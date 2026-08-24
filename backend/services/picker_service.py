@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
-
+from models.game_play_stats import GamePlayStats
 from models.game import Game
 
 
@@ -77,36 +77,32 @@ class PickerService:
         self,
         game: Game,
         criteria: PickerCriteria,
-        play_stats=None,
-    ) -> PickerMatch:
-        score = 50
+        play_stats: GamePlayStats | None = None,
+        ) -> PickerMatch:
+        score = 40
         reasons = [
             f"Supports {criteria.players} player"
             + ("" if criteria.players == 1 else "s")
         ]
 
-        # Play time contributes up to 30 points.
         if criteria.max_play_time is None:
-            score += 30
+            score += 25
         elif game.max_play_time is not None:
             utilisation = min(
                 game.max_play_time / criteria.max_play_time,
                 1.0,
             )
 
-            time_score = round(15 + (15 * utilisation))
-            score += time_score
+            score += round(15 + (10 * utilisation))
 
             reasons.append(
                 f"Fits within {criteria.max_play_time} minutes"
             )
 
-        # Complexity contributes up to 20 points.
         if criteria.max_complexity is None:
-            score += 20
+            score += 15
         elif game.complexity is None:
-            # Unknown complexity is allowed, but receives a neutral score.
-            score += 10
+            score += 7
             reasons.append("Complexity not yet available")
         else:
             utilisation = min(
@@ -114,61 +110,26 @@ class PickerService:
                 1.0,
             )
 
-            complexity_score = round(10 + (10 * utilisation))
-            score += complexity_score
+            score += round(7 + (8 * utilisation))
 
             reasons.append(
                 f"Complexity {game.complexity:.1f} fits preference"
             )
 
-        if play_stats is None:
-            score += 10
+        history_score, history_reason = self._score_play_history(
+            play_stats
+        )
 
-            reasons.append(
-                "Hasn't been played yet"
-            )
+        score += history_score
 
-        elif play_stats.last_played_at is None:
-            score += 10
-
-            reasons.append(
-                "Hasn't been played yet"
-            )
-
-        else:
-            from datetime import (
-                datetime,
-                timezone,
-            )
-
-            now = datetime.now(timezone.utc)
-
-            days_since_played = (
-                now - play_stats.last_played_at
-            ).days
-
-            if days_since_played >= 180:
-                score += 10
-
-                reasons.append(
-                    "Hasn't been played in a while"
-                )
-
-            elif days_since_played >= 60:
-                score += 6
-
-                reasons.append(
-                    "Due another play"
-                )
-
-            elif days_since_played >= 14:
-                score += 3
+        if history_reason:
+            reasons.append(history_reason)
 
         return PickerMatch(
             game=game,
             score=min(score, 100),
             reasons=reasons,
-        )
+    )
 
     @staticmethod
     def _supports_player_count(game: Game, players: int) -> bool:
@@ -202,3 +163,30 @@ class PickerService:
             return True
 
         return game.complexity <= max_complexity
+
+    @staticmethod
+    def _score_play_history(
+        play_stats: GamePlayStats | None,
+    ) -> tuple[int, str | None]:
+        if (
+            play_stats is None
+            or play_stats.last_played_at is None
+        ):
+            return 20, "Hasn't been played yet"
+
+        now = datetime.now(timezone.utc)
+
+        days_since_played = (
+            now - play_stats.last_played_at
+        ).days
+
+        if days_since_played >= 180:
+            return 15, "Hasn't been played in over 6 months"
+
+        if days_since_played >= 60:
+            return 10, "Hasn't been played in over 2 months"
+
+        if days_since_played >= 14:
+            return 5, "Due another play"
+
+        return 0, "Played recently"

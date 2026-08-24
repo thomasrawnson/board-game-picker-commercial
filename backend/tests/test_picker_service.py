@@ -291,6 +291,54 @@ def test_game_not_played_recently_scores_higher():
     )
 
     assert (
-        "Hasn't been played in a while"
+        "Hasn't been played in over 6 months"
         in matches[0].reasons
     )
+
+def test_never_played_game_beats_recently_played_game():
+    service = PickerService()
+
+    never_played = Game(
+        bgg_id=1,
+        name="Never Played",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+    )
+
+    recent_game = Game(
+        bgg_id=2,
+        name="Recent Game",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+    )
+
+    play_stats = {
+        2: GamePlayStats(
+            bgg_id=2,
+            play_count=5,
+            last_played_at=(
+                datetime.now(timezone.utc)
+                - timedelta(days=2)
+            ),
+        )
+    }
+
+    matches = service.rank_matches(
+        [recent_game, never_played],
+        PickerCriteria(
+            players=2,
+            max_play_time=60,
+            max_complexity=3.0,
+        ),
+        play_stats=play_stats,
+    )
+
+    assert matches[0].game.bgg_id == 1
+    assert "Hasn't been played yet" in matches[0].reasons
+    assert "Played recently" in matches[1].reasons
