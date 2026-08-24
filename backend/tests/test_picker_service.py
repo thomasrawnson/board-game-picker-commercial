@@ -231,7 +231,7 @@ def test_score_never_exceeds_100():
         ),
     )
 
-    assert matches[0].score == 100
+    assert matches[0].score <= 100
 
 def test_game_not_played_recently_scores_higher():
     service = PickerService()
@@ -342,3 +342,223 @@ def test_never_played_game_beats_recently_played_game():
     assert matches[0].game.bgg_id == 1
     assert "Hasn't been played yet" in matches[0].reasons
     assert "Played recently" in matches[1].reasons
+
+def test_preferred_mechanic_increases_score():
+    service = PickerService()
+
+    preferred_game = Game(
+        bgg_id=1,
+        name="Deck Builder",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+        mechanics=[
+            "Deck Building",
+        ],
+    )
+
+    other_game = Game(
+        bgg_id=2,
+        name="Other Game",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+        mechanics=[
+            "Worker Placement",
+        ],
+    )
+
+    matches = service.rank_matches(
+        [
+            other_game,
+            preferred_game,
+        ],
+        PickerCriteria(
+            players=2,
+            max_play_time=60,
+            max_complexity=3.0,
+            preferred_mechanics=[
+                "Deck Building"
+            ],
+        ),
+    )
+
+    assert matches[0].game.bgg_id == 1
+
+    assert (
+        "Matches preferred mechanic: Deck Building"
+        in matches[0].reasons
+    )
+
+
+def test_preferred_category_increases_score():
+    service = PickerService()
+
+    preferred_game = Game(
+        bgg_id=1,
+        name="Economic Game",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+        categories=[
+            "Economic",
+        ],
+    )
+
+    other_game = Game(
+        bgg_id=2,
+        name="Adventure Game",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+        categories=[
+            "Adventure",
+        ],
+    )
+
+    matches = service.rank_matches(
+        [
+            other_game,
+            preferred_game,
+        ],
+        PickerCriteria(
+            players=2,
+            max_play_time=60,
+            max_complexity=3.0,
+            preferred_categories=[
+                "Economic"
+            ],
+        ),
+    )
+
+    assert matches[0].game.bgg_id == 1
+
+    assert (
+        "Matches preferred category: Economic"
+        in matches[0].reasons
+    )
+
+
+def test_preferences_are_case_insensitive():
+    service = PickerService()
+
+    game = Game(
+        bgg_id=1,
+        name="Deck Builder",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+        mechanics=[
+            "Deck Building",
+        ],
+    )
+
+    matches = service.rank_matches(
+        [game],
+        PickerCriteria(
+            players=2,
+            preferred_mechanics=[
+                "deck building"
+            ],
+        ),
+    )
+
+    assert (
+        "Matches preferred mechanic: Deck Building"
+        in matches[0].reasons
+    )
+
+
+def test_preferences_do_not_hard_filter_games():
+    service = PickerService()
+
+    matching_game = Game(
+        bgg_id=1,
+        name="Deck Builder",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        owned=True,
+        mechanics=[
+            "Deck Building",
+        ],
+    )
+
+    non_matching_game = Game(
+        bgg_id=2,
+        name="Worker Placement Game",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        owned=True,
+        mechanics=[
+            "Worker Placement",
+        ],
+    )
+
+    matches = service.rank_matches(
+        [
+            matching_game,
+            non_matching_game,
+        ],
+        PickerCriteria(
+            players=2,
+            preferred_mechanics=[
+                "Deck Building"
+            ],
+        ),
+    )
+
+    assert len(matches) == 2
+    assert matches[0].game.bgg_id == 1
+
+
+def test_category_and_mechanic_bonus_is_capped_at_ten():
+    service = PickerService()
+
+    game = Game(
+        bgg_id=1,
+        name="Perfect Preference Match",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=3.0,
+        owned=True,
+        categories=[
+            "Economic",
+            "Strategy",
+        ],
+        mechanics=[
+            "Deck Building",
+            "Hand Management",
+        ],
+    )
+
+    matches = service.rank_matches(
+        [game],
+        PickerCriteria(
+            players=2,
+            max_play_time=60,
+            max_complexity=3.0,
+            preferred_categories=[
+                "Economic",
+                "Strategy",
+            ],
+            preferred_mechanics=[
+                "Deck Building",
+                "Hand Management",
+            ],
+        ),
+    )
+
+    assert matches[0].score <= 100

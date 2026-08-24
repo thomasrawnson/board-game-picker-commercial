@@ -24,10 +24,12 @@ from services.picker_service import (
 )
 from services.play_service import PlayService
 
+
 app = FastAPI(
     title="BoardGamePicker API",
     version="0.1.0",
 )
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,6 +38,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 def get_collection_service(
     db: Session = Depends(get_db),
@@ -49,7 +52,9 @@ def get_collection_service(
 @app.post("/collections/{username}/sync")
 def sync_collection(
     username: str,
-    service: CollectionService = Depends(get_collection_service),
+    service: CollectionService = Depends(
+        get_collection_service
+    ),
 ):
     games = service.sync_collection(username)
 
@@ -57,7 +62,8 @@ def sync_collection(
         "username": username,
         "games_synced": len(games),
     }
-    
+
+
 def get_game_service(
     db: Session = Depends(get_db),
 ) -> GameService:
@@ -68,7 +74,9 @@ def get_game_service(
 @app.get("/games/{bgg_id}")
 def get_game(
     bgg_id: int,
-    service: GameService = Depends(get_game_service),
+    service: GameService = Depends(
+        get_game_service
+    ),
 ):
     game = service.get_game(bgg_id)
 
@@ -84,7 +92,9 @@ def get_game(
 @app.post("/games", status_code=201)
 def create_game(
     game_data: GameCreate,
-    service: GameService = Depends(get_game_service),
+    service: GameService = Depends(
+        get_game_service
+    ),
 ):
     game = Game(
         bgg_id=game_data.bgg_id,
@@ -105,22 +115,31 @@ def create_game(
 
     return service.create_game(game)
 
+
 @app.get("/games")
 def get_games(
-    service: GameService = Depends(get_game_service),
+    service: GameService = Depends(
+        get_game_service
+    ),
 ):
     return service.get_games()
+
 
 @app.put("/games/{bgg_id}")
 def update_game(
     bgg_id: int,
     game_data: GameCreate,
-    service: GameService = Depends(get_game_service),
+    service: GameService = Depends(
+        get_game_service
+    ),
 ):
     if bgg_id != game_data.bgg_id:
         raise HTTPException(
             status_code=400,
-            detail="BGG ID in URL does not match request body",
+            detail=(
+                "BGG ID in URL does not "
+                "match request body"
+            ),
         )
 
     game = Game(
@@ -150,10 +169,13 @@ def update_game(
 
     return updated_game
 
+
 @app.delete("/games/{bgg_id}")
 def delete_game(
     bgg_id: int,
-    service: GameService = Depends(get_game_service),
+    service: GameService = Depends(
+        get_game_service
+    ),
 ):
     deleted = service.delete_game(bgg_id)
 
@@ -167,33 +189,61 @@ def delete_game(
         "message": "Game deleted"
     }
 
+
 def get_picker_play_repository(
     db: Session = Depends(get_db),
 ) -> PlayRepository:
     return PlayRepository(db)
 
+
 @app.get("/picker")
 def pick_games(
     players: int = Query(..., ge=1),
-    max_play_time: int | None = Query(None, ge=1),
-    max_complexity: float | None = Query(None, ge=0),
-    limit: int = Query(10, ge=1, le=50),
-    game_service: GameService = Depends(get_game_service),
-    play_repository: PlayRepository = Depends(get_picker_play_repository),
+    max_play_time: int | None = Query(
+        None,
+        ge=1,
+    ),
+    max_complexity: float | None = Query(
+        None,
+        ge=0,
+    ),
+    preferred_categories: list[str] = Query(
+        default=[],
+    ),
+    preferred_mechanics: list[str] = Query(
+        default=[],
+    ),
+    limit: int = Query(
+        10,
+        ge=1,
+        le=50,
+    ),
+    game_service: GameService = Depends(
+        get_game_service
+    ),
+    play_repository: PlayRepository = Depends(
+        get_picker_play_repository
+    ),
 ):
     games = game_service.get_games()
 
     picker_service = PickerService()
 
-    play_stats = play_repository.get_game_play_stats() 
+    play_stats = (
+        play_repository.get_game_play_stats()
+    )
+
+    criteria = PickerCriteria(
+        players=players,
+        max_play_time=max_play_time,
+        max_complexity=max_complexity,
+        preferred_categories=preferred_categories,
+        preferred_mechanics=preferred_mechanics,
+    )
 
     matches = picker_service.rank_matches(
         games,
-        PickerCriteria(
-            players=players,
-            max_play_time=max_play_time,
-            max_complexity=max_complexity,
-        ),
+        criteria,
         play_stats=play_stats,
     )
 
@@ -206,16 +256,20 @@ def pick_games(
         for match in matches[:limit]
     ]
 
+
 def get_play_service(
     db: Session = Depends(get_db),
 ) -> PlayService:
     repository = PlayRepository(db)
     return PlayService(repository)
 
+
 @app.post("/plays", status_code=201)
 def record_play(
     play_data: PlayCreate,
-    service: PlayService = Depends(get_play_service),
+    service: PlayService = Depends(
+        get_play_service
+    ),
 ):
     play = service.record_play(
         bgg_id=play_data.bgg_id,
@@ -230,14 +284,18 @@ def record_play(
 
     return play
 
+
 def get_insights_service(
     db: Session = Depends(get_db),
 ) -> InsightsService:
     repository = InsightsRepository(db)
     return InsightsService(repository)
 
+
 @app.get("/insights")
 def get_collection_insights(
-    service: InsightsService = Depends(get_insights_service),
+    service: InsightsService = Depends(
+        get_insights_service
+    ),
 ):
     return service.get_collection_insights()

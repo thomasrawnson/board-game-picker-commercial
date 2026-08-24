@@ -1,16 +1,19 @@
-from fastapi.testclient import TestClient
-from services.collection_service import CollectionService
-from models.game import Game
-from api.main import app, get_collection_service, get_game_service
 from datetime import datetime, timezone
+
+from fastapi.testclient import TestClient
 
 from api.main import (
     app,
     get_collection_service,
     get_game_service,
+    get_picker_play_repository,
     get_play_service,
 )
+from models.game import Game
 from models.play import Play
+
+
+client = TestClient(app)
 
 client = TestClient(app)
 
@@ -418,3 +421,66 @@ def test_record_play_returns_404_for_unknown_game():
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Game not found"
+
+def test_picker_uses_preferred_mechanic():
+    class FakeGameService:
+        def get_games(self):
+            return [
+                Game(
+                    bgg_id=1,
+                    name="Deck Builder",
+                    min_players=2,
+                    max_players=4,
+                    max_play_time=60,
+                    complexity=2.5,
+                    owned=True,
+                    mechanics=["Deck Building"],
+                ),
+                Game(
+                    bgg_id=2,
+                    name="Worker Placement Game",
+                    min_players=2,
+                    max_players=4,
+                    max_play_time=60,
+                    complexity=2.5,
+                    owned=True,
+                    mechanics=["Worker Placement"],
+                ),
+            ]
+
+    class FakePlayRepository:
+        def get_game_play_stats(self):
+            return {}
+
+    app.dependency_overrides[get_game_service] = (
+        lambda: FakeGameService()
+    )
+
+    app.dependency_overrides[
+        get_picker_play_repository
+    ] = lambda: FakePlayRepository()
+
+    try:
+        response = client.get(
+            "/picker",
+            params={
+                "players": 2,
+                "max_play_time": 60,
+                "max_complexity": 3.0,
+                "preferred_mechanics": "Deck Building",
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 2
+    assert data[0]["game"]["bgg_id"] == 1
+
+    assert (
+        "Matches preferred mechanic: Deck Building"
+        in data[0]["reasons"]
+    )
