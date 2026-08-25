@@ -47,6 +47,41 @@ export async function getPickerMatches(
     )
   }
 
+    criteria.preferredCategories?.forEach(
+    (category) => {
+      params.append(
+        "preferred_categories",
+        category,
+      )
+    },
+  )
+
+  criteria.preferredMechanics?.forEach(
+    (mechanic) => {
+      params.append(
+        "preferred_mechanics",
+        mechanic,
+      )
+    },
+  )
+
+  criteria.preferredCategories?.forEach(
+    (category) => {
+      params.append(
+        "preferred_categories",
+        category,
+      )
+    },
+  )
+
+  criteria.preferredMechanics?.forEach(
+    (mechanic) => {
+      params.append(
+        "preferred_mechanics",
+        mechanic,
+      )
+    },
+  )
   const response = await fetch(
     `${API_BASE_URL}/picker?${params.toString()}`,
   )
@@ -60,6 +95,19 @@ export async function getPickerMatches(
   return response.json()
 }
 
+export async function getGames(): Promise<Game[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/games`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Games request failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
+}
 export interface Play {
   id: number
   bgg_id: number

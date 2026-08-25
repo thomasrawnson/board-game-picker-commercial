@@ -1,5 +1,5 @@
 import { useState } from "react"
-
+import CollectionView from "./components/CollectionView"
 import {
   getPickerMatches,
   recordPlay,
@@ -19,6 +19,7 @@ type Step =
 
 type AppView =
   | "picker"
+  | "collection"
   | "insights"
 
 
@@ -280,6 +281,19 @@ function App() {
 
           <button
             className={
+              view === "collection"
+                ? "nav-button active"
+                : "nav-button"
+            }
+            onClick={() =>
+              setView("collection")
+            }
+          >
+            Games
+          </button>
+
+          <button
+            className={
               view === "insights"
                 ? "nav-button active"
                 : "nav-button"
@@ -288,7 +302,7 @@ function App() {
               setView("insights")
             }
           >
-            Your shelf
+            Insights
           </button>
         </nav>
 
@@ -769,7 +783,9 @@ function App() {
           </>
         )}
 
-
+        {view === "collection" && (
+          <CollectionView />
+        )}
         {view === "insights" && (
           <InsightsView />
         )}
