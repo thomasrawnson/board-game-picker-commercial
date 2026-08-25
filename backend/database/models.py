@@ -2,20 +2,71 @@ from datetime import datetime
 
 from sqlalchemy import (
     Boolean,
+    Column,
     DateTime,
     Float,
     ForeignKey,
     Integer,
     String,
+    Table,
     UniqueConstraint,
     func,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.connection import Base
 
+game_categories = Table(
+    "game_categories",
+    Base.metadata,
+    Column(
+        "game_id",
+        ForeignKey("games.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "category_id",
+        ForeignKey(
+            "categories.id",
+            ondelete="CASCADE",
+        ),
+        primary_key=True,
+    ),
+)
+
+
+game_mechanics = Table(
+    "game_mechanics",
+    Base.metadata,
+    Column(
+        "game_id",
+        ForeignKey("games.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "mechanic_id",
+        ForeignKey(
+            "mechanics.id",
+            ondelete="CASCADE",
+        ),
+        primary_key=True,
+    ),
+)
+
 class Game(Base):
     __tablename__ = "games"
+
+    categories = relationship(
+        "Category",
+        secondary=game_categories,
+        lazy="selectin",
+    )
+
+    mechanics = relationship(
+        "Mechanic",
+        secondary=game_mechanics,
+        lazy="selectin",
+    )
 
     id: Mapped[int] = mapped_column(
         Integer,
@@ -98,4 +149,27 @@ class Play(Base):
 
     source_play_id: Mapped[str | None] = mapped_column(
         String(100),
+    )
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(
+        String(100),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+
+
+class Mechanic(Base):
+    __tablename__ = "mechanics"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(
+        String(100),
+        unique=True,
+        nullable=False,
+        index=True,
     )

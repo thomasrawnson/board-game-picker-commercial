@@ -35,8 +35,14 @@
         <link type="boardgamemechanic"
               id="2078"
               value="Campaign / Battle Card Driven"/>
+        
+        <link type="boardgamecategory" id="1021" value="Economic" />
+        <link type="boardgamecategory" id="1029" value="City Building" />
 
-        <statistics>
+        <link type="boardgamemechanic" id="2040" value="Hand Management" />
+        <link type="boardgamemechanic" id="2081" value="Network and Route Building" />
+
+                <statistics>
             <ratings>
 
                 <average value="8.40"/>

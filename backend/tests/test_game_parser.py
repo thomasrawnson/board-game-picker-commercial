@@ -36,6 +36,12 @@ def test_parse_game_metadata():
 
     assert "Cooperative Game" in game.mechanics
 
+    assert "Economic" in game.categories
+    assert "City Building" in game.categories
+
+    assert "Hand Management" in game.mechanics
+    assert "Network and Route Building" in game.mechanics
+
 
 def test_multiple_mechanics_are_parsed():
 
@@ -43,4 +49,7 @@ def test_multiple_mechanics_are_parsed():
 
     game = parse_game_metadata(xml)
 
-    assert len(game.mechanics) == 2
+    assert "Cooperative Game" in game.mechanics
+    assert "Campaign / Battle Card Driven" in game.mechanics
+    assert "Hand Management" in game.mechanics
+    assert "Network and Route Building" in game.mechanics

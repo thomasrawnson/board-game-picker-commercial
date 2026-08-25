@@ -65,3 +65,31 @@ def _get_rating(item) -> float | None:
         return None
 
     return float(value)
+
+def parse_game(xml_text: str) -> Game:
+    root = ET.fromstring(xml_text)
+
+    item = root.find("item")
+
+    if item is None:
+        raise ValueError("No game found in BGG response")
+
+    categories = [
+        link.attrib["value"]
+        for link in item.findall("link")
+        if link.attrib.get("type")
+        == "boardgamecategory"
+    ]
+
+    mechanics = [
+        link.attrib["value"]
+        for link in item.findall("link")
+        if link.attrib.get("type")
+        == "boardgamemechanic"
+    ]
+
+    return Game(
+        # existing fields...
+        categories=categories,
+        mechanics=mechanics,
+    )
