@@ -11,6 +11,8 @@ export interface Game {
   owned: boolean
   image_url: string | null
   thumbnail_url: string | null
+  categories: string[]
+  mechanics: string[]
 }
 
 export interface PickerMatch {
@@ -22,6 +24,8 @@ export interface PickerMatch {
 export interface PickerCriteria {
   players: number
   maxPlayTime?: number
+  preferredCategories?: string[]
+  preferredMechanics?: string[]
 }
 
 const API_BASE_URL =

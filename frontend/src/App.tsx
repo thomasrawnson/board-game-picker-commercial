@@ -11,11 +11,25 @@ import InsightsView from "./components/InsightsView"
 import "./App.css"
 
 
-type Step = "players" | "time" | "reveal"
-type AppView = "picker" | "insights"
+type Step =
+  | "players"
+  | "time"
+  | "preferences"
+  | "reveal"
+
+type AppView =
+  | "picker"
+  | "insights"
 
 
-const playerOptions = [2, 3, 4, 5, 6, 7]
+const playerOptions = [
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+]
 
 
 const timeOptions = [
@@ -37,8 +51,24 @@ const timeOptions = [
   {
     label: "All night",
     description: "no limit",
-    value: undefined,
+    value: 0,
   },
+]
+
+
+const categoryOptions = [
+  "Adventure",
+  "Economic",
+  "Fantasy",
+  "Science Fiction",
+]
+
+
+const mechanicOptions = [
+  "Cooperative Game",
+  "Deck Building",
+  "Hand Management",
+  "Worker Placement",
 ]
 
 
@@ -53,7 +83,17 @@ function App() {
     useState<number | null>(null)
 
   const [maxPlayTime, setMaxPlayTime] =
-    useState<number | undefined>(undefined)
+    useState<number | null>(null)
+
+  const [
+    preferredCategories,
+    setPreferredCategories,
+  ] = useState<string[]>([])
+
+  const [
+    preferredMechanics,
+    setPreferredMechanics,
+  ] = useState<string[]>([])
 
   const [matches, setMatches] =
     useState<PickerMatch[]>([])
@@ -80,6 +120,42 @@ function App() {
   const match = matches[matchIndex]
 
 
+  function toggleCategory(
+    category: string,
+  ) {
+    setPreferredCategories(
+      (current) =>
+        current.includes(category)
+          ? current.filter(
+              (item) =>
+                item !== category,
+            )
+          : [
+              ...current,
+              category,
+            ],
+    )
+  }
+
+
+  function toggleMechanic(
+    mechanic: string,
+  ) {
+    setPreferredMechanics(
+      (current) =>
+        current.includes(mechanic)
+          ? current.filter(
+              (item) =>
+                item !== mechanic,
+            )
+          : [
+              ...current,
+              mechanic,
+            ],
+    )
+  }
+
+
   async function revealGame() {
     if (players === null) {
       return
@@ -91,10 +167,17 @@ function App() {
     setPlayError("")
 
     try {
-      const results = await getPickerMatches({
-        players,
-        maxPlayTime,
-      })
+      const results =
+        await getPickerMatches({
+          players,
+          maxPlayTime:
+            maxPlayTime === 0
+              ? undefined
+              : maxPlayTime ??
+                undefined,
+          preferredCategories,
+          preferredMechanics,
+        })
 
       if (results.length === 0) {
         setError(
@@ -119,7 +202,10 @@ function App() {
 
 
   async function handlePlayThis() {
-    if (!match || players === null) {
+    if (
+      !match ||
+      players === null
+    ) {
       return
     }
 
@@ -155,13 +241,18 @@ function App() {
 
     setMatchIndex(
       (current) =>
-        (current + 1) % matches.length,
+        (current + 1) %
+        matches.length,
     )
   }
 
 
   function startOver() {
     setStep("players")
+    setPlayers(null)
+    setMaxPlayTime(null)
+    setPreferredCategories([])
+    setPreferredMechanics([])
     setMatches([])
     setMatchIndex(0)
     setPlayRecorded(false)
@@ -180,7 +271,9 @@ function App() {
                 ? "nav-button active"
                 : "nav-button"
             }
-            onClick={() => setView("picker")}
+            onClick={() =>
+              setView("picker")
+            }
           >
             Picker
           </button>
@@ -191,7 +284,9 @@ function App() {
                 ? "nav-button active"
                 : "nav-button"
             }
-            onClick={() => setView("insights")}
+            onClick={() =>
+              setView("insights")
+            }
           >
             Your shelf
           </button>
@@ -219,6 +314,15 @@ function App() {
 
               <span
                 className={
+                  step ===
+                  "preferences"
+                    ? "dot active"
+                    : "dot"
+                }
+              />
+
+              <span
+                className={
                   step === "reveal"
                     ? "dot active"
                     : "dot"
@@ -234,44 +338,54 @@ function App() {
                     Game night
                   </p>
 
-                  <h1>Who's playing?</h1>
+                  <h1>
+                    Who's playing?
+                  </h1>
 
                   <p className="subtitle">
-                    Pick a number, we'll do the rest.
+                    Pick a number,
+                    we'll do the rest.
                   </p>
                 </header>
 
 
                 <div className="player-grid">
-                  {playerOptions.map((option) => (
-                    <button
-                      key={option}
-                      className={
-                        players === option
-                          ? "player-chip selected"
-                          : "player-chip"
-                      }
-                      onClick={() =>
-                        setPlayers(option)
-                      }
-                    >
-                      <strong>
-                        {option === 7
-                          ? "7+"
-                          : option}
-                      </strong>
+                  {playerOptions.map(
+                    (option) => (
+                      <button
+                        key={option}
+                        className={
+                          players ===
+                          option
+                            ? "player-chip selected"
+                            : "player-chip"
+                        }
+                        onClick={() =>
+                          setPlayers(
+                            option,
+                          )
+                        }
+                      >
+                        <strong>
+                          {option === 7
+                            ? "7+"
+                            : option}
+                        </strong>
 
-                      <span>
-                        Players
-                      </span>
-                    </button>
-                  ))}
+                        <span>
+                          Players
+                        </span>
+                      </button>
+                    ),
+                  )}
                 </div>
 
 
                 <button
                   className="primary-button"
-                  disabled={players === null}
+                  disabled={
+                    players === null
+                  }
                   onClick={() =>
                     setStep("time")
                   }
@@ -294,61 +408,66 @@ function App() {
                   </h1>
 
                   <p className="subtitle">
-                    We'll only show games that fit.
+                    We'll only show
+                    games that fit.
                   </p>
                 </header>
 
 
                 <div className="time-list">
-                  {timeOptions.map((option) => {
-                    const selected =
-                      maxPlayTime ===
-                      option.value
+                  {timeOptions.map(
+                    (option) => {
+                      const selected =
+                        maxPlayTime ===
+                        option.value
 
-                    return (
-                      <button
-                        key={option.label}
-                        className={
-                          selected
-                            ? "time-option selected"
-                            : "time-option"
-                        }
-                        onClick={() =>
-                          setMaxPlayTime(
-                            option.value,
-                          )
-                        }
-                      >
-                        <strong>
-                          {option.label}
-                        </strong>
-
-                        <span>
-                          {
-                            option.description
+                      return (
+                        <button
+                          key={
+                            option.label
                           }
-                        </span>
-                      </button>
-                    )
-                  })}
+                          className={
+                            selected
+                              ? "time-option selected"
+                              : "time-option"
+                          }
+                          onClick={() =>
+                            setMaxPlayTime(
+                              option.value,
+                            )
+                          }
+                        >
+                          <strong>
+                            {
+                              option.label
+                            }
+                          </strong>
+
+                          <span>
+                            {
+                              option.description
+                            }
+                          </span>
+                        </button>
+                      )
+                    },
+                  )}
                 </div>
-
-
-                {error && (
-                  <p className="error-message">
-                    {error}
-                  </p>
-                )}
 
 
                 <button
                   className="primary-button"
-                  onClick={revealGame}
-                  disabled={loading}
+                  disabled={
+                    maxPlayTime ===
+                    null
+                  }
+                  onClick={() =>
+                    setStep(
+                      "preferences",
+                    )
+                  }
                 >
-                  {loading
-                    ? "Searching the shelf..."
-                    : "Reveal a game"}
+                  Continue
                 </button>
 
 
@@ -364,23 +483,151 @@ function App() {
             )}
 
 
-            {step === "reveal" && match && (
+            {step ===
+              "preferences" && (
+              <section className="screen">
+                <header>
+                  <p className="eyebrow">
+                    Game night
+                  </p>
+
+                  <h1>
+                    What are you in
+                    the mood for?
+                  </h1>
+
+                  <p className="subtitle">
+                    Optional — choose
+                    anything that
+                    sounds good.
+                  </p>
+                </header>
+
+
+                <div className="preference-section">
+                  <p className="preference-label">
+                    Theme
+                  </p>
+
+                  <div className="preference-grid">
+                    {categoryOptions.map(
+                      (category) => (
+                        <button
+                          key={
+                            category
+                          }
+                          className={
+                            preferredCategories.includes(
+                              category,
+                            )
+                              ? "preference-chip selected"
+                              : "preference-chip"
+                          }
+                          onClick={() =>
+                            toggleCategory(
+                              category,
+                            )
+                          }
+                        >
+                          {category}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                </div>
+
+
+                <div className="preference-section">
+                  <p className="preference-label">
+                    Play style
+                  </p>
+
+                  <div className="preference-grid">
+                    {mechanicOptions.map(
+                      (mechanic) => (
+                        <button
+                          key={
+                            mechanic
+                          }
+                          className={
+                            preferredMechanics.includes(
+                              mechanic,
+                            )
+                              ? "preference-chip selected"
+                              : "preference-chip"
+                          }
+                          onClick={() =>
+                            toggleMechanic(
+                              mechanic,
+                            )
+                          }
+                        >
+                          {mechanic}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                </div>
+
+
+                {error && (
+                  <p className="error-message">
+                    {error}
+                  </p>
+                )}
+
+
+                <button
+                  className="primary-button"
+                  onClick={
+                    revealGame
+                  }
+                  disabled={loading}
+                >
+                  {loading
+                    ? "Searching the shelf..."
+                    : "Reveal a game"}
+                </button>
+
+
+                <button
+                  className="ghost-button"
+                  onClick={() =>
+                    setStep("time")
+                  }
+                >
+                  Back
+                </button>
+              </section>
+            )}
+
+
+            {step === "reveal" &&
+              match && (
               <section className="screen reveal-screen">
                 <div
                   className="game-card"
-                  key={match.game.bgg_id}
+                  key={
+                    match.game.bgg_id
+                  }
                 >
                   <div className="game-image-wrap">
-                    {match.game.image_url ||
-                    match.game.thumbnail_url ? (
+                    {match.game
+                      .image_url ||
+                    match.game
+                      .thumbnail_url ? (
                       <img
                         className="game-image"
                         src={
-                          match.game.image_url ??
-                          match.game.thumbnail_url ??
+                          match.game
+                            .image_url ??
+                          match.game
+                            .thumbnail_url ??
                           ""
                         }
-                        alt={match.game.name}
+                        alt={
+                          match.game.name
+                        }
                       />
                     ) : (
                       <div className="image-placeholder">
@@ -407,9 +654,11 @@ function App() {
 
 
                   <div className="game-meta">
-                    {match.game.min_players !==
+                    {match.game
+                      .min_players !==
                       null &&
-                      match.game.max_players !==
+                      match.game
+                        .max_players !==
                         null && (
                         <span>
                           {
@@ -426,10 +675,12 @@ function App() {
                       )}
 
 
-                    {match.game.max_play_time !==
+                    {match.game
+                      .max_play_time !==
                       null && (
                       <span>
-                        {match.game.min_play_time ??
+                        {match.game
+                          .min_play_time ??
                           "?"}
                         –
                         {
@@ -463,7 +714,9 @@ function App() {
                 <div className="reveal-actions">
                   <button
                     className="secondary-button"
-                    onClick={tryAnother}
+                    onClick={
+                      tryAnother
+                    }
                   >
                     Try another
                   </button>
@@ -471,7 +724,9 @@ function App() {
 
                   <button
                     className="primary-button"
-                    onClick={handlePlayThis}
+                    onClick={
+                      handlePlayThis
+                    }
                     disabled={
                       savingPlay ||
                       playRecorded
@@ -488,7 +743,8 @@ function App() {
 
                 {playRecorded && (
                   <p className="play-confirmation">
-                    ✓ Added to your play history
+                    ✓ Added to your
+                    play history
                   </p>
                 )}
 
@@ -502,7 +758,9 @@ function App() {
 
                 <button
                   className="ghost-button"
-                  onClick={startOver}
+                  onClick={
+                    startOver
+                  }
                 >
                   Start over
                 </button>

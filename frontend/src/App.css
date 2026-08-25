@@ -913,3 +913,38 @@ button:focus-visible {
   font-size: 11px;
   line-height: 1.4;
 }
+
+.preference-section {
+  margin-bottom: 24px;
+}
+
+.preference-label {
+  margin: 0 0 10px;
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.preference-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preference-chip {
+  padding: 10px 13px;
+  color: var(--card);
+  background: rgba(243, 234, 216, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.preference-chip.selected {
+  color: var(--ink);
+  background: var(--gold);
+  border-color: var(--gold);
+}
