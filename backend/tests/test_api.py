@@ -362,13 +362,18 @@ def test_record_play():
         def record_play(
             self,
             bgg_id: int,
-            player_count: int,
+            played_at,
+            duration_minutes: int | None,
+            participants: list[dict],
         ):
             return Play(
                 id=1,
                 bgg_id=bgg_id,
-                player_count=player_count,
-                played_at=datetime.now(timezone.utc),
+                player_count=len(participants),
+                played_at=(
+                    played_at
+                    or datetime.now(timezone.utc)
+                ),
             )
 
     app.dependency_overrides[get_play_service] = (
@@ -380,7 +385,22 @@ def test_record_play():
             "/plays",
             json={
                 "bgg_id": 167791,
-                "player_count": 2,
+                "played_at": (
+                    "2026-08-28T20:00:00+00:00"
+                ),
+                "duration_minutes": 75,
+                "participants": [
+                    {
+                        "name": "Tom",
+                        "score": 83,
+                        "is_winner": True,
+                    },
+                    {
+                        "name": "Sarah",
+                        "score": 72,
+                        "is_winner": False,
+                    },
+                ],
             },
         )
     finally:
@@ -400,7 +420,9 @@ def test_record_play_returns_404_for_unknown_game():
         def record_play(
             self,
             bgg_id: int,
-            player_count: int,
+            played_at,
+            duration_minutes: int | None,
+            participants: list[dict],
         ):
             return None
 
@@ -413,15 +435,27 @@ def test_record_play_returns_404_for_unknown_game():
             "/plays",
             json={
                 "bgg_id": 999999999,
-                "player_count": 2,
+                "played_at": (
+                    "2026-08-28T20:00:00+00:00"
+                ),
+                "duration_minutes": 60,
+                "participants": [
+                    {
+                        "name": "Tom",
+                        "score": 10,
+                        "is_winner": True,
+                    },
+                ],
             },
         )
     finally:
         app.dependency_overrides.clear()
 
     assert response.status_code == 404
-    assert response.json()["detail"] == "Game not found"
-
+    assert response.json()["detail"] == (
+        "Game not found"
+    )
+    
 def test_picker_uses_preferred_mechanic():
     class FakeGameService:
         def get_games(self):

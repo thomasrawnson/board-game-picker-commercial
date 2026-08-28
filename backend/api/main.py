@@ -363,7 +363,15 @@ def record_play(
 ):
     play = service.record_play(
         bgg_id=play_data.bgg_id,
-        player_count=play_data.player_count,
+        played_at=play_data.played_at,
+        duration_minutes=(
+            play_data.duration_minutes
+        ),
+        participants=[
+            participant.model_dump()
+            for participant
+            in play_data.participants
+        ],
     )
 
     if play is None:
@@ -396,22 +404,6 @@ def get_collection_insights(
 ):
     return service.get_collection_insights()
 
-@app.get("/games/{bgg_id}/plays")
-def get_game_plays(
-    bgg_id: int,
-    limit: int = Query(
-        10,
-        ge=1,
-        le=50,
-    ),
-    repository: PlayRepository = Depends(
-        get_picker_play_repository
-    ),
-):
-    return repository.get_for_game(
-        bgg_id=bgg_id,
-        limit=limit,
-    )
 
 @app.get("/games/{bgg_id}/plays")
 def get_game_play_history(

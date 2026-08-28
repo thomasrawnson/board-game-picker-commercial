@@ -277,6 +277,55 @@ class Play(Base):
         String(100),
     )
 
+    participants = relationship(
+        "PlayParticipant",
+        back_populates="play",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
+    participants = relationship(
+        "PlayParticipant",
+        back_populates="play",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
+
+class PlayParticipant(Base):
+    __tablename__ = "play_participants"
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    play_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "plays.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
+    )
+
+    name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False,
+    )
+
+    score: Mapped[float | None] = mapped_column(
+        Float,
+    )
+
+    is_winner: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
+
+    play = relationship(
+        "Play",
+        back_populates="participants",
+    )
 
 class Category(Base):
     __tablename__ = "categories"

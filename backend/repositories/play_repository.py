@@ -7,7 +7,10 @@ from database.models import (
 from database.models import (
     Play as DatabasePlay,
 )
-from database.models import UserGame
+from database.models import (
+    PlayParticipant,
+    UserGame,
+)
 from models.game_play_stats import (
     GamePlayStats,
 )
@@ -29,7 +32,9 @@ class PlayRepository:
     def create(
         self,
         bgg_id: int,
-        player_count: int,
+        played_at,
+        duration_minutes: int | None,
+        participants: list[dict],
     ) -> DomainPlay | None:
         if self.user_id is None:
             raise ValueError(
@@ -59,10 +64,30 @@ class PlayRepository:
         database_play = DatabasePlay(
             user_id=self.user_id,
             game_id=database_game.id,
-            player_count=player_count,
+            player_count=len(participants),
+            duration_minutes=duration_minutes,
         )
 
+        if played_at is not None:
+            database_play.played_at = played_at
+
         self.db.add(database_play)
+        self.db.flush()
+
+        for participant in participants:
+            database_play.participants.append(
+                PlayParticipant(
+                    name=participant["name"],
+                    score=participant.get(
+                        "score"
+                    ),
+                    is_winner=participant.get(
+                        "is_winner",
+                        False,
+                    ),
+                )
+            )
+
         self.db.commit()
         self.db.refresh(database_play)
 
@@ -76,7 +101,6 @@ class PlayRepository:
                 database_play.played_at
             ),
         )
-
 
     def exists_by_source_play_id(
         self,
@@ -365,6 +389,22 @@ class PlayRepository:
                         play.duration_minutes
                     ),
                     "source": play.source,
+                    "participants": [
+                        {
+                            "id": participant.id,
+                            "name": (
+                                participant.name
+                            ),
+                            "score": (
+                                participant.score
+                            ),
+                            "is_winner": (
+                                participant.is_winner
+                            ),
+                        }
+                        for participant
+                        in play.participants
+                    ],
                 }
                 for play in plays
             ],
