@@ -23,6 +23,7 @@ pydantic_core==2.46.4
 Pygments==2.21.0
 pytest==9.1.1
 python-dotenv==1.2.3
+python-multipart==0.0.32
 SQLAlchemy==2.0.52
 starlette==1.6.0
 typing-inspection==0.4.4
