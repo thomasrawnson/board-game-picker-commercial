@@ -220,15 +220,27 @@ class Play(Base):
 
     __table_args__ = (
         UniqueConstraint(
+            "user_id",
             "source",
             "source_play_id",
-            name="uq_plays_source_play_id",
+            name=(
+                "uq_plays_user_source_play_id"
+            ),
         ),
     )
 
     id: Mapped[int] = mapped_column(
         Integer,
         primary_key=True,
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
     )
 
     game_id: Mapped[int] = mapped_column(

@@ -23,7 +23,10 @@ from services.picker_service import (
     PickerService,
 )
 from services.play_service import PlayService
-
+from api.current_user import (
+    get_current_user,
+)
+from database.models import User
 
 app = FastAPI(
     title="BoardGamePicker API",
@@ -42,10 +45,14 @@ app.add_middleware(
 
 def get_collection_service(
     db: Session = Depends(get_db),
+    current_user: User = Depends(
+        get_current_user
+    ),
 ) -> CollectionService:
     return CollectionService(
         bgg_client=BGGClient(),
         repository=GameRepository(db),
+        user_id=current_user.id,
     )
 
 
@@ -66,9 +73,16 @@ def sync_collection(
 
 def get_game_service(
     db: Session = Depends(get_db),
+    current_user: User = Depends(
+        get_current_user
+    ),
 ) -> GameService:
     repository = GameRepository(db)
-    return GameService(repository)
+
+    return GameService(
+        repository,
+        user_id=current_user.id,
+    )
 
 
 @app.get("/games/{bgg_id}")
@@ -192,8 +206,14 @@ def delete_game(
 
 def get_picker_play_repository(
     db: Session = Depends(get_db),
+    current_user: User = Depends(
+        get_current_user
+    ),
 ) -> PlayRepository:
-    return PlayRepository(db)
+    return PlayRepository(
+        db,
+        user_id=current_user.id,
+    )
 
 
 @app.get("/picker")
@@ -259,8 +279,15 @@ def pick_games(
 
 def get_play_service(
     db: Session = Depends(get_db),
+    current_user: User = Depends(
+        get_current_user
+    ),
 ) -> PlayService:
-    repository = PlayRepository(db)
+    repository = PlayRepository(
+        db,
+        user_id=current_user.id,
+    )
+
     return PlayService(repository)
 
 
@@ -284,11 +311,17 @@ def record_play(
 
     return play
 
-
 def get_insights_service(
     db: Session = Depends(get_db),
+    current_user: User = Depends(
+        get_current_user
+    ),
 ) -> InsightsService:
-    repository = InsightsRepository(db)
+    repository = InsightsRepository(
+        db,
+        user_id=current_user.id,
+    )
+
     return InsightsService(repository)
 
 

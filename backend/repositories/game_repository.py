@@ -4,12 +4,113 @@ from database.models import Category
 from database.models import Game as DatabaseGame
 from database.models import Mechanic
 from models.game import Game as DomainGame
+from database.models import UserGame
 
 
 class GameRepository:
     def __init__(self, db: Session):
         self.db = db
 
+    def get_owned_by_user(
+        self,
+        user_id: int,
+    ) -> list[DomainGame]:
+        database_games = (
+            self.db.query(DatabaseGame)
+            .join(
+                UserGame,
+                UserGame.game_id
+                == DatabaseGame.id,
+            )
+            .filter(
+                UserGame.user_id == user_id
+            )
+            .order_by(DatabaseGame.name)
+            .all()
+        )
+
+        games = [
+            self._to_domain(game)
+            for game in database_games
+        ]
+
+        for game in games:
+            game.owned = True
+
+        return games
+
+
+    def get_owned_by_bgg_id(
+        self,
+        user_id: int,
+        bgg_id: int,
+    ) -> DomainGame | None:
+        database_game = (
+            self.db.query(DatabaseGame)
+            .join(
+                UserGame,
+                UserGame.game_id
+                == DatabaseGame.id,
+            )
+            .filter(
+                UserGame.user_id == user_id,
+                DatabaseGame.bgg_id == bgg_id,
+            )
+            .first()
+        )
+
+        if database_game is None:
+            return None
+
+        game = self._to_domain(
+            database_game
+        )
+
+        game.owned = True
+
+        return game
+
+
+    def add_to_user_collection(
+        self,
+        user_id: int,
+        bgg_id: int,
+    ) -> bool:
+        database_game = (
+            self.db.query(DatabaseGame)
+            .filter(
+                DatabaseGame.bgg_id == bgg_id
+            )
+            .first()
+        )
+
+        if database_game is None:
+            return False
+
+        existing = (
+            self.db.query(UserGame)
+            .filter(
+                UserGame.user_id == user_id,
+                UserGame.game_id
+                == database_game.id,
+            )
+            .first()
+        )
+
+        if existing is not None:
+            return True
+
+        self.db.add(
+            UserGame(
+                user_id=user_id,
+                game_id=database_game.id,
+            )
+        )
+
+        self.db.commit()
+
+        return True
+    
     def get_by_bgg_id(
         self,
         bgg_id: int,
