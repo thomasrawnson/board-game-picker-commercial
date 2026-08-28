@@ -28,9 +28,65 @@ export interface PickerCriteria {
   preferredMechanics?: string[]
 }
 
+export interface Play {
+  id: number
+  bgg_id: number
+  player_count: number
+  played_at: string
+}
+
+export interface GamePlay {
+  id: number
+  played_at: string
+  player_count: number
+  duration_minutes: number | null
+  source: string
+}
+
+export interface GameHistory {
+  bgg_id: number
+  play_count: number
+  last_played_at: string | null
+  average_players: number | null
+  average_duration_minutes: number | null
+  recent_plays: GamePlay[]
+}
+
+export interface GamePlaySummary {
+  bgg_id: number
+  name: string
+  play_count: number
+}
+
+export interface LastPlayedGame {
+  bgg_id: number
+  name: string
+  played_at: string
+}
+
+export interface CollectionInsights {
+  total_games: number
+  total_plays: number
+  most_played: GamePlaySummary | null
+  last_played: LastPlayedGame | null
+  never_played_count: number
+}
+
+export interface CollectionSyncResult {
+  username: string
+  games_synced: number
+}
+
+export interface BGStatsImportResult {
+  imported: number
+  skipped_existing: number
+  skipped_missing_game: number
+}
+
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
   "http://127.0.0.1:8000"
+
 
 export async function getPickerMatches(
   criteria: PickerCriteria,
@@ -47,7 +103,7 @@ export async function getPickerMatches(
     )
   }
 
-    criteria.preferredCategories?.forEach(
+  criteria.preferredCategories?.forEach(
     (category) => {
       params.append(
         "preferred_categories",
@@ -78,6 +134,7 @@ export async function getPickerMatches(
   return response.json()
 }
 
+
 export async function getGames(): Promise<Game[]> {
   const response = await fetch(
     `${API_BASE_URL}/games`,
@@ -91,29 +148,7 @@ export async function getGames(): Promise<Game[]> {
 
   return response.json()
 }
-export interface Play {
-  id: number
-  bgg_id: number
-  player_count: number
-  played_at: string
-}
 
-export interface GamePlay {
-  id: number
-  played_at: string
-  player_count: number
-  duration_minutes: number | null
-  source: string
-}
-
-export interface GameHistory {
-  bgg_id: number
-  play_count: number
-  last_played_at: string | null
-  average_players: number | null
-  average_duration_minutes: number | null
-  recent_plays: GamePlay[]
-}
 
 export async function getGameHistory(
   bggId: number,
@@ -130,6 +165,7 @@ export async function getGameHistory(
 
   return response.json()
 }
+
 
 export async function recordPlay(
   bggId: number,
@@ -158,27 +194,9 @@ export async function recordPlay(
   return response.json()
 }
 
-export interface GamePlaySummary {
-  bgg_id: number
-  name: string
-  play_count: number
-}
 
-export interface LastPlayedGame {
-  bgg_id: number
-  name: string
-  played_at: string
-}
-
-export interface CollectionInsights {
-  total_games: number
-  total_plays: number
-  most_played: GamePlaySummary | null
-  last_played: LastPlayedGame | null
-  never_played_count: number
-}
-
-export async function getCollectionInsights(): Promise<CollectionInsights> {
+export async function getCollectionInsights():
+Promise<CollectionInsights> {
   const response = await fetch(
     `${API_BASE_URL}/insights`,
   )
@@ -192,25 +210,50 @@ export async function getCollectionInsights(): Promise<CollectionInsights> {
   return response.json()
 }
 
-export interface GamePlay {
-  id: number
-  bgg_id: number
-  player_count: number
-  played_at: string
-  duration_minutes: number | null
-  source: string
-}
 
-export async function getGamePlays(
-  bggId: number,
-): Promise<GamePlay[]> {
+export async function syncBGGCollection(
+  username: string,
+): Promise<CollectionSyncResult> {
   const response = await fetch(
-    `${API_BASE_URL}/games/${bggId}/plays`,
+    `${API_BASE_URL}/collections/${encodeURIComponent(
+      username,
+    )}/sync`,
+    {
+      method: "POST",
+    },
   )
 
   if (!response.ok) {
     throw new Error(
-      `Game plays request failed: ${response.status}`,
+      `Collection sync failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
+}
+
+
+export async function importBGStatsPlays(
+  file: File,
+): Promise<BGStatsImportResult> {
+  const formData = new FormData()
+
+  formData.append(
+    "file",
+    file,
+  )
+
+  const response = await fetch(
+    `${API_BASE_URL}/imports/bgstats/plays`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `BG Stats import failed: ${response.status}`,
     )
   }
 

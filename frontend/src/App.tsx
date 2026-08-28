@@ -7,7 +7,7 @@ import {
 } from "./api/client"
 
 import InsightsView from "./components/InsightsView"
-
+import SetupView from "./components/SetupView"
 import "./App.css"
 
 
@@ -21,7 +21,8 @@ type AppView =
   | "picker"
   | "collection"
   | "insights"
-
+  | "setup"
+  
 
 const playerOptions = [
   2,
@@ -265,6 +266,14 @@ function App() {
   return (
     <main className="app-shell">
       <section className="phone">
+        <button
+          className="settings-button"
+          onClick={() => setView("setup")}
+          aria-label="Setup"
+          title="Setup"
+        >
+          ⚙
+        </button>
         <nav className="app-nav">
           <button
             className={
@@ -305,7 +314,6 @@ function App() {
             Insights
           </button>
         </nav>
-
 
         {view === "picker" && (
           <>
@@ -788,6 +796,9 @@ function App() {
         )}
         {view === "insights" && (
           <InsightsView />
+        )}
+        {view === "setup" && (
+          <SetupView />
         )}
       </section>
     </main>

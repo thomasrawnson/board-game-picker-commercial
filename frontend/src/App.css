@@ -1472,3 +1472,48 @@ button:focus-visible {
     max-height: 560px;
   }
 }
+
+/* =========================================================
+   Setup / imports
+   ========================================================= */
+
+.phone {
+  position: relative;
+}
+
+.settings-button {
+  align-self: flex-end;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: -6px 0 8px;
+
+  padding: 0;
+
+  color: var(--text-muted);
+  background: rgba(243, 234, 216, 0.06);
+
+  border: 1px solid rgba(243, 234, 216, 0.14);
+  border-radius: 50%;
+
+  font-size: 15px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.settings-button:hover {
+  color: var(--gold);
+  background: rgba(243, 234, 216, 0.09);
+  border-color: rgba(201, 162, 39, 0.5);
+}
