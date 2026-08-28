@@ -7,15 +7,23 @@ def test_bgg_client_can_be_created():
     client = BGGClient()
 
     assert client.timeout == 30.0
-    assert client.max_retries == 5
+    assert client.max_retries == 10
 
 
-def test_get_game_requests_correct_bgg_endpoint(monkeypatch):
+def test_get_game_requests_correct_bgg_endpoint(
+    monkeypatch,
+):
     requested = {}
 
-    def mock_get(url, params, timeout):
+    def mock_get(
+        url,
+        params,
+        headers,
+        timeout,
+    ):
         requested["url"] = url
         requested["params"] = params
+        requested["headers"] = headers
         requested["timeout"] = timeout
 
         request = httpx.Request(
@@ -26,19 +34,32 @@ def test_get_game_requests_correct_bgg_endpoint(monkeypatch):
         return httpx.Response(
             200,
             request=request,
-            text="<items><item id='174430'/></items>",
+            text=(
+                "<items>"
+                "<item id='174430'/>"
+                "</items>"
+            ),
         )
 
-    monkeypatch.setattr(httpx, "get", mock_get)
+    monkeypatch.setattr(
+        httpx,
+        "get",
+        mock_get,
+    )
 
     client = BGGClient()
 
     xml = client.get_game(174430)
 
-    assert xml == "<items><item id='174430'/></items>"
+    assert xml == (
+        "<items>"
+        "<item id='174430'/>"
+        "</items>"
+    )
 
     assert requested["url"] == (
-        "https://boardgamegeek.com/xmlapi2/thing"
+        "https://boardgamegeek.com/"
+        "xmlapi2/thing"
     )
 
     assert requested["params"] == {
@@ -48,10 +69,23 @@ def test_get_game_requests_correct_bgg_endpoint(monkeypatch):
 
     assert requested["timeout"] == 30.0
 
-def test_get_game_retries_when_bgg_returns_202(monkeypatch):
+    assert isinstance(
+        requested["headers"],
+        dict,
+    )
+
+
+def test_get_game_retries_when_bgg_returns_202(
+    monkeypatch,
+):
     calls = []
 
-    def mock_get(url, params, timeout):
+    def mock_get(
+        url,
+        params,
+        headers,
+        timeout,
+    ):
         calls.append(url)
 
         request = httpx.Request(
@@ -68,10 +102,18 @@ def test_get_game_retries_when_bgg_returns_202(monkeypatch):
         return httpx.Response(
             200,
             request=request,
-            text="<items><item id='174430'/></items>",
+            text=(
+                "<items>"
+                "<item id='174430'/>"
+                "</items>"
+            ),
         )
 
-    monkeypatch.setattr(httpx, "get", mock_get)
+    monkeypatch.setattr(
+        httpx,
+        "get",
+        mock_get,
+    )
 
     client = BGGClient(
         retry_delay=0,
@@ -80,5 +122,71 @@ def test_get_game_retries_when_bgg_returns_202(monkeypatch):
 
     xml = client.get_game(174430)
 
-    assert xml == "<items><item id='174430'/></items>"
+    assert xml == (
+        "<items>"
+        "<item id='174430'/>"
+        "</items>"
+    )
+
+    assert len(calls) == 2
+
+
+def test_get_game_retries_when_rate_limited(
+    monkeypatch,
+):
+    calls = []
+
+    def mock_get(
+        url,
+        params,
+        headers,
+        timeout,
+    ):
+        calls.append(url)
+
+        request = httpx.Request(
+            "GET",
+            url,
+        )
+
+        if len(calls) == 1:
+            return httpx.Response(
+                429,
+                request=request,
+            )
+
+        return httpx.Response(
+            200,
+            request=request,
+            text=(
+                "<items>"
+                "<item id='174430'/>"
+                "</items>"
+            ),
+        )
+
+    monkeypatch.setattr(
+        httpx,
+        "get",
+        mock_get,
+    )
+
+    client = BGGClient(
+        retry_delay=0,
+        max_retries=3,
+    )
+
+    monkeypatch.setattr(
+        "bgg.client.time.sleep",
+        lambda _: None,
+    )
+
+    xml = client.get_game(174430)
+
+    assert xml == (
+        "<items>"
+        "<item id='174430'/>"
+        "</items>"
+    )
+
     assert len(calls) == 2

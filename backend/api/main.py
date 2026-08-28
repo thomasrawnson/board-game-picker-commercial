@@ -395,3 +395,45 @@ def get_collection_insights(
     ),
 ):
     return service.get_collection_insights()
+
+@app.get("/games/{bgg_id}/plays")
+def get_game_plays(
+    bgg_id: int,
+    limit: int = Query(
+        10,
+        ge=1,
+        le=50,
+    ),
+    repository: PlayRepository = Depends(
+        get_picker_play_repository
+    ),
+):
+    return repository.get_for_game(
+        bgg_id=bgg_id,
+        limit=limit,
+    )
+
+@app.get("/games/{bgg_id}/plays")
+def get_game_play_history(
+    bgg_id: int,
+    limit: int = Query(
+        10,
+        ge=1,
+        le=50,
+    ),
+    repository: PlayRepository = Depends(
+        get_picker_play_repository
+    ),
+):
+    history = repository.get_game_history(
+        bgg_id=bgg_id,
+        limit=limit,
+    )
+
+    if history is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Game not found",
+        )
+
+    return history

@@ -65,23 +65,6 @@ export async function getPickerMatches(
     },
   )
 
-  criteria.preferredCategories?.forEach(
-    (category) => {
-      params.append(
-        "preferred_categories",
-        category,
-      )
-    },
-  )
-
-  criteria.preferredMechanics?.forEach(
-    (mechanic) => {
-      params.append(
-        "preferred_mechanics",
-        mechanic,
-      )
-    },
-  )
   const response = await fetch(
     `${API_BASE_URL}/picker?${params.toString()}`,
   )
@@ -113,6 +96,39 @@ export interface Play {
   bgg_id: number
   player_count: number
   played_at: string
+}
+
+export interface GamePlay {
+  id: number
+  played_at: string
+  player_count: number
+  duration_minutes: number | null
+  source: string
+}
+
+export interface GameHistory {
+  bgg_id: number
+  play_count: number
+  last_played_at: string | null
+  average_players: number | null
+  average_duration_minutes: number | null
+  recent_plays: GamePlay[]
+}
+
+export async function getGameHistory(
+  bggId: number,
+): Promise<GameHistory> {
+  const response = await fetch(
+    `${API_BASE_URL}/games/${bggId}/plays`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Game history request failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
 }
 
 export async function recordPlay(
@@ -170,6 +186,31 @@ export async function getCollectionInsights(): Promise<CollectionInsights> {
   if (!response.ok) {
     throw new Error(
       `Insights request failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
+}
+
+export interface GamePlay {
+  id: number
+  bgg_id: number
+  player_count: number
+  played_at: string
+  duration_minutes: number | null
+  source: string
+}
+
+export async function getGamePlays(
+  bggId: number,
+): Promise<GamePlay[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/games/${bggId}/plays`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Game plays request failed: ${response.status}`,
     )
   }
 

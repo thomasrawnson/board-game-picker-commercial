@@ -5,8 +5,10 @@ import {
 } from "react"
 
 import {
+  getGameHistory,
   getGames,
   type Game,
+  type GameHistory,
 } from "../api/client"
 
 
@@ -28,6 +30,12 @@ function CollectionView() {
 
   const [selectedGame, setSelectedGame] =
     useState<Game | null>(null)
+
+  const [gameHistory, setGameHistory] =
+    useState<GameHistory | null>(null)
+
+  const [historyLoading, setHistoryLoading] =
+    useState(false)
 
   const [loading, setLoading] =
     useState(true)
@@ -59,6 +67,35 @@ function CollectionView() {
 
     loadGames()
   }, [])
+
+
+  useEffect(() => {
+    async function loadHistory() {
+      if (!selectedGame) {
+        setGameHistory(null)
+        return
+      }
+
+      setHistoryLoading(true)
+
+      try {
+        const history =
+          await getGameHistory(
+            selectedGame.bgg_id,
+          )
+
+        setGameHistory(history)
+      } catch (err) {
+        console.error(err)
+
+        setGameHistory(null)
+      } finally {
+        setHistoryLoading(false)
+      }
+    }
+
+    loadHistory()
+  }, [selectedGame])
 
 
   const filteredGames = useMemo(() => {
@@ -114,7 +151,9 @@ function CollectionView() {
           Your collection
         </p>
 
-        <h1>Opening the cupboard...</h1>
+        <h1>
+          Opening the cupboard...
+        </h1>
       </section>
     )
   }
@@ -142,9 +181,10 @@ function CollectionView() {
       <section className="screen collection-screen">
         <button
           className="collection-back"
-          onClick={() =>
+          onClick={() => {
             setSelectedGame(null)
-          }
+            setGameHistory(null)
+          }}
         >
           ← Back to collection
         </button>
@@ -177,6 +217,7 @@ function CollectionView() {
             {selectedGame.name}
           </h1>
 
+
           <div className="detail-stats">
             <div>
               <strong>
@@ -184,6 +225,7 @@ function CollectionView() {
                   1,
                 ) ?? "—"}
               </strong>
+
               <span>Rating</span>
             </div>
 
@@ -193,6 +235,7 @@ function CollectionView() {
                   1,
                 ) ?? "—"}
               </strong>
+
               <span>Weight</span>
             </div>
 
@@ -201,9 +244,11 @@ function CollectionView() {
                 {selectedGame.max_play_time ??
                   "—"}
               </strong>
+
               <span>Minutes</span>
             </div>
           </div>
+
 
           <div className="detail-section">
             <p className="preference-label">
@@ -211,13 +256,12 @@ function CollectionView() {
             </p>
 
             <p>
-              {selectedGame.min_players ??
-                "?"}
+              {selectedGame.min_players ?? "?"}
               –
-              {selectedGame.max_players ??
-                "?"}
+              {selectedGame.max_players ?? "?"}
             </p>
           </div>
+
 
           {selectedGame.categories.length >
             0 && (
@@ -238,6 +282,7 @@ function CollectionView() {
             </div>
           )}
 
+
           {selectedGame.mechanics.length >
             0 && (
             <div className="detail-section">
@@ -256,6 +301,125 @@ function CollectionView() {
               </div>
             </div>
           )}
+
+
+          <div className="detail-section game-history">
+            <p className="preference-label">
+              Your history
+            </p>
+
+            {historyLoading ? (
+              <p className="history-empty">
+                Loading your play history...
+              </p>
+            ) : gameHistory ? (
+              <>
+                <div className="history-stats">
+                  <div>
+                    <strong>
+                      {gameHistory.play_count}
+                    </strong>
+
+                    <span>Plays</span>
+                  </div>
+
+                  <div>
+                    <strong>
+                      {gameHistory
+                        .average_players
+                        ?.toFixed(1) ?? "—"}
+                    </strong>
+
+                    <span>Avg players</span>
+                  </div>
+
+                  <div>
+                    <strong>
+                      {gameHistory
+                        .average_duration_minutes
+                        ?? "—"}
+                    </strong>
+
+                    <span>Avg mins</span>
+                  </div>
+                </div>
+
+
+                {gameHistory.last_played_at && (
+                  <p className="history-last-played">
+                    Last played{" "}
+                    {new Date(
+                      gameHistory.last_played_at,
+                    ).toLocaleDateString(
+                      undefined,
+                      {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      },
+                    )}
+                  </p>
+                )}
+
+
+                {gameHistory.recent_plays.length >
+                0 ? (
+                  <div className="recent-plays">
+                    <p className="preference-label">
+                      Recent plays
+                    </p>
+
+                    {gameHistory.recent_plays.map(
+                      (play) => (
+                        <div
+                          className="recent-play"
+                          key={play.id}
+                        >
+                          <div>
+                            <strong>
+                              {new Date(
+                                play.played_at,
+                              ).toLocaleDateString(
+                                undefined,
+                                {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                },
+                              )}
+                            </strong>
+
+                            <span>
+                              {play.player_count}{" "}
+                              {play.player_count ===
+                              1
+                                ? "player"
+                                : "players"}
+                            </span>
+                          </div>
+
+                          <span>
+                            {play.duration_minutes
+                              ? `${play.duration_minutes} min`
+                              : "—"}
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                ) : (
+                  <p className="history-empty">
+                    You haven't logged a play
+                    of this game yet.
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="history-empty">
+                Play history unavailable.
+              </p>
+            )}
+          </div>
         </article>
       </section>
     )
@@ -275,6 +439,7 @@ function CollectionView() {
           {games.length} games on your shelf.
         </p>
       </header>
+
 
       <div className="collection-tools">
         <input
@@ -311,12 +476,14 @@ function CollectionView() {
         </select>
       </div>
 
+
       <p className="collection-count">
         {filteredGames.length}{" "}
         {filteredGames.length === 1
           ? "game"
           : "games"}
       </p>
+
 
       <div className="collection-list">
         {filteredGames.map((game) => (
@@ -343,6 +510,7 @@ function CollectionView() {
               )}
             </div>
 
+
             <div className="collection-game-info">
               <strong>
                 {game.name}
@@ -354,13 +522,11 @@ function CollectionView() {
                 {game.max_players ?? "?"}
                 P
                 {" · "}
-                {game.max_play_time ??
-                  "?"}
+                {game.max_play_time ?? "?"}
                 MIN
               </span>
 
-              {game.categories.length >
-                0 && (
+              {game.categories.length > 0 && (
                 <small>
                   {game.categories
                     .slice(0, 2)
@@ -369,12 +535,14 @@ function CollectionView() {
               )}
             </div>
 
+
             <span className="collection-chevron">
               ›
             </span>
           </button>
         ))}
       </div>
+
 
       {filteredGames.length === 0 && (
         <p className="collection-empty">
