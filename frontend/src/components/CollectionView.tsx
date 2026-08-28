@@ -7,8 +7,10 @@ import {
 import {
   getGameHistory,
   getGames,
+  recordPlay,
   type Game,
   type GameHistory,
+  type PlayParticipant,
 } from "../api/client"
 
 
@@ -16,6 +18,27 @@ type SortOption =
   | "name"
   | "rating"
   | "complexity"
+
+type PlayerForm = {
+  name: string
+  score: string
+  isWinner: boolean
+}
+
+
+function todayValue() {
+  const now = new Date()
+
+  const year = now.getFullYear()
+  const month = String(
+    now.getMonth() + 1,
+  ).padStart(2, "0")
+  const day = String(
+    now.getDate(),
+  ).padStart(2, "0")
+
+  return `${year}-${month}-${day}`
+}
 
 
 function CollectionView() {
@@ -43,6 +66,33 @@ function CollectionView() {
   const [error, setError] =
     useState("")
 
+  const [showPlayForm, setShowPlayForm] =
+    useState(false)
+
+  const [playDate, setPlayDate] =
+    useState(todayValue())
+
+  const [duration, setDuration] =
+    useState("")
+
+  const [players, setPlayers] =
+    useState<PlayerForm[]>([
+      {
+        name: "",
+        score: "",
+        isWinner: false,
+      },
+    ])
+
+  const [savingPlay, setSavingPlay] =
+    useState(false)
+
+  const [playError, setPlayError] =
+    useState("")
+
+  const [playSaved, setPlaySaved] =
+    useState(false)
+
 
   useEffect(() => {
     async function loadGames() {
@@ -69,32 +119,35 @@ function CollectionView() {
   }, [])
 
 
+  async function refreshHistory(
+    game: Game,
+  ) {
+    setHistoryLoading(true)
+
+    try {
+      const history =
+        await getGameHistory(
+          game.bgg_id,
+        )
+
+      setGameHistory(history)
+    } catch (err) {
+      console.error(err)
+
+      setGameHistory(null)
+    } finally {
+      setHistoryLoading(false)
+    }
+  }
+
+
   useEffect(() => {
-    async function loadHistory() {
-      if (!selectedGame) {
-        setGameHistory(null)
-        return
-      }
-
-      setHistoryLoading(true)
-
-      try {
-        const history =
-          await getGameHistory(
-            selectedGame.bgg_id,
-          )
-
-        setGameHistory(history)
-      } catch (err) {
-        console.error(err)
-
-        setGameHistory(null)
-      } finally {
-        setHistoryLoading(false)
-      }
+    if (!selectedGame) {
+      setGameHistory(null)
+      return
     }
 
-    loadHistory()
+    refreshHistory(selectedGame)
   }, [selectedGame])
 
 
@@ -144,6 +197,164 @@ function CollectionView() {
   }, [games, search, sort])
 
 
+  function resetPlayForm() {
+    setPlayDate(todayValue())
+    setDuration("")
+    setPlayers([
+      {
+        name: "",
+        score: "",
+        isWinner: false,
+      },
+    ])
+    setPlayError("")
+    setPlaySaved(false)
+  }
+
+
+  function updatePlayer(
+    index: number,
+    changes: Partial<PlayerForm>,
+  ) {
+    setPlayers(
+      players.map(
+        (player, playerIndex) =>
+          playerIndex === index
+            ? {
+                ...player,
+                ...changes,
+              }
+            : player,
+      ),
+    )
+  }
+
+
+  function addPlayer() {
+    setPlayers([
+      ...players,
+      {
+        name: "",
+        score: "",
+        isWinner: false,
+      },
+    ])
+  }
+
+
+  function removePlayer(
+    index: number,
+  ) {
+    if (players.length === 1) {
+      return
+    }
+
+    setPlayers(
+      players.filter(
+        (_, playerIndex) =>
+          playerIndex !== index,
+      ),
+    )
+  }
+
+
+  async function handleSavePlay() {
+    if (!selectedGame) {
+      return
+    }
+
+    const cleanedPlayers =
+      players.map(
+        (player): PlayParticipant => ({
+          name: player.name.trim(),
+          score:
+            player.score.trim() === ""
+              ? null
+              : Number(player.score),
+          is_winner: player.isWinner,
+        }),
+      )
+
+    if (
+      cleanedPlayers.some(
+        (player) =>
+          player.name.length === 0,
+      )
+    ) {
+      setPlayError(
+        "Please enter a name for every player.",
+      )
+      return
+    }
+
+    if (
+      cleanedPlayers.some(
+        (player) =>
+          player.score !== null &&
+          Number.isNaN(player.score),
+      )
+    ) {
+      setPlayError(
+        "Scores must be numbers.",
+      )
+      return
+    }
+
+    const durationMinutes =
+      duration.trim() === ""
+        ? null
+        : Number(duration)
+
+    if (
+      durationMinutes !== null &&
+      (
+        Number.isNaN(durationMinutes) ||
+        durationMinutes < 0
+      )
+    ) {
+      setPlayError(
+        "Duration must be a valid number.",
+      )
+      return
+    }
+
+    setSavingPlay(true)
+    setPlayError("")
+    setPlaySaved(false)
+
+    try {
+      const playedAt =
+        new Date(
+          `${playDate}T12:00:00`,
+        ).toISOString()
+
+      await recordPlay(
+        selectedGame.bgg_id,
+        playedAt,
+        durationMinutes,
+        cleanedPlayers,
+      )
+
+      setPlaySaved(true)
+      setShowPlayForm(false)
+
+      resetPlayForm()
+
+      await refreshHistory(
+        selectedGame,
+      )
+    } catch (err) {
+      console.error(err)
+
+      setPlayError(
+        "Couldn't save this play.",
+      )
+    } finally {
+      setSavingPlay(false)
+    }
+  }
+
+
   if (loading) {
     return (
       <section className="screen collection-screen">
@@ -184,6 +395,8 @@ function CollectionView() {
           onClick={() => {
             setSelectedGame(null)
             setGameHistory(null)
+            setShowPlayForm(false)
+            resetPlayForm()
           }}
         >
           ← Back to collection
@@ -248,6 +461,224 @@ function CollectionView() {
               <span>Minutes</span>
             </div>
           </div>
+
+
+          <button
+            className="primary-button log-play-button"
+            onClick={() => {
+              setShowPlayForm(
+                !showPlayForm,
+              )
+              setPlayError("")
+              setPlaySaved(false)
+            }}
+          >
+            {showPlayForm
+              ? "Cancel"
+              : "Log a play"}
+          </button>
+
+
+          {showPlayForm && (
+            <div className="play-form">
+              <div className="play-form-heading">
+                <div>
+                  <p className="preference-label">
+                    New play
+                  </p>
+
+                  <strong>
+                    {selectedGame.name}
+                  </strong>
+                </div>
+              </div>
+
+
+              <div className="play-form-grid">
+                <label>
+                  <span>Date</span>
+
+                  <input
+                    type="date"
+                    value={playDate}
+                    onChange={(event) =>
+                      setPlayDate(
+                        event.target.value,
+                      )
+                    }
+                  />
+                </label>
+
+                <label>
+                  <span>
+                    Duration
+                  </span>
+
+                  <div className="duration-input">
+                    <input
+                      type="number"
+                      min="0"
+                      inputMode="numeric"
+                      placeholder="60"
+                      value={duration}
+                      onChange={(event) =>
+                        setDuration(
+                          event.target.value,
+                        )
+                      }
+                    />
+
+                    <small>min</small>
+                  </div>
+                </label>
+              </div>
+
+
+              <div className="player-form-heading">
+                <p className="preference-label">
+                  Players
+                </p>
+
+                <span>
+                  {players.length}
+                </span>
+              </div>
+
+
+              <div className="player-forms">
+                {players.map(
+                  (player, index) => (
+                    <div
+                      className="player-form-card"
+                      key={index}
+                    >
+                      <div className="player-form-number">
+                        <strong>
+                          Player {index + 1}
+                        </strong>
+
+                        {players.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removePlayer(
+                                index,
+                              )
+                            }
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="player-input-row">
+                        <label>
+                          <span>Name</span>
+
+                          <input
+                            type="text"
+                            value={player.name}
+                            placeholder="Player name"
+                            onChange={(event) =>
+                              updatePlayer(
+                                index,
+                                {
+                                  name:
+                                    event
+                                      .target
+                                      .value,
+                                },
+                              )
+                            }
+                          />
+                        </label>
+
+                        <label className="score-field">
+                          <span>Score</span>
+
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            value={player.score}
+                            placeholder="—"
+                            onChange={(event) =>
+                              updatePlayer(
+                                index,
+                                {
+                                  score:
+                                    event
+                                      .target
+                                      .value,
+                                },
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+
+                      <label className="winner-toggle">
+                        <input
+                          type="checkbox"
+                          checked={
+                            player.isWinner
+                          }
+                          onChange={(event) =>
+                            updatePlayer(
+                              index,
+                              {
+                                isWinner:
+                                  event
+                                    .target
+                                    .checked,
+                              },
+                            )
+                          }
+                        />
+
+                        <span>
+                          Winner
+                        </span>
+                      </label>
+                    </div>
+                  ),
+                )}
+              </div>
+
+
+              <button
+                type="button"
+                className="add-player-button"
+                onClick={addPlayer}
+              >
+                + Add player
+              </button>
+
+
+              {playError && (
+                <p className="error-message">
+                  {playError}
+                </p>
+              )}
+
+
+              <button
+                className="primary-button save-play-button"
+                disabled={savingPlay}
+                onClick={handleSavePlay}
+              >
+                {savingPlay
+                  ? "Saving..."
+                  : "Save play"}
+              </button>
+            </div>
+          )}
+
+
+          {playSaved && (
+            <p className="play-confirmation">
+              Play saved.
+            </p>
+          )}
 
 
           <div className="detail-section">
@@ -372,37 +803,79 @@ function CollectionView() {
                     {gameHistory.recent_plays.map(
                       (play) => (
                         <div
-                          className="recent-play"
+                          className="recent-play-detail"
                           key={play.id}
                         >
-                          <div>
-                            <strong>
-                              {new Date(
-                                play.played_at,
-                              ).toLocaleDateString(
-                                undefined,
-                                {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                },
-                              )}
-                            </strong>
+                          <div className="recent-play-header">
+                            <div>
+                              <strong>
+                                {new Date(
+                                  play.played_at,
+                                ).toLocaleDateString(
+                                  undefined,
+                                  {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                  },
+                                )}
+                              </strong>
+
+                              <span>
+                                {play.player_count}{" "}
+                                {play.player_count ===
+                                1
+                                  ? "player"
+                                  : "players"}
+                              </span>
+                            </div>
 
                             <span>
-                              {play.player_count}{" "}
-                              {play.player_count ===
-                              1
-                                ? "player"
-                                : "players"}
+                              {play.duration_minutes
+                                ? `${play.duration_minutes} min`
+                                : "—"}
                             </span>
                           </div>
 
-                          <span>
-                            {play.duration_minutes
-                              ? `${play.duration_minutes} min`
-                              : "—"}
-                          </span>
+
+                          {play.participants.length >
+                            0 && (
+                            <div className="play-participants">
+                              {play.participants.map(
+                                (
+                                  participant,
+                                ) => (
+                                  <div
+                                    className={
+                                      participant
+                                        .is_winner
+                                        ? "history-player winner"
+                                        : "history-player"
+                                    }
+                                    key={
+                                      participant.id
+                                    }
+                                  >
+                                    <span>
+                                      {
+                                        participant.name
+                                      }
+
+                                      {participant
+                                        .is_winner &&
+                                        " · Winner"}
+                                    </span>
+
+                                    <strong>
+                                      {participant
+                                        .score ??
+                                        "—"}
+                                    </strong>
+                                  </div>
+                                ),
+                              )}
+                            </div>
+                          )}
                         </div>
                       ),
                     )}

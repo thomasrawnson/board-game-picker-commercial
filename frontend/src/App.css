@@ -1517,3 +1517,329 @@ button:focus-visible {
   background: rgba(243, 234, 216, 0.09);
   border-color: rgba(201, 162, 39, 0.5);
 }
+
+/* Detailed play logging */
+
+.log-play-button {
+  margin-top: 18px;
+}
+
+.play-form {
+  margin-top: 14px;
+  padding: 16px;
+
+  background:
+    rgba(243, 234, 216, 0.055);
+
+  border:
+    1px solid
+    rgba(243, 234, 216, 0.13);
+
+  border-radius: 16px;
+}
+
+.play-form-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 16px;
+}
+
+.play-form-heading strong {
+  color: var(--card);
+  font-family: "Fraunces", serif;
+  font-size: 17px;
+}
+
+.play-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+
+  margin-bottom: 18px;
+}
+
+.play-form label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.play-form label > span {
+  color: var(--text-secondary);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.play-form input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 10px 11px;
+
+  color: var(--card);
+  background:
+    rgba(0, 0, 0, 0.17);
+
+  border:
+    1px solid
+    rgba(243, 234, 216, 0.15);
+
+  border-radius: 10px;
+
+  font: inherit;
+  font-size: 13px;
+}
+
+.play-form input:focus {
+  outline: none;
+  border-color:
+    rgba(201, 162, 39, 0.7);
+}
+
+.duration-input {
+  position: relative;
+}
+
+.duration-input input {
+  padding-right: 38px;
+}
+
+.duration-input small {
+  position: absolute;
+
+  right: 10px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+}
+
+.player-form-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 8px;
+}
+
+.player-form-heading span {
+  min-width: 24px;
+
+  padding: 3px 7px;
+
+  color: var(--ink);
+  background: var(--gold);
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+.player-forms {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.player-form-card {
+  padding: 12px;
+
+  background:
+    rgba(0, 0, 0, 0.12);
+
+  border:
+    1px solid
+    rgba(243, 234, 216, 0.1);
+
+  border-radius: 12px;
+}
+
+.player-form-number {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 10px;
+}
+
+.player-form-number strong {
+  color: var(--card);
+
+  font-size: 12px;
+}
+
+.player-form-number button {
+  padding: 0;
+
+  color: var(--text-muted);
+  background: transparent;
+
+  border: 0;
+
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.player-form-number button:hover {
+  color: var(--gold);
+}
+
+.player-input-row {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+
+  gap: 8px;
+}
+
+.winner-toggle {
+  width: fit-content;
+
+  flex-direction: row !important;
+  align-items: center;
+
+  margin-top: 10px;
+
+  cursor: pointer;
+}
+
+.winner-toggle input {
+  width: 16px;
+  height: 16px;
+
+  accent-color: var(--gold);
+}
+
+.winner-toggle span {
+  color: var(--text-secondary) !important;
+}
+
+.add-player-button {
+  width: 100%;
+
+  margin-top: 10px;
+  padding: 10px;
+
+  color: var(--gold);
+  background: transparent;
+
+  border:
+    1px dashed
+    rgba(201, 162, 39, 0.45);
+
+  border-radius: 10px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.add-player-button:hover {
+  background:
+    rgba(201, 162, 39, 0.06);
+}
+
+.save-play-button {
+  margin-top: 14px;
+}
+
+.recent-play-detail {
+  padding: 11px 0;
+
+  border-bottom:
+    1px solid
+    rgba(243, 234, 216, 0.1);
+}
+
+.recent-play-detail:last-child {
+  border-bottom: 0;
+}
+
+.recent-play-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.recent-play-header > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.recent-play-header strong {
+  color: var(--card);
+
+  font-size: 12px;
+}
+
+.recent-play-header span {
+  color: var(--text-secondary);
+
+  font-size: 11px;
+}
+
+.play-participants {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  margin-top: 9px;
+}
+
+.history-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 6px 8px;
+
+  background:
+    rgba(243, 234, 216, 0.04);
+
+  border-radius: 7px;
+}
+
+.history-player span {
+  color: var(--text-secondary);
+
+  font-size: 11px;
+}
+
+.history-player strong {
+  color: var(--card);
+
+  font-size: 11px;
+}
+
+.history-player.winner {
+  background:
+    rgba(201, 162, 39, 0.11);
+
+  border:
+    1px solid
+    rgba(201, 162, 39, 0.2);
+}
+
+.history-player.winner span,
+.history-player.winner strong {
+  color: var(--gold);
+}

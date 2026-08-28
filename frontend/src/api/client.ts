@@ -35,12 +35,24 @@ export interface Play {
   played_at: string
 }
 
+export interface PlayParticipant {
+  name: string
+  score: number | null
+  is_winner: boolean
+}
+
+export interface GamePlayParticipant
+  extends PlayParticipant {
+  id: number
+}
+
 export interface GamePlay {
   id: number
   played_at: string
   player_count: number
   duration_minutes: number | null
   source: string
+  participants: GamePlayParticipant[]
 }
 
 export interface GameHistory {
@@ -169,7 +181,9 @@ export async function getGameHistory(
 
 export async function recordPlay(
   bggId: number,
-  playerCount: number,
+  playedAt: string,
+  durationMinutes: number | null,
+  participants: PlayParticipant[],
 ): Promise<Play> {
   const response = await fetch(
     `${API_BASE_URL}/plays`,
@@ -180,7 +194,9 @@ export async function recordPlay(
       },
       body: JSON.stringify({
         bgg_id: bggId,
-        player_count: playerCount,
+        played_at: playedAt,
+        duration_minutes: durationMinutes,
+        participants,
       }),
     },
   )

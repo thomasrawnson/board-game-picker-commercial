@@ -2,7 +2,6 @@ import { useState } from "react"
 import CollectionView from "./components/CollectionView"
 import {
   getPickerMatches,
-  recordPlay,
   type PickerMatch,
 } from "./api/client"
 
@@ -109,16 +108,6 @@ function App() {
   const [error, setError] =
     useState("")
 
-  const [savingPlay, setSavingPlay] =
-    useState(false)
-
-  const [playRecorded, setPlayRecorded] =
-    useState(false)
-
-  const [playError, setPlayError] =
-    useState("")
-
-
   const match = matches[matchIndex]
 
 
@@ -165,8 +154,6 @@ function App() {
 
     setLoading(true)
     setError("")
-    setPlayRecorded(false)
-    setPlayError("")
 
     try {
       const results =
@@ -202,44 +189,10 @@ function App() {
     }
   }
 
-
-  async function handlePlayThis() {
-    if (
-      !match ||
-      players === null
-    ) {
-      return
-    }
-
-    setSavingPlay(true)
-    setPlayError("")
-
-    try {
-      await recordPlay(
-        match.game.bgg_id,
-        players,
-      )
-
-      setPlayRecorded(true)
-    } catch (err) {
-      console.error(err)
-
-      setPlayError(
-        "Couldn't record this play. Please try again.",
-      )
-    } finally {
-      setSavingPlay(false)
-    }
-  }
-
-
   function tryAnother() {
     if (matches.length === 0) {
       return
     }
-
-    setPlayRecorded(false)
-    setPlayError("")
 
     setMatchIndex(
       (current) =>
@@ -257,8 +210,6 @@ function App() {
     setPreferredMechanics([])
     setMatches([])
     setMatchIndex(0)
-    setPlayRecorded(false)
-    setPlayError("")
     setError("")
   }
 
@@ -744,39 +695,15 @@ function App() {
                   </button>
 
 
-                  <button
-                    className="primary-button"
-                    onClick={
-                      handlePlayThis
-                    }
-                    disabled={
-                      savingPlay ||
-                      playRecorded
-                    }
-                  >
-                    {savingPlay
-                      ? "Recording..."
-                      : playRecorded
-                        ? "Play recorded"
-                        : "Play this"}
-                  </button>
+                 <button
+                  className="primary-button"
+                  onClick={() =>
+                    setView("collection")
+                  }
+                >
+                  View game
+                </button>
                 </div>
-
-
-                {playRecorded && (
-                  <p className="play-confirmation">
-                    ✓ Added to your
-                    play history
-                  </p>
-                )}
-
-
-                {playError && (
-                  <p className="error-message">
-                    {playError}
-                  </p>
-                )}
-
 
                 <button
                   className="ghost-button"
