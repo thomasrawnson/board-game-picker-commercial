@@ -1,8 +1,16 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+import random
 
 from models.game import Game
 from models.game_play_stats import GamePlayStats
+
+
+PICKER_MODES = {
+    "best_match",
+    "different",
+    "surprise",
+}
 
 
 @dataclass
@@ -16,6 +24,7 @@ class PickerCriteria:
     preferred_mechanics: list[str] = field(
         default_factory=list
     )
+    mode: str = "best_match"
 
 
 @dataclass
@@ -80,10 +89,16 @@ class PickerService:
             self._score_game(
                 game,
                 criteria,
-                play_stats.get(game.bgg_id),
+                play_stats.get(
+                    game.bgg_id
+                ),
             )
             for game in eligible_games
         ]
+
+        if criteria.mode == "surprise":
+            random.shuffle(ranked)
+            return ranked
 
         return sorted(
             ranked,
@@ -120,44 +135,75 @@ class PickerService:
         score += play_time_score
 
         if play_time_reason:
-            reasons.append(play_time_reason)
-
-        complexity_score, complexity_reason = (
-            self._score_complexity(
-                game,
-                criteria.max_complexity,
+            reasons.append(
+                play_time_reason
             )
+
+        (
+            complexity_score,
+            complexity_reason,
+        ) = self._score_complexity(
+            game,
+            criteria.max_complexity,
         )
 
         score += complexity_score
 
         if complexity_reason:
-            reasons.append(complexity_reason)
-
-        history_score, history_reason = (
-            self._score_play_history(
-                play_stats
+            reasons.append(
+                complexity_reason
             )
+
+        (
+            history_score,
+            history_reasons,
+        ) = self._score_play_history(
+            play_stats,
+            mode=criteria.mode,
         )
 
         score += history_score
+        reasons.extend(
+            history_reasons
+        )
 
-        if history_reason:
-            reasons.append(history_reason)
-
-        preference_score, preference_reasons = (
-            self._score_preferences(
-                game,
-                criteria,
-            )
+        (
+            preference_score,
+            preference_reasons,
+        ) = self._score_preferences(
+            game,
+            criteria,
         )
 
         score += preference_score
-        reasons.extend(preference_reasons)
+        reasons.extend(
+            preference_reasons
+        )
+
+        if criteria.mode == "different":
+            reasons.insert(
+                0,
+                (
+                    "Picked to give something "
+                    "less familiar a chance"
+                ),
+            )
+
+        elif criteria.mode == "surprise":
+            reasons.insert(
+                0,
+                (
+                    "A wildcard from the games "
+                    "that fit tonight"
+                ),
+            )
 
         return PickerMatch(
             game=game,
-            score=min(score, 100),
+            score=max(
+                0,
+                min(score, 100),
+            ),
             reasons=reasons,
         )
 
@@ -173,12 +219,17 @@ class PickerService:
             return 0, None
 
         utilisation = min(
-            game.max_play_time / max_play_time,
+            game.max_play_time
+            / max_play_time,
             1.0,
         )
 
         score = round(
-            10 + (10 * utilisation)
+            10
+            + (
+                10
+                * utilisation
+            )
         )
 
         return (
@@ -190,7 +241,10 @@ class PickerService:
     def _score_complexity(
         game: Game,
         max_complexity: float | None,
-    ) -> tuple[int, str | None]:
+    ) -> tuple[
+        int,
+        str | None,
+    ]:
         if max_complexity is None:
             return 15, None
 
@@ -201,18 +255,24 @@ class PickerService:
             )
 
         utilisation = min(
-            game.complexity / max_complexity,
+            game.complexity
+            / max_complexity,
             1.0,
         )
 
         score = round(
-            7 + (8 * utilisation)
+            7
+            + (
+                8
+                * utilisation
+            )
         )
 
         return (
             score,
             (
-                f"Complexity {game.complexity:.1f} "
+                f"Complexity "
+                f"{game.complexity:.1f} "
                 "fits preference"
             ),
         )
@@ -220,56 +280,162 @@ class PickerService:
     @staticmethod
     def _score_play_history(
         play_stats: GamePlayStats | None,
-    ) -> tuple[int, str | None]:
+        mode: str = "best_match",
+    ) -> tuple[
+        int,
+        list[str],
+    ]:
         if (
             play_stats is None
-            or play_stats.last_played_at is None
+            or play_stats.last_played_at
+            is None
         ):
+            if mode == "different":
+                return (
+                    25,
+                    [
+                        "Hasn't been played yet",
+                    ],
+                )
+
             return (
                 20,
-                "Hasn't been played yet",
+                [
+                    "Hasn't been played yet",
+                ],
             )
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(
+            timezone.utc
+        )
+
+        last_played_at = (
+            play_stats.last_played_at
+        )
+
+        if (
+            last_played_at.tzinfo
+            is None
+        ):
+            last_played_at = (
+                last_played_at.replace(
+                    tzinfo=timezone.utc
+                )
+            )
 
         days_since_played = (
-            now - play_stats.last_played_at
+            now - last_played_at
         ).days
 
-        if days_since_played >= 180:
+        play_count = (
+            play_stats.play_count or 0
+        )
+
+        reasons = []
+
+        if mode == "different":
+            if days_since_played >= 180:
+                score = 23
+                reasons.append(
+                    (
+                        "Hasn't been played in "
+                        "over 6 months"
+                    )
+                )
+
+            elif days_since_played >= 60:
+                score = 18
+                reasons.append(
+                    (
+                        "Hasn't been played in "
+                        "over 2 months"
+                    )
+                )
+
+            elif days_since_played >= 14:
+                score = 10
+                reasons.append(
+                    "Due another play"
+                )
+
+            else:
+                score = 2
+                reasons.append(
+                    "Played recently"
+                )
+
+            if play_count <= 2:
+                score += 5
+                reasons.append(
+                    (
+                        "One of your "
+                        "least-played games"
+                    )
+                )
+
+            elif play_count >= 10:
+                score -= 6
+
             return (
-                15,
+                max(score, 0),
+                reasons,
+            )
+
+        if days_since_played >= 180:
+            score = 17
+            reasons.append(
                 (
                     "Hasn't been played in "
                     "over 6 months"
-                ),
+                )
             )
 
-        if days_since_played >= 60:
-            return (
-                10,
+        elif days_since_played >= 60:
+            score = 12
+            reasons.append(
                 (
                     "Hasn't been played in "
                     "over 2 months"
-                ),
+                )
             )
 
-        if days_since_played >= 14:
-            return (
-                5,
-                "Due another play",
+        elif days_since_played >= 14:
+            score = 6
+            reasons.append(
+                "Due another play"
             )
+
+        else:
+            score = 0
+            reasons.append(
+                "Played recently"
+            )
+
+        if (
+            play_count <= 2
+            and days_since_played >= 14
+        ):
+            score += 3
+            reasons.append(
+                "Hasn't had many plays"
+            )
+
+        elif play_count >= 10:
+            score -= 3
 
         return (
-            0,
-            "Played recently",
+            max(score, 0),
+            reasons,
         )
 
     @staticmethod
     def _score_preferences(
         game: Game,
         criteria: PickerCriteria,
-    ) -> tuple[int, list[str]]:
+    ) -> tuple[
+        int,
+        list[str],
+    ]:
         preferred_categories = {
             category.strip().lower()
             for category
@@ -285,27 +451,45 @@ class PickerService:
         }
 
         game_categories = {
-            category.strip().lower(): category
-            for category in (game.categories or [])
+            category.strip().lower():
+                category
+            for category
+            in (
+                game.categories
+                or []
+            )
             if category.strip()
         }
 
         game_mechanics = {
-            mechanic.strip().lower(): mechanic
-            for mechanic in (game.mechanics or [])
+            mechanic.strip().lower():
+                mechanic
+            for mechanic
+            in (
+                game.mechanics
+                or []
+            )
             if mechanic.strip()
         }
 
         matched_categories = [
-            game_categories[category]
-            for category in preferred_categories
-            if category in game_categories
+            game_categories[
+                category
+            ]
+            for category
+            in preferred_categories
+            if category
+            in game_categories
         ]
 
         matched_mechanics = [
-            game_mechanics[mechanic]
-            for mechanic in preferred_mechanics
-            if mechanic in game_mechanics
+            game_mechanics[
+                mechanic
+            ]
+            for mechanic
+            in preferred_mechanics
+            if mechanic
+            in game_mechanics
         ]
 
         if (
@@ -343,7 +527,10 @@ class PickerService:
                     )
                 )
 
-        return min(score, 10), reasons
+        return (
+            min(score, 10),
+            reasons,
+        )
 
     @staticmethod
     def _supports_player_count(
@@ -352,7 +539,8 @@ class PickerService:
     ) -> bool:
         if (
             game.min_players is None
-            or game.max_players is None
+            or game.max_players
+            is None
         ):
             return False
 

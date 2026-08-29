@@ -281,7 +281,10 @@ def get_picker_play_repository(
 
 @app.get("/picker")
 def pick_games(
-    players: int = Query(..., ge=1),
+    players: int = Query(
+        ...,
+        ge=1,
+    ),
     max_play_time: int | None = Query(
         None,
         ge=1,
@@ -289,6 +292,7 @@ def pick_games(
     max_complexity: float | None = Query(
         None,
         ge=0,
+        le=5,
     ),
     preferred_categories: list[str] = Query(
         default=[],
@@ -296,8 +300,14 @@ def pick_games(
     preferred_mechanics: list[str] = Query(
         default=[],
     ),
+    mode: str = Query(
+        "best_match",
+        pattern=(
+            "^(best_match|different|surprise)$"
+        ),
+    ),
     limit: int = Query(
-        10,
+        20,
         ge=1,
         le=50,
     ),
@@ -313,32 +323,42 @@ def pick_games(
     picker_service = PickerService()
 
     play_stats = (
-        play_repository.get_game_play_stats()
+        play_repository
+        .get_game_play_stats()
     )
 
     criteria = PickerCriteria(
         players=players,
         max_play_time=max_play_time,
         max_complexity=max_complexity,
-        preferred_categories=preferred_categories,
-        preferred_mechanics=preferred_mechanics,
+        preferred_categories=(
+            preferred_categories
+        ),
+        preferred_mechanics=(
+            preferred_mechanics
+        ),
+        mode=mode,
     )
 
-    matches = picker_service.rank_matches(
-        games,
-        criteria,
-        play_stats=play_stats,
+    matches = (
+        picker_service.rank_matches(
+            games,
+            criteria,
+            play_stats=play_stats,
+        )
     )
 
     return [
         {
             "game": match.game,
             "score": match.score,
-            "reasons": match.reasons,
+            "reasons": (
+                match.reasons
+            ),
         }
-        for match in matches[:limit]
+        for match
+        in matches[:limit]
     ]
-
 
 def get_play_service(
     db: Session = Depends(get_db),
