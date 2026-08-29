@@ -409,3 +409,63 @@ class PlayRepository:
                 for play in plays
             ],
         }
+
+    def get_collection_stats(
+        self,
+    ):
+        if self.user_id is None:
+            return []
+
+        rows = (
+            self.db.query(
+                DatabaseGame.bgg_id,
+                func.count(
+                    DatabasePlay.id
+                ).label(
+                    "play_count"
+                ),
+                func.max(
+                    DatabasePlay.played_at
+                ).label(
+                    "last_played_at"
+                ),
+            )
+            .join(
+                UserGame,
+                UserGame.game_id
+                == DatabaseGame.id,
+            )
+            .outerjoin(
+                DatabasePlay,
+                (
+                    DatabasePlay.game_id
+                    == DatabaseGame.id
+                )
+                & (
+                    DatabasePlay.user_id
+                    == self.user_id
+                ),
+            )
+            .filter(
+                UserGame.user_id
+                == self.user_id
+            )
+            .group_by(
+                DatabaseGame.id,
+                DatabaseGame.bgg_id,
+            )
+            .all()
+        )
+
+        return [
+            {
+                "bgg_id": row.bgg_id,
+                "play_count": (
+                    row.play_count or 0
+                ),
+                "last_played_at": (
+                    row.last_played_at
+                ),
+            }
+            for row in rows
+    ]

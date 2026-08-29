@@ -110,6 +110,33 @@ class GameRepository:
         self.db.commit()
 
         return True
+
+    def remove_from_user_collection(
+        self,
+        user_id: int,
+        bgg_id: int,
+    ) -> bool:
+        membership = (
+            self.db.query(UserGame)
+            .join(
+                DatabaseGame,
+                DatabaseGame.id
+                == UserGame.game_id,
+            )
+            .filter(
+                UserGame.user_id == user_id,
+                DatabaseGame.bgg_id == bgg_id,
+            )
+            .first()
+        )
+
+        if membership is None:
+            return False
+
+        self.db.delete(membership)
+        self.db.commit()
+
+        return True
     
     def get_by_bgg_id(
         self,

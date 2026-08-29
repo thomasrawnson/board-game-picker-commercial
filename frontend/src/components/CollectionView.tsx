@@ -1,13 +1,17 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react"
 
 import {
+  getCollectionStats,
   getGameHistory,
   getGames,
   recordPlay,
+  removeFromCollection,
+  type CollectionGameStats,
   type Game,
   type GameHistory,
   type PlayParticipant,
@@ -16,8 +20,15 @@ import {
 
 type SortOption =
   | "name"
+  | "recent"
+  | "most-played"
   | "rating"
   | "complexity"
+
+type PlayFilter =
+  | "all"
+  | "played"
+  | "never"
 
 type PlayerForm = {
   name: string
@@ -33,6 +44,7 @@ function todayValue() {
   const month = String(
     now.getMonth() + 1,
   ).padStart(2, "0")
+
   const day = String(
     now.getDate(),
   ).padStart(2, "0")
@@ -45,11 +57,17 @@ function CollectionView() {
   const [games, setGames] =
     useState<Game[]>([])
 
+  const [collectionStats, setCollectionStats] =
+    useState<CollectionGameStats[]>([])
+
   const [search, setSearch] =
     useState("")
 
   const [sort, setSort] =
     useState<SortOption>("name")
+
+  const [playFilter, setPlayFilter] =
+    useState<PlayFilter>("all")
 
   const [selectedGame, setSelectedGame] =
     useState<Game | null>(null)
@@ -93,16 +111,29 @@ function CollectionView() {
   const [playSaved, setPlaySaved] =
     useState(false)
 
+  const savedScrollPosition =
+    useRef(0)
+
 
   useEffect(() => {
     async function loadGames() {
       try {
-        const result = await getGames()
+        const [
+          gamesResult,
+          statsResult,
+        ] = await Promise.all([
+          getGames(),
+          getCollectionStats(),
+        ])
 
         setGames(
-          result.filter(
+          gamesResult.filter(
             (game) => game.owned,
           ),
+        )
+
+        setCollectionStats(
+          statsResult,
         )
       } catch (err) {
         console.error(err)
@@ -119,6 +150,20 @@ function CollectionView() {
   }, [])
 
 
+  useEffect(() => {
+    if (selectedGame !== null) {
+      return
+    }
+
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: savedScrollPosition.current,
+        behavior: "instant",
+      })
+    })
+  }, [selectedGame])
+
+
   async function refreshHistory(
     game: Game,
   ) {
@@ -131,6 +176,40 @@ function CollectionView() {
         )
 
       setGameHistory(history)
+
+      setCollectionStats(
+        (currentStats) => {
+          const existing =
+            currentStats.find(
+              (stats) =>
+                stats.bgg_id ===
+                game.bgg_id,
+            )
+
+          const updated = {
+            bgg_id: game.bgg_id,
+            play_count:
+              history.play_count,
+            last_played_at:
+              history.last_played_at,
+          }
+
+          if (!existing) {
+            return [
+              ...currentStats,
+              updated,
+            ]
+          }
+
+          return currentStats.map(
+            (stats) =>
+              stats.bgg_id ===
+              game.bgg_id
+                ? updated
+                : stats,
+          )
+        },
+      )
     } catch (err) {
       console.error(err)
 
@@ -151,55 +230,146 @@ function CollectionView() {
   }, [selectedGame])
 
 
-  const filteredGames = useMemo(() => {
-    const query =
-      search.trim().toLowerCase()
+  const statsByGame =
+    useMemo(() => {
+      return new Map(
+        collectionStats.map(
+          (stats) => [
+            stats.bgg_id,
+            stats,
+          ],
+        ),
+      )
+    }, [collectionStats])
 
-    const results = games.filter(
-      (game) => {
-        if (!query) {
-          return true
-        }
 
-        const searchable = [
-          game.name,
-          ...game.categories,
-          ...game.mechanics,
-        ]
-          .join(" ")
+  const filteredGames =
+    useMemo(() => {
+      const query =
+        search
+          .trim()
           .toLowerCase()
 
-        return searchable.includes(query)
-      },
-    )
+      const results =
+        games.filter(
+          (game) => {
+            const stats =
+              statsByGame.get(
+                game.bgg_id,
+              )
 
-    return [...results].sort(
-      (a, b) => {
-        if (sort === "rating") {
-          return (
-            (b.rating ?? -1) -
-            (a.rating ?? -1)
-          )
-        }
+            const playCount =
+              stats?.play_count ?? 0
 
-        if (sort === "complexity") {
-          return (
-            (b.complexity ?? -1) -
-            (a.complexity ?? -1)
-          )
-        }
+            if (
+              playFilter ===
+                "played" &&
+              playCount === 0
+            ) {
+              return false
+            }
 
-        return a.name.localeCompare(
-          b.name,
+            if (
+              playFilter ===
+                "never" &&
+              playCount > 0
+            ) {
+              return false
+            }
+
+            if (!query) {
+              return true
+            }
+
+            const searchable = [
+              game.name,
+              ...game.categories,
+              ...game.mechanics,
+            ]
+              .join(" ")
+              .toLowerCase()
+
+            return searchable.includes(
+              query,
+            )
+          },
         )
-      },
-    )
-  }, [games, search, sort])
+
+      return [...results].sort(
+        (a, b) => {
+          const aStats =
+            statsByGame.get(
+              a.bgg_id,
+            )
+
+          const bStats =
+            statsByGame.get(
+              b.bgg_id,
+            )
+
+          if (sort === "recent") {
+            const aDate =
+              aStats?.last_played_at
+                ? new Date(
+                    aStats.last_played_at,
+                  ).getTime()
+                : 0
+
+            const bDate =
+              bStats?.last_played_at
+                ? new Date(
+                    bStats.last_played_at,
+                  ).getTime()
+                : 0
+
+            return bDate - aDate
+          }
+
+          if (
+            sort === "most-played"
+          ) {
+            return (
+              (bStats?.play_count ??
+                0) -
+              (aStats?.play_count ??
+                0)
+            )
+          }
+
+          if (sort === "rating") {
+            return (
+              (b.rating ?? -1) -
+              (a.rating ?? -1)
+            )
+          }
+
+          if (
+            sort === "complexity"
+          ) {
+            return (
+              (b.complexity ?? -1) -
+              (a.complexity ?? -1)
+            )
+          }
+
+          return a.name.localeCompare(
+            b.name,
+          )
+        },
+      )
+    }, [
+      games,
+      search,
+      sort,
+      playFilter,
+      statsByGame,
+    ])
 
 
   function resetPlayForm() {
     setPlayDate(todayValue())
     setDuration("")
+
     setPlayers([
       {
         name: "",
@@ -207,8 +377,8 @@ function CollectionView() {
         isWinner: false,
       },
     ])
+
     setPlayError("")
-    setPlaySaved(false)
   }
 
 
@@ -218,7 +388,10 @@ function CollectionView() {
   ) {
     setPlayers(
       players.map(
-        (player, playerIndex) =>
+        (
+          player,
+          playerIndex,
+        ) =>
           playerIndex === index
             ? {
                 ...player,
@@ -265,38 +438,53 @@ function CollectionView() {
 
     const cleanedPlayers =
       players.map(
-        (player): PlayParticipant => ({
-          name: player.name.trim(),
+        (
+          player,
+        ): PlayParticipant => ({
+          name:
+            player.name.trim(),
+
           score:
-            player.score.trim() === ""
+            player.score.trim() ===
+            ""
               ? null
-              : Number(player.score),
-          is_winner: player.isWinner,
+              : Number(
+                  player.score,
+                ),
+
+          is_winner:
+            player.isWinner,
         }),
       )
 
     if (
       cleanedPlayers.some(
         (player) =>
-          player.name.length === 0,
+          player.name.length ===
+          0,
       )
     ) {
       setPlayError(
         "Please enter a name for every player.",
       )
+
       return
     }
 
     if (
       cleanedPlayers.some(
         (player) =>
-          player.score !== null &&
-          Number.isNaN(player.score),
+          player.score !==
+            null &&
+          Number.isNaN(
+            player.score,
+          ),
       )
     ) {
       setPlayError(
         "Scores must be numbers.",
       )
+
       return
     }
 
@@ -308,13 +496,16 @@ function CollectionView() {
     if (
       durationMinutes !== null &&
       (
-        Number.isNaN(durationMinutes) ||
+        Number.isNaN(
+          durationMinutes,
+        ) ||
         durationMinutes < 0
       )
     ) {
       setPlayError(
         "Duration must be a valid number.",
       )
+
       return
     }
 
@@ -335,10 +526,10 @@ function CollectionView() {
         cleanedPlayers,
       )
 
-      setPlaySaved(true)
-      setShowPlayForm(false)
-
       resetPlayForm()
+
+      setShowPlayForm(false)
+      setPlaySaved(true)
 
       await refreshHistory(
         selectedGame,
@@ -352,6 +543,79 @@ function CollectionView() {
     } finally {
       setSavingPlay(false)
     }
+  }
+
+
+  async function handleRemoveFromCollection() {
+    if (!selectedGame) {
+      return
+    }
+
+    const confirmed =
+      window.confirm(
+        `Remove ${selectedGame.name} from your collection?`,
+      )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      await removeFromCollection(
+        selectedGame.bgg_id,
+      )
+
+      setGames(
+        (currentGames) =>
+          currentGames.filter(
+            (game) =>
+              game.bgg_id !==
+              selectedGame.bgg_id,
+          ),
+      )
+
+      setCollectionStats(
+        (currentStats) =>
+          currentStats.filter(
+            (stats) =>
+              stats.bgg_id !==
+              selectedGame.bgg_id,
+          ),
+      )
+
+      setSelectedGame(null)
+      setGameHistory(null)
+      setShowPlayForm(false)
+
+      resetPlayForm()
+    } catch (err) {
+      console.error(err)
+
+      window.alert(
+        "Couldn't remove this game from your collection.",
+      )
+    }
+  }
+
+
+  function openGame(
+    game: Game,
+  ) {
+    savedScrollPosition.current =
+      window.scrollY
+
+    setPlaySaved(false)
+    setSelectedGame(game)
+  }
+
+
+  function closeGame() {
+    setSelectedGame(null)
+    setGameHistory(null)
+    setShowPlayForm(false)
+    setPlaySaved(false)
+
+    resetPlayForm()
   }
 
 
@@ -392,15 +656,11 @@ function CollectionView() {
       <section className="screen collection-screen">
         <button
           className="collection-back"
-          onClick={() => {
-            setSelectedGame(null)
-            setGameHistory(null)
-            setShowPlayForm(false)
-            resetPlayForm()
-          }}
+          onClick={closeGame}
         >
           ← Back to collection
         </button>
+
 
         <article className="collection-detail">
           <div className="collection-detail-image">
@@ -412,7 +672,9 @@ function CollectionView() {
                   selectedGame.thumbnail_url ??
                   ""
                 }
-                alt={selectedGame.name}
+                alt={
+                  selectedGame.name
+                }
               />
             ) : (
               <div className="collection-placeholder">
@@ -420,6 +682,7 @@ function CollectionView() {
               </div>
             )}
           </div>
+
 
           <p className="eyebrow">
             {selectedGame.year_published ??
@@ -469,6 +732,7 @@ function CollectionView() {
               setShowPlayForm(
                 !showPlayForm,
               )
+
               setPlayError("")
               setPlaySaved(false)
             }}
@@ -488,7 +752,9 @@ function CollectionView() {
                   </p>
 
                   <strong>
-                    {selectedGame.name}
+                    {
+                      selectedGame.name
+                    }
                   </strong>
                 </div>
               </div>
@@ -501,13 +767,17 @@ function CollectionView() {
                   <input
                     type="date"
                     value={playDate}
-                    onChange={(event) =>
+                    onChange={(
+                      event,
+                    ) =>
                       setPlayDate(
-                        event.target.value,
+                        event.target
+                          .value,
                       )
                     }
                   />
                 </label>
+
 
                 <label>
                   <span>
@@ -521,14 +791,19 @@ function CollectionView() {
                       inputMode="numeric"
                       placeholder="60"
                       value={duration}
-                      onChange={(event) =>
+                      onChange={(
+                        event,
+                      ) =>
                         setDuration(
-                          event.target.value,
+                          event.target
+                            .value,
                         )
                       }
                     />
 
-                    <small>min</small>
+                    <small>
+                      min
+                    </small>
                   </div>
                 </label>
               </div>
@@ -547,17 +822,22 @@ function CollectionView() {
 
               <div className="player-forms">
                 {players.map(
-                  (player, index) => (
+                  (
+                    player,
+                    index,
+                  ) => (
                     <div
                       className="player-form-card"
                       key={index}
                     >
                       <div className="player-form-number">
                         <strong>
-                          Player {index + 1}
+                          Player{" "}
+                          {index + 1}
                         </strong>
 
-                        {players.length > 1 && (
+                        {players.length >
+                          1 && (
                           <button
                             type="button"
                             onClick={() =>
@@ -571,15 +851,22 @@ function CollectionView() {
                         )}
                       </div>
 
+
                       <div className="player-input-row">
                         <label>
-                          <span>Name</span>
+                          <span>
+                            Name
+                          </span>
 
                           <input
                             type="text"
-                            value={player.name}
+                            value={
+                              player.name
+                            }
                             placeholder="Player name"
-                            onChange={(event) =>
+                            onChange={(
+                              event,
+                            ) =>
                               updatePlayer(
                                 index,
                                 {
@@ -593,15 +880,22 @@ function CollectionView() {
                           />
                         </label>
 
+
                         <label className="score-field">
-                          <span>Score</span>
+                          <span>
+                            Score
+                          </span>
 
                           <input
                             type="number"
                             inputMode="decimal"
-                            value={player.score}
+                            value={
+                              player.score
+                            }
                             placeholder="—"
-                            onChange={(event) =>
+                            onChange={(
+                              event,
+                            ) =>
                               updatePlayer(
                                 index,
                                 {
@@ -616,13 +910,16 @@ function CollectionView() {
                         </label>
                       </div>
 
+
                       <label className="winner-toggle">
                         <input
                           type="checkbox"
                           checked={
                             player.isWinner
                           }
-                          onChange={(event) =>
+                          onChange={(
+                            event,
+                          ) =>
                             updatePlayer(
                               index,
                               {
@@ -663,8 +960,12 @@ function CollectionView() {
 
               <button
                 className="primary-button save-play-button"
-                disabled={savingPlay}
-                onClick={handleSavePlay}
+                disabled={
+                  savingPlay
+                }
+                onClick={
+                  handleSavePlay
+                }
               >
                 {savingPlay
                   ? "Saving..."
@@ -687,15 +988,17 @@ function CollectionView() {
             </p>
 
             <p>
-              {selectedGame.min_players ?? "?"}
+              {selectedGame.min_players ??
+                "?"}
               –
-              {selectedGame.max_players ?? "?"}
+              {selectedGame.max_players ??
+                "?"}
             </p>
           </div>
 
 
-          {selectedGame.categories.length >
-            0 && (
+          {selectedGame.categories
+            .length > 0 && (
             <div className="detail-section">
               <p className="preference-label">
                 Categories
@@ -704,7 +1007,11 @@ function CollectionView() {
               <div className="detail-tags">
                 {selectedGame.categories.map(
                   (category) => (
-                    <span key={category}>
+                    <span
+                      key={
+                        category
+                      }
+                    >
                       {category}
                     </span>
                   ),
@@ -714,8 +1021,8 @@ function CollectionView() {
           )}
 
 
-          {selectedGame.mechanics.length >
-            0 && (
+          {selectedGame.mechanics
+            .length > 0 && (
             <div className="detail-section">
               <p className="preference-label">
                 Mechanics
@@ -724,7 +1031,11 @@ function CollectionView() {
               <div className="detail-tags">
                 {selectedGame.mechanics.map(
                   (mechanic) => (
-                    <span key={mechanic}>
+                    <span
+                      key={
+                        mechanic
+                      }
+                    >
                       {mechanic}
                     </span>
                   ),
@@ -739,39 +1050,53 @@ function CollectionView() {
               Your history
             </p>
 
+
             {historyLoading ? (
               <p className="history-empty">
-                Loading your play history...
+                Loading your play
+                history...
               </p>
             ) : gameHistory ? (
               <>
                 <div className="history-stats">
                   <div>
                     <strong>
-                      {gameHistory.play_count}
+                      {
+                        gameHistory.play_count
+                      }
                     </strong>
 
-                    <span>Plays</span>
+                    <span>
+                      Plays
+                    </span>
                   </div>
+
 
                   <div>
                     <strong>
                       {gameHistory
                         .average_players
-                        ?.toFixed(1) ?? "—"}
+                        ?.toFixed(
+                          1,
+                        ) ?? "—"}
                     </strong>
 
-                    <span>Avg players</span>
+                    <span>
+                      Avg players
+                    </span>
                   </div>
+
 
                   <div>
                     <strong>
                       {gameHistory
-                        .average_duration_minutes
-                        ?? "—"}
+                        .average_duration_minutes ??
+                        "—"}
                     </strong>
 
-                    <span>Avg mins</span>
+                    <span>
+                      Avg mins
+                    </span>
                   </div>
                 </div>
 
@@ -793,18 +1118,22 @@ function CollectionView() {
                 )}
 
 
-                {gameHistory.recent_plays.length >
-                0 ? (
+                {gameHistory
+                  .recent_plays
+                  .length > 0 ? (
                   <div className="recent-plays">
                     <p className="preference-label">
                       Recent plays
                     </p>
 
+
                     {gameHistory.recent_plays.map(
                       (play) => (
                         <div
                           className="recent-play-detail"
-                          key={play.id}
+                          key={
+                            play.id
+                          }
                         >
                           <div className="recent-play-header">
                             <div>
@@ -822,13 +1151,16 @@ function CollectionView() {
                               </strong>
 
                               <span>
-                                {play.player_count}{" "}
+                                {
+                                  play.player_count
+                                }{" "}
                                 {play.player_count ===
                                 1
                                   ? "player"
                                   : "players"}
                               </span>
                             </div>
+
 
                             <span>
                               {play.duration_minutes
@@ -838,7 +1170,9 @@ function CollectionView() {
                           </div>
 
 
-                          {play.participants.length >
+                          {play
+                            .participants
+                            .length >
                             0 && (
                             <div className="play-participants">
                               {play.participants.map(
@@ -882,16 +1216,30 @@ function CollectionView() {
                   </div>
                 ) : (
                   <p className="history-empty">
-                    You haven't logged a play
-                    of this game yet.
+                    You haven't logged
+                    a play of this game
+                    yet.
                   </p>
                 )}
               </>
             ) : (
               <p className="history-empty">
-                Play history unavailable.
+                Play history
+                unavailable.
               </p>
             )}
+          </div>
+
+
+          <div className="detail-section collection-danger-zone">
+            <button
+              className="remove-collection-button"
+              onClick={
+                handleRemoveFromCollection
+              }
+            >
+              Remove from collection
+            </button>
           </div>
         </article>
       </section>
@@ -909,7 +1257,8 @@ function CollectionView() {
         <h1>Your games</h1>
 
         <p className="subtitle">
-          {games.length} games on your shelf.
+          {games.length} games on
+          your shelf.
         </p>
       </header>
 
@@ -921,9 +1270,60 @@ function CollectionView() {
           value={search}
           placeholder="Search games, themes or mechanics"
           onChange={(event) =>
-            setSearch(event.target.value)
+            setSearch(
+              event.target.value,
+            )
           }
         />
+
+
+        <div className="collection-filter-tabs">
+          <button
+            className={
+              playFilter === "all"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setPlayFilter("all")
+            }
+          >
+            All
+          </button>
+
+          <button
+            className={
+              playFilter ===
+              "played"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setPlayFilter(
+                "played",
+              )
+            }
+          >
+            Played
+          </button>
+
+          <button
+            className={
+              playFilter ===
+              "never"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setPlayFilter(
+                "never",
+              )
+            }
+          >
+            Never played
+          </button>
+        </div>
+
 
         <select
           className="collection-sort"
@@ -937,6 +1337,14 @@ function CollectionView() {
         >
           <option value="name">
             A–Z
+          </option>
+
+          <option value="recent">
+            Recently played
+          </option>
+
+          <option value="most-played">
+            Most played
           </option>
 
           <option value="rating">
@@ -959,67 +1367,114 @@ function CollectionView() {
 
 
       <div className="collection-list">
-        {filteredGames.map((game) => (
-          <button
-            className="collection-game"
-            key={game.bgg_id}
-            onClick={() =>
-              setSelectedGame(game)
-            }
-          >
-            <div className="collection-thumb">
-              {game.thumbnail_url ||
-              game.image_url ? (
-                <img
-                  src={
-                    game.thumbnail_url ??
-                    game.image_url ??
-                    ""
-                  }
-                  alt=""
-                />
-              ) : (
-                <span>?</span>
-              )}
-            </div>
+        {filteredGames.map(
+          (game) => {
+            const stats =
+              statsByGame.get(
+                game.bgg_id,
+              )
+
+            return (
+              <button
+                className="collection-game"
+                key={game.bgg_id}
+                onClick={() =>
+                  openGame(game)
+                }
+              >
+                <div className="collection-thumb">
+                  {game.thumbnail_url ||
+                  game.image_url ? (
+                    <img
+                      src={
+                        game.thumbnail_url ??
+                        game.image_url ??
+                        ""
+                      }
+                      alt=""
+                    />
+                  ) : (
+                    <span>?</span>
+                  )}
+                </div>
 
 
-            <div className="collection-game-info">
-              <strong>
-                {game.name}
-              </strong>
+                <div className="collection-game-info">
+                  <strong>
+                    {game.name}
+                  </strong>
 
-              <span>
-                {game.min_players ?? "?"}
-                –
-                {game.max_players ?? "?"}
-                P
-                {" · "}
-                {game.max_play_time ?? "?"}
-                MIN
-              </span>
+                  <span>
+                    {game.min_players ??
+                      "?"}
+                    –
+                    {game.max_players ??
+                      "?"}
+                    P
+                    {" · "}
+                    {game.max_play_time ??
+                      "?"}
+                    MIN
+                  </span>
 
-              {game.categories.length > 0 && (
-                <small>
+
                   {game.categories
-                    .slice(0, 2)
-                    .join(" · ")}
-                </small>
-              )}
-            </div>
+                    .length > 0 && (
+                    <small>
+                      {game.categories
+                        .slice(0, 2)
+                        .join(" · ")}
+                    </small>
+                  )}
 
 
-            <span className="collection-chevron">
-              ›
-            </span>
-          </button>
-        ))}
+                  {!stats ||
+                  stats.play_count ===
+                    0 ? (
+                    <small className="collection-play-meta">
+                      Never played
+                    </small>
+                  ) : (
+                    <small className="collection-play-meta">
+                      {
+                        stats.play_count
+                      }{" "}
+                      {stats.play_count ===
+                      1
+                        ? "play"
+                        : "plays"}
+
+                      {stats.last_played_at &&
+                        ` · Last played ${new Date(
+                          stats.last_played_at,
+                        ).toLocaleDateString(
+                          undefined,
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )}`}
+                    </small>
+                  )}
+                </div>
+
+
+                <span className="collection-chevron">
+                  ›
+                </span>
+              </button>
+            )
+          },
+        )}
       </div>
 
 
-      {filteredGames.length === 0 && (
+      {filteredGames.length ===
+        0 && (
         <p className="collection-empty">
-          No games match that search.
+          No games match these
+          filters.
         </p>
       )}
     </section>

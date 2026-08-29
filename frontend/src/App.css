@@ -1843,3 +1843,83 @@ button:focus-visible {
 .history-player.winner strong {
   color: var(--gold);
 }
+
+.collection-danger-zone {
+  margin-top: 22px;
+  padding-top: 18px;
+
+  border-top:
+    1px solid
+    rgba(243, 234, 216, 0.1);
+}
+
+.remove-collection-button {
+  width: 100%;
+
+  padding: 11px 14px;
+
+  color: #e5a58e;
+  background: transparent;
+
+  border:
+    1px solid
+    rgba(229, 165, 142, 0.28);
+
+  border-radius: 10px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.remove-collection-button:hover {
+  background:
+    rgba(181, 84, 43, 0.08);
+
+  border-color:
+    rgba(229, 165, 142, 0.5);
+}
+
+.collection-filter-tabs {
+  display: grid;
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 6px;
+
+  margin: 10px 0;
+}
+
+.collection-filter-tabs button {
+  padding: 8px 6px;
+
+  color: var(--text-secondary);
+  background:
+    rgba(243, 234, 216, 0.05);
+
+  border:
+    1px solid
+    rgba(243, 234, 216, 0.12);
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.collection-filter-tabs button.active {
+  color: var(--ink);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.collection-play-meta {
+  display: block;
+
+  margin-top: 4px;
+
+  color: var(--gold) !important;
+}

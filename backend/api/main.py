@@ -429,3 +429,42 @@ def get_game_play_history(
         )
 
     return history
+
+@app.get("/collection/stats")
+def get_collection_stats(
+    repository: PlayRepository = Depends(
+        get_picker_play_repository
+    ),
+):
+    return (
+        repository.get_collection_stats()
+    )
+
+@app.delete(
+    "/collection/{bgg_id}",
+)
+def remove_from_collection(
+    bgg_id: int,
+    service: GameService = Depends(
+        get_game_service
+    ),
+):
+    removed = (
+        service.remove_from_collection(
+            bgg_id
+        )
+    )
+
+    if not removed:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                "Game not found in collection"
+            ),
+        )
+
+    return {
+        "message": (
+            "Game removed from collection"
+        )
+    }

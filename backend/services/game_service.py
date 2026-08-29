@@ -66,3 +66,18 @@ class GameService:
         return self.repository.delete(
             bgg_id
         )
+
+    def remove_from_collection(
+        self,
+        bgg_id: int,
+    ) -> bool:
+        if self.user_id is None:
+            return False
+
+        return (
+            self.repository
+            .remove_from_user_collection(
+                self.user_id,
+                bgg_id,
+            )
+        )

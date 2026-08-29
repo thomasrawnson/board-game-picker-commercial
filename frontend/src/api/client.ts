@@ -275,3 +275,41 @@ export async function importBGStatsPlays(
 
   return response.json()
 }
+
+export interface CollectionGameStats {
+  bgg_id: number
+  play_count: number
+  last_played_at: string | null
+}
+
+export async function getCollectionStats():
+Promise<CollectionGameStats[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/collection/stats`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Collection stats failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
+}
+
+export async function removeFromCollection(
+  bggId: number,
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/collection/${bggId}`,
+    {
+      method: "DELETE",
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Collection removal failed: ${response.status}`,
+    )
+  }
+}
