@@ -1,26 +1,53 @@
 import type {
   PickerMatch,
+  PickerMode,
 } from "../../api/client"
+
 
 type Props = {
   match: PickerMatch
   matchIndex: number
   totalMatches: number
+  mode: PickerMode
+  hasMoreMatches: boolean
   onTryAnother: () => void
   onViewGame: () => void
   onStartOver: () => void
 }
 
+
+function modeLabel(
+  mode: PickerMode,
+) {
+  if (mode === "different") {
+    return "Something different"
+  }
+
+  if (mode === "surprise") {
+    return "Surprise pick"
+  }
+
+  return "Best match"
+}
+
+
 function PickerResult({
   match,
   matchIndex,
   totalMatches,
+  mode,
+  hasMoreMatches,
   onTryAnother,
   onViewGame,
   onStartOver,
 }: Props) {
   return (
     <section className="screen reveal-screen">
+      <p className="picker-result-mode">
+        {modeLabel(mode)}
+      </p>
+
+
       <div
         className="game-card"
         key={match.game.bgg_id}
@@ -31,8 +58,7 @@ function PickerResult({
             <img
               className="game-image"
               src={
-                match.game
-                  .image_url ??
+                match.game.image_url ??
                 match.game
                   .thumbnail_url ??
                 ""
@@ -47,18 +73,23 @@ function PickerResult({
             </div>
           )}
 
+
           <div className="match-score">
             <strong>
               {match.score}
             </strong>
 
-            <span>Match</span>
+            <span>
+              Match
+            </span>
           </div>
         </div>
+
 
         <h2>
           {match.game.name}
         </h2>
+
 
         <div className="game-meta">
           {match.game.min_players !==
@@ -79,6 +110,7 @@ function PickerResult({
               </span>
             )}
 
+
           {match.game.max_play_time !==
             null && (
             <span>
@@ -93,23 +125,43 @@ function PickerResult({
               min
             </span>
           )}
+
+
+          {match.game.complexity !==
+            null && (
+            <span>
+              Weight{" "}
+              {match.game.complexity.toFixed(
+                1,
+              )}
+            </span>
+          )}
         </div>
       </div>
 
+
       <div className="match-reasons">
-        {match.reasons.map(
-          (reason) => (
-            <p key={reason}>
-              ✓ {reason}
-            </p>
-          ),
-        )}
+        <p className="preference-label">
+          Why this one?
+        </p>
+
+        {match.reasons
+          .slice(0, 4)
+          .map(
+            (reason) => (
+              <p key={reason}>
+                ✓ {reason}
+              </p>
+            ),
+          )}
       </div>
 
+
       <p className="result-count">
-        {matchIndex + 1} of{" "}
-        {totalMatches} matches
+        Pick {matchIndex + 1} of{" "}
+        {totalMatches}
       </p>
+
 
       <div className="reveal-actions">
         <button
@@ -117,9 +169,15 @@ function PickerResult({
           onClick={
             onTryAnother
           }
+          disabled={
+            !hasMoreMatches
+          }
         >
-          Try another
+          {hasMoreMatches
+            ? "Try another"
+            : "No more matches"}
         </button>
+
 
         <button
           className="primary-button"
@@ -131,6 +189,16 @@ function PickerResult({
         </button>
       </div>
 
+
+      {!hasMoreMatches &&
+        totalMatches > 1 && (
+        <p className="picker-exhausted">
+          You've seen every game that
+          matched these choices.
+        </p>
+      )}
+
+
       <button
         className="ghost-button"
         onClick={onStartOver}
@@ -140,5 +208,6 @@ function PickerResult({
     </section>
   )
 }
+
 
 export default PickerResult

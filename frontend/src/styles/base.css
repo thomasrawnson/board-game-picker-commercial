@@ -1,0 +1,280 @@
+/* Shared application styles */
+
+.app-shell {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 24px 16px;
+
+  background:
+    radial-gradient(
+      ellipse at 50% -10%,
+      rgba(201, 162, 39, 0.12),
+      transparent 55%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.015) 0,
+      rgba(255, 255, 255, 0.015) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    linear-gradient(
+      var(--felt),
+      var(--felt-dark)
+    );
+}
+
+/* Phone / app container */
+
+.phone {
+  width: 100%;
+  max-width: 390px;
+  min-height: 700px;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 28px 22px 24px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      rgba(0, 0, 0, 0.09)
+    );
+
+  border: 1px solid var(--line);
+  border-radius: 28px;
+
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.26),
+    inset 0 1px rgba(255, 255, 255, 0.03);
+
+  overflow: hidden;
+}
+
+/* Screen transitions */
+
+.screen {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  animation: screen-in 350ms ease both;
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Typography */
+
+header {
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+
+  color: var(--gold);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  font-family: "Fraunces", serif;
+}
+
+h1 {
+  margin: 0 0 8px;
+
+  color: var(--card);
+
+  font-size: 31px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 0 0 32px;
+
+  color: rgba(243, 234, 216, 0.52);
+
+  font-size: 14px;
+}
+
+/* Buttons */
+
+.primary-button,
+.secondary-button,
+.ghost-button {
+  width: 100%;
+
+  padding: 15px 16px;
+
+  border-radius: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 120ms ease,
+    opacity 180ms ease,
+    background 180ms ease;
+}
+
+.primary-button {
+  margin-top: 24px;
+
+  color: var(--card);
+
+  background:
+    linear-gradient(
+      180deg,
+      #be5d35,
+      var(--rust)
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  box-shadow:
+    0 9px 24px rgba(0, 0, 0, 0.18);
+}
+
+.primary-button:hover:not(:disabled) {
+  background:
+    linear-gradient(
+      180deg,
+      #c6653d,
+      #aa4927
+    );
+}
+
+.primary-button:active:not(:disabled),
+.secondary-button:active,
+.ghost-button:active {
+  transform: scale(0.97);
+}
+
+.primary-button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  color: var(--card);
+
+  background: rgba(243, 234, 216, 0.07);
+
+  border: 1px solid var(--line);
+}
+
+.ghost-button {
+  margin-top: 10px;
+
+  color: rgba(243, 234, 216, 0.62);
+
+  background: transparent;
+
+  border: 1px solid var(--line);
+}
+
+/* Errors */
+
+.error-message {
+  margin: 15px 0 0;
+
+  color: #f0b9a6;
+
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Accessibility */
+
+button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Desktop presentation */
+
+@media (min-width: 700px) {
+  .phone {
+    min-height: 720px;
+  }
+}
+
+/* Small phones */
+
+@media (max-width: 390px) {
+  .app-shell {
+    padding: 0;
+  }
+
+  .phone {
+    min-height: 100vh;
+
+    border: 0;
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+}
+
+/* =========================================================
+   UI polish overrides
+   - stronger text contrast
+   - scrollable collection list
+   - sticky collection controls
+   ========================================================= */
+
+:root {
+  --text-primary: #f6eedc;
+  --text-secondary: #ddd3bd;
+  --text-muted: #b5bdaa;
+  --text-accent: #d6ad32;
+}
+
+/* General readability */
+
+.subtitle {
+  color: var(--text-secondary);
+}
+
+/* Buttons */
+
+.secondary-button {
+  color: var(--text-primary);
+}
+
+.ghost-button {
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   Setup / imports
+   ========================================================= */
+
+.phone {
+  position: relative;
+}

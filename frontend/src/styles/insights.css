@@ -1,0 +1,179 @@
+/* Collection insights */
+
+/* Collection insights */
+
+.insights-screen {
+  overflow-y: auto;
+}
+
+.insights-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 12px;
+
+  margin-bottom: 14px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  min-height: 120px;
+
+  padding: 18px 12px;
+
+  background: rgba(243, 234, 216, 0.055);
+
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.stat-card strong {
+  color: var(--gold);
+
+  font-family: "Fraunces", serif;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.stat-card span {
+  margin-top: 8px;
+
+  color: rgba(243, 234, 216, 0.5);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Most / last played cards */
+
+.insight-feature-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.insight-feature {
+  padding: 17px 18px;
+
+  color: var(--ink);
+
+  background: var(--card);
+
+  border-radius: 15px;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.insight-label {
+  margin: 0 0 5px;
+
+  color: var(--rust);
+
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.insight-feature h2 {
+  margin: 0;
+
+  color: var(--ink);
+
+  font-size: 19px;
+  line-height: 1.15;
+}
+
+.insight-detail {
+  margin: 5px 0 0;
+
+  color: var(--ink-soft);
+
+  font-size: 12px;
+}
+
+.insight-empty {
+  margin: 4px 0 0;
+
+  color: var(--ink-soft);
+
+  font-size: 13px;
+}
+
+/* Unplayed collection callout */
+
+.shelf-callout {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  margin-top: 14px;
+
+  padding: 17px 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(201, 162, 39, 0.13),
+      rgba(243, 234, 216, 0.035)
+    );
+
+  border: 1px solid rgba(201, 162, 39, 0.25);
+  border-radius: 16px;
+}
+
+.shelf-callout > strong {
+  min-width: 58px;
+
+  color: var(--gold);
+
+  font-family: "Fraunces", serif;
+  font-size: 36px;
+  line-height: 1;
+
+  text-align: center;
+}
+
+.shelf-callout span {
+  color: var(--card);
+
+  font-family: "Fraunces", serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.shelf-callout p {
+  margin: 3px 0 0;
+
+  color: rgba(243, 234, 216, 0.43);
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Insights */
+
+.insights-screen h1,
+.insights-screen h2,
+.insights-screen strong {
+  color: var(--text-primary);
+}
+
+.insights-screen p,
+.insights-screen span,
+.insights-screen small {
+  color: var(--text-secondary);
+}

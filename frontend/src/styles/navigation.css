@@ -1,0 +1,97 @@
+/* Application navigation */
+
+/* Main navigation */
+
+.app-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 5px;
+
+  padding: 4px;
+
+  margin-bottom: 22px;
+
+  background: rgba(0, 0, 0, 0.12);
+
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.nav-button {
+  padding: 9px 12px;
+
+  color: rgba(243, 234, 216, 0.5);
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 9px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.nav-button.active {
+  color: var(--ink);
+
+  background: var(--gold);
+}
+
+.nav-button {
+  color: #c7cebd;
+}
+
+.nav-button:hover {
+  color: var(--text-primary);
+}
+
+.nav-button.active {
+  color: var(--ink);
+}
+
+.settings-button {
+  align-self: flex-end;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: -6px 0 8px;
+
+  padding: 0;
+
+  color: var(--text-muted);
+  background: rgba(243, 234, 216, 0.06);
+
+  border: 1px solid rgba(243, 234, 216, 0.14);
+  border-radius: 50%;
+
+  font-size: 15px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.settings-button:hover {
+  color: var(--gold);
+  background: rgba(243, 234, 216, 0.09);
+  border-color: rgba(201, 162, 39, 0.5);
+}

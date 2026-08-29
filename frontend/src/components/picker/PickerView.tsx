@@ -5,6 +5,7 @@ import {
 import {
   getPickerMatches,
   type PickerMatch,
+  type PickerMode,
 } from "../../api/client"
 
 import {
@@ -26,6 +27,7 @@ type Step =
   | "time"
   | "preferences"
   | "reveal"
+
 
 type Props = {
   onViewCollection: () => void
@@ -52,6 +54,14 @@ function PickerView({
     )
 
   const [
+    maxComplexity,
+    setMaxComplexity,
+  ] =
+    useState<number | null>(
+      null,
+    )
+
+  const [
     preferredCategories,
     setPreferredCategories,
   ] =
@@ -62,6 +72,11 @@ function PickerView({
     setPreferredMechanics,
   ] =
     useState<string[]>([])
+
+  const [mode, setMode] =
+    useState<PickerMode>(
+      "best_match",
+    )
 
   const [matches, setMatches] =
     useState<PickerMatch[]>([])
@@ -78,8 +93,13 @@ function PickerView({
   const [error, setError] =
     useState("")
 
+
   const match =
     matches[matchIndex]
+
+  const hasMoreMatches =
+    matchIndex <
+    matches.length - 1
 
 
   function toggleCategory(
@@ -143,19 +163,28 @@ function PickerView({
               : maxPlayTime ??
                 undefined,
 
+          maxComplexity:
+            maxComplexity ??
+            undefined,
+
           preferredCategories,
+
           preferredMechanics,
+
+          mode,
         })
+
 
       if (
         results.length === 0
       ) {
         setError(
-          "No games matched those choices. Try allowing more time.",
+          "No games matched those choices. Try allowing more time or weight.",
         )
 
         return
       }
+
 
       setMatches(results)
       setMatchIndex(0)
@@ -173,24 +202,23 @@ function PickerView({
 
 
   function tryAnother() {
-    if (
-      matches.length === 0
-    ) {
+    if (!hasMoreMatches) {
       return
     }
 
     setMatchIndex(
       (current) =>
-        (current + 1) %
-        matches.length,
+        current + 1,
     )
   }
 
 
   function startOver() {
     setStep("players")
+
     setPlayers(null)
     setMaxPlayTime(null)
+    setMaxComplexity(null)
 
     setPreferredCategories(
       [],
@@ -198,6 +226,10 @@ function PickerView({
 
     setPreferredMechanics(
       [],
+    )
+
+    setMode(
+      "best_match",
     )
 
     setMatches([])
@@ -243,6 +275,7 @@ function PickerView({
         />
       </div>
 
+
       {step === "players" && (
         <PlayerStep
           players={players}
@@ -252,6 +285,7 @@ function PickerView({
           }
         />
       )}
+
 
       {step === "time" && (
         <TimeStep
@@ -272,6 +306,7 @@ function PickerView({
         />
       )}
 
+
       {step ===
         "preferences" && (
         <PreferenceStep
@@ -281,6 +316,10 @@ function PickerView({
           preferredMechanics={
             preferredMechanics
           }
+          maxComplexity={
+            maxComplexity
+          }
+          mode={mode}
           error={error}
           loading={loading}
           onToggleCategory={
@@ -288,6 +327,12 @@ function PickerView({
           }
           onToggleMechanic={
             toggleMechanic
+          }
+          onComplexityChange={
+            setMaxComplexity
+          }
+          onModeChange={
+            setMode
           }
           onReveal={
             revealGame
@@ -298,6 +343,7 @@ function PickerView({
         />
       )}
 
+
       {step === "reveal" &&
         match && (
         <PickerResult
@@ -307,6 +353,10 @@ function PickerView({
           }
           totalMatches={
             matches.length
+          }
+          mode={mode}
+          hasMoreMatches={
+            hasMoreMatches
           }
           onTryAnother={
             tryAnother
@@ -322,5 +372,6 @@ function PickerView({
     </>
   )
 }
+
 
 export default PickerView

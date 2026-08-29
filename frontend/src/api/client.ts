@@ -21,12 +21,19 @@ export interface PickerMatch {
   reasons: string[]
 }
 
+export type PickerMode =
+  | "best_match"
+  | "different"
+  | "surprise"
+
 export interface PickerCriteria {
   players: number
   maxPlayTime?: number
+  maxComplexity?: number
   preferredCategories?: string[]
   preferredMechanics?: string[]
-}
+  mode?: PickerMode
+} 
 
 export interface Play {
   id: number
@@ -114,7 +121,22 @@ export async function getPickerMatches(
       criteria.maxPlayTime.toString(),
     )
   }
+  if (
+    criteria.maxComplexity !==
+    undefined
+  ) {
+    params.set(
+      "max_complexity",
+      criteria.maxComplexity.toString(),
+    )
+  }
 
+  if (criteria.mode) {
+    params.set(
+      "mode",
+      criteria.mode,
+    )
+  }
   criteria.preferredCategories?.forEach(
     (category) => {
       params.append(
@@ -276,6 +298,11 @@ export async function importBGStatsPlays(
   return response.json()
 }
 
+export interface CollectionGameStats {
+  bgg_id: number
+  play_count: number
+  last_played_at: string | null
+}
 export interface CollectionGameStats {
   bgg_id: number
   play_count: number

@@ -1,6 +1,13 @@
+import type {
+  PickerMode,
+} from "../../api/client"
+
+
 type Props = {
   preferredCategories: string[]
   preferredMechanics: string[]
+  maxComplexity: number | null
+  mode: PickerMode
   error: string
   loading: boolean
   onToggleCategory: (
@@ -9,9 +16,16 @@ type Props = {
   onToggleMechanic: (
     mechanic: string,
   ) => void
+  onComplexityChange: (
+    value: number | null,
+  ) => void
+  onModeChange: (
+    mode: PickerMode,
+  ) => void
   onReveal: () => void
   onBack: () => void
 }
+
 
 const categoryOptions = [
   "Adventure",
@@ -20,6 +34,7 @@ const categoryOptions = [
   "Science Fiction",
 ]
 
+
 const mechanicOptions = [
   "Cooperative Game",
   "Deck Building",
@@ -27,13 +42,68 @@ const mechanicOptions = [
   "Worker Placement",
 ]
 
+
+const complexityOptions = [
+  {
+    label: "Any",
+    description: "Anything goes",
+    value: null,
+  },
+  {
+    label: "Light",
+    description: "Up to 2.0",
+    value: 2,
+  },
+  {
+    label: "Medium",
+    description: "Up to 3.0",
+    value: 3,
+  },
+  {
+    label: "Heavy",
+    description: "Up to 4.0",
+    value: 4,
+  },
+]
+
+
+const modeOptions: {
+  value: PickerMode
+  label: string
+  description: string
+}[] = [
+  {
+    value: "best_match",
+    label: "Best match",
+    description:
+      "Give me the strongest fit",
+  },
+  {
+    value: "different",
+    label: "Something different",
+    description:
+      "Bring neglected games forward",
+  },
+  {
+    value: "surprise",
+    label: "Surprise me",
+    description:
+      "Pick a wildcard that still fits",
+  },
+]
+
+
 function PreferenceStep({
   preferredCategories,
   preferredMechanics,
+  maxComplexity,
+  mode,
   error,
   loading,
   onToggleCategory,
   onToggleMechanic,
+  onComplexityChange,
+  onModeChange,
   onReveal,
   onBack,
 }: Props) {
@@ -50,10 +120,89 @@ function PreferenceStep({
         </h1>
 
         <p className="subtitle">
-          Optional — choose anything
-          that sounds good.
+          Fine-tune it, or leave the
+          choices open.
         </p>
       </header>
+
+
+      <div className="preference-section">
+        <p className="preference-label">
+          How should we pick?
+        </p>
+
+        <div className="picker-mode-list">
+          {modeOptions.map(
+            (option) => (
+              <button
+                key={option.value}
+                className={
+                  mode === option.value
+                    ? "picker-mode-option selected"
+                    : "picker-mode-option"
+                }
+                onClick={() =>
+                  onModeChange(
+                    option.value,
+                  )
+                }
+              >
+                <strong>
+                  {option.label}
+                </strong>
+
+                <span>
+                  {option.description}
+                </span>
+              </button>
+            ),
+          )}
+        </div>
+      </div>
+
+
+      <div className="preference-section">
+        <p className="preference-label">
+          Weight
+        </p>
+
+        <div className="complexity-grid">
+          {complexityOptions.map(
+            (option) => {
+              const selected =
+                maxComplexity ===
+                option.value
+
+              return (
+                <button
+                  key={option.label}
+                  className={
+                    selected
+                      ? "complexity-option selected"
+                      : "complexity-option"
+                  }
+                  onClick={() =>
+                    onComplexityChange(
+                      option.value,
+                    )
+                  }
+                >
+                  <strong>
+                    {option.label}
+                  </strong>
+
+                  <span>
+                    {
+                      option.description
+                    }
+                  </span>
+                </button>
+              )
+            },
+          )}
+        </div>
+      </div>
+
 
       <div className="preference-section">
         <p className="preference-label">
@@ -85,6 +234,7 @@ function PreferenceStep({
         </div>
       </div>
 
+
       <div className="preference-section">
         <p className="preference-label">
           Play style
@@ -115,11 +265,13 @@ function PreferenceStep({
         </div>
       </div>
 
+
       {error && (
         <p className="error-message">
           {error}
         </p>
       )}
+
 
       <button
         className="primary-button"
@@ -128,8 +280,11 @@ function PreferenceStep({
       >
         {loading
           ? "Searching the shelf..."
-          : "Reveal a game"}
+          : mode === "surprise"
+            ? "Surprise me"
+            : "Reveal a game"}
       </button>
+
 
       <button
         className="ghost-button"
@@ -140,5 +295,6 @@ function PreferenceStep({
     </section>
   )
 }
+
 
 export default PreferenceStep
