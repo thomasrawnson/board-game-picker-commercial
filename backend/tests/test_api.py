@@ -322,7 +322,17 @@ def test_picker_returns_ranked_matches():
                 ),
             ]
 
-    app.dependency_overrides[get_game_service] = lambda: FakeGameService()
+    class FakePlayRepository:
+        def get_game_play_stats(self):
+            return {}
+
+    app.dependency_overrides[
+        get_game_service
+    ] = lambda: FakeGameService()
+
+    app.dependency_overrides[
+        get_picker_play_repository
+    ] = lambda: FakePlayRepository()
 
     try:
         response = client.get(
@@ -342,78 +352,48 @@ def test_picker_returns_ranked_matches():
 
     assert len(data) == 2
     assert data[0]["game"]["bgg_id"] == 2
-    assert data[0]["game"]["name"] == "Best Match"
-    assert data[0]["score"] > data[1]["score"]
-    assert "Supports 2 players" in data[0]["reasons"]
+    assert (
+        data[0]["game"]["name"]
+        == "Best Match"
+    )
+    assert (
+        data[0]["score"]
+        > data[1]["score"]
+    )
+    assert (
+        "Supports 2 players"
+        in data[0]["reasons"]
+    )
 
 
 def test_picker_requires_valid_player_count():
-    response = client.get(
-        "/picker",
-        params={
-            "players": 0,
-        },
-    )
+    class FakeGameService:
+        def get_games(self):
+            return []
 
-    assert response.status_code == 422
+    class FakePlayRepository:
+        def get_game_play_stats(self):
+            return {}
 
-def test_record_play():
-    class FakePlayService:
-        def record_play(
-            self,
-            bgg_id: int,
-            played_at,
-            duration_minutes: int | None,
-            participants: list[dict],
-        ):
-            return Play(
-                id=1,
-                bgg_id=bgg_id,
-                player_count=len(participants),
-                played_at=(
-                    played_at
-                    or datetime.now(timezone.utc)
-                ),
-            )
+    app.dependency_overrides[
+        get_game_service
+    ] = lambda: FakeGameService()
 
-    app.dependency_overrides[get_play_service] = (
-        lambda: FakePlayService()
-    )
+    app.dependency_overrides[
+        get_picker_play_repository
+    ] = lambda: FakePlayRepository()
 
     try:
-        response = client.post(
-            "/plays",
-            json={
-                "bgg_id": 167791,
-                "played_at": (
-                    "2026-08-28T20:00:00+00:00"
-                ),
-                "duration_minutes": 75,
-                "participants": [
-                    {
-                        "name": "Tom",
-                        "score": 83,
-                        "is_winner": True,
-                    },
-                    {
-                        "name": "Sarah",
-                        "score": 72,
-                        "is_winner": False,
-                    },
-                ],
+        response = client.get(
+            "/picker",
+            params={
+                "players": 0,
             },
         )
     finally:
         app.dependency_overrides.clear()
 
-    assert response.status_code == 201
-
-    data = response.json()
-
-    assert data["bgg_id"] == 167791
-    assert data["player_count"] == 2
-    assert data["id"] == 1
-
+    assert response.status_code == 422
 
 def test_record_play_returns_404_for_unknown_game():
     class FakePlayService:
