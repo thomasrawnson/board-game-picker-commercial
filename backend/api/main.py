@@ -9,7 +9,9 @@ from api.dependencies import (
     get_play_repository,
     get_play_service,
 )
+
 from api.routers import (
+    auth,
     collection,
     games,
     imports,
@@ -63,4 +65,8 @@ app.include_router(
 
 app.include_router(
     imports.router
+)
+
+app.include_router(
+    auth.router
 )
