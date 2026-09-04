@@ -4,17 +4,33 @@ from datetime import (
     timedelta,
     timezone,
 )
+from pathlib import Path
 
 import jwt
+from dotenv import load_dotenv
 from pwdlib import PasswordHash
 
 
-JWT_SECRET = os.getenv(
-    "JWT_SECRET",
-    "development-only-change-me",
+BACKEND_DIR = Path(__file__).resolve().parents[1]
+
+load_dotenv(
+    BACKEND_DIR / ".env"
 )
 
+
+JWT_SECRET = os.getenv(
+    "JWT_SECRET"
+)
+
+if not JWT_SECRET:
+    raise RuntimeError(
+        "JWT_SECRET environment variable "
+        "must be configured"
+    )
+
+
 JWT_ALGORITHM = "HS256"
+JWT_ISSUER = "boardgamepicker"
 
 ACCESS_TOKEN_MINUTES = int(
     os.getenv(
@@ -29,7 +45,9 @@ password_hash = PasswordHash.recommended()
 def hash_password(
     password: str,
 ) -> str:
-    return password_hash.hash(password)
+    return password_hash.hash(
+        password
+    )
 
 
 def verify_password(
@@ -55,6 +73,7 @@ def create_access_token(
         "exp": now + timedelta(
             minutes=ACCESS_TOKEN_MINUTES
         ),
+        "iss": JWT_ISSUER,
     }
 
     return jwt.encode(
@@ -73,9 +92,12 @@ def decode_access_token(
         algorithms=[
             JWT_ALGORITHM
         ],
+        issuer=JWT_ISSUER,
     )
 
-    subject = payload.get("sub")
+    subject = payload.get(
+        "sub"
+    )
 
     if subject is None:
         raise ValueError(

@@ -65,10 +65,7 @@ def register(
         .first()
     )
 
-    if (
-        existing is not None
-        and existing.password_hash
-    ):
+    if existing is not None:
         raise HTTPException(
             status_code=409,
             detail=(
@@ -77,44 +74,17 @@ def register(
             ),
         )
 
-    if (
-        existing is not None
-        and existing.password_hash
-        is None
-    ):
-        user = existing
-
-    else:
-        unclaimed_users = (
-            db.query(User)
-            .filter(
-                User.password_hash
-                .is_(None)
-            )
-            .all()
-        )
-
-        if len(unclaimed_users) == 1:
-            user = unclaimed_users[0]
-            user.email = email
-
-        else:
-            user = User(
-                email=email
-            )
-
-            db.add(user)
-
-    user.display_name = (
-        request.display_name.strip()
-    )
-
-    user.password_hash = (
-        hash_password(
+    user = User(
+        email=email,
+        display_name=(
+            request.display_name.strip()
+        ),
+        password_hash=hash_password(
             request.password
-        )
+        ),
     )
 
+    db.add(user)
     db.commit()
     db.refresh(user)
 
