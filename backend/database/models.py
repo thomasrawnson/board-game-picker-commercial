@@ -283,12 +283,6 @@ class Play(Base):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
-    participants = relationship(
-        "PlayParticipant",
-        back_populates="play",
-        cascade="all, delete-orphan",
-        lazy="selectin",
-    )
 
 class PlayParticipant(Base):
     __tablename__ = "play_participants"

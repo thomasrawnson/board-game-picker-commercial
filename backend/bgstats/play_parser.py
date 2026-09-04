@@ -5,12 +5,20 @@ from datetime import datetime, timezone
 
 
 @dataclass(frozen=True)
+class BGStatsParticipant:
+    name: str
+    score: float | None
+    is_winner: bool
+
+
+@dataclass(frozen=True)
 class BGStatsPlay:
     source_play_id: str
     bgg_id: int
     player_count: int
     played_at: datetime
     duration_minutes: int | None
+    participants: list[BGStatsParticipant]
 
 
 def parse_bgstats_plays(
@@ -23,6 +31,12 @@ def parse_bgstats_plays(
         for game in data.get("games", [])
         if game.get("id") is not None
         and game.get("bggId")
+    }
+
+    players_by_ref_id = {
+        player["id"]: player.get("name")
+        for player in data.get("players", [])
+        if player.get("id") is not None
     }
 
     plays: list[BGStatsPlay] = []
@@ -47,27 +61,78 @@ def parse_bgstats_plays(
         if not play_date:
             continue
 
-        player_scores = item.get("playerScores") or []
-        player_count = len(player_scores)
+        participant_rows = []
 
-        if player_count == 0:
+        for player_score in (
+            item.get("playerScores") or []
+        ):
+            player_ref_id = (
+                player_score.get("playerRefId")
+            )
+
+            name = players_by_ref_id.get(
+                player_ref_id
+            )
+
+            if not name:
+                name = "Unknown player"
+
+            participant_rows.append(
+                BGStatsParticipant(
+                    name=name,
+                    score=_parse_score(
+                        player_score.get("score")
+                    ),
+                    is_winner=bool(
+                        player_score.get("winner")
+                    ),
+                )
+            )
+
+        if not participant_rows:
             continue
 
-        played_at = _parse_datetime(play_date)
+        played_at = _parse_datetime(
+            play_date
+        )
 
         plays.append(
             BGStatsPlay(
                 source_play_id=source_play_id,
                 bgg_id=bgg_id,
-                player_count=player_count,
+                player_count=len(
+                    participant_rows
+                ),
                 played_at=played_at,
                 duration_minutes=item.get(
                     "durationMin"
                 ),
+                participants=participant_rows,
             )
         )
 
     return plays
+
+
+def _parse_score(
+    value,
+) -> float | None:
+    if value is None:
+        return None
+
+    if isinstance(
+        value,
+        str,
+    ):
+        value = value.strip()
+
+        if not value:
+            return None
+
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def _parse_datetime(value: str) -> datetime:

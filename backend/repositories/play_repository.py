@@ -124,7 +124,55 @@ class PlayRepository:
             is not None
         )
 
+    def enrich_imported_participants(
+        self,
+        source: str,
+        source_play_id: str,
+        participants: list[dict],
+    ) -> bool:
+        if self.user_id is None:
+            return False
 
+        database_play = (
+            self.db.query(DatabasePlay)
+            .filter(
+                DatabasePlay.user_id
+                == self.user_id,
+                DatabasePlay.source
+                == source,
+                DatabasePlay.source_play_id
+                == source_play_id,
+            )
+            .first()
+        )
+
+        if database_play is None:
+            return False
+
+        if database_play.participants:
+            return False
+
+        for participant in participants:
+            database_play.participants.append(
+                PlayParticipant(
+                    name=participant["name"],
+                    score=participant.get(
+                        "score"
+                    ),
+                    is_winner=participant.get(
+                        "is_winner",
+                        False,
+                    ),
+                )
+            )
+
+        database_play.player_count = len(
+            participants
+        )
+
+        self.db.commit()
+
+        return True
     def create_imported(
         self,
         bgg_id: int,
@@ -133,6 +181,7 @@ class PlayRepository:
         duration_minutes: int | None,
         source: str,
         source_play_id: str,
+        participants: list[dict],
     ) -> bool:
         if self.user_id is None:
             raise ValueError(
@@ -174,10 +223,25 @@ class PlayRepository:
         )
 
         self.db.add(database_play)
+        self.db.flush()
+
+        for participant in participants:
+            database_play.participants.append(
+                PlayParticipant(
+                    name=participant["name"],
+                    score=participant.get(
+                        "score"
+                    ),
+                    is_winner=participant.get(
+                        "is_winner",
+                        False,
+                    ),
+                )
+            )
+
         self.db.commit()
 
         return True
-
 
     def get_game_play_stats(
         self,
