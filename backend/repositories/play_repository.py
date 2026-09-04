@@ -1,4 +1,5 @@
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from database.models import (
@@ -213,17 +214,25 @@ class PlayRepository:
             game_id=database_game.id,
             player_count=player_count,
             played_at=played_at,
-            duration_minutes=(
-                duration_minutes
-            ),
+            duration_minutes=duration_minutes,
             source=source,
-            source_play_id=(
-                source_play_id
-            ),
+            source_play_id=source_play_id,
         )
 
         self.db.add(database_play)
-        self.db.flush()
+
+        try:
+            self.db.flush()
+        except IntegrityError:
+            self.db.rollback()
+
+            self.enrich_imported_participants(
+                source=source,
+                source_play_id=source_play_id,
+                participants=participants,
+            )
+
+            return True
 
         for participant in participants:
             database_play.participants.append(
