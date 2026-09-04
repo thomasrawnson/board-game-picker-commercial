@@ -2,15 +2,13 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
-    Query,
 )
 
 from api.dependencies import (
     get_game_service,
     get_play_repository,
 )
-from api.schemas.game import GameCreate
-from models.game import Game
+
 from repositories.play_repository import (
     PlayRepository,
 )

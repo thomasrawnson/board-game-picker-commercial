@@ -1,6 +1,20 @@
 import {
+  useEffect,
   useState,
 } from "react"
+
+import {
+  getMe,
+} from "./api/client"
+
+import {
+  clearToken,
+  getToken,
+  type AuthUser,
+} from "./auth"
+
+import AuthView
+  from "./components/AuthView"
 
 import CollectionView
   from "./components/CollectionView"
@@ -23,7 +37,86 @@ import "./App.css"
 
 function App() {
   const [view, setView] =
-    useState<AppView>("picker")
+    useState<AppView>(
+      "picker",
+    )
+
+  const [user, setUser] =
+    useState<AuthUser | null>(
+      null,
+    )
+
+  const [
+    checkingAuth,
+    setCheckingAuth,
+  ] = useState(true)
+
+
+  useEffect(() => {
+    async function restoreSession() {
+      if (!getToken()) {
+        setCheckingAuth(false)
+        return
+      }
+
+      try {
+        const currentUser =
+          await getMe()
+
+        setUser(
+          currentUser,
+        )
+      } catch {
+        clearToken()
+      } finally {
+        setCheckingAuth(false)
+      }
+    }
+
+    restoreSession()
+  }, [])
+
+
+  function handleLogout() {
+    clearToken()
+    setUser(null)
+    setView("picker")
+  }
+
+
+  if (checkingAuth) {
+    return (
+      <main className="app-shell">
+        <section className="phone">
+          <section className="auth-loading">
+            <p className="eyebrow">
+              Board Game Picker
+            </p>
+
+            <h1>
+              Loading...
+            </h1>
+          </section>
+        </section>
+      </main>
+    )
+  }
+
+
+  if (!user) {
+    return (
+      <main className="app-shell">
+        <section className="phone">
+          <AuthView
+            onAuthenticated={
+              setUser
+            }
+          />
+        </section>
+      </main>
+    )
+  }
+
 
   return (
     <main className="app-shell">
@@ -35,7 +128,8 @@ function App() {
           }
         />
 
-        {view === "picker" && (
+        {view ===
+          "picker" && (
           <PickerView
             onViewCollection={() =>
               setView(
@@ -55,12 +149,43 @@ function App() {
           <InsightsView />
         )}
 
-        {view === "setup" && (
-          <SetupView />
+        {view ===
+          "setup" && (
+          <>
+            <SetupView />
+
+            <div className="account-panel">
+              <div>
+                <p className="account-label">
+                  Signed in as
+                </p>
+
+                <strong>
+                  {user.display_name ??
+                    user.email}
+                </strong>
+
+                <span>
+                  {user.email}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="logout-button"
+                onClick={
+                  handleLogout
+                }
+              >
+                Log out
+              </button>
+            </div>
+          </>
         )}
       </section>
     </main>
   )
 }
+
 
 export default App
