@@ -1,3 +1,208 @@
 /* Setup and imports */
 
+.setup-screen {
+  overflow-y: auto;
+}
 
+.setup-card {
+  padding: 20px;
+
+  background: rgba(243, 234, 216, 0.055);
+
+  border: 1px solid var(--line);
+  border-radius: 17px;
+}
+
+.setup-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 18px 0;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.setup-divider::before,
+.setup-divider::after {
+  content: "";
+
+  flex: 1;
+  height: 1px;
+
+  background: var(--line);
+}
+
+.setup-step {
+  display: flex;
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+.setup-step > span {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+
+  width: 26px;
+  height: 26px;
+
+  color: var(--felt-dark);
+  background: var(--gold);
+
+  border-radius: 50%;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.setup-step strong {
+  display: block;
+  margin-bottom: 3px;
+
+  color: var(--text-primary);
+
+  font-size: 14px;
+}
+
+.setup-step p {
+  margin: 0;
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.setup-label {
+  display: block;
+  margin-bottom: 7px;
+
+  color: var(--text-secondary);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.setup-input {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 12px 13px;
+
+  color: var(--text-primary);
+  background: rgba(243, 234, 216, 0.055);
+
+  border: 1px solid var(--line);
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.setup-input:focus {
+  outline: none;
+
+  border-color: rgba(201, 162, 39, 0.7);
+
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.1);
+}
+
+.setup-button {
+  margin-top: 14px;
+}
+
+.setup-success {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  margin-top: 14px;
+  padding: 12px 13px;
+
+  background: rgba(201, 162, 39, 0.12);
+
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 10px;
+}
+
+.setup-success strong {
+  color: var(--gold);
+
+  font-size: 12px;
+}
+
+.setup-success span {
+  color: var(--text-secondary);
+
+  font-size: 11px;
+}
+
+/* File picker: a styled label stands in for the native
+   input, which is visually hidden but stays in the
+   accessibility tree and keyboard-operable via the label. */
+
+.file-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  margin-top: 14px;
+  padding: 14px;
+
+  background: rgba(243, 234, 216, 0.04);
+
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.file-picker:hover {
+  background: rgba(243, 234, 216, 0.06);
+  border-color: rgba(201, 162, 39, 0.5);
+}
+
+.file-picker strong {
+  color: var(--text-primary);
+
+  font-size: 13px;
+}
+
+.file-picker span {
+  color: var(--text-muted);
+
+  font-size: 11px;
+}
+
+.file-input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.file-picker:has(+ .file-input:focus-visible) {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}

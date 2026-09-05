@@ -285,6 +285,85 @@
   color: var(--text-accent);
 }
 
+/* Play history (game detail) */
+
+.game-history {
+  padding-top: 18px;
+
+  border-top:
+    1px solid
+    rgba(243, 234, 216, 0.1);
+}
+
+.history-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 8px;
+
+  margin: 12px 0 14px;
+}
+
+.history-stats div {
+  padding: 10px 6px;
+
+  background: rgba(243, 234, 216, 0.04);
+
+  border: 1px solid var(--line);
+  border-radius: 10px;
+
+  text-align: center;
+}
+
+.history-stats strong {
+  display: block;
+
+  color: var(--gold);
+
+  font-family: "Fraunces", serif;
+  font-size: 16px;
+}
+
+.history-stats span {
+  display: block;
+  margin-top: 2px;
+
+  color: var(--text-muted);
+
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.history-last-played {
+  margin: 0 0 14px;
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+}
+
+.history-empty {
+  margin: 8px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 12px;
+  font-style: italic;
+}
+
+.recent-plays {
+  margin-top: 16px;
+  padding-top: 14px;
+
+  border-top:
+    1px solid
+    rgba(243, 234, 216, 0.1);
+}
+
+.score-field input {
+  text-align: center;
+}
+
 /* =========================================================
    Collection browser
    ========================================================= */
