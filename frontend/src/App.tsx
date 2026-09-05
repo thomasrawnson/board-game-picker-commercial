@@ -34,6 +34,7 @@ import PickerView
 
 import "./App.css"
 
+import OnboardingView from "./components/OnboardingView"
 
 function App() {
   const [view, setView] =
@@ -76,31 +77,68 @@ function App() {
     restoreSession()
   }, [])
 
+  useEffect(() => {
+    function handleAuthExpired() {
+      setUser(null)
+      setView("picker")
+    }
 
-  function handleLogout() {
-    clearToken()
-    setUser(null)
-    setView("picker")
-  }
-
-
-  if (checkingAuth) {
-    return (
-      <main className="app-shell">
-        <section className="phone">
-          <section className="auth-loading">
-            <p className="eyebrow">
-              Board Game Picker
-            </p>
-
-            <h1>
-              Loading...
-            </h1>
-          </section>
-        </section>
-      </main>
+    window.addEventListener(
+      "boardgamepicker-auth-expired",
+      handleAuthExpired,
     )
-  }
+
+    return () => {
+      window.removeEventListener(
+        "boardgamepicker-auth-expired",
+        handleAuthExpired,
+      )
+    }
+  }, [])
+
+  useEffect(() => {
+    function handleAuthExpired() {
+      setUser(null)
+      setView("picker")
+    }
+
+    window.addEventListener(
+      "boardgamepicker-auth-expired",
+      handleAuthExpired,
+    )
+
+    return () => {
+      window.removeEventListener(
+        "boardgamepicker-auth-expired",
+        handleAuthExpired,
+      )
+    }
+  }, [])
+
+    function handleLogout() {
+      clearToken()
+      setUser(null)
+      setView("picker")
+    }
+
+
+    if (checkingAuth) {
+      return (
+        <main className="app-shell">
+          <section className="phone">
+            <section className="auth-loading">
+              <p className="eyebrow">
+                Board Game Picker
+              </p>
+
+              <h1>
+                Loading...
+              </h1>
+            </section>
+          </section>
+        </main>
+      )
+    }
 
 
   if (!user) {
@@ -117,7 +155,31 @@ function App() {
     )
   }
 
+  if (!user.bgg_username) {
+    return (
+      <main className="app-shell">
+        <section className="phone">
+          <OnboardingView
+            displayName={
+              user.display_name
+            }
+            onComplete={(
+              username,
+            ) => {
+              setUser({
+                ...user,
+                bgg_username:
+                  username,
+              })
 
+              setView("picker")
+            }}
+          />
+        </section>
+      </main>
+    )
+  }
+  
   return (
     <main className="app-shell">
       <section className="phone">
@@ -152,7 +214,20 @@ function App() {
         {view ===
           "setup" && (
           <>
-            <SetupView />
+            <SetupView
+              initialUsername={
+                user.bgg_username
+              }
+              onUsernameChange={(
+                username,
+              ) => {
+                setUser({
+                  ...user,
+                  bgg_username:
+                    username,
+                })
+              }}
+            />
 
             <div className="account-panel">
               <div>

@@ -1,0 +1,133 @@
+.onboarding-screen {
+  min-height: 100%;
+  padding: 28px 22px 32px;
+  overflow-y: auto;
+}
+
+.onboarding-header {
+  margin-bottom: 22px;
+}
+
+.onboarding-header h1 {
+  margin: 5px 0 8px;
+}
+
+.onboarding-progress {
+  display: grid;
+  grid-template-columns:
+    30px 1fr 30px 1fr 30px;
+
+  align-items: center;
+
+  margin-bottom: 22px;
+}
+
+.onboarding-progress span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  color: var(--text-secondary);
+
+  border:
+    1px solid var(--line);
+  border-radius: 50%;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.onboarding-progress span.active {
+  color: var(--felt-dark);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.onboarding-progress span.complete {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.onboarding-progress > div {
+  height: 1px;
+  background: var(--line);
+}
+
+.onboarding-card {
+  padding: 20px;
+
+  background:
+    rgba(243, 234, 216, 0.055);
+
+  border:
+    1px solid var(--line);
+  border-radius: 17px;
+}
+
+.onboarding-card h2 {
+  margin: 4px 0 8px;
+
+  color: var(--text-primary);
+}
+
+.onboarding-card > p {
+  color: var(--text-secondary);
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.onboarding-card .setup-label {
+  display: block;
+  margin-top: 20px;
+}
+
+.onboarding-skip {
+  width: 100%;
+
+  margin-top: 10px;
+  padding: 11px;
+
+  color: var(--text-secondary);
+
+  background: transparent;
+
+  border: 0;
+
+  font: inherit;
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.onboarding-skip:hover {
+  color: var(--text-primary);
+}
+
+.onboarding-complete {
+  text-align: center;
+}
+
+.onboarding-ready {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  margin:
+    2px auto
+    18px;
+
+  color: var(--felt-dark);
+  background: var(--gold);
+
+  border-radius: 50%;
+
+  font-size: 23px;
+  font-weight: 700;
+}

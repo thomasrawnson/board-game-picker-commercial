@@ -477,17 +477,25 @@ export async function syncBGGCollection(
 ): Promise<CollectionSyncResult> {
   const response =
     await apiFetch(
-      `/collections/${encodeURIComponent(
-        username,
-      )}/sync`,
+      "/collection/sync",
       {
         method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          username,
+        }),
       },
     )
 
   if (!response.ok) {
     throw new Error(
-      `Collection sync failed: ${response.status}`,
+      await readError(
+        response,
+        "Collection sync failed",
+      ),
     )
   }
 

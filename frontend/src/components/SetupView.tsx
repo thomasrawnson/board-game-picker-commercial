@@ -10,9 +10,22 @@ import {
 } from "../api/client"
 
 
-function SetupView() {
+type Props = {
+  initialUsername?: string | null
+  onUsernameChange?: (
+    username: string,
+  ) => void
+}
+
+
+function SetupView({
+  initialUsername,
+  onUsernameChange,
+}: Props) {
   const [username, setUsername] =
-    useState("")
+    useState(
+      initialUsername ?? "",
+    )
 
   const [syncing, setSyncing] =
     useState(false)
@@ -59,6 +72,10 @@ function SetupView() {
         )
 
       setSyncResult(result)
+      
+      onUsernameChange?.(
+        result.username,
+      )
     } catch (err) {
       console.error(err)
 

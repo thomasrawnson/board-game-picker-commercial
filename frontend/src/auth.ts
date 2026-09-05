@@ -2,6 +2,7 @@ export interface AuthUser {
   id: number
   email: string
   display_name: string | null
+  bgg_username: string | null
 }
 
 export interface AuthResult {
