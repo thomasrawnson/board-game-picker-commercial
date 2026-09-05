@@ -8,6 +8,10 @@ import {
   type PlayParticipant,
 } from "../../api/client"
 
+import {
+  createBGStatsPlayUrl,
+} from "../../utils/bgstats"
+
 type PlayerForm = {
   name: string
   score: string
@@ -65,6 +69,13 @@ function PlayLogForm({
 
   const [saved, setSaved] =
     useState(false)
+
+  const [
+    bgStatsUrl,
+    setBGStatsUrl,
+  ] = useState<string | null>(
+    null,
+  )
 
   function resetForm() {
     setPlayDate(todayValue())
@@ -202,12 +213,23 @@ function PlayLogForm({
           `${playDate}T12:00:00`,
         ).toISOString()
 
-      await recordPlay(
-        game.bgg_id,
-        playedAt,
-        durationMinutes,
-        participants,
-      )
+      const savedPlay =
+        await recordPlay(
+          game.bgg_id,
+          playedAt,
+          durationMinutes,
+          participants,
+        )
+
+      const url =
+        createBGStatsPlayUrl(
+          game,
+          savedPlay,
+          participants,
+          durationMinutes,
+        )
+
+      setBGStatsUrl(url)
 
       resetForm()
       setOpen(false)
@@ -233,6 +255,7 @@ function PlayLogForm({
           setOpen(!open)
           setError("")
           setSaved(false)
+          setBGStatsUrl(null)
         }}
       >
         {open
@@ -433,9 +456,20 @@ function PlayLogForm({
       )}
 
       {saved && (
-        <p className="play-confirmation">
-          Play saved.
-        </p>
+        <div className="play-confirmation-panel">
+          <p className="play-confirmation">
+            Play saved.
+          </p>
+
+          {bgStatsUrl && (
+            <a
+              className="bgstats-button"
+              href={bgStatsUrl}
+            >
+              Send to BG Stats
+            </a>
+          )}
+        </div>
       )}
     </>
   )

@@ -149,6 +149,7 @@ function GameDetail({
         )}
 
         <GameHistory
+          game={game}
           history={history}
           loading={
             historyLoading

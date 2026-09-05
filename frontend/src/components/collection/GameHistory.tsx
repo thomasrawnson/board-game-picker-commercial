@@ -1,13 +1,22 @@
 import type {
+  Game,
   GameHistory as GameHistoryData,
 } from "../../api/client"
 
+import {
+  createBGStatsHistoryUrl,
+} from "../../utils/bgstats"
+
+
 type Props = {
+  game: Game
   history: GameHistoryData | null
   loading: boolean
 }
 
+
 function GameHistory({
+  game,
   history,
   loading,
 }: Props) {
@@ -28,6 +37,7 @@ function GameHistory({
               <strong>
                 {history.play_count}
               </strong>
+
               <span>Plays</span>
             </div>
 
@@ -36,6 +46,7 @@ function GameHistory({
                 {history.average_players
                   ?.toFixed(1) ?? "—"}
               </strong>
+
               <span>
                 Avg players
               </span>
@@ -43,9 +54,11 @@ function GameHistory({
 
             <div>
               <strong>
-                {history.average_duration_minutes ??
+                {history
+                  .average_duration_minutes ??
                   "—"}
               </strong>
+
               <span>
                 Avg mins
               </span>
@@ -68,8 +81,7 @@ function GameHistory({
             </p>
           )}
 
-          {history.recent_plays.length >
-          0 ? (
+          {history.recent_plays.length > 0 ? (
             <div className="recent-plays">
               <p className="preference-label">
                 Recent plays
@@ -98,8 +110,7 @@ function GameHistory({
 
                         <span>
                           {play.player_count}{" "}
-                          {play.player_count ===
-                          1
+                          {play.player_count === 1
                             ? "player"
                             : "players"}
                         </span>
@@ -112,13 +123,11 @@ function GameHistory({
                       </span>
                     </div>
 
-                    {play.participants
-                      .length > 0 && (
+                    {play.participants.length >
+                      0 && (
                       <div className="play-participants">
                         {play.participants.map(
-                          (
-                            participant,
-                          ) => (
+                          (participant) => (
                             <div
                               className={
                                 participant
@@ -149,14 +158,26 @@ function GameHistory({
                         )}
                       </div>
                     )}
+
+                    <a
+                      className="bgstats-history-link"
+                      href={
+                        createBGStatsHistoryUrl(
+                          game,
+                          play,
+                        )
+                      }
+                    >
+                      Send to BG Stats
+                    </a>
                   </div>
                 ),
               )}
             </div>
           ) : (
             <p className="history-empty">
-              You haven't logged a
-              play of this game yet.
+              You haven't logged a play of
+              this game yet.
             </p>
           )}
         </>
@@ -168,5 +189,6 @@ function GameHistory({
     </div>
   )
 }
+
 
 export default GameHistory
