@@ -96,25 +96,6 @@ function App() {
     }
   }, [])
 
-  useEffect(() => {
-    function handleAuthExpired() {
-      setUser(null)
-      setView("picker")
-    }
-
-    window.addEventListener(
-      "boardgamepicker-auth-expired",
-      handleAuthExpired,
-    )
-
-    return () => {
-      window.removeEventListener(
-        "boardgamepicker-auth-expired",
-        handleAuthExpired,
-      )
-    }
-  }, [])
-
     function handleLogout() {
       clearToken()
       setUser(null)

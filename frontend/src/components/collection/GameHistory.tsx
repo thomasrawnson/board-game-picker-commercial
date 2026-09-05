@@ -159,17 +159,22 @@ function GameHistory({
                       </div>
                     )}
 
-                    <a
-                      className="bgstats-history-link"
-                      href={
-                        createBGStatsHistoryUrl(
-                          game,
-                          play,
-                        )
-                      }
-                    >
-                      Send to BG Stats
-                    </a>
+                    {play.source !==
+                      "bgstats" && (
+                      <a
+                        className="bgstats-history-link"
+                        href={
+                          createBGStatsHistoryUrl(
+                            game,
+                            play,
+                          )
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Send to BG Stats
+                      </a>
+                    )}
                   </div>
                 ),
               )}

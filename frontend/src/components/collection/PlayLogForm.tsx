@@ -465,6 +465,8 @@ function PlayLogForm({
             <a
               className="bgstats-button"
               href={bgStatsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Send to BG Stats
             </a>

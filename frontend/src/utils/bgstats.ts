@@ -31,13 +31,45 @@ type BGStatsPlayData = {
 }
 
 
+function pad(
+  value: number,
+): string {
+  return String(value).padStart(
+    2,
+    "0",
+  )
+}
+
+
 function formatBGStatsDate(
   value: string,
 ): string {
-  return new Date(value)
-    .toISOString()
-    .slice(0, 19)
-    .replace("T", " ")
+  // BG Stats expects a plain
+  // "YYYY-MM-DD HH:MM:SS" string
+  // with no timezone marker, read
+  // as local wall-clock time. Using
+  // toISOString() here would return
+  // the UTC instant instead, which
+  // silently shifts both the time
+  // of day and, for people east of
+  // UTC+12, the calendar date too.
+  const date = new Date(value)
+
+  const year = date.getFullYear()
+  const month =
+    date.getMonth() + 1
+  const day = date.getDate()
+
+  const hours = date.getHours()
+  const minutes =
+    date.getMinutes()
+  const seconds =
+    date.getSeconds()
+
+  return (
+    `${year}-${pad(month)}-${pad(day)} `
+    + `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
+  )
 }
 
 
