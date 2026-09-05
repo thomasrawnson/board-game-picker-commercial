@@ -11,7 +11,10 @@ from api.main import (
 )
 from models.game import Game
 from models.play import Play
-
+from api.current_user import (
+    get_current_user,
+)
+from database.models import User
 
 client = TestClient(app)
 
@@ -98,30 +101,6 @@ def test_get_games():
         assert len(data) == 2
         assert data[0]["name"] == "Gloomhaven"
         assert data[1]["name"] == "Terraforming Mars"
-
-    finally:
-        app.dependency_overrides.clear()
-
-def test_sync_collection():
-    class FakeCollectionService:
-        def sync_collection(self, username):
-            return [
-                Game(bgg_id=174430, name="Gloomhaven"),
-                Game(bgg_id=167791, name="Terraforming Mars"),
-            ]
-
-    app.dependency_overrides[get_collection_service] = (
-        lambda: FakeCollectionService()
-    )
-
-    try:
-        response = client.post("/collections/tom/sync")
-
-        assert response.status_code == 200
-        assert response.json() == {
-            "username": "tom",
-            "games_synced": 2,
-        }
 
     finally:
         app.dependency_overrides.clear()
@@ -335,3 +314,4 @@ def test_picker_uses_preferred_mechanic():
         "Matches preferred mechanic: Deck Building"
         in data[0]["reasons"]
     )
+

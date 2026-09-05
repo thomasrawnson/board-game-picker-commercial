@@ -29,7 +29,9 @@ from database.models import (
     User,
     UserGame,
 )
-
+from api.dependencies import (
+    get_collection_service,
+)
 
 engine = create_engine(
     "sqlite://",
@@ -117,6 +119,10 @@ def test_register_returns_token_and_user(
         == "Tom"
     )
 
+    assert (
+        data["user"]["bgg_username"]
+        is None
+    )
 
 def test_duplicate_registration_returns_409(
     client: TestClient,
@@ -384,3 +390,86 @@ def test_users_only_see_their_own_collection(
 
     assert first_ids == {1001}
     assert second_ids == {1002}
+
+def test_authenticated_user_can_sync_collection(
+    client: TestClient,
+):
+    register_response = (
+        register_user(client)
+    )
+
+    token = register_response.json()[
+        "access_token"
+    ]
+
+    class FakeCollectionService:
+        def sync_collection(
+            self,
+            username: str,
+        ):
+            return [
+                Game(
+                    bgg_id=174430,
+                    name="Gloomhaven",
+                ),
+                Game(
+                    bgg_id=167791,
+                    name="Terraforming Mars",
+                ),
+            ]
+
+    app.dependency_overrides[
+        get_collection_service
+    ] = (
+        lambda:
+            FakeCollectionService()
+    )
+
+    try:
+        response = client.post(
+            "/collection/sync",
+            headers={
+                "Authorization":
+                    f"Bearer {token}",
+            },
+            json={
+                "username": "tom",
+            },
+        )
+
+        assert (
+            response.status_code
+            == 200
+        )
+
+        assert response.json() == {
+            "username": "tom",
+            "games_synced": 2,
+        }
+
+        me_response = client.get(
+            "/auth/me",
+            headers={
+                "Authorization":
+                    f"Bearer {token}",
+            },
+        )
+
+        assert (
+            me_response.status_code
+            == 200
+        )
+
+        assert (
+            me_response.json()[
+                "bgg_username"
+            ]
+            == "tom"
+        )
+
+    finally:
+        app.dependency_overrides[
+            get_collection_service
+        ] = (
+            get_collection_service
+        )

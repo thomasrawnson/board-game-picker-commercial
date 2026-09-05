@@ -84,6 +84,11 @@ class User(Base):
         String(100),
     )
 
+    bgg_username: Mapped[str | None] = mapped_column(
+    String(100),
+    nullable=True,
+)
+
     password_hash: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,

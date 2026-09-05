@@ -36,9 +36,8 @@ def user_response(
     return UserResponse(
         id=user.id,
         email=user.email,
-        display_name=(
-            user.display_name
-        ),
+        display_name=user.display_name,
+        bgg_username=user.bgg_username,
     )
 
 

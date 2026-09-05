@@ -16,23 +16,47 @@ from services.collection_service import (
     CollectionService,
 )
 from services.game_service import GameService
+from sqlalchemy.orm import Session
 
+from api.current_user import (
+    get_current_user,
+)
+from api.schemas.collection import (
+    CollectionSyncRequest,
+)
+from database.connection import get_db
+from database.models import User
 
 router = APIRouter()
 
 
 @router.post(
-    "/collections/{username}/sync"
+    "/collection/sync"
 )
 def sync_collection(
-    username: str,
+    request: CollectionSyncRequest,
     service: CollectionService = Depends(
         get_collection_service
     ),
+    current_user: User = Depends(
+        get_current_user
+    ),
+    db: Session = Depends(get_db),
 ):
+    username = (
+        request.username
+        .strip()
+    )
+
     games = service.sync_collection(
         username
     )
+
+    current_user.bgg_username = (
+        username
+    )
+
+    db.commit()
 
     return {
         "username": username,
