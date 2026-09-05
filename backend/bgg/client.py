@@ -79,6 +79,31 @@ class BGGClient:
             params,
             "BGG game request",
         )
+    
+    def get_games(
+        self,
+        bgg_ids: list[int],
+    ) -> str:
+        if not bgg_ids:
+            return "<items />"
+
+        url = (
+            f"{self.BASE_URL}/thing"
+        )
+
+        params = {
+            "id": ",".join(
+                str(bgg_id)
+                for bgg_id in bgg_ids
+            ),
+            "stats": 1,
+        }
+
+        return self._get(
+            url,
+            params,
+            "BGG games request",
+        )
 
     def _get(
         self,

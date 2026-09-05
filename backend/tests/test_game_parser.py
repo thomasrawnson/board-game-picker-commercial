@@ -53,3 +53,61 @@ def test_multiple_mechanics_are_parsed():
     assert "Campaign / Battle Card Driven" in game.mechanics
     assert "Hand Management" in game.mechanics
     assert "Network and Route Building" in game.mechanics
+
+from bgg.game_parser import (
+    parse_games_metadata,
+)
+
+
+def test_parse_multiple_games():
+    xml = """
+    <items>
+        <item
+            type="boardgame"
+            id="174430"
+        >
+            <name
+                type="primary"
+                value="Gloomhaven"
+            />
+        </item>
+
+        <item
+            type="boardgame"
+            id="167791"
+        >
+            <name
+                type="primary"
+                value="Terraforming Mars"
+            />
+        </item>
+    </items>
+    """
+
+    games = (
+        parse_games_metadata(
+            xml
+        )
+    )
+
+    assert len(games) == 2
+
+    assert (
+        games[0].bgg_id
+        == 174430
+    )
+
+    assert (
+        games[0].name
+        == "Gloomhaven"
+    )
+
+    assert (
+        games[1].bgg_id
+        == 167791
+    )
+
+    assert (
+        games[1].name
+        == "Terraforming Mars"
+    )

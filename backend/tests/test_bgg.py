@@ -386,3 +386,76 @@ def test_queued_request_fails_after_max_retries(
         ),
     ):
         client.get_game(174430)
+
+def test_get_games_batches_ids_in_request(
+    monkeypatch,
+):
+    requested = {}
+
+    def mock_get(
+        url,
+        params,
+        headers,
+        timeout,
+    ):
+        requested["url"] = url
+        requested["params"] = params
+
+        request = httpx.Request(
+            "GET",
+            url,
+        )
+
+        return httpx.Response(
+            200,
+            request=request,
+            text="<items />",
+        )
+
+    monkeypatch.setattr(
+        httpx,
+        "get",
+        mock_get,
+    )
+
+    client = BGGClient()
+
+    client.get_games(
+        [
+            174430,
+            167791,
+            13,
+        ]
+    )
+
+    assert requested["url"] == (
+        "https://boardgamegeek.com/"
+        "xmlapi2/thing"
+    )
+
+    assert requested["params"] == {
+        "id": "174430,167791,13",
+        "stats": 1,
+    }
+
+def test_get_games_handles_empty_list(
+    monkeypatch,
+):
+    called = False
+
+    def mock_get(*args, **kwargs):
+        nonlocal called
+        called = True
+
+    monkeypatch.setattr(
+        httpx,
+        "get",
+        mock_get,
+    )
+
+    client = BGGClient()
+
+    result = client.get_games([])
+
+    assert result == "<items />"
+    assert called is False

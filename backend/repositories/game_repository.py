@@ -380,3 +380,27 @@ class GameRepository:
                 in database_game.mechanics
             ],
         )
+
+    def get_existing_bgg_ids(
+        self,
+        bgg_ids: list[int],
+    ) -> set[int]:
+        if not bgg_ids:
+            return set()
+
+        rows = (
+            self.db.query(
+                DatabaseGame.bgg_id
+            )
+            .filter(
+                DatabaseGame.bgg_id.in_(
+                    bgg_ids
+                )
+            )
+            .all()
+        )
+
+        return {
+            row[0]
+            for row in rows
+        }
