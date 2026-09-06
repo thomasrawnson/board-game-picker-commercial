@@ -11,6 +11,17 @@ class PlayService:
     ):
         self.repository = repository
 
+    @staticmethod
+    def _normalize_player_name(
+        name: str,
+    ) -> str:
+        return " ".join(
+            name
+            .strip()
+            .lower()
+            .split()
+        )
+
     def record_play(
         self,
         bgg_id: int,
@@ -18,9 +29,35 @@ class PlayService:
         duration_minutes: int | None,
         participants: list[dict],
     ) -> Play | None:
+        normalized_names = [
+            self._normalize_player_name(
+                participant["name"]
+            )
+            for participant
+            in participants
+        ]
+
+        if (
+            len(
+                set(
+                    normalized_names
+                )
+            )
+            !=
+            len(
+                normalized_names
+            )
+        ):
+            raise ValueError(
+                "The same player cannot "
+                "be added twice."
+            )
+
         return self.repository.create(
             bgg_id=bgg_id,
             played_at=played_at,
-            duration_minutes=duration_minutes,
+            duration_minutes=(
+                duration_minutes
+            ),
             participants=participants,
         )

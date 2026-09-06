@@ -8,6 +8,7 @@ from database.models import (
 )
 from database.models import (
     PlayParticipant,
+    Player,
     UserGame,
 )
 from models.play import (
@@ -62,9 +63,16 @@ class PlayWriteRepository:
         self.db.flush()
 
         for participant in participants:
+            player = (
+                self._get_or_create_player(
+                    participant["name"]
+                )
+            )
+
             database_play.participants.append(
                 PlayParticipant(
-                    name=participant["name"],
+                    player_id=player.id,
+                    name=player.name,
                     score=participant.get(
                         "score"
                     ),
@@ -74,7 +82,7 @@ class PlayWriteRepository:
                     ),
                 )
             )
-
+            
         self.db.commit()
         self.db.refresh(database_play)
 
@@ -88,6 +96,61 @@ class PlayWriteRepository:
                 database_play.played_at
             ),
         )
+    @staticmethod
+    def _normalize_player_name(
+        name: str,
+    ) -> str:
+        return " ".join(
+            name.strip().lower().split()
+        )
+
+
+    def _get_or_create_player(
+        self,
+        name: str,
+    ) -> Player:
+        if self.user_id is None:
+            raise ValueError(
+                "user_id is required "
+                "to resolve a player"
+            )
+
+        cleaned_name = " ".join(
+            name.strip().split()
+        )
+
+        normalized_name = (
+            self._normalize_player_name(
+                cleaned_name
+            )
+        )
+
+        player = (
+            self.db.query(Player)
+            .filter(
+                Player.user_id
+                == self.user_id,
+                Player.normalized_name
+                == normalized_name,
+            )
+            .first()
+        )
+
+        if player is not None:
+            return player
+
+        player = Player(
+            user_id=self.user_id,
+            name=cleaned_name,
+            normalized_name=(
+                normalized_name
+            ),
+        )
+
+        self.db.add(player)
+        self.db.flush()
+
+        return player
 
     def exists_by_source_play_id(
         self,
@@ -142,7 +205,8 @@ class PlayWriteRepository:
         for participant in participants:
             database_play.participants.append(
                 PlayParticipant(
-                    name=participant["name"],
+                     player_id=player.id,
+                    name=player.name,
                     score=participant.get(
                         "score"
                     ),
@@ -224,7 +288,8 @@ class PlayWriteRepository:
         for participant in participants:
             database_play.participants.append(
                 PlayParticipant(
-                    name=participant["name"],
+                    player_id=player.id,
+                    name=player.name,
                     score=participant.get(
                         "score"
                     ),

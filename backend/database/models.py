@@ -85,9 +85,9 @@ class User(Base):
     )
 
     bgg_username: Mapped[str | None] = mapped_column(
-    String(100),
-    nullable=True,
-)
+        String(100),
+        nullable=True,
+    )
 
     password_hash: Mapped[str | None] = mapped_column(
         String(255),
@@ -102,6 +102,12 @@ class User(Base):
 
     user_games = relationship(
         "UserGame",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    players = relationship(
+        "Player",
         back_populates="user",
         cascade="all, delete-orphan",
     )
@@ -224,7 +230,56 @@ class Game(Base):
         cascade="all, delete-orphan",
     )
 
+class Player(Base):
+    __tablename__ = "players"
 
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "normalized_name",
+            name="uq_players_user_normalized_name",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
+    )
+
+    name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False,
+    )
+
+    normalized_name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+
+    user = relationship(
+        "User",
+        back_populates="players",
+    )
+
+    participants = relationship(
+        "PlayParticipant",
+        back_populates="player",
+    )
 class Play(Base):
     __tablename__ = "plays"
 
@@ -328,6 +383,20 @@ class PlayParticipant(Base):
 
     play = relationship(
         "Play",
+        back_populates="participants",
+    )
+
+    player_id: Mapped[int | None] = mapped_column(
+        ForeignKey(
+            "players.id",
+            ondelete="SET NULL",
+        ),
+        nullable=True,
+        index=True,
+    )
+
+    player = relationship(
+        "Player",
         back_populates="participants",
     )
 

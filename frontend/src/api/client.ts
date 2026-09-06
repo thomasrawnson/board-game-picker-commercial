@@ -147,6 +147,11 @@ export interface CollectionGameStats {
   last_played_at: string | null
 }
 
+export interface Player {
+  id: number
+  name: string
+}
+
 
 const API_BASE_URL =
   import.meta.env
@@ -566,4 +571,20 @@ export async function removeFromCollection(
       `Collection removal failed: ${response.status}`,
     )
   }
+}
+
+export async function getPlayers():
+Promise<Player[]> {
+  const response =
+    await apiFetch(
+      "/players",
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      `Players request failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
 }

@@ -1,10 +1,13 @@
 import {
+  useEffect,
   useState,
 } from "react"
 
 import {
+  getPlayers,
   recordPlay,
   type Game,
+  type Player,
   type PlayParticipant,
 } from "../../api/client"
 
@@ -12,16 +15,19 @@ import {
   createBGStatsPlayUrl,
 } from "../../utils/bgstats"
 
+
 type PlayerForm = {
   name: string
   score: string
   isWinner: boolean
 }
 
+
 type Props = {
   game: Game
   onSaved: () => Promise<void>
 }
+
 
 function todayValue() {
   const now = new Date()
@@ -30,14 +36,21 @@ function todayValue() {
 
   const month = String(
     now.getMonth() + 1,
-  ).padStart(2, "0")
+  ).padStart(
+    2,
+    "0",
+  )
 
   const day = String(
     now.getDate(),
-  ).padStart(2, "0")
+  ).padStart(
+    2,
+    "0",
+  )
 
   return `${year}-${month}-${day}`
 }
+
 
 function PlayLogForm({
   game,
@@ -46,29 +59,48 @@ function PlayLogForm({
   const [open, setOpen] =
     useState(false)
 
-  const [playDate, setPlayDate] =
-    useState(todayValue())
+  const [
+    playDate,
+    setPlayDate,
+  ] = useState(
+    todayValue(),
+  )
 
-  const [duration, setDuration] =
-    useState("")
+  const [
+    duration,
+    setDuration,
+  ] = useState("")
 
-  const [players, setPlayers] =
-    useState<PlayerForm[]>([
-      {
-        name: "",
-        score: "",
-        isWinner: false,
-      },
-    ])
+  const [
+    players,
+    setPlayers,
+  ] = useState<PlayerForm[]>([
+    {
+      name: "",
+      score: "",
+      isWinner: false,
+    },
+  ])
 
-  const [saving, setSaving] =
-    useState(false)
+  const [
+    knownPlayers,
+    setKnownPlayers,
+  ] = useState<Player[]>([])
 
-  const [error, setError] =
-    useState("")
+  const [
+    saving,
+    setSaving,
+  ] = useState(false)
 
-  const [saved, setSaved] =
-    useState(false)
+  const [
+    error,
+    setError,
+  ] = useState("")
+
+  const [
+    saved,
+    setSaved,
+  ] = useState(false)
 
   const [
     bgStatsUrl,
@@ -77,8 +109,30 @@ function PlayLogForm({
     null,
   )
 
+
+  useEffect(() => {
+    async function loadPlayers() {
+      try {
+        const result =
+          await getPlayers()
+
+        setKnownPlayers(
+          result,
+        )
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    loadPlayers()
+  }, [])
+
+
   function resetForm() {
-    setPlayDate(todayValue())
+    setPlayDate(
+      todayValue(),
+    )
+
     setDuration("")
 
     setPlayers([
@@ -92,13 +146,17 @@ function PlayLogForm({
     setError("")
   }
 
+
   function updatePlayer(
     index: number,
     changes: Partial<PlayerForm>,
   ) {
     setPlayers(
       players.map(
-        (player, playerIndex) =>
+        (
+          player,
+          playerIndex,
+        ) =>
           playerIndex === index
             ? {
                 ...player,
@@ -108,6 +166,7 @@ function PlayLogForm({
       ),
     )
   }
+
 
   function addPlayer() {
     setPlayers([
@@ -120,20 +179,41 @@ function PlayLogForm({
     ])
   }
 
+
   function removePlayer(
     index: number,
   ) {
-    if (players.length === 1) {
+    if (
+      players.length === 1
+    ) {
       return
     }
 
     setPlayers(
       players.filter(
-        (_, playerIndex) =>
+        (
+          _,
+          playerIndex,
+        ) =>
           playerIndex !== index,
       ),
     )
   }
+
+
+  async function refreshPlayers() {
+    try {
+      const result =
+        await getPlayers()
+
+      setKnownPlayers(
+        result,
+      )
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
 
   async function savePlay() {
     const participants =
@@ -145,7 +225,8 @@ function PlayLogForm({
             player.name.trim(),
 
           score:
-            player.score.trim() === ""
+            player.score.trim() ===
+            ""
               ? null
               : Number(
                   player.score,
@@ -159,19 +240,43 @@ function PlayLogForm({
     if (
       participants.some(
         (player) =>
-          player.name.length === 0,
+          player.name.length ===
+          0,
       )
     ) {
       setError(
         "Please enter a name for every player.",
       )
+
       return
     }
+    const normalizedNames =
+      participants.map(
+        (participant) =>
+          participant.name
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, " "),
+      )
 
+    const hasDuplicatePlayers =
+      new Set(
+        normalizedNames,
+      ).size !==
+      normalizedNames.length
+
+    if (hasDuplicatePlayers) {
+      setError(
+        "The same player can't be added twice.",
+      )
+
+      return
+    }
     if (
       participants.some(
         (player) =>
-          player.score !== null &&
+          player.score !==
+            null &&
           Number.isNaN(
             player.score,
           ),
@@ -180,16 +285,20 @@ function PlayLogForm({
       setError(
         "Scores must be numbers.",
       )
+
       return
     }
 
     const durationMinutes =
       duration.trim() === ""
         ? null
-        : Number(duration)
+        : Number(
+            duration,
+          )
 
     if (
-      durationMinutes !== null &&
+      durationMinutes !==
+        null &&
       (
         Number.isNaN(
           durationMinutes,
@@ -200,6 +309,7 @@ function PlayLogForm({
       setError(
         "Duration must be a valid number.",
       )
+
       return
     }
 
@@ -229,13 +339,19 @@ function PlayLogForm({
           durationMinutes,
         )
 
-      setBGStatsUrl(url)
+      setBGStatsUrl(
+        url,
+      )
 
       resetForm()
+
       setOpen(false)
       setSaved(true)
 
-      await onSaved()
+      await Promise.all([
+        onSaved(),
+        refreshPlayers(),
+      ])
     } catch (err) {
       console.error(err)
 
@@ -247,12 +363,28 @@ function PlayLogForm({
     }
   }
 
+
   return (
     <>
+      <datalist id="known-players">
+        {knownPlayers.map(
+          (player) => (
+            <option
+              key={player.id}
+              value={player.name}
+            />
+          ),
+        )}
+      </datalist>
+
       <button
+        type="button"
         className="primary-button log-play-button"
         onClick={() => {
-          setOpen(!open)
+          setOpen(
+            !open,
+          )
+
           setError("")
           setSaved(false)
           setBGStatsUrl(null)
@@ -279,14 +411,22 @@ function PlayLogForm({
 
           <div className="play-form-grid">
             <label>
-              <span>Date</span>
+              <span>
+                Date
+              </span>
 
               <input
                 type="date"
-                value={playDate}
-                onChange={(event) =>
+                value={
+                  playDate
+                }
+                onChange={(
+                  event,
+                ) =>
                   setPlayDate(
-                    event.target.value,
+                    event
+                      .target
+                      .value,
                   )
                 }
               />
@@ -303,15 +443,23 @@ function PlayLogForm({
                   min="0"
                   inputMode="numeric"
                   placeholder="60"
-                  value={duration}
-                  onChange={(event) =>
+                  value={
+                    duration
+                  }
+                  onChange={(
+                    event,
+                  ) =>
                     setDuration(
-                      event.target.value,
+                      event
+                        .target
+                        .value,
                     )
                   }
                 />
 
-                <small>min</small>
+                <small>
+                  min
+                </small>
               </div>
             </label>
           </div>
@@ -328,14 +476,18 @@ function PlayLogForm({
 
           <div className="player-forms">
             {players.map(
-              (player, index) => (
+              (
+                player,
+                index,
+              ) => (
                 <div
                   className="player-form-card"
                   key={index}
                 >
                   <div className="player-form-number">
                     <strong>
-                      Player {index + 1}
+                      Player{" "}
+                      {index + 1}
                     </strong>
 
                     {players.length >
@@ -355,20 +507,27 @@ function PlayLogForm({
 
                   <div className="player-input-row">
                     <label>
-                      <span>Name</span>
+                      <span>
+                        Name
+                      </span>
 
                       <input
                         type="text"
+                        list="known-players"
+                        autoComplete="off"
                         value={
                           player.name
                         }
                         placeholder="Player name"
-                        onChange={(event) =>
+                        onChange={(
+                          event,
+                        ) =>
                           updatePlayer(
                             index,
                             {
                               name:
-                                event.target
+                                event
+                                  .target
                                   .value,
                             },
                           )
@@ -388,12 +547,15 @@ function PlayLogForm({
                           player.score
                         }
                         placeholder="—"
-                        onChange={(event) =>
+                        onChange={(
+                          event,
+                        ) =>
                           updatePlayer(
                             index,
                             {
                               score:
-                                event.target
+                                event
+                                  .target
                                   .value,
                             },
                           )
@@ -408,12 +570,15 @@ function PlayLogForm({
                       checked={
                         player.isWinner
                       }
-                      onChange={(event) =>
+                      onChange={(
+                        event,
+                      ) =>
                         updatePlayer(
                           index,
                           {
                             isWinner:
-                              event.target
+                              event
+                                .target
                                 .checked,
                           },
                         )
@@ -432,7 +597,9 @@ function PlayLogForm({
           <button
             type="button"
             className="add-player-button"
-            onClick={addPlayer}
+            onClick={
+              addPlayer
+            }
           >
             + Add player
           </button>
@@ -444,9 +611,14 @@ function PlayLogForm({
           )}
 
           <button
+            type="button"
             className="primary-button save-play-button"
-            disabled={saving}
-            onClick={savePlay}
+            disabled={
+              saving
+            }
+            onClick={
+              savePlay
+            }
           >
             {saving
               ? "Saving..."
@@ -464,7 +636,9 @@ function PlayLogForm({
           {bgStatsUrl && (
             <a
               className="bgstats-button"
-              href={bgStatsUrl}
+              href={
+                bgStatsUrl
+              }
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -476,5 +650,6 @@ function PlayLogForm({
     </>
   )
 }
+
 
 export default PlayLogForm

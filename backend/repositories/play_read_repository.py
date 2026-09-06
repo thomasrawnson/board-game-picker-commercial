@@ -6,7 +6,10 @@ from database.models import (
 from database.models import (
     Play as DatabasePlay,
 )
-from database.models import UserGame
+from database.models import (
+    Player,
+    UserGame,
+)
 from models.game_play_stats import GamePlayStats
 
 
@@ -301,4 +304,30 @@ class PlayReadRepository:
                 ),
             }
             for row in rows
+        ]
+
+    def get_players(
+        self,
+    ) -> list[dict]:
+        if self.user_id is None:
+            return []
+
+        rows = (
+            self.db.query(Player)
+            .filter(
+                Player.user_id
+                == self.user_id
+            )
+            .order_by(
+                Player.name
+            )
+            .all()
+        )
+
+        return [
+            {
+                "id": player.id,
+                "name": player.name,
+            }
+            for player in rows
         ]
