@@ -99,6 +99,15 @@ class CollectionService:
             missing_ids
         )
 
+        if (
+            self.user_id
+            is not None
+        ):
+            self.repository.sync_user_collection(
+                self.user_id,
+                bgg_ids,
+            )
+
         games = []
 
         for bgg_id in bgg_ids:
@@ -109,22 +118,8 @@ class CollectionService:
                 )
             )
 
-            if game is None:
-                continue
-
-            if (
-                self.user_id
-                is not None
-            ):
-                (
-                    self.repository
-                    .add_to_user_collection(
-                        self.user_id,
-                        game.bgg_id,
-                    )
-                )
-
-            games.append(game)
+            if game is not None:
+                games.append(game)
 
         return games
 

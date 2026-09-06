@@ -404,3 +404,70 @@ class GameRepository:
             row[0]
             for row in rows
         }
+
+    def sync_user_collection(
+        self,
+        user_id: int,
+        bgg_ids: list[int],
+    ) -> None:
+        database_games = (
+            self.db.query(DatabaseGame)
+            .filter(
+                DatabaseGame.bgg_id.in_(
+                    bgg_ids
+                )
+            )
+            .all()
+            if bgg_ids
+            else []
+        )
+
+        target_game_ids = {
+            game.id
+            for game in database_games
+        }
+
+        existing_memberships = (
+            self.db.query(UserGame)
+            .filter(
+                UserGame.user_id
+                == user_id
+            )
+            .all()
+        )
+
+        existing_game_ids = {
+            membership.game_id
+            for membership
+            in existing_memberships
+        }
+
+        game_ids_to_add = (
+            target_game_ids
+            - existing_game_ids
+        )
+
+        memberships_to_remove = [
+            membership
+            for membership
+            in existing_memberships
+            if membership.game_id
+            not in target_game_ids
+        ]
+
+        for game_id in game_ids_to_add:
+            self.db.add(
+                UserGame(
+                    user_id=user_id,
+                    game_id=game_id,
+                )
+            )
+
+        for membership in (
+            memberships_to_remove
+        ):
+            self.db.delete(
+                membership
+            )
+
+        self.db.commit()

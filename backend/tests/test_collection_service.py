@@ -71,6 +71,16 @@ def test_sync_game_updates_existing_game():
         def update(self, game):
             return game
 
+        def sync_user_collection(
+            self,
+            user_id,
+            bgg_ids,
+        ):
+            self.synced_user_id = user_id
+            self.synced_bgg_ids = list(
+                bgg_ids
+            )
+
     service = CollectionService(
         FakeBGGClient(),
         FakeRepository(),
@@ -162,6 +172,16 @@ def test_sync_collection():
             ] = game
 
             return game
+        
+        def sync_user_collection(
+            self,
+            user_id,
+            bgg_ids,
+        ):
+            self.synced_user_id = user_id
+            self.synced_bgg_ids = list(
+                bgg_ids
+            )
 
     service = CollectionService(
         FakeBGGClient(),
@@ -268,7 +288,17 @@ def test_sync_collection_batches_uncached_games():
             ] = game
 
             return game
-
+        
+        def sync_user_collection(
+            self,
+            user_id,
+            bgg_ids,
+        ):
+            self.synced_user_id = user_id
+            self.synced_bgg_ids = list(
+                bgg_ids
+            )
+            
     bgg_client = (
         FakeBGGClient()
     )
