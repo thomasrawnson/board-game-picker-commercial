@@ -395,7 +395,11 @@ function PlayLogForm({
 
       <button
         type="button"
-        className="primary-button log-play-button"
+        className={
+          saved && !open
+            ? "secondary-button log-play-button"
+            : "primary-button log-play-button"
+        }
         onClick={() => {
           setOpen(
             !open,
@@ -408,7 +412,9 @@ function PlayLogForm({
       >
         {open
           ? "Cancel"
-          : "Log a play"}
+          : saved
+            ? "Log another play"
+            : "Log a play"}
       </button>
 
       {open && (

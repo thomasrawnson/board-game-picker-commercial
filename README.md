@@ -21,17 +21,25 @@ Currently implemented:
 - SQLAlchemy persistence layer
 - Alembic database migrations
 - layered API, service and repository architecture
+- user accounts with registration, login and JWT-based authentication
+- Argon2 password hashing (pwdlib) and PyJWT-signed access tokens
+- per-user data isolation across collection, plays and insights
 - BoardGameGeek XML API client and parsers
 - retry handling for queued BoardGameGeek API responses
 - BG Stats JSON collection ingestion
 - BG Stats historical play ingestion
 - idempotent play import using source identifiers
+- one-tap "send to BG Stats" integration for plays logged in the app
 - game metadata including player counts, play time, complexity, ratings and artwork
+- category and mechanic persistence via relational join tables
 - deterministic and explainable recommendation engine
 - player-count and play-time filtering
 - recommendation scoring informed by historical play recency
 - game reveal interface using real BoardGameGeek artwork
-- play-history recording from the frontend
+- play-history recording from the frontend, including participants, scores and winners
+- reusable player identities with normalised-name matching, so the same person is recognised across plays regardless of case or whitespace
+- player-name autocomplete when logging a play
+- collection resynchronisation that reconciles additions and removals against the current BoardGameGeek collection
 - collection-insights API and React dashboard
 - PostgreSQL aggregate queries for most played, last played and never played games
 - automated tests across parsers, repositories, services and API endpoints
@@ -54,20 +62,21 @@ The picker remains the main entry point, but the application is intended to grow
 
 - browse and manage the owned collection
 - import games from BG Stats
-- import and synchronise games from BoardGameGeek
+- import and synchronise games from BoardGameGeek, including removing games that are no longer owned on a resync
 - add games manually
-- retain richer metadata including designers, publishers, categories and mechanics
+- category and mechanic metadata is persisted; designers and publishers are not yet retained
 
 ### Play
 
-- record game sessions rather than only aggregate player counts
-- create reusable player names or aliases
-- record which players participated in each session
-- record winners and player scores
-- retain session date, duration and other useful play metadata
+- record game sessions with participants, scores and winners rather than only aggregate player counts
+- reusable player identities: a normalised-name match means "Alex" and "alex" resolve to the same player rather than fragmenting stats
+- player-name autocomplete when logging a session, sourced from previously used players
+- send a logged play directly to BG Stats via a one-tap integration
 - import participant-level historical data from BG Stats where available
+- retain session date, duration and other useful play metadata
+- surface player-level analytics (win rate, head-to-head, most-played-together) from the identities already captured
 
-The planned relational model will evolve toward a structure such as:
+The relational model has evolved to:
 
 ```text
 games
@@ -76,7 +85,7 @@ plays
 play_participants
 ```
 
-`play_participants` will associate players with individual sessions and provide a natural place for participant-specific values such as score and winner status. This structure will support player-level analytics without overloading the existing `plays` table.
+`play_participants` associates a `player` with an individual `play` and is the natural home for participant-specific values such as score and winner status. `players` are scoped per user and matched by a normalised name, so the same person is recognised across sessions without needing an account of their own. This structure supports player-level analytics without overloading the `plays` table, and the two Alembic migrations that introduced it also backfilled existing play history so no participant data was lost.
 
 ### Insights
 
@@ -170,6 +179,8 @@ The collection importer filters the export to currently owned games and uses the
 
 Historical plays are also idempotent: imported play UUIDs are stored with their source so repeated imports do not duplicate play records.
 
+Data also flows in the other direction for plays logged directly in the app: a one-tap link builds a BG Stats-compatible payload client-side and hands it to the BG Stats app, so a session recorded here doesn't have to be re-entered there.
+
 A future import screen is intended to provide explicit choices for **BG Stats**, **BoardGameGeek**, and **manual game entry** rather than tying collection management to a single source.
 
 ## Recommendation engine
@@ -210,7 +221,7 @@ Current insights include:
 
 Historical BG Stats plays feed the same database used by the picker, so analytics and recommendations operate from a shared source of truth.
 
-The planned player/session model will allow the same analytics layer to expand into winner, score, player, monthly, yearly, designer and publisher statistics.
+The reusable player identities introduced for play recording provide the foundation the analytics layer needs to expand into winner, score, player, monthly, yearly, designer and publisher statistics; the insights queries themselves are not yet updated to group by that identity.
 
 ## Technology stack
 
@@ -222,6 +233,8 @@ The planned player/session model will allow the same analytics layer to expand i
 - **SQLAlchemy** — ORM, sessions and database access
 - **psycopg** — PostgreSQL driver
 - **httpx** — BoardGameGeek HTTP client
+- **pwdlib (Argon2)** — password hashing
+- **PyJWT** — signed access tokens
 - **pytest** — unit and integration testing
 
 ### Database and infrastructure
@@ -239,11 +252,9 @@ The planned player/session model will allow the same analytics layer to expand i
 
 ### Planned / next
 
-- player and play-participant relational models
-- richer session recording including winners and scores
-- participant-level BG Stats ingestion
+- player-based insights (win rate, head-to-head, most-played-together) built on the existing player identities
 - expanded play and collection analytics
-- designer, publisher, category and mechanic persistence
+- designer and publisher persistence
 - multi-source import UI and manual game entry
 - personal ranking and preference signals
 - similar-game discovery
@@ -352,11 +363,11 @@ npm run build
 Development is organised so new product features also strengthen the underlying engineering and data model.
 
 1. **Recommendation refinement** — complete and validate play-history-aware scoring against real historical data.
-2. **Players and game sessions** — introduce `players` and `play_participants`, with Alembic migrations and repository/service coverage.
-3. **Rich play recording** — record participants, winners and scores from the application.
-4. **Historical participant ingestion** — extend BG Stats play import to populate player/session detail idempotently.
-5. **Play analytics** — add monthly, yearly and all-time views plus player wins, win rates, game rankings and head-to-head statistics.
-6. **Rich collection metadata** — persist designers, publishers, categories and mechanics using appropriate relational models.
+2. ~~Players and game sessions~~ — done: `players` and `play_participants` are implemented with Alembic migrations, a backfill migration for existing data, and repository/service coverage.
+3. ~~Rich play recording~~ — done: the application records participants, winners and scores, with reusable player identities and autocomplete.
+4. ~~Historical participant ingestion~~ — done: BG Stats play import populates player/session detail idempotently, resolving each participant to a persistent player record.
+5. **Play analytics** — add monthly, yearly and all-time views plus player wins, win rates, game rankings and head-to-head statistics, building on the player identities already captured.
+6. **Rich collection metadata** — persist designers and publishers using appropriate relational models (categories and mechanics are already persisted).
 7. **Collection analytics** — add top designers/publishers, collection distributions, utilisation and related ranked views.
 8. **Import and collection management UX** — provide BG Stats import, BoardGameGeek sync and manual game-entry options in the frontend.
 9. **Picker and mobile UX polish** — strengthen reveal-card readability, surface last winner/history and improve mobile component structure.
@@ -398,6 +409,6 @@ The project is intended to demonstrate practical experience with:
 
 **Active development**
 
-The core application is functional end to end: collection ingestion, PostgreSQL persistence, recommendation, play tracking and collection insights are implemented.
+The core application is functional end to end: user accounts, collection ingestion, PostgreSQL persistence, recommendation, rich play tracking with reusable player identities, and collection insights are all implemented, alongside a two-way integration with BG Stats for both importing and sending play data.
 
-Current development is focused on recommendation refinement before expanding the data model to support players, richer game sessions and participant-level analytics. The longer-term direction is a release-capable board-game collection, picker, play-tracking and analytics application.
+Current development is focused on recommendation refinement and building player-level analytics (win rate, head-to-head, most-played-together) on top of the player identities now captured, before expanding collection metadata to include designers and publishers. The longer-term direction is a release-capable board-game collection, picker, play-tracking and analytics application.

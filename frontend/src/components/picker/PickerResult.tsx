@@ -192,13 +192,21 @@ function PickerResult({
             null && (
             <span>
               {match.game
-                .min_play_time ??
-                "?"}
-              –
-              {
+                .min_play_time !== null &&
+              match.game
+                .min_play_time ===
                 match.game
                   .max_play_time
-              }{" "}
+                ? match.game
+                    .max_play_time
+                : `${
+                    match.game
+                      .min_play_time ??
+                    "?"
+                  }–${
+                    match.game
+                      .max_play_time
+                  }`}{" "}
               min
             </span>
           )}
