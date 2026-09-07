@@ -562,3 +562,113 @@ def test_category_and_mechanic_bonus_is_capped_at_ten():
     )
 
     assert matches[0].score <= 100
+
+def test_new_game_for_selected_group_gets_bonus():
+    service = PickerService()
+
+    new_for_group = Game(
+        bgg_id=1,
+        name="New For Group",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+    )
+
+    recent_for_group = Game(
+        bgg_id=2,
+        name="Recent For Group",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.5,
+        owned=True,
+    )
+
+    now = datetime.now(
+        timezone.utc
+    )
+
+    group_play_stats = {
+        2: GamePlayStats(
+            bgg_id=2,
+            play_count=2,
+            last_played_at=(
+                now
+                - timedelta(
+                    days=2
+                )
+            ),
+        ),
+    }
+
+    matches = service.rank_matches(
+        [
+            recent_for_group,
+            new_for_group,
+        ],
+        PickerCriteria(
+            players=2,
+            player_ids=[
+                1,
+                2,
+            ],
+        ),
+        group_play_stats=(
+            group_play_stats
+        ),
+    )
+
+    assert (
+        matches[0].game.bgg_id
+        == 1
+    )
+
+    assert (
+        "This group hasn't played it together yet"
+        in matches[0].reasons
+    )
+
+
+def test_recent_group_play_gets_penalty():
+    service = PickerService()
+
+    game = Game(
+        bgg_id=1,
+        name="Recent Together",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        owned=True,
+    )
+
+    matches = service.rank_matches(
+        [game],
+        PickerCriteria(
+            players=2,
+            player_ids=[
+                1,
+                2,
+            ],
+        ),
+        group_play_stats={
+            1: GamePlayStats(
+                bgg_id=1,
+                play_count=3,
+                last_played_at=(
+                    datetime.now(
+                        timezone.utc
+                    )
+                    - timedelta(
+                        days=2
+                    )
+                ),
+            ),
+        },
+    )
+
+    assert (
+        "This group played it recently"
+        in matches[0].reasons
+    )

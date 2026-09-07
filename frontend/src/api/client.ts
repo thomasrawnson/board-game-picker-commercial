@@ -39,6 +39,7 @@ export type PickerMode =
 
 export interface PickerCriteria {
   players: number
+  playerIds?: number[]
   maxPlayTime?: number
   maxComplexity?: number
   preferredCategories?: string[]
@@ -350,6 +351,15 @@ export async function getPickerMatches(
     )
   }
 
+  criteria.playerIds?.forEach(
+    (playerId) => {
+      params.append(
+        "player_ids",
+        playerId.toString(),
+      )
+    },
+  )
+
   criteria
     .preferredCategories
     ?.forEach(
@@ -385,7 +395,6 @@ export async function getPickerMatches(
 
   return response.json()
 }
-
 
 export async function getGames():
 Promise<Game[]> {

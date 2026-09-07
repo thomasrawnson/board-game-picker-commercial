@@ -1,6 +1,7 @@
 from fastapi import (
     APIRouter,
     Depends,
+    HTTPException,
     Query,
 )
 
@@ -11,7 +12,9 @@ from api.dependencies import (
 from repositories.play_repository import (
     PlayRepository,
 )
-from services.game_service import GameService
+from services.game_service import (
+    GameService,
+)
 from services.picker_service import (
     PickerCriteria,
     PickerService,
@@ -26,6 +29,9 @@ def pick_games(
     players: int = Query(
         ...,
         ge=1,
+    ),
+    player_ids: list[int] = Query(
+        default=[],
     ),
     max_play_time: int | None = Query(
         None,
@@ -60,13 +66,66 @@ def pick_games(
         get_play_repository
     ),
 ):
-    games = game_service.get_games()
+    if (
+        len(player_ids)
+        != len(set(player_ids))
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Player IDs must be unique."
+            ),
+        )
 
-    picker_service = PickerService()
+    if (
+        len(player_ids)
+        > players
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Selected players cannot "
+                "exceed player count."
+            ),
+        )
+
+    known_player_ids = {
+        player["id"]
+        for player
+        in play_repository.get_players()
+    }
+
+    if any(
+        player_id
+        not in known_player_ids
+        for player_id
+        in player_ids
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Unknown player.",
+        )
+
+    games = (
+        game_service.get_games()
+    )
+
+    picker_service = (
+        PickerService()
+    )
 
     play_stats = (
         play_repository
         .get_game_play_stats()
+    )
+
+    group_play_stats = (
+        play_repository
+        .get_group_game_play_stats(
+            player_ids
+        )
+        if player_ids
+        else {}
     )
 
     criteria = PickerCriteria(
@@ -79,6 +138,7 @@ def pick_games(
         preferred_mechanics=(
             preferred_mechanics
         ),
+        player_ids=player_ids,
         mode=mode,
     )
 
@@ -87,6 +147,9 @@ def pick_games(
             games,
             criteria,
             play_stats=play_stats,
+            group_play_stats=(
+                group_play_stats
+            ),
         )
     )
 

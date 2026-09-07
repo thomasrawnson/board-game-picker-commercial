@@ -9,20 +9,23 @@ from api.main import (
     get_picker_play_repository,
     get_play_service,
 )
-from models.game import Game
-from models.play import Play
 from api.current_user import (
     get_current_user,
 )
 from database.models import User
+from models.game import Game
+from models.play import Play
+
 
 client = TestClient(app)
 
-client = TestClient(app)
 
 def test_get_game_returns_game():
     class FakeGameService:
-        def get_game(self, bgg_id: int):
+        def get_game(
+            self,
+            bgg_id: int,
+        ):
             return Game(
                 bgg_id=bgg_id,
                 name="Gloomhaven",
@@ -33,23 +36,41 @@ def test_get_game_returns_game():
                 rating=8.5,
             )
 
-    app.dependency_overrides[get_game_service] = (
-        lambda: FakeGameService()
-    )
+    app.dependency_overrides[
+        get_game_service
+    ] = lambda: FakeGameService()
 
     try:
-        client = TestClient(app)
+        response = client.get(
+            "/games/174430"
+        )
 
-        response = client.get("/games/174430")
-
-        assert response.status_code == 200
+        assert (
+            response.status_code
+            == 200
+        )
 
         data = response.json()
 
-        assert data["bgg_id"] == 174430
-        assert data["name"] == "Gloomhaven"
-        assert data["min_players"] == 1
-        assert data["max_players"] == 4
+        assert (
+            data["bgg_id"]
+            == 174430
+        )
+
+        assert (
+            data["name"]
+            == "Gloomhaven"
+        )
+
+        assert (
+            data["min_players"]
+            == 1
+        )
+
+        assert (
+            data["max_players"]
+            == 4
+        )
 
     finally:
         app.dependency_overrides.clear()
@@ -57,19 +78,26 @@ def test_get_game_returns_game():
 
 def test_get_missing_game_returns_404():
     class FakeGameService:
-        def get_game(self, bgg_id: int):
+        def get_game(
+            self,
+            bgg_id: int,
+        ):
             return None
 
-    app.dependency_overrides[get_game_service] = (
-        lambda: FakeGameService()
-    )
+    app.dependency_overrides[
+        get_game_service
+    ] = lambda: FakeGameService()
 
     try:
-        client = TestClient(app)
+        response = client.get(
+            "/games/999999"
+        )
 
-        response = client.get("/games/999999")
+        assert (
+            response.status_code
+            == 404
+        )
 
-        assert response.status_code == 404
         assert response.json() == {
             "detail": "Game not found"
         }
@@ -77,37 +105,60 @@ def test_get_missing_game_returns_404():
     finally:
         app.dependency_overrides.clear()
 
+
 def test_get_games():
     class FakeGameService:
-        def get_games(self):
+        def get_games(
+            self,
+        ):
             return [
-                Game(bgg_id=174430, name="Gloomhaven"),
-                Game(bgg_id=167791, name="Terraforming Mars"),
+                Game(
+                    bgg_id=174430,
+                    name="Gloomhaven",
+                ),
+                Game(
+                    bgg_id=167791,
+                    name="Terraforming Mars",
+                ),
             ]
 
-    app.dependency_overrides[get_game_service] = (
-        lambda: FakeGameService()
-    )
+    app.dependency_overrides[
+        get_game_service
+    ] = lambda: FakeGameService()
 
     try:
-        client = TestClient(app)
+        response = client.get(
+            "/games"
+        )
 
-        response = client.get("/games")
-
-        assert response.status_code == 200
+        assert (
+            response.status_code
+            == 200
+        )
 
         data = response.json()
 
         assert len(data) == 2
-        assert data[0]["name"] == "Gloomhaven"
-        assert data[1]["name"] == "Terraforming Mars"
+
+        assert (
+            data[0]["name"]
+            == "Gloomhaven"
+        )
+
+        assert (
+            data[1]["name"]
+            == "Terraforming Mars"
+        )
 
     finally:
         app.dependency_overrides.clear()
 
+
 def test_picker_returns_ranked_matches():
     class FakeGameService:
-        def get_games(self):
+        def get_games(
+            self,
+        ):
             return [
                 Game(
                     bgg_id=1,
@@ -139,7 +190,20 @@ def test_picker_returns_ranked_matches():
             ]
 
     class FakePlayRepository:
-        def get_game_play_stats(self):
+        def get_players(
+            self,
+        ):
+            return []
+
+        def get_group_game_play_stats(
+            self,
+            player_ids,
+        ):
+            return {}
+
+        def get_game_play_stats(
+            self,
+        ):
             return {}
 
     app.dependency_overrides[
@@ -159,23 +223,34 @@ def test_picker_returns_ranked_matches():
                 "max_complexity": 3.0,
             },
         )
+
     finally:
         app.dependency_overrides.clear()
 
-    assert response.status_code == 200
+    assert (
+        response.status_code
+        == 200
+    )
 
     data = response.json()
 
     assert len(data) == 2
-    assert data[0]["game"]["bgg_id"] == 2
+
+    assert (
+        data[0]["game"]["bgg_id"]
+        == 2
+    )
+
     assert (
         data[0]["game"]["name"]
         == "Best Match"
     )
+
     assert (
         data[0]["score"]
         > data[1]["score"]
     )
+
     assert (
         "Supports 2 players"
         in data[0]["reasons"]
@@ -184,11 +259,26 @@ def test_picker_returns_ranked_matches():
 
 def test_picker_requires_valid_player_count():
     class FakeGameService:
-        def get_games(self):
+        def get_games(
+            self,
+        ):
             return []
 
     class FakePlayRepository:
-        def get_game_play_stats(self):
+        def get_players(
+            self,
+        ):
+            return []
+
+        def get_group_game_play_stats(
+            self,
+            player_ids,
+        ):
+            return {}
+
+        def get_game_play_stats(
+            self,
+        ):
             return {}
 
     app.dependency_overrides[
@@ -206,10 +296,15 @@ def test_picker_requires_valid_player_count():
                 "players": 0,
             },
         )
+
     finally:
         app.dependency_overrides.clear()
 
-    assert response.status_code == 422
+    assert (
+        response.status_code
+        == 422
+    )
+
 
 def test_record_play_returns_404_for_unknown_game():
     class FakePlayService:
@@ -217,14 +312,16 @@ def test_record_play_returns_404_for_unknown_game():
             self,
             bgg_id: int,
             played_at,
-            duration_minutes: int | None,
-            participants: list[dict],
+            duration_minutes:
+                int | None,
+            participants:
+                list[dict],
         ):
             return None
 
-    app.dependency_overrides[get_play_service] = (
-        lambda: FakePlayService()
-    )
+    app.dependency_overrides[
+        get_play_service
+    ] = lambda: FakePlayService()
 
     try:
         response = client.post(
@@ -234,7 +331,8 @@ def test_record_play_returns_404_for_unknown_game():
                 "played_at": (
                     "2026-08-28T20:00:00+00:00"
                 ),
-                "duration_minutes": 60,
+                "duration_minutes":
+                    60,
                 "participants": [
                     {
                         "name": "Tom",
@@ -244,17 +342,26 @@ def test_record_play_returns_404_for_unknown_game():
                 ],
             },
         )
+
     finally:
         app.dependency_overrides.clear()
 
-    assert response.status_code == 404
-    assert response.json()["detail"] == (
-        "Game not found"
+    assert (
+        response.status_code
+        == 404
     )
-    
+
+    assert (
+        response.json()["detail"]
+        == "Game not found"
+    )
+
+
 def test_picker_uses_preferred_mechanic():
     class FakeGameService:
-        def get_games(self):
+        def get_games(
+            self,
+        ):
             return [
                 Game(
                     bgg_id=1,
@@ -264,27 +371,47 @@ def test_picker_uses_preferred_mechanic():
                     max_play_time=60,
                     complexity=2.5,
                     owned=True,
-                    mechanics=["Deck Building"],
+                    mechanics=[
+                        "Deck Building"
+                    ],
                 ),
                 Game(
                     bgg_id=2,
-                    name="Worker Placement Game",
+                    name=(
+                        "Worker Placement "
+                        "Game"
+                    ),
                     min_players=2,
                     max_players=4,
                     max_play_time=60,
                     complexity=2.5,
                     owned=True,
-                    mechanics=["Worker Placement"],
+                    mechanics=[
+                        "Worker Placement"
+                    ],
                 ),
             ]
 
     class FakePlayRepository:
-        def get_game_play_stats(self):
+        def get_players(
+            self,
+        ):
+            return []
+
+        def get_group_game_play_stats(
+            self,
+            player_ids,
+        ):
             return {}
 
-    app.dependency_overrides[get_game_service] = (
-        lambda: FakeGameService()
-    )
+        def get_game_play_stats(
+            self,
+        ):
+            return {}
+
+    app.dependency_overrides[
+        get_game_service
+    ] = lambda: FakeGameService()
 
     app.dependency_overrides[
         get_picker_play_repository
@@ -297,21 +424,30 @@ def test_picker_uses_preferred_mechanic():
                 "players": 2,
                 "max_play_time": 60,
                 "max_complexity": 3.0,
-                "preferred_mechanics": "Deck Building",
+                "preferred_mechanics":
+                    "Deck Building",
             },
         )
+
     finally:
         app.dependency_overrides.clear()
 
-    assert response.status_code == 200
+    assert (
+        response.status_code
+        == 200
+    )
 
     data = response.json()
 
     assert len(data) == 2
-    assert data[0]["game"]["bgg_id"] == 1
 
     assert (
-        "Matches preferred mechanic: Deck Building"
-        in data[0]["reasons"]
+        data[0]["game"]["bgg_id"]
+        == 1
     )
 
+    assert (
+        "Matches preferred mechanic: "
+        "Deck Building"
+        in data[0]["reasons"]
+    )

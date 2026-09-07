@@ -24,6 +24,9 @@ class PickerCriteria:
     preferred_mechanics: list[str] = field(
         default_factory=list
     )
+    player_ids: list[int] = field(
+        default_factory=list
+    )
     mode: str = "best_match"
 
 
@@ -77,8 +80,17 @@ class PickerService:
             GamePlayStats,
         ]
         | None = None,
+        group_play_stats: dict[
+            int,
+            GamePlayStats,
+        ]
+        | None = None,
     ) -> list[PickerMatch]:
         play_stats = play_stats or {}
+
+        group_play_stats = (
+            group_play_stats or {}
+        )
 
         eligible_games = self.find_matches(
             games,
@@ -92,12 +104,16 @@ class PickerService:
                 play_stats.get(
                     game.bgg_id
                 ),
+                group_play_stats.get(
+                    game.bgg_id
+                ),
             )
             for game in eligible_games
         ]
 
         if criteria.mode == "surprise":
             random.shuffle(ranked)
+
             return ranked
 
         return sorted(
@@ -113,6 +129,7 @@ class PickerService:
         game: Game,
         criteria: PickerCriteria,
         play_stats: GamePlayStats | None = None,
+        group_play_stats: GamePlayStats | None = None,
     ) -> PickerMatch:
         score = 35
 
@@ -125,11 +142,12 @@ class PickerService:
             )
         ]
 
-        play_time_score, play_time_reason = (
-            self._score_play_time(
-                game,
-                criteria.max_play_time,
-            )
+        (
+            play_time_score,
+            play_time_reason,
+        ) = self._score_play_time(
+            game,
+            criteria.max_play_time,
         )
 
         score += play_time_score
@@ -163,6 +181,7 @@ class PickerService:
         )
 
         score += history_score
+
         reasons.extend(
             history_reasons
         )
@@ -176,9 +195,24 @@ class PickerService:
         )
 
         score += preference_score
+
         reasons.extend(
             preference_reasons
         )
+
+        if criteria.player_ids:
+            (
+                group_score,
+                group_reasons,
+            ) = self._score_group_history(
+                group_play_stats
+            )
+
+            score += group_score
+
+            reasons.extend(
+                group_reasons
+            )
 
         if criteria.mode == "different":
             reasons.insert(
@@ -208,6 +242,93 @@ class PickerService:
         )
 
     @staticmethod
+    def _score_group_history(
+        play_stats: GamePlayStats | None,
+    ) -> tuple[
+        int,
+        list[str],
+    ]:
+        if (
+            play_stats is None
+            or play_stats.last_played_at
+            is None
+        ):
+            return (
+                10,
+                [
+                    (
+                        "This group hasn't "
+                        "played it together yet"
+                    ),
+                ],
+            )
+
+        last_played_at = (
+            play_stats.last_played_at
+        )
+
+        if (
+            last_played_at.tzinfo
+            is None
+        ):
+            last_played_at = (
+                last_played_at.replace(
+                    tzinfo=timezone.utc
+                )
+            )
+
+        days_since_played = (
+            datetime.now(
+                timezone.utc
+            )
+            - last_played_at
+        ).days
+
+        if days_since_played >= 90:
+            return (
+                8,
+                [
+                    (
+                        "This group hasn't "
+                        "played it in over "
+                        "3 months"
+                    ),
+                ],
+            )
+
+        if days_since_played >= 30:
+            return (
+                5,
+                [
+                    (
+                        "This group hasn't "
+                        "played it recently"
+                    ),
+                ],
+            )
+
+        if days_since_played >= 14:
+            return (
+                2,
+                [
+                    (
+                        "It's been a while "
+                        "for this group"
+                    ),
+                ],
+            )
+
+        return (
+            -6,
+            [
+                (
+                    "This group played it "
+                    "recently"
+                ),
+            ],
+        )
+
+    @staticmethod
     def _score_play_time(
         game: Game,
         max_play_time: int | None,
@@ -234,7 +355,10 @@ class PickerService:
 
         return (
             score,
-            f"Fits within {max_play_time} minutes",
+            (
+                f"Fits within "
+                f"{max_play_time} minutes"
+            ),
         )
 
     @staticmethod
@@ -336,6 +460,7 @@ class PickerService:
         if mode == "different":
             if days_since_played >= 180:
                 score = 23
+
                 reasons.append(
                     (
                         "Hasn't been played in "
@@ -345,6 +470,7 @@ class PickerService:
 
             elif days_since_played >= 60:
                 score = 18
+
                 reasons.append(
                     (
                         "Hasn't been played in "
@@ -354,18 +480,21 @@ class PickerService:
 
             elif days_since_played >= 14:
                 score = 10
+
                 reasons.append(
                     "Due another play"
                 )
 
             else:
                 score = 2
+
                 reasons.append(
                     "Played recently"
                 )
 
             if play_count <= 2:
                 score += 5
+
                 reasons.append(
                     (
                         "One of your "
@@ -383,6 +512,7 @@ class PickerService:
 
         if days_since_played >= 180:
             score = 17
+
             reasons.append(
                 (
                     "Hasn't been played in "
@@ -392,6 +522,7 @@ class PickerService:
 
         elif days_since_played >= 60:
             score = 12
+
             reasons.append(
                 (
                     "Hasn't been played in "
@@ -401,12 +532,14 @@ class PickerService:
 
         elif days_since_played >= 14:
             score = 6
+
             reasons.append(
                 "Due another play"
             )
 
         else:
             score = 0
+
             reasons.append(
                 "Played recently"
             )
@@ -416,6 +549,7 @@ class PickerService:
             and days_since_played >= 14
         ):
             score += 3
+
             reasons.append(
                 "Hasn't had many plays"
             )

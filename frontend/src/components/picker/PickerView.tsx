@@ -40,6 +40,11 @@ function PickerView({
   const [step, setStep] =
     useState<Step>("players")
 
+  const [
+    selectedPlayerIds,
+    setSelectedPlayerIds,
+  ] = useState<number[]>([])
+
   const [players, setPlayers] =
     useState<number | null>(
       null,
@@ -148,7 +153,6 @@ function PickerView({
     if (players === null) {
       return
     }
-
     setLoading(true)
     setError("")
 
@@ -156,6 +160,7 @@ function PickerView({
       const results =
         await getPickerMatches({
           players,
+          playerIds: selectedPlayerIds,
 
           maxPlayTime:
             maxPlayTime === 0
@@ -217,6 +222,7 @@ function PickerView({
     setStep("players")
 
     setPlayers(null)
+    setSelectedPlayerIds([])
     setMaxPlayTime(null)
     setMaxComplexity(null)
 
@@ -279,7 +285,15 @@ function PickerView({
       {step === "players" && (
         <PlayerStep
           players={players}
-          onSelect={setPlayers}
+          selectedPlayerIds={
+            selectedPlayerIds
+          }
+          onSelectCount={
+            setPlayers
+          }
+          onSelectPlayers={
+            setSelectedPlayerIds
+          }
           onContinue={() =>
             setStep("time")
           }

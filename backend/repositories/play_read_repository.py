@@ -7,6 +7,7 @@ from database.models import (
     Play as DatabasePlay,
 )
 from database.models import (
+    PlayParticipant,
     Player,
     UserGame,
 )
@@ -305,7 +306,102 @@ class PlayReadRepository:
             }
             for row in rows
         ]
+    def get_group_game_play_stats(
+        self,
+        player_ids: list[int],
+    ) -> dict[int, GamePlayStats]:
+        if (
+            self.user_id is None
+            or not player_ids
+        ):
+            return {}
 
+        unique_player_ids = list(
+            dict.fromkeys(
+                player_ids
+            )
+        )
+
+        rows = (
+            self.db.query(
+                DatabaseGame.bgg_id,
+                func.count(
+                    func.distinct(
+                        DatabasePlay.id
+                    )
+                ).label(
+                    "play_count"
+                ),
+                func.max(
+                    DatabasePlay.played_at
+                ).label(
+                    "last_played_at"
+                ),
+            )
+            .join(
+                DatabasePlay,
+                DatabasePlay.game_id
+                == DatabaseGame.id,
+            )
+            .join(
+                PlayParticipant,
+                PlayParticipant.play_id
+                == DatabasePlay.id,
+            )
+            .filter(
+                DatabasePlay.user_id
+                == self.user_id,
+                PlayParticipant.player_id.in_(
+                    unique_player_ids
+                ),
+            )
+            .group_by(
+                DatabaseGame.id,
+                DatabaseGame.bgg_id,
+                DatabasePlay.id,
+            )
+            .having(
+                func.count(
+                    func.distinct(
+                        PlayParticipant.player_id
+                    )
+                )
+                == len(
+                    unique_player_ids
+                )
+            )
+            .subquery()
+        )
+
+        grouped = (
+            self.db.query(
+                rows.c.bgg_id,
+                func.count().label(
+                    "play_count"
+                ),
+                func.max(
+                    rows.c.last_played_at
+                ).label(
+                    "last_played_at"
+                ),
+            )
+            .group_by(
+                rows.c.bgg_id
+            )
+            .all()
+        )
+
+        return {
+            row.bgg_id: GamePlayStats(
+                bgg_id=row.bgg_id,
+                play_count=row.play_count,
+                last_played_at=(
+                    row.last_played_at
+                ),
+            )
+            for row in grouped
+        }
+    
     def get_players(
         self,
     ) -> list[dict]:

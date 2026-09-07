@@ -617,3 +617,69 @@
   .play-form {
   text-align: left;
 }
+
+/* Known player selection */
+
+.known-player-section {
+  width: 100%;
+
+  margin-bottom: 18px;
+}
+
+.known-player-grid {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.known-player-chip {
+  padding: 10px 14px;
+
+  color: var(--text-primary);
+
+  background:
+    rgba(243, 234, 216, 0.06);
+
+  border:
+    1px solid
+    rgba(243, 234, 216, 0.14);
+
+  border-radius: 999px;
+
+  font: inherit;
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.known-player-chip.selected {
+  color: var(--ink);
+
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.player-or {
+  margin: 15px 0 10px;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+
+  text-align: center;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.selected-player-count {
+  margin: 12px 0 0;
+
+  color: var(--gold);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  text-align: center;
+}
