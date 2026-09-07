@@ -62,77 +62,77 @@ class FakeInsightsRepository:
         ]
 
 
-    def test_get_collection_insights():
-        service = InsightsService(
-            FakeInsightsRepository()
-        )
+def test_get_collection_insights():
+    service = InsightsService(
+        FakeInsightsRepository()
+    )
 
-        insights = (
-            service.get_collection_insights()
-        )
+    insights = (
+        service.get_collection_insights()
+    )
 
-        assert (
-            insights.frequent_players[0].id
-            == 1
-        )
-        assert insights.total_games == 194
-        assert insights.total_plays == 12
+    assert (
+        insights.frequent_players[0].id
+        == 1
+    )
+    assert insights.total_games == 194
+    assert insights.total_plays == 12
 
-        assert (
-            insights.played_games_count
-            == 44
-        )
+    assert (
+        insights.played_games_count
+        == 44
+    )
 
-        assert (
-            insights.collection_played_percentage
-            == 23
-        )
+    assert (
+        insights.collection_played_percentage
+        == 23
+    )
 
-        assert (
-            insights.total_duration_minutes
-            == 720
-        )
+    assert (
+        insights.total_duration_minutes
+        == 720
+    )
 
-        assert (
-            insights.average_duration_minutes
-            == 60
-        )
+    assert (
+        insights.average_duration_minutes
+        == 60
+    )
 
-        assert insights.most_played is not None
+    assert insights.most_played is not None
 
-        assert (
-            insights.most_played.name
-            == "Terraforming Mars"
-        )
+    assert (
+        insights.most_played.name
+        == "Terraforming Mars"
+    )
 
-        assert (
-            insights.most_played.play_count
-            == 4
-        )
+    assert (
+        insights.most_played.play_count
+        == 4
+    )
 
-        assert insights.last_played is not None
+    assert insights.last_played is not None
 
-        assert (
-            insights.last_played.name
-            == "Terraforming Mars"
-        )
+    assert (
+        insights.last_played.name
+        == "Terraforming Mars"
+    )
 
-        assert (
-            insights.never_played_count
-            == 150
-        )
+    assert (
+        insights.never_played_count
+        == 150
+    )
 
-        assert (
-            len(insights.frequent_players)
-            == 2
-        )
+    assert (
+        len(insights.frequent_players)
+        == 2
+    )
 
-        assert (
-            insights.frequent_players[0].name
-            == "Tom"
-        )
+    assert (
+        insights.frequent_players[0].name
+        == "Tom"
+    )
 
-        assert (
-            insights.frequent_players[0].win_count
-            == 4
-        )
+    assert (
+        insights.frequent_players[0].win_count
+        == 4
+    )
