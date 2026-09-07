@@ -48,9 +48,15 @@ def sync_collection(
         .strip()
     )
 
-    games = service.sync_collection(
-        username
-    )
+    try:
+        games = service.sync_collection(
+            username
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
 
     current_user.bgg_username = (
         username

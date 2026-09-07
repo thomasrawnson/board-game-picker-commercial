@@ -203,9 +203,15 @@ class PlayWriteRepository:
             return False
 
         for participant in participants:
+            player = (
+                self._get_or_create_player(
+                    participant["name"]
+                )
+            )
+
             database_play.participants.append(
                 PlayParticipant(
-                     player_id=player.id,
+                    player_id=player.id,
                     name=player.name,
                     score=participant.get(
                         "score"
@@ -286,6 +292,12 @@ class PlayWriteRepository:
             return True
 
         for participant in participants:
+            player = (
+                self._get_or_create_player(
+                    participant["name"]
+                )
+            )
+
             database_play.participants.append(
                 PlayParticipant(
                     player_id=player.id,
@@ -299,7 +311,6 @@ class PlayWriteRepository:
                     ),
                 )
             )
-
         self.db.commit()
 
         return True

@@ -410,6 +410,37 @@ class GameRepository:
         user_id: int,
         bgg_ids: list[int],
     ) -> None:
+        existing_memberships = (
+            self.db.query(UserGame)
+            .filter(
+                UserGame.user_id
+                == user_id
+            )
+            .all()
+        )
+
+        if (
+            not bgg_ids
+            and existing_memberships
+        ):
+            # BGG returned no games at
+            # all, but this user already
+            # has a collection. Treat
+            # this as a failed/partial
+            # fetch rather than "the
+            # user owns nothing now" --
+            # otherwise a transient BGG
+            # hiccup would silently wipe
+            # their whole collection.
+            raise ValueError(
+                "BGG returned no games "
+                "for this collection. "
+                "Sync aborted to avoid "
+                "clearing your existing "
+                "collection -- please "
+                "try again."
+            )
+
         database_games = (
             self.db.query(DatabaseGame)
             .filter(
@@ -426,15 +457,6 @@ class GameRepository:
             game.id
             for game in database_games
         }
-
-        existing_memberships = (
-            self.db.query(UserGame)
-            .filter(
-                UserGame.user_id
-                == user_id
-            )
-            .all()
-        )
 
         existing_game_ids = {
             membership.game_id
