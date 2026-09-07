@@ -13,7 +13,7 @@ type Props = {
   players: number | null
   selectedPlayerIds: number[]
   onSelectCount:
-    (players: number) => void
+    (players: number | null) => void
   onSelectPlayers:
     (playerIds: number[]) => void
   onContinue: () => void
@@ -79,11 +79,11 @@ function PlayerStep({
         next
       )
 
-      if (next.length > 0) {
-        onSelectCount(
-          next.length
-        )
-      }
+      onSelectCount(
+        next.length > 0
+          ? next.length
+          : null
+      )
 
       return
     }
