@@ -42,6 +42,11 @@ function PlayerStep({
     setKnownPlayers,
   ] = useState<Player[]>([])
 
+  const [
+    playerPickerOpen,
+    setPlayerPickerOpen,
+  ] = useState(false)
+
 
   useEffect(() => {
     async function loadPlayers() {
@@ -111,6 +116,15 @@ function PlayerStep({
   }
 
 
+  const selectedPlayers =
+    knownPlayers.filter(
+      (player) =>
+        selectedPlayerIds.includes(
+          player.id
+        ),
+    )
+
+
   return (
     <section className="screen">
       <header>
@@ -131,40 +145,58 @@ function PlayerStep({
 
       {knownPlayers.length > 0 && (
         <div className="known-player-section">
-          <p className="preference-label">
-            Players
-          </p>
+          <button
+            type="button"
+            className="player-picker-trigger"
+            onClick={() =>
+              setPlayerPickerOpen(
+                true
+              )
+            }
+          >
+            <span>
+              Choose players
+            </span>
 
-          <div className="known-player-grid">
-            {knownPlayers.map(
-              (player) => {
-                const selected =
-                  selectedPlayerIds
-                    .includes(
-                      player.id
-                    )
+            <strong>
+              {
+                selectedPlayerIds
+                  .length > 0
+                  ? `${
+                      selectedPlayerIds
+                        .length
+                    } selected`
+                  : "Optional"
+              }
+            </strong>
+          </button>
 
-                return (
-                  <button
-                    key={player.id}
-                    type="button"
-                    className={
-                      selected
-                        ? "known-player-chip selected"
-                        : "known-player-chip"
-                    }
-                    onClick={() =>
-                      togglePlayer(
-                        player.id
-                      )
-                    }
-                  >
-                    {player.name}
-                  </button>
-                )
-              },
-            )}
-          </div>
+
+          {
+            selectedPlayers.length
+            > 0
+            && (
+              <div className="selected-player-summary">
+                {
+                  selectedPlayers.map(
+                    (player) => (
+                      <span
+                        key={
+                          player.id
+                        }
+                        className="selected-player-pill"
+                      >
+                        {
+                          player.name
+                        }
+                      </span>
+                    ),
+                  )
+                }
+              </div>
+            )
+          }
+
 
           <p className="player-or">
             or choose a group size
@@ -193,9 +225,11 @@ function PlayerStep({
               }
             >
               <strong>
-                {option === 7
-                  ? "7+"
-                  : option}
+                {
+                  option === 7
+                    ? "7+"
+                    : option
+                }
               </strong>
 
               <span>
@@ -207,13 +241,20 @@ function PlayerStep({
       </div>
 
 
-      {selectedPlayerIds.length > 0 && (
-        <p className="selected-player-count">
-          {selectedPlayerIds.length}
-          {" "}
-          selected
-        </p>
-      )}
+      {
+        selectedPlayerIds.length
+        > 0
+        && (
+          <p className="selected-player-count">
+            {
+              selectedPlayerIds
+                .length
+            }
+            {" "}
+            selected
+          </p>
+        )
+      }
 
 
       <button
@@ -228,6 +269,116 @@ function PlayerStep({
       >
         Continue
       </button>
+
+
+      {
+        playerPickerOpen
+        && (
+          <div
+            className="player-picker-backdrop"
+            onClick={() =>
+              setPlayerPickerOpen(
+                false
+              )
+            }
+          >
+            <div
+              className="player-picker-panel"
+              onClick={(
+                event,
+              ) =>
+                event
+                  .stopPropagation()
+              }
+            >
+              <div className="player-picker-header">
+                <div>
+                  <p className="eyebrow">
+                    Players
+                  </p>
+
+                  <h2>
+                    Who's playing?
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  className="player-picker-close"
+                  onClick={() =>
+                    setPlayerPickerOpen(
+                      false
+                    )
+                  }
+                >
+                  ×
+                </button>
+              </div>
+
+
+              <div className="player-picker-list">
+                {
+                  knownPlayers.map(
+                    (player) => {
+                      const selected =
+                        selectedPlayerIds
+                          .includes(
+                            player.id
+                          )
+
+                      return (
+                        <button
+                          key={
+                            player.id
+                          }
+                          type="button"
+                          className={
+                            selected
+                              ? "player-picker-row selected"
+                              : "player-picker-row"
+                          }
+                          onClick={() =>
+                            togglePlayer(
+                              player.id
+                            )
+                          }
+                        >
+                          <span>
+                            {
+                              player.name
+                            }
+                          </span>
+
+                          <span className="player-picker-check">
+                            {
+                              selected
+                                ? "✓"
+                                : ""
+                            }
+                          </span>
+                        </button>
+                      )
+                    },
+                  )
+                }
+              </div>
+
+
+              <button
+                type="button"
+                className="primary-button"
+                onClick={() =>
+                  setPlayerPickerOpen(
+                    false
+                  )
+                }
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        )
+      }
     </section>
   )
 }
