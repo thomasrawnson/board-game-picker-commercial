@@ -355,6 +355,9 @@ function PickerView({
             matches.length
           }
           mode={mode}
+          playerCount={
+            players ?? 1
+          }
           hasMoreMatches={
             hasMoreMatches
           }

@@ -26,8 +26,8 @@ type PlayerForm = {
 type Props = {
   game: Game
   onSaved: () => Promise<void>
+  initialPlayerCount?: number
 }
-
 
 function todayValue() {
   const now = new Date()
@@ -51,10 +51,28 @@ function todayValue() {
   return `${year}-${month}-${day}`
 }
 
+function createPlayerForms(
+  count: number,
+): PlayerForm[] {
+  return Array.from(
+    {
+      length: Math.max(
+        1,
+        count,
+      ),
+    },
+    () => ({
+      name: "",
+      score: "",
+      isWinner: false,
+    }),
+  )
+}
 
 function PlayLogForm({
   game,
   onSaved,
+  initialPlayerCount = 1,
 }: Props) {
   const [open, setOpen] =
     useState(false)
@@ -74,13 +92,11 @@ function PlayLogForm({
   const [
     players,
     setPlayers,
-  ] = useState<PlayerForm[]>([
-    {
-      name: "",
-      score: "",
-      isWinner: false,
-    },
-  ])
+  ] = useState<PlayerForm[]>(
+    createPlayerForms(
+      initialPlayerCount,
+    ),
+  )
 
   const [
     knownPlayers,

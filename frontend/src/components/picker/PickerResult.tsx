@@ -1,7 +1,14 @@
+import {
+  useState,
+} from "react"
+
 import type {
   PickerMatch,
   PickerMode,
 } from "../../api/client"
+
+import PlayLogForm
+  from "../collection/PlayLogForm"
 
 
 type Props = {
@@ -9,6 +16,7 @@ type Props = {
   matchIndex: number
   totalMatches: number
   mode: PickerMode
+  playerCount: number
   hasMoreMatches: boolean
   onTryAnother: () => void
   onViewGame: () => void
@@ -36,11 +44,80 @@ function PickerResult({
   matchIndex,
   totalMatches,
   mode,
+  playerCount,
   hasMoreMatches,
   onTryAnother,
   onViewGame,
   onStartOver,
 }: Props) {
+  const [
+    shareMessage,
+    setShareMessage,
+  ] = useState("")
+
+
+  async function sharePick() {
+    const reason =
+      match.reasons[0]
+
+    const text = [
+      `Tonight's pick: ${match.game.name}`,
+      `${playerCount} player${
+        playerCount === 1
+          ? ""
+          : "s"
+      }`,
+      reason
+        ? `Why: ${reason}`
+        : null,
+      "Picked with Board Game Picker",
+    ]
+      .filter(Boolean)
+      .join("\n")
+
+    setShareMessage("")
+
+    try {
+      if (
+        navigator.share
+      ) {
+        await navigator.share({
+          title:
+            match.game.name,
+          text,
+        })
+
+        setShareMessage(
+          "Pick shared.",
+        )
+
+        return
+      }
+
+      await navigator.clipboard
+        .writeText(text)
+
+      setShareMessage(
+        "Pick copied.",
+      )
+    } catch (err) {
+      if (
+        err instanceof DOMException
+        && err.name ===
+          "AbortError"
+      ) {
+        return
+      }
+
+      console.error(err)
+
+      setShareMessage(
+        "Couldn't share this pick.",
+      )
+    }
+  }
+
+
   return (
     <section className="screen reveal-screen">
       <p className="picker-result-mode">
@@ -163,8 +240,40 @@ function PickerResult({
       </p>
 
 
+      <div className="picker-result-actions">
+        <PlayLogForm
+          key={
+            match.game.bgg_id
+          }
+          game={match.game}
+          initialPlayerCount={
+            playerCount
+          }
+          onSaved={async () => {}}
+        />
+
+        <button
+          type="button"
+          className="secondary-button share-pick-button"
+          onClick={
+            sharePick
+          }
+        >
+          Share this pick
+        </button>
+      </div>
+
+
+      {shareMessage && (
+        <p className="share-message">
+          {shareMessage}
+        </p>
+      )}
+
+
       <div className="reveal-actions">
         <button
+          type="button"
           className="secondary-button"
           onClick={
             onTryAnother
@@ -180,6 +289,7 @@ function PickerResult({
 
 
         <button
+          type="button"
           className="primary-button"
           onClick={
             onViewGame
@@ -200,8 +310,11 @@ function PickerResult({
 
 
       <button
+        type="button"
         className="ghost-button"
-        onClick={onStartOver}
+        onClick={
+          onStartOver
+        }
       >
         Start over
       </button>

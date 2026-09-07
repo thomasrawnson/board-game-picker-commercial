@@ -52,7 +52,7 @@ function AppNavigation({
             )
           }
         >
-          Games
+          Collection
         </button>
 
         <button
@@ -67,7 +67,7 @@ function AppNavigation({
             )
           }
         >
-          Insights
+          Stats
         </button>
       </nav>
     </>
