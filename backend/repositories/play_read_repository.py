@@ -427,3 +427,257 @@ class PlayReadRepository:
             }
             for player in rows
         ]
+
+    def get_player_stats(
+        self,
+        player_id: int,
+    ):
+        if self.user_id is None:
+            return None
+
+        player = (
+            self.db.query(Player)
+            .filter(
+                Player.id == player_id,
+                Player.user_id == self.user_id,
+            )
+            .first()
+        )
+
+        if player is None:
+            return None
+
+        participant_rows = (
+            self.db.query(
+                PlayParticipant,
+                DatabasePlay,
+                DatabaseGame,
+            )
+            .join(
+                DatabasePlay,
+                DatabasePlay.id
+                == PlayParticipant.play_id,
+            )
+            .join(
+                DatabaseGame,
+                DatabaseGame.id
+                == DatabasePlay.game_id,
+            )
+            .filter(
+                DatabasePlay.user_id
+                == self.user_id,
+                PlayParticipant.player_id
+                == player_id,
+            )
+            .order_by(
+                DatabasePlay.played_at.desc()
+            )
+            .all()
+        )
+
+        total_plays = len(
+            participant_rows
+        )
+
+        unique_game_ids = {
+            game.id
+            for _participant,
+            _play,
+            game
+            in participant_rows
+        }
+
+        wins = sum(
+            1
+            for participant,
+            _play,
+            _game
+            in participant_rows
+            if participant.is_winner
+        )
+
+        win_rate = (
+            round(
+                wins
+                / total_plays
+                * 100,
+                1,
+            )
+            if total_plays
+            else 0.0
+        )
+
+        game_counts: dict[
+            int,
+            dict,
+        ] = {}
+
+        for (
+            _participant,
+            play,
+            game,
+        ) in participant_rows:
+            if game.id not in game_counts:
+                game_counts[
+                    game.id
+                ] = {
+                    "bgg_id":
+                        game.bgg_id,
+                    "name":
+                        game.name,
+                    "play_count":
+                        0,
+                    "last_played_at":
+                        None,
+                }
+
+            game_counts[
+                game.id
+            ]["play_count"] += 1
+
+            current_last_played_at = (
+                game_counts[
+                    game.id
+                ][
+                    "last_played_at"
+                ]
+            )
+
+            if (
+                current_last_played_at
+                is None
+                or play.played_at
+                > current_last_played_at
+            ):
+                game_counts[
+                    game.id
+                ][
+                    "last_played_at"
+                ] = play.played_at
+
+        most_played_games = sorted(
+            game_counts.values(),
+            key=lambda item: (
+                -item[
+                    "play_count"
+                ],
+                item[
+                    "name"
+                ],
+            ),
+        )[:5]
+
+        recent_games = [
+            {
+                "play_id":
+                    play.id,
+                "bgg_id":
+                    game.bgg_id,
+                "name":
+                    game.name,
+                "played_at":
+                    play.played_at,
+                "is_winner":
+                    participant.is_winner,
+                "score":
+                    participant.score,
+            }
+            for (
+                participant,
+                play,
+                game,
+            ) in participant_rows[:10]
+        ]
+
+        partner_rows = (
+            self.db.query(
+                Player.id,
+                Player.name,
+                func.count(
+                    func.distinct(
+                        DatabasePlay.id
+                    )
+                ).label(
+                    "play_count"
+                ),
+            )
+            .join(
+                PlayParticipant,
+                PlayParticipant.player_id
+                == Player.id,
+            )
+            .join(
+                DatabasePlay,
+                DatabasePlay.id
+                == PlayParticipant.play_id,
+            )
+            .filter(
+                DatabasePlay.user_id
+                == self.user_id,
+                Player.user_id
+                == self.user_id,
+                Player.id
+                != player_id,
+                DatabasePlay.id.in_(
+                    self.db.query(
+                        PlayParticipant.play_id
+                    )
+                    .filter(
+                        PlayParticipant.player_id
+                        == player_id
+                    )
+                ),
+            )
+            .group_by(
+                Player.id,
+                Player.name,
+            )
+            .order_by(
+                func.count(
+                    func.distinct(
+                        DatabasePlay.id
+                    )
+                ).desc(),
+                Player.name,
+            )
+            .limit(5)
+            .all()
+        )
+
+        common_partners = [
+            {
+                "id":
+                    row.id,
+                "name":
+                    row.name,
+                "play_count":
+                    row.play_count,
+            }
+            for row
+            in partner_rows
+        ]
+
+        return {
+            "player": {
+                "id":
+                    player.id,
+                "name":
+                    player.name,
+            },
+            "total_plays":
+                total_plays,
+            "unique_games":
+                len(
+                    unique_game_ids
+                ),
+            "wins":
+                wins,
+            "win_rate":
+                win_rate,
+            "most_played_games":
+                most_played_games,
+            "recent_games":
+                recent_games,
+            "common_partners":
+                common_partners,
+        }

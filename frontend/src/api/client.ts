@@ -103,13 +103,12 @@ export interface LastPlayedGame {
   played_at: string
 }
 
-
 export interface PlayerSummary {
+  id: number
   name: string
   play_count: number
   win_count: number
 }
-
 
 export interface CollectionInsights {
   total_games: number
@@ -153,6 +152,38 @@ export interface Player {
   name: string
 }
 
+export interface PlayerStatsGame {
+  bgg_id: number
+  name: string
+  play_count: number
+  last_played_at: string | null
+}
+
+export interface PlayerRecentGame {
+  play_id: number
+  bgg_id: number
+  name: string
+  played_at: string
+  is_winner: boolean
+  score: number | null
+}
+
+export interface PlayerPartner {
+  id: number
+  name: string
+  play_count: number
+}
+
+export interface PlayerStats {
+  player: Player
+  total_plays: number
+  unique_games: number
+  wins: number
+  win_rate: number
+  most_played_games: PlayerStatsGame[]
+  recent_games: PlayerRecentGame[]
+  common_partners: PlayerPartner[]
+}
 
 const API_BASE_URL =
   import.meta.env
@@ -310,6 +341,22 @@ Promise<AuthUser> {
   return response.json()
 }
 
+export async function getPlayerStats(
+  playerId: number,
+): Promise<PlayerStats> {
+  const response =
+    await apiFetch(
+      `/players/${playerId}/stats`,
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      `Player stats request failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
+}
 
 export async function getPickerMatches(
   criteria: PickerCriteria,

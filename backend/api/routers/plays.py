@@ -65,3 +65,26 @@ def get_players(
     ),
 ):
     return repository.get_players()
+
+@router.get(
+    "/players/{player_id}/stats",
+)
+def get_player_stats(
+    player_id: int,
+    repository: PlayRepository = Depends(
+        get_play_repository
+    ),
+):
+    stats = (
+        repository.get_player_stats(
+            player_id
+        )
+    )
+
+    if stats is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Player not found",
+        )
+
+    return stats

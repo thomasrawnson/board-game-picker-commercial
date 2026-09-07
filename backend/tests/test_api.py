@@ -7,6 +7,7 @@ from api.main import (
     get_collection_service,
     get_game_service,
     get_picker_play_repository,
+    get_play_repository,
     get_play_service,
 )
 from api.current_user import (

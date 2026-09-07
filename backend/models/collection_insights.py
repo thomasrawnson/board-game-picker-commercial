@@ -15,14 +15,12 @@ class LastPlayedGame:
     name: str
     played_at: datetime
 
-
 @dataclass
 class PlayerSummary:
+    id: int
     name: str
     play_count: int
     win_count: int
-
-
 @dataclass
 class CollectionInsights:
     total_games: int

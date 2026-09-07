@@ -407,3 +407,183 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
+.player-row-button {
+  width: 100%;
+  padding: 0;
+
+  color: inherit;
+  background: transparent;
+
+  border: 0;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.player-row-button:hover {
+  opacity: 0.9;
+}
+
+.player-row-chevron {
+  margin-left: auto;
+
+  color: var(--gold);
+
+  font-size: 22px;
+  line-height: 1;
+}
+
+.player-profile {
+  padding-bottom: 32px;
+}
+
+.player-profile-back {
+  margin: 0 0 18px;
+  padding: 0;
+
+  color: var(--gold);
+  background: transparent;
+
+  border: 0;
+
+  font: inherit;
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.player-profile-header {
+  margin-bottom: 20px;
+}
+
+.player-profile-stats {
+  margin-bottom: 22px;
+}
+
+.player-profile-section {
+  margin-top: 22px;
+  padding: 18px;
+
+  background:
+    rgba(243, 234, 216, 0.05);
+
+  border:
+    1px solid
+    rgba(243, 234, 216, 0.1);
+
+  border-radius: 18px;
+}
+
+.player-profile-section-header {
+  margin-bottom: 14px;
+}
+
+.player-profile-section-header h2 {
+  margin: 3px 0 0;
+
+  font-family: Fraunces, serif;
+  font-size: 20px;
+}
+
+.player-profile-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-profile-row {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+  padding: 13px 0;
+
+  color: inherit;
+  background: transparent;
+
+  border: 0;
+  border-bottom:
+    1px solid
+    rgba(243, 234, 216, 0.08);
+
+  text-align: left;
+}
+
+.player-profile-row:last-child {
+  border-bottom: 0;
+}
+
+.player-profile-row-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 3px;
+}
+
+.player-profile-row-main strong {
+  overflow: hidden;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-profile-row-main span {
+  color: var(--text-muted);
+
+  font-size: 10px;
+}
+
+.player-recent-result {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.player-win-badge,
+.player-played-badge {
+  padding: 4px 8px;
+
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.player-win-badge {
+  color: var(--ink);
+  background: var(--gold);
+}
+
+.player-played-badge {
+  color: var(--text-muted);
+
+  background:
+    rgba(243, 234, 216, 0.08);
+}
+
+.player-score {
+  color: var(--text-muted);
+
+  font-size: 9px;
+}
+
+.player-partner-row {
+  cursor: pointer;
+}
+
+.player-partner-row:hover {
+  opacity: 0.9;
+}

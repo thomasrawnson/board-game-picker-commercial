@@ -5,6 +5,7 @@ from database.models import (
     Game,
     Play,
     PlayParticipant,
+    Player,
     UserGame,
 )
 from models.collection_insights import (
@@ -260,10 +261,13 @@ class InsightsRepository:
 
         rows = (
             self.db.query(
-                PlayParticipant.name,
+                Player.id,
+                Player.name,
                 func.count(
                     PlayParticipant.id
-                ).label("play_count"),
+                ).label(
+                    "play_count"
+                ),
                 func.sum(
                     case(
                         (
@@ -274,7 +278,14 @@ class InsightsRepository:
                         ),
                         else_=0,
                     )
-                ).label("win_count"),
+                ).label(
+                    "win_count"
+                ),
+            )
+            .join(
+                PlayParticipant,
+                PlayParticipant.player_id
+                == Player.id,
             )
             .join(
                 Play,
@@ -282,20 +293,20 @@ class InsightsRepository:
                 == PlayParticipant.play_id,
             )
             .filter(
+                Player.user_id
+                == self.user_id,
                 Play.user_id
                 == self.user_id,
-                PlayParticipant.name
-                .is_not(None),
-                PlayParticipant.name != "",
             )
             .group_by(
-                PlayParticipant.name
+                Player.id,
+                Player.name,
             )
             .order_by(
                 func.count(
                     PlayParticipant.id
                 ).desc(),
-                PlayParticipant.name,
+                Player.name,
             )
             .limit(limit)
             .all()
@@ -303,6 +314,7 @@ class InsightsRepository:
 
         return [
             PlayerSummary(
+                id=row.id,
                 name=row.name,
                 play_count=row.play_count,
                 win_count=(

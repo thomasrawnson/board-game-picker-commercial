@@ -1,15 +1,21 @@
-import { useEffect, useState } from "react"
+import {
+  useEffect,
+  useState,
+} from "react"
 
 import {
   getCollectionInsights,
   type CollectionInsights,
 } from "../api/client"
 
+import PlayerProfile from "./players/PlayerProfile"
+
 
 function formatPlayedAt(
   value: string,
 ): string {
-  const date = new Date(value)
+  const date =
+    new Date(value)
 
   return new Intl.DateTimeFormat(
     undefined,
@@ -25,25 +31,45 @@ function formatPlayedAt(
 function formatHours(
   minutes: number,
 ): string {
-  const hours = minutes / 60
+  const hours =
+    minutes / 60
 
   if (hours < 10) {
     return hours.toFixed(1)
   }
 
-  return Math.round(hours).toString()
+  return (
+    Math.round(hours)
+      .toString()
+  )
 }
 
 
 function InsightsView() {
-  const [insights, setInsights] =
-    useState<CollectionInsights | null>(null)
+  const [
+    insights,
+    setInsights,
+  ] = useState<
+    CollectionInsights | null
+  >(null)
 
-  const [loading, setLoading] =
-    useState(true)
+  const [
+    loading,
+    setLoading,
+  ] = useState(true)
 
-  const [error, setError] =
-    useState("")
+  const [
+    error,
+    setError,
+  ] = useState("")
+
+  const [
+    selectedPlayerId,
+    setSelectedPlayerId,
+  ] = useState<number | null>(
+    null,
+  )
+
 
   useEffect(() => {
     async function loadInsights() {
@@ -66,6 +92,32 @@ function InsightsView() {
     loadInsights()
   }, [])
 
+
+  if (
+    selectedPlayerId !== null
+  ) {
+    return (
+      <PlayerProfile
+        playerId={
+          selectedPlayerId
+        }
+        onBack={() =>
+          setSelectedPlayerId(
+            null
+          )
+        }
+        onSelectPlayer={(
+          playerId: number,
+        ) =>
+          setSelectedPlayerId(
+            playerId
+          )
+        }
+      />
+    )
+  }
+
+
   if (loading) {
     return (
       <section className="screen insights-screen">
@@ -80,7 +132,11 @@ function InsightsView() {
     )
   }
 
-  if (error || !insights) {
+
+  if (
+    error
+    || !insights
+  ) {
     return (
       <section className="screen insights-screen">
         <p className="eyebrow">
@@ -98,6 +154,7 @@ function InsightsView() {
     )
   }
 
+
   return (
     <section className="screen insights-screen">
       <header>
@@ -110,11 +167,13 @@ function InsightsView() {
         </h1>
 
         <p className="subtitle">
-          What you've played, who you've
-          played with and what's still
-          waiting on the shelf.
+          What you've played,
+          who you've played with
+          and what's still waiting
+          on the shelf.
         </p>
       </header>
+
 
       <div className="insights-stat-grid">
         <article className="stat-card">
@@ -164,6 +223,7 @@ function InsightsView() {
         </article>
       </div>
 
+
       <div className="insights-mini-grid">
         <article className="insight-mini-card">
           <span>
@@ -171,7 +231,10 @@ function InsightsView() {
           </span>
 
           <strong>
-            {insights.played_games_count}
+            {
+              insights
+                .played_games_count
+            }
           </strong>
         </article>
 
@@ -181,14 +244,20 @@ function InsightsView() {
           </span>
 
           <strong>
-            {insights
-              .average_duration_minutes !==
-            null
-              ? `${insights.average_duration_minutes}m`
-              : "—"}
+            {
+              insights
+                .average_duration_minutes
+              !== null
+                ? `${
+                    insights
+                      .average_duration_minutes
+                  }m`
+                : "—"
+            }
           </strong>
         </article>
       </div>
+
 
       <div className="insight-feature-list">
         <article className="insight-feature">
@@ -215,7 +284,8 @@ function InsightsView() {
                 {
                   insights
                     .most_played
-                    .play_count === 1
+                    .play_count
+                  === 1
                     ? "play"
                     : "plays"
                 }
@@ -227,6 +297,7 @@ function InsightsView() {
             </p>
           )}
         </article>
+
 
         <article className="insight-feature">
           <p className="insight-label">
@@ -253,78 +324,120 @@ function InsightsView() {
             </>
           ) : (
             <p className="insight-empty">
-              Nothing has hit the table yet.
+              Nothing has hit the
+              table yet.
             </p>
           )}
         </article>
       </div>
 
-      {insights.frequent_players.length > 0 && (
-        <article className="players-card">
-          <div className="players-card-header">
-            <div>
-              <p className="insight-label">
-                Table regulars
-              </p>
 
-              <h2>
-                Your players
-              </h2>
+      {
+        insights
+          .frequent_players
+          .length > 0
+        && (
+          <article className="players-card">
+            <div className="players-card-header">
+              <div>
+                <p className="insight-label">
+                  Table regulars
+                </p>
+
+                <h2>
+                  Your players
+                </h2>
+              </div>
+
+              <span>
+                Top{" "}
+                {
+                  insights
+                    .frequent_players
+                    .length
+                }
+              </span>
             </div>
 
-            <span>
-              Top {
+
+            <div className="player-list">
+              {
                 insights
                   .frequent_players
-                  .length
+                  .map(
+                    (
+                      player,
+                      index,
+                    ) => (
+                      <button
+                        type="button"
+                        className="player-row player-row-button"
+                        key={
+                          player.id
+                        }
+                        onClick={() =>
+                          setSelectedPlayerId(
+                            player.id
+                          )
+                        }
+                      >
+                        <span className="player-rank">
+                          {
+                            index + 1
+                          }
+                        </span>
+
+                        <div className="player-name">
+                          {
+                            player.name
+                          }
+                        </div>
+
+                        <div className="player-stat">
+                          <strong>
+                            {
+                              player
+                                .play_count
+                            }
+                          </strong>
+
+                          <span>
+                            plays
+                          </span>
+                        </div>
+
+                        <div className="player-stat">
+                          <strong>
+                            {
+                              player
+                                .win_count
+                            }
+                          </strong>
+
+                          <span>
+                            wins
+                          </span>
+                        </div>
+
+                        <span className="player-row-chevron">
+                          ›
+                        </span>
+                      </button>
+                    ),
+                  )
               }
-            </span>
-          </div>
+            </div>
+          </article>
+        )
+      }
 
-          <div className="player-list">
-            {insights.frequent_players.map(
-              (player, index) => (
-                <div
-                  className="player-row"
-                  key={player.name}
-                >
-                  <span className="player-rank">
-                    {index + 1}
-                  </span>
-
-                  <div className="player-name">
-                    {player.name}
-                  </div>
-
-                  <div className="player-stat">
-                    <strong>
-                      {player.play_count}
-                    </strong>
-
-                    <span>
-                      plays
-                    </span>
-                  </div>
-
-                  <div className="player-stat">
-                    <strong>
-                      {player.win_count}
-                    </strong>
-
-                    <span>
-                      wins
-                    </span>
-                  </div>
-                </div>
-              ),
-            )}
-          </div>
-        </article>
-      )}
 
       <article className="shelf-callout">
         <strong>
-          {insights.never_played_count}
+          {
+            insights
+              .never_played_count
+          }
         </strong>
 
         <div>
@@ -333,8 +446,8 @@ function InsightsView() {
           </span>
 
           <p>
-            Still looking for their next
-            night on the table.
+            Still looking for their
+            next night on the table.
           </p>
         </div>
       </article>
