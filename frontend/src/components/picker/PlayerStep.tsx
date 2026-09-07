@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react"
 
@@ -47,6 +48,11 @@ function PlayerStep({
     setPlayerPickerOpen,
   ] = useState(false)
 
+  const [
+    playerSearch,
+    setPlayerSearch,
+  ] = useState("")
+
 
   useEffect(() => {
     async function loadPlayers() {
@@ -64,6 +70,45 @@ function PlayerStep({
 
     loadPlayers()
   }, [])
+
+
+  const selectedPlayers =
+    useMemo(
+      () =>
+        knownPlayers.filter(
+          (player) =>
+            selectedPlayerIds.includes(
+              player.id
+            ),
+        ),
+      [
+        knownPlayers,
+        selectedPlayerIds,
+      ],
+    )
+
+
+  const filteredPlayers =
+    useMemo(() => {
+      const query =
+        playerSearch
+          .trim()
+          .toLowerCase()
+
+      if (!query) {
+        return knownPlayers
+      }
+
+      return knownPlayers.filter(
+        (player) =>
+          player.name
+            .toLowerCase()
+            .includes(query),
+      )
+    }, [
+      knownPlayers,
+      playerSearch,
+    ])
 
 
   function togglePlayer(
@@ -116,13 +161,19 @@ function PlayerStep({
   }
 
 
-  const selectedPlayers =
-    knownPlayers.filter(
-      (player) =>
-        selectedPlayerIds.includes(
-          player.id
-        ),
-    )
+  function closePlayerPicker() {
+    setPlayerPickerOpen(false)
+    setPlayerSearch("")
+  }
+
+
+  const selectedPlayerNames =
+    selectedPlayers
+      .map(
+        (player) =>
+          player.name
+      )
+      .join(", ")
 
 
   return (
@@ -154,48 +205,25 @@ function PlayerStep({
               )
             }
           >
-            <span>
-              Choose players
-            </span>
+            <div className="player-picker-trigger-copy">
+              <strong>
+                Choose players
+              </strong>
 
-            <strong>
-              {
-                selectedPlayerIds
-                  .length > 0
-                  ? `${
-                      selectedPlayerIds
-                        .length
-                    } selected`
-                  : "Optional"
-              }
-            </strong>
-          </button>
-
-
-          {
-            selectedPlayers.length
-            > 0
-            && (
-              <div className="selected-player-summary">
+              <span>
                 {
-                  selectedPlayers.map(
-                    (player) => (
-                      <span
-                        key={
-                          player.id
-                        }
-                        className="selected-player-pill"
-                      >
-                        {
-                          player.name
-                        }
-                      </span>
-                    ),
-                  )
+                  selectedPlayers.length
+                  > 0
+                    ? selectedPlayerNames
+                    : "Select regular players"
                 }
-              </div>
-            )
-          }
+              </span>
+            </div>
+
+            <span className="player-picker-trigger-chevron">
+              ›
+            </span>
+          </button>
 
 
           <p className="player-or">
@@ -241,22 +269,6 @@ function PlayerStep({
       </div>
 
 
-      {
-        selectedPlayerIds.length
-        > 0
-        && (
-          <p className="selected-player-count">
-            {
-              selectedPlayerIds
-                .length
-            }
-            {" "}
-            selected
-          </p>
-        )
-      }
-
-
       <button
         type="button"
         className="primary-button"
@@ -276,10 +288,8 @@ function PlayerStep({
         && (
           <div
             className="player-picker-backdrop"
-            onClick={() =>
-              setPlayerPickerOpen(
-                false
-              )
+            onClick={
+              closePlayerPicker
             }
           >
             <div
@@ -300,15 +310,19 @@ function PlayerStep({
                   <h2>
                     Who's playing?
                   </h2>
+
+                  <p>
+                    Pick everyone at
+                    the table.
+                  </p>
                 </div>
 
                 <button
                   type="button"
                   className="player-picker-close"
-                  onClick={() =>
-                    setPlayerPickerOpen(
-                      false
-                    )
+                  aria-label="Close player picker"
+                  onClick={
+                    closePlayerPicker
                   }
                 >
                   ×
@@ -316,65 +330,114 @@ function PlayerStep({
               </div>
 
 
+              <div className="player-picker-search-wrap">
+                <input
+                  type="search"
+                  className="player-picker-search"
+                  placeholder="Search players..."
+                  value={
+                    playerSearch
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    setPlayerSearch(
+                      event
+                        .target
+                        .value
+                    )
+                  }
+                  autoFocus
+                />
+              </div>
+
+
               <div className="player-picker-list">
                 {
-                  knownPlayers.map(
-                    (player) => {
-                      const selected =
-                        selectedPlayerIds
-                          .includes(
-                            player.id
+                  filteredPlayers.length
+                  > 0
+                    ? filteredPlayers.map(
+                        (player) => {
+                          const selected =
+                            selectedPlayerIds
+                              .includes(
+                                player.id
+                              )
+
+                          return (
+                            <button
+                              key={
+                                player.id
+                              }
+                              type="button"
+                              className={
+                                selected
+                                  ? "player-picker-row selected"
+                                  : "player-picker-row"
+                              }
+                              onClick={() =>
+                                togglePlayer(
+                                  player.id
+                                )
+                              }
+                            >
+                              <span className="player-picker-row-name">
+                                {
+                                  player.name
+                                }
+                              </span>
+
+                              <span
+                                className={
+                                  selected
+                                    ? "player-picker-check selected"
+                                    : "player-picker-check"
+                                }
+                              >
+                                {
+                                  selected
+                                    ? "✓"
+                                    : ""
+                                }
+                              </span>
+                            </button>
                           )
-
-                      return (
-                        <button
-                          key={
-                            player.id
-                          }
-                          type="button"
-                          className={
-                            selected
-                              ? "player-picker-row selected"
-                              : "player-picker-row"
-                          }
-                          onClick={() =>
-                            togglePlayer(
-                              player.id
-                            )
-                          }
-                        >
-                          <span>
-                            {
-                              player.name
-                            }
-                          </span>
-
-                          <span className="player-picker-check">
-                            {
-                              selected
-                                ? "✓"
-                                : ""
-                            }
-                          </span>
-                        </button>
+                        },
                       )
-                    },
-                  )
+                    : (
+                      <p className="player-picker-empty">
+                        No players found.
+                      </p>
+                    )
                 }
               </div>
 
 
-              <button
-                type="button"
-                className="primary-button"
-                onClick={() =>
-                  setPlayerPickerOpen(
-                    false
-                  )
-                }
-              >
-                Done
-              </button>
+              <div className="player-picker-footer">
+                <span>
+                  {
+                    selectedPlayerIds
+                      .length
+                  }
+                  {" "}
+                  {
+                    selectedPlayerIds
+                      .length === 1
+                      ? "player selected"
+                      : "players selected"
+                  }
+                </span>
+
+                <button
+                  type="button"
+                  className="primary-button player-picker-done"
+                  onClick={
+                    closePlayerPicker
+                  }
+                >
+                  Done
+                </button>
+              </div>
             </div>
           </div>
         )
