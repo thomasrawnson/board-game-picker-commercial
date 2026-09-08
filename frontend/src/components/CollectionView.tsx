@@ -27,55 +27,77 @@ import GameDetail
   from "./collection/GameDetail"
 
 
-function CollectionView() {
-  const [games, setGames] =
-    useState<Game[]>([])
+type Props = {
+  initialGameBggId:
+    number | null
+  onInitialGameHandled:
+    () => void
+}
+
+
+function CollectionView({
+  initialGameBggId,
+  onInitialGameHandled,
+}: Props) {
+  const [
+    games,
+    setGames,
+  ] = useState<Game[]>([])
 
   const [
     collectionStats,
     setCollectionStats,
-  ] =
-    useState<
-      CollectionGameStats[]
-    >([])
+  ] = useState<
+    CollectionGameStats[]
+  >([])
 
-  const [search, setSearch] =
-    useState("")
+  const [
+    search,
+    setSearch,
+  ] = useState("")
 
-  const [sort, setSort] =
-    useState<SortOption>("name")
+  const [
+    sort,
+    setSort,
+  ] = useState<SortOption>(
+    "name",
+  )
 
   const [
     playFilter,
     setPlayFilter,
-  ] =
-    useState<PlayFilter>("all")
+  ] = useState<PlayFilter>(
+    "all",
+  )
 
   const [
     selectedGame,
     setSelectedGame,
-  ] =
-    useState<Game | null>(null)
+  ] = useState<
+    Game | null
+  >(null)
 
   const [
     gameHistory,
     setGameHistory,
-  ] =
-    useState<GameHistory | null>(
-      null,
-    )
+  ] = useState<
+    GameHistory | null
+  >(null)
 
   const [
     historyLoading,
     setHistoryLoading,
-  ] =
-    useState(false)
+  ] = useState(false)
 
-  const [loading, setLoading] =
-    useState(true)
+  const [
+    loading,
+    setLoading,
+  ] = useState(true)
 
-  const [error, setError] =
-    useState("")
+  const [
+    error,
+    setError,
+  ] = useState("")
 
   const savedScrollPosition =
     useRef(0)
@@ -94,7 +116,8 @@ function CollectionView() {
 
         setGames(
           gamesResult.filter(
-            (game) => game.owned,
+            (game) =>
+              game.owned,
           ),
         )
 
@@ -117,7 +140,44 @@ function CollectionView() {
 
 
   useEffect(() => {
-    if (selectedGame !== null) {
+    if (
+      initialGameBggId === null
+      || games.length === 0
+    ) {
+      return
+    }
+
+    const game =
+      games.find(
+        (candidate) =>
+          candidate.bgg_id
+          === initialGameBggId,
+      )
+
+    if (!game) {
+      onInitialGameHandled()
+      return
+    }
+
+    savedScrollPosition.current =
+      window.scrollY
+
+    setSelectedGame(
+      game,
+    )
+
+    onInitialGameHandled()
+  }, [
+    games,
+    initialGameBggId,
+    onInitialGameHandled,
+  ])
+
+
+  useEffect(() => {
+    if (
+      selectedGame !== null
+    ) {
       return
     }
 
@@ -125,10 +185,13 @@ function CollectionView() {
       window.scrollTo({
         top:
           savedScrollPosition.current,
-        behavior: "instant",
+        behavior:
+          "instant",
       })
     })
-  }, [selectedGame])
+  }, [
+    selectedGame,
+  ])
 
 
   async function refreshHistory(
@@ -142,17 +205,17 @@ function CollectionView() {
           game.bgg_id,
         )
 
-      setGameHistory(history)
+      setGameHistory(
+        history,
+      )
 
       setCollectionStats(
         (current) => {
           const updated = {
             bgg_id:
               game.bgg_id,
-
             play_count:
               history.play_count,
-
             last_played_at:
               history.last_played_at,
           }
@@ -160,8 +223,8 @@ function CollectionView() {
           const exists =
             current.some(
               (stats) =>
-                stats.bgg_id ===
-                game.bgg_id,
+                stats.bgg_id
+                === game.bgg_id,
             )
 
           if (!exists) {
@@ -173,8 +236,8 @@ function CollectionView() {
 
           return current.map(
             (stats) =>
-              stats.bgg_id ===
-              game.bgg_id
+              stats.bgg_id
+              === game.bgg_id
                 ? updated
                 : stats,
           )
@@ -199,7 +262,9 @@ function CollectionView() {
     refreshHistory(
       selectedGame,
     )
-  }, [selectedGame])
+  }, [
+    selectedGame,
+  ])
 
 
   const statsByGame =
@@ -213,7 +278,9 @@ function CollectionView() {
             ],
           ),
         ),
-      [collectionStats],
+      [
+        collectionStats,
+      ],
     )
 
 
@@ -233,21 +300,23 @@ function CollectionView() {
               )
 
             const playCount =
-              stats?.play_count ??
-              0
+              stats?.play_count
+              ?? 0
 
             if (
-              playFilter ===
-                "played" &&
-              playCount === 0
+              playFilter
+                === "played"
+              && playCount
+                === 0
             ) {
               return false
             }
 
             if (
-              playFilter ===
-                "never" &&
-              playCount > 0
+              playFilter
+                === "never"
+              && playCount
+                > 0
             ) {
               return false
             }
@@ -263,76 +332,114 @@ function CollectionView() {
             ]
               .join(" ")
               .toLowerCase()
-              .includes(query)
+              .includes(
+                query,
+              )
           },
         )
 
       return [
         ...results,
-      ].sort((a, b) => {
-        const aStats =
-          statsByGame.get(
-            a.bgg_id,
-          )
+      ].sort(
+        (a, b) => {
+          const aStats =
+            statsByGame.get(
+              a.bgg_id,
+            )
 
-        const bStats =
-          statsByGame.get(
-            b.bgg_id,
-          )
+          const bStats =
+            statsByGame.get(
+              b.bgg_id,
+            )
 
-        if (sort === "recent") {
-          const aDate =
-            aStats?.last_played_at
-              ? new Date(
-                  aStats.last_played_at,
-                ).getTime()
-              : 0
+          if (
+            sort
+            === "recent"
+          ) {
+            const aDate =
+              aStats
+                ?.last_played_at
+                ? new Date(
+                    aStats
+                      .last_played_at,
+                  ).getTime()
+                : 0
 
-          const bDate =
-            bStats?.last_played_at
-              ? new Date(
-                  bStats.last_played_at,
-                ).getTime()
-              : 0
+            const bDate =
+              bStats
+                ?.last_played_at
+                ? new Date(
+                    bStats
+                      .last_played_at,
+                  ).getTime()
+                : 0
 
-          return bDate - aDate
-        }
+            return (
+              bDate - aDate
+            )
+          }
 
-        if (
-          sort === "most-played"
-        ) {
+          if (
+            sort
+            === "most-played"
+          ) {
+            return (
+              (
+                bStats
+                  ?.play_count
+                ?? 0
+              )
+              -
+              (
+                aStats
+                  ?.play_count
+                ?? 0
+              )
+            )
+          }
+
+          if (
+            sort
+            === "rating"
+          ) {
+            return (
+              (
+                b.rating
+                ?? -1
+              )
+              -
+              (
+                a.rating
+                ?? -1
+              )
+            )
+          }
+
+          if (
+            sort
+            === "complexity"
+          ) {
+            return (
+              (
+                b.complexity
+                ?? -1
+              )
+              -
+              (
+                a.complexity
+                ?? -1
+              )
+            )
+          }
+
           return (
-            (bStats?.play_count ??
-              0) -
-            (aStats?.play_count ??
-              0)
+            a.name
+              .localeCompare(
+                b.name,
+              )
           )
-        }
-
-        if (sort === "rating") {
-          return (
-            (b.rating ?? -1) -
-            (a.rating ?? -1)
-          )
-        }
-
-        if (
-          sort === "complexity"
-        ) {
-          return (
-            (b.complexity ??
-              -1) -
-            (a.complexity ??
-              -1)
-          )
-        }
-
-        return (
-          a.name.localeCompare(
-            b.name,
-          )
-        )
-      })
+        },
+      )
     }, [
       games,
       search,
@@ -348,13 +455,20 @@ function CollectionView() {
     savedScrollPosition.current =
       window.scrollY
 
-    setSelectedGame(game)
+    setSelectedGame(
+      game,
+    )
   }
 
 
   function closeGame() {
-    setSelectedGame(null)
-    setGameHistory(null)
+    setSelectedGame(
+      null,
+    )
+
+    setGameHistory(
+      null,
+    )
   }
 
 
@@ -381,8 +495,9 @@ function CollectionView() {
         (current) =>
           current.filter(
             (game) =>
-              game.bgg_id !==
-              selectedGame.bgg_id,
+              game.bgg_id
+              !== selectedGame
+                .bgg_id,
           ),
       )
 
@@ -390,8 +505,9 @@ function CollectionView() {
         (current) =>
           current.filter(
             (stats) =>
-              stats.bgg_id !==
-              selectedGame.bgg_id,
+              stats.bgg_id
+              !== selectedGame
+                .bgg_id,
           ),
       )
 
@@ -428,7 +544,9 @@ function CollectionView() {
           Your collection
         </p>
 
-        <h1>Your games</h1>
+        <h1>
+          Your games
+        </h1>
 
         <p className="error-message">
           {error}
@@ -441,12 +559,18 @@ function CollectionView() {
   if (selectedGame) {
     return (
       <GameDetail
-        game={selectedGame}
-        history={gameHistory}
+        game={
+          selectedGame
+        }
+        history={
+          gameHistory
+        }
         historyLoading={
           historyLoading
         }
-        onBack={closeGame}
+        onBack={
+          closeGame
+        }
         onPlaySaved={() =>
           refreshHistory(
             selectedGame,
@@ -467,7 +591,9 @@ function CollectionView() {
           Your collection
         </p>
 
-        <h1>Your games</h1>
+        <h1>
+          Your games
+        </h1>
 
         <p className="subtitle">
           {games.length} games on
@@ -475,9 +601,14 @@ function CollectionView() {
         </p>
       </header>
 
+
       <CollectionFilters
-        search={search}
-        sort={sort}
+        search={
+          search
+        }
+        sort={
+          sort
+        }
         playFilter={
           playFilter
         }
@@ -495,8 +626,11 @@ function CollectionView() {
         }
       />
 
+
       <CollectionGameList
-        games={filteredGames}
+        games={
+          filteredGames
+        }
         statsByGame={
           statsByGame
         }
@@ -507,5 +641,6 @@ function CollectionView() {
     </section>
   )
 }
+
 
 export default CollectionView

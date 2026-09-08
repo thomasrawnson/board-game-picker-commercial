@@ -8,7 +8,8 @@ import {
   type CollectionInsights,
 } from "../api/client"
 
-import PlayerProfile from "./players/PlayerProfile"
+import PlayerProfile
+  from "./players/PlayerProfile"
 
 
 function formatPlayedAt(
@@ -45,7 +46,80 @@ function formatHours(
 }
 
 
-function InsightsView() {
+function formatNeglectedGame(
+  lastPlayedAt: string | null,
+): string {
+  if (!lastPlayedAt) {
+    return "Never played"
+  }
+
+  const playedAt =
+    new Date(lastPlayedAt)
+
+  const today =
+    new Date()
+
+  const millisecondsPerDay =
+    1000
+    * 60
+    * 60
+    * 24
+
+  const days =
+    Math.max(
+      0,
+      Math.floor(
+        (
+          today.getTime()
+          - playedAt.getTime()
+        )
+        / millisecondsPerDay
+      ),
+    )
+
+  if (days === 0) {
+    return "Played today"
+  }
+
+  if (days === 1) {
+    return "1 day ago"
+  }
+
+  if (days < 30) {
+    return `${days} days ago`
+  }
+
+  const months =
+    Math.floor(
+      days / 30
+    )
+
+  if (months < 12) {
+    return months === 1
+      ? "1 month ago"
+      : `${months} months ago`
+  }
+
+  const years =
+    Math.floor(
+      months / 12
+    )
+
+  return years === 1
+    ? "1 year ago"
+    : `${years} years ago`
+}
+
+
+type Props = {
+  onOpenGame:
+    (bggId: number) => void
+}
+
+
+function InsightsView({
+  onOpenGame,
+}: Props) {
   const [
     insights,
     setInsights,
@@ -69,6 +143,26 @@ function InsightsView() {
   ] = useState<number | null>(
     null,
   )
+
+  const [
+    showMonthlyPlays,
+    setShowMonthlyPlays,
+  ] = useState(false)
+
+  const [
+    showAllNeglected,
+    setShowAllNeglected,
+  ] = useState(false)
+
+  const [
+    showAllFavourites,
+    setShowAllFavourites,
+  ] = useState(false)
+
+  const [
+    showAllGroups,
+    setShowAllGroups,
+  ] = useState(false)
 
 
   useEffect(() => {
@@ -259,43 +353,205 @@ function InsightsView() {
       </div>
 
 
+      <article className="monthly-activity-card">
+        <button
+          type="button"
+          className="monthly-activity-trigger"
+          onClick={() =>
+            setShowMonthlyPlays(
+              (current) => !current
+            )
+          }
+        >
+          <div>
+            <p className="insight-label">
+              This month
+            </p>
+
+            <h2>
+              Around the table
+            </h2>
+          </div>
+
+          <span className="monthly-activity-chevron">
+            {
+              showMonthlyPlays
+                ? "⌃"
+                : "⌄"
+            }
+          </span>
+        </button>
+
+        <div className="monthly-activity-grid">
+          <div className="monthly-activity-stat">
+            <strong>
+              {
+                insights
+                  .monthly_activity
+                  .plays
+              }
+            </strong>
+
+            <span>
+              Plays
+            </span>
+          </div>
+
+          <div className="monthly-activity-stat">
+            <strong>
+              {
+                insights
+                  .monthly_activity
+                  .unique_games
+              }
+            </strong>
+
+            <span>
+              Games
+            </span>
+          </div>
+
+          <div className="monthly-activity-stat">
+            <strong>
+              {
+                insights
+                  .monthly_activity
+                  .new_games
+              }
+            </strong>
+
+            <span>
+              New
+            </span>
+          </div>
+
+          <div className="monthly-activity-stat">
+            <strong>
+              {
+                insights
+                  .monthly_activity
+                  .repeat_plays
+              }
+            </strong>
+
+            <span>
+              Repeat
+            </span>
+          </div>
+        </div>
+
+        {
+          showMonthlyPlays
+          && (
+            <div className="monthly-play-list">
+              {
+                insights
+                  .monthly_activity
+                  .recent_plays
+                  .map(
+                    (play) => (
+                      <div
+                        key={
+                          play.play_id
+                        }
+                        className="monthly-play-row"
+                      >
+                        <button
+                          type="button"
+                          className="monthly-play-game"
+                          onClick={() =>
+                            onOpenGame(
+                              play.bgg_id
+                            )
+                          }
+                        >
+                          {
+                            play
+                              .game_name
+                          }
+                        </button>
+
+                        <div className="monthly-play-meta">
+                          <span>
+                            {
+                              formatPlayedAt(
+                                play
+                                  .played_at
+                              )
+                            }
+                          </span>
+
+                          <span>
+                            {
+                              play
+                                .player_count
+                            }{" "}
+                            players
+                          </span>
+                        </div>
+                      </div>
+                    ),
+                  )
+              }
+
+              {
+                insights
+                  .monthly_activity
+                  .recent_plays
+                  .length === 0
+                && (
+                  <p className="insight-empty">
+                    No plays this month.
+                  </p>
+                )
+              }
+            </div>
+          )
+        }
+      </article>
+
+
       <div className="insight-feature-list">
         <article className="insight-feature">
           <p className="insight-label">
             Most played
           </p>
 
-          {insights.most_played ? (
-            <>
-              <h2>
-                {
-                  insights
-                    .most_played
-                    .name
-                }
-              </h2>
+          {
+            insights.most_played
+              ? (
+                <>
+                  <h2>
+                    {
+                      insights
+                        .most_played
+                        .name
+                    }
+                  </h2>
 
-              <p className="insight-detail">
-                {
-                  insights
-                    .most_played
-                    .play_count
-                }{" "}
-                {
-                  insights
-                    .most_played
-                    .play_count
-                  === 1
-                    ? "play"
-                    : "plays"
-                }
-              </p>
-            </>
-          ) : (
-            <p className="insight-empty">
-              No plays recorded yet.
-            </p>
-          )}
+                  <p className="insight-detail">
+                    {
+                      insights
+                        .most_played
+                        .play_count
+                    }{" "}
+                    {
+                      insights
+                        .most_played
+                        .play_count
+                      === 1
+                        ? "play"
+                        : "plays"
+                    }
+                  </p>
+                </>
+              )
+              : (
+                <p className="insight-empty">
+                  No plays recorded yet.
+                </p>
+              )
+          }
         </article>
 
 
@@ -304,32 +560,154 @@ function InsightsView() {
             Last played
           </p>
 
-          {insights.last_played ? (
-            <>
-              <h2>
-                {
-                  insights
-                    .last_played
-                    .name
-                }
-              </h2>
+          {
+            insights.last_played
+              ? (
+                <>
+                  <h2>
+                    {
+                      insights
+                        .last_played
+                        .name
+                    }
+                  </h2>
 
-              <p className="insight-detail">
-                {formatPlayedAt(
-                  insights
-                    .last_played
-                    .played_at,
-                )}
-              </p>
-            </>
-          ) : (
-            <p className="insight-empty">
-              Nothing has hit the
-              table yet.
-            </p>
-          )}
+                  <p className="insight-detail">
+                    {
+                      formatPlayedAt(
+                        insights
+                          .last_played
+                          .played_at,
+                      )
+                    }
+                  </p>
+                </>
+              )
+              : (
+                <p className="insight-empty">
+                  Nothing has hit the
+                  table yet.
+                </p>
+              )
+          }
         </article>
       </div>
+
+
+      {
+        insights
+          .neglected_games
+          .length > 0
+        && (
+          <article className="players-card neglected-card">
+            <div className="players-card-header">
+              <div>
+                <p className="insight-label">
+                  Needs some love
+                </p>
+
+                <h2>
+                  Waiting on the shelf
+                </h2>
+              </div>
+            </div>
+
+            <div className="player-list">
+              {
+                insights
+                  .neglected_games
+                  .slice(
+                    0,
+                    showAllNeglected
+                      ? undefined
+                      : 3
+                  )
+                  .map(
+                    (
+                      game,
+                      index,
+                    ) => (
+                      <div
+                        className="player-row neglected-game-row"
+                        key={
+                          game.bgg_id
+                        }
+                      >
+                        <span className="player-rank">
+                          {
+                            index + 1
+                          }
+                        </span>
+
+                        <button
+                          type="button"
+                          className="stats-game-link neglected-game-name"
+                          onClick={() =>
+                            onOpenGame(
+                              game.bgg_id
+                            )
+                          }
+                        >
+                          <strong>
+                            {
+                              game.name
+                            }
+                          </strong>
+
+                          <span>
+                            {
+                              formatNeglectedGame(
+                                game
+                                  .last_played_at
+                              )
+                            }
+                          </span>
+                        </button>
+
+                        <div className="player-stat">
+                          <strong>
+                            {
+                              game
+                                .play_count
+                            }
+                          </strong>
+
+                          <span>
+                            plays
+                          </span>
+                        </div>
+                      </div>
+                    ),
+                  )
+              }
+            </div>
+
+            {
+              insights
+                .neglected_games
+                .length > 3
+              && (
+                <button
+                  type="button"
+                  className="insights-view-all"
+                  onClick={() =>
+                    setShowAllNeglected(
+                      (current) =>
+                        !current
+                    )
+                  }
+                >
+                  {
+                    showAllNeglected
+                      ? "Show less"
+                      : "View all"
+                  }
+                </button>
+              )
+            }
+          </article>
+        )
+      }
 
 
       {
@@ -350,35 +728,27 @@ function InsightsView() {
               </div>
 
               <span>
-                Top{" "}
-                {
-                  insights
-                    .frequent_players
-                    .length
-                }
+                Top 3
               </span>
             </div>
-
 
             <div className="player-list">
               {
                 insights
                   .frequent_players
+                  .slice(
+                    0,
+                    3
+                  )
                   .map(
                     (
                       player,
                       index,
                     ) => (
-                      <button
-                        type="button"
-                        className="player-row player-row-button"
+                      <div
+                        className="player-row"
                         key={
                           player.id
-                        }
-                        onClick={() =>
-                          setSelectedPlayerId(
-                            player.id
-                          )
                         }
                       >
                         <span className="player-rank">
@@ -387,11 +757,19 @@ function InsightsView() {
                           }
                         </span>
 
-                        <div className="player-name">
+                        <button
+                          type="button"
+                          className="player-name player-name-link"
+                          onClick={() =>
+                            setSelectedPlayerId(
+                              player.id
+                            )
+                          }
+                        >
                           {
                             player.name
                           }
-                        </div>
+                        </button>
 
                         <div className="player-stat">
                           <strong>
@@ -418,15 +796,238 @@ function InsightsView() {
                             wins
                           </span>
                         </div>
-
-                        <span className="player-row-chevron">
-                          ›
-                        </span>
-                      </button>
+                      </div>
                     ),
                   )
               }
             </div>
+          </article>
+        )
+      }
+
+
+      {
+        insights
+          .top_games_by_player
+          .length > 0
+        && (
+          <article className="players-card">
+            <div className="players-card-header">
+              <div>
+                <p className="insight-label">
+                  Player favourites
+                </p>
+
+                <h2>
+                  Their go-to games
+                </h2>
+              </div>
+            </div>
+
+            <div className="player-list">
+              {
+                insights
+                  .top_games_by_player
+                  .slice(
+                    0,
+                    showAllFavourites
+                      ? undefined
+                      : 3
+                  )
+                  .map(
+                    (
+                      favourite,
+                      index,
+                    ) => (
+                      <div
+                        className="player-row favourite-game-row"
+                        key={
+                          favourite
+                            .player_id
+                        }
+                      >
+                        <span className="player-rank">
+                          {
+                            index + 1
+                          }
+                        </span>
+
+                        <div className="favourite-game-copy">
+                          <button
+                            type="button"
+                            className="favourite-player-link"
+                            onClick={() =>
+                              setSelectedPlayerId(
+                                favourite
+                                  .player_id
+                              )
+                            }
+                          >
+                            {
+                              favourite
+                                .player_name
+                            }
+                          </button>
+
+                          <button
+                            type="button"
+                            className="stats-game-link favourite-game-link"
+                            onClick={() =>
+                              onOpenGame(
+                                favourite
+                                  .bgg_id
+                              )
+                            }
+                          >
+                            {
+                              favourite
+                                .game_name
+                            }
+                          </button>
+                        </div>
+
+                        <div className="player-stat">
+                          <strong>
+                            {
+                              favourite
+                                .play_count
+                            }
+                          </strong>
+
+                          <span>
+                            plays
+                          </span>
+                        </div>
+                      </div>
+                    ),
+                  )
+              }
+            </div>
+
+            {
+              insights
+                .top_games_by_player
+                .length > 3
+              && (
+                <button
+                  type="button"
+                  className="insights-view-all"
+                  onClick={() =>
+                    setShowAllFavourites(
+                      (current) =>
+                        !current
+                    )
+                  }
+                >
+                  {
+                    showAllFavourites
+                      ? "Show less"
+                      : "View all"
+                  }
+                </button>
+              )
+            }
+          </article>
+        )
+      }
+
+
+      {
+        insights
+          .common_groups
+          .length > 0
+        && (
+          <article className="players-card">
+            <div className="players-card-header">
+              <div>
+                <p className="insight-label">
+                  Regular groups
+                </p>
+
+                <h2>
+                  Who plays together
+                </h2>
+              </div>
+            </div>
+
+            <div className="player-list">
+              {
+                insights
+                  .common_groups
+                  .slice(
+                    0,
+                    showAllGroups
+                      ? undefined
+                      : 3
+                  )
+                  .map(
+                    (
+                      group,
+                      index,
+                    ) => (
+                      <div
+                        className="player-row common-group-row"
+                        key={
+                          group
+                            .player_ids
+                            .join("-")
+                        }
+                      >
+                        <span className="player-rank">
+                          {
+                            index + 1
+                          }
+                        </span>
+
+                        <div className="player-name common-group-names">
+                          {
+                            group
+                              .player_names
+                              .join(" + ")
+                          }
+                        </div>
+
+                        <div className="player-stat">
+                          <strong>
+                            {
+                              group
+                                .play_count
+                            }
+                          </strong>
+
+                          <span>
+                            plays
+                          </span>
+                        </div>
+                      </div>
+                    ),
+                  )
+              }
+            </div>
+
+            {
+              insights
+                .common_groups
+                .length > 3
+              && (
+                <button
+                  type="button"
+                  className="insights-view-all"
+                  onClick={() =>
+                    setShowAllGroups(
+                      (current) =>
+                        !current
+                    )
+                  }
+                >
+                  {
+                    showAllGroups
+                      ? "Show less"
+                      : "View all"
+                  }
+                </button>
+              )
+            }
           </article>
         )
       }

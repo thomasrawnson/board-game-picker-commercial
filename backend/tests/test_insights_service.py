@@ -60,6 +60,31 @@ class FakeInsightsRepository:
                 win_count=3,
             ),
         ]
+    
+    def get_monthly_activity(self):
+        from models.collection_insights import (
+            MonthlyActivity,
+        )
+
+        return MonthlyActivity(
+            plays=12,
+            unique_games=7,
+            new_games=3,
+            repeat_plays=9,
+            recent_plays=[],
+        )
+
+
+    def get_neglected_games(self):
+        return []
+
+
+    def get_top_games_by_player(self):
+        return []
+
+
+    def get_common_groups(self):
+        return []
 
 
 def test_get_collection_insights():

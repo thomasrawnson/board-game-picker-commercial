@@ -42,6 +42,13 @@ function App() {
       "picker",
     )
 
+  const [
+    selectedCollectionGameId,
+    setSelectedCollectionGameId,
+  ] = useState<number | null>(
+    null,
+  )
+
   const [user, setUser] =
     useState<AuthUser | null>(
       null,
@@ -184,12 +191,33 @@ function App() {
 
         {view ===
           "collection" && (
-          <CollectionView />
+          <CollectionView
+            initialGameBggId={
+              selectedCollectionGameId
+            }
+            onInitialGameHandled={() =>
+              setSelectedCollectionGameId(
+                null
+              )
+            }
+          />
         )}
 
         {view ===
           "insights" && (
-          <InsightsView />
+          <InsightsView
+            onOpenGame={(
+              bggId: number,
+            ) => {
+              setSelectedCollectionGameId(
+                bggId
+              )
+
+              setView(
+                "collection"
+              )
+            }}
+          />
         )}
 
         {view ===

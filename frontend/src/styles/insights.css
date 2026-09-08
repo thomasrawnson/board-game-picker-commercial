@@ -587,3 +587,386 @@
 .player-partner-row:hover {
   opacity: 0.9;
 }
+
+.monthly-activity-card {
+  margin-top: 18px;
+  padding: 18px;
+
+  background:
+    rgba(243, 234, 216, 0.05);
+
+  border:
+    1px solid
+    rgba(243, 234, 216, 0.1);
+
+  border-radius: 18px;
+}
+
+.monthly-activity-header {
+  margin-bottom: 14px;
+}
+
+.monthly-activity-header h2 {
+  margin: 3px 0 0;
+
+  font-family: Fraunces, serif;
+  font-size: 20px;
+}
+
+.monthly-activity-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 8px;
+}
+
+.monthly-activity-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 12px 6px;
+
+  background:
+    rgba(243, 234, 216, 0.04);
+
+  border-radius: 12px;
+}
+
+.monthly-activity-stat strong {
+  color: var(--gold);
+
+  font-family: Fraunces, serif;
+  font-size: 22px;
+}
+
+.monthly-activity-stat span {
+  margin-top: 2px;
+
+  color: var(--text-muted);
+
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.neglected-game-name,
+.favourite-game-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.neglected-game-row .neglected-game-name strong {
+  color: var(--ink) !important;
+}
+.favourite-game-copy strong {
+  overflow: hidden;
+
+  color: var(--text-primary);
+
+  font-size: 12px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.neglected-game-row .neglected-game-name span {
+  color: rgba(43, 33, 24, 0.58) !important;
+}
+.favourite-game-copy span {
+  margin-top: 2px;
+
+  overflow: hidden;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.common-group-row,
+.common-group-row .player-name,
+.common-group-row .common-group-names {
+  color: var(--ink) !important;
+}
+
+
+.common-group-row .common-group-names {
+  overflow: hidden;
+
+  color: var(--ink) !important;
+
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.common-group-row {
+  align-items: center;
+}
+
+.common-group-row .player-stat {
+  min-width: 52px;
+}
+
+.neglected-card {
+  margin-top: 18px;
+}
+
+@media (
+  max-width: 360px
+) {
+  .monthly-activity-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+}
+
+.favourite-game-row {
+  align-items: center;
+}
+
+.favourite-game-row .favourite-game-copy strong {
+  color: var(--ink) !important;
+}
+
+.favourite-game-row .favourite-game-copy span {
+  color: rgba(43, 33, 24, 0.65) !important;
+}
+
+.favourite-game-row .player-stat {
+  min-width: 48px;
+}
+
+.favourite-game-row .player-row-chevron {
+  margin-left: 6px;
+}
+.stats-game-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  padding: 0;
+
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+
+  font: inherit;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.stats-game-link strong {
+  color: var(--ink) !important;
+}
+
+.stats-game-link span {
+  color:
+    rgba(43, 33, 24, 0.58)
+    !important;
+}
+
+.stats-game-link:hover strong {
+  text-decoration: underline;
+}
+
+.stats-game-link,
+.player-name-link {
+  display: inline;
+  padding: 0;
+
+  color: var(--ink);
+  background: transparent !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  font: inherit;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.stats-game-link strong,
+.player-name-link {
+  color: var(--ink) !important;
+}
+
+.stats-game-link:hover strong,
+.player-name-link:hover {
+  text-decoration: underline;
+}
+
+.player-name-link {
+  font-weight: 700;
+}
+
+.favourite-game-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  gap: 2px;
+}
+
+.favourite-player-name {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.favourite-game-link {
+  display: block;
+
+  padding: 0;
+
+  color: rgba(43, 33, 24, 0.64) !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.common-group-row {
+  min-height: 38px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.common-group-row .player-rank {
+  flex-shrink: 0;
+}
+
+.common-group-row .common-group-names {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.common-group-row .player-stat {
+  min-width: 46px;
+}
+
+.monthly-activity-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 0;
+  margin-bottom: 14px;
+
+  color: inherit;
+  background: transparent;
+  border: 0;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.monthly-activity-trigger h2 {
+  margin: 3px 0 0;
+}
+
+.monthly-activity-chevron {
+  color: var(--gold);
+  font-size: 20px;
+}
+
+.monthly-play-list {
+  margin-top: 14px;
+  padding-top: 6px;
+
+  border-top:
+    1px solid
+    rgba(243, 234, 216, 0.08);
+}
+
+.monthly-play-row {
+  padding: 10px 0;
+
+  border-bottom:
+    1px solid
+    rgba(243, 234, 216, 0.07);
+}
+
+.monthly-play-game {
+  padding: 0;
+
+  color: var(--text-primary);
+  background: transparent;
+  border: 0;
+
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.monthly-play-meta {
+  display: flex;
+  gap: 8px;
+
+  margin-top: 3px;
+
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.insights-view-all {
+  display: block;
+
+  width: 100%;
+  padding: 10px 0 2px;
+
+  color: #b5542b;
+  background: transparent;
+  border: 0;
+
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.favourite-player-link {
+  padding: 0;
+
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.favourite-player-link:hover,
+.favourite-game-link:hover,
+.monthly-play-game:hover {
+  text-decoration: underline;
+}

@@ -125,6 +125,10 @@ export interface CollectionInsights {
     LastPlayedGame | null
   never_played_count: number
   frequent_players: PlayerSummary[]
+  monthly_activity: MonthlyActivity
+  neglected_games: NeglectedGame[]
+  top_games_by_player: PlayerTopGame[]
+  common_groups: PlayerGroupSummary[]
 }
 
 
@@ -183,6 +187,43 @@ export interface PlayerStats {
   most_played_games: PlayerStatsGame[]
   recent_games: PlayerRecentGame[]
   common_partners: PlayerPartner[]
+}
+
+export interface MonthlyActivity {
+  plays: number
+  unique_games: number
+  new_games: number
+  repeat_plays: number
+  recent_plays: MonthlyPlay[]
+}
+
+export interface NeglectedGame {
+  bgg_id: number
+  name: string
+  play_count: number
+  last_played_at: string | null
+}
+
+export interface PlayerTopGame {
+  player_id: number
+  player_name: string
+  bgg_id: number
+  game_name: string
+  play_count: number
+}
+
+export interface PlayerGroupSummary {
+  player_ids: number[]
+  player_names: string[]
+  play_count: number
+}
+
+export interface MonthlyPlay {
+  play_id: number
+  bgg_id: number
+  game_name: string
+  played_at: string
+  player_count: number
 }
 
 const API_BASE_URL =
@@ -644,3 +685,4 @@ Promise<Player[]> {
 
   return response.json()
 }
+

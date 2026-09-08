@@ -40,7 +40,8 @@ class InsightsService:
         return CollectionInsights(
             total_games=total_games,
             total_plays=(
-                self.repository.total_plays()
+                self.repository
+                .total_plays()
             ),
             played_games_count=(
                 played_games_count
@@ -71,5 +72,21 @@ class InsightsService:
             frequent_players=(
                 self.repository
                 .get_frequent_players()
+            ),
+            monthly_activity=(
+                self.repository
+                .get_monthly_activity()
+            ),
+            neglected_games=(
+                self.repository
+                .get_neglected_games()
+            ),
+            top_games_by_player=(
+                self.repository
+                .get_top_games_by_player()
+            ),
+            common_groups=(
+                self.repository
+                .get_common_groups()
             ),
         )
