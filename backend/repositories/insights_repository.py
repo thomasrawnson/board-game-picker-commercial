@@ -340,6 +340,7 @@ class InsightsRepository:
                 unique_games=0,
                 new_games=0,
                 repeat_plays=0,
+                recent_plays=[],
             )
 
         now = datetime.now(
@@ -431,11 +432,47 @@ class InsightsRepository:
             0,
         )
 
+        recent_rows = (
+            self.db.query(
+                Play.id,
+                Game.bgg_id,
+                Game.name,
+                Play.played_at,
+                Play.player_count,
+            )
+            .join(
+                Game,
+                Game.id == Play.game_id,
+            )
+            .filter(
+                Play.user_id
+                == self.user_id,
+                Play.played_at
+                >= month_start,
+            )
+            .order_by(
+                Play.played_at.desc()
+            )
+            .limit(20)
+            .all()
+        )
+
+        recent_plays = [
+            MonthlyPlay(
+                play_id=row.id,
+                bgg_id=row.bgg_id,
+                game_name=row.name,
+                played_at=row.played_at,
+                player_count=row.player_count,
+            )
+            for row in recent_rows
+        ]
         return MonthlyActivity(
             plays=plays_this_month,
             unique_games=unique_games,
             new_games=new_games,
             repeat_plays=repeat_plays,
+            recent_plays=recent_plays,
         )
 
 
