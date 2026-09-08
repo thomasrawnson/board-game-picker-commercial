@@ -181,6 +181,13 @@ class GameRepository:
             max_players=game.max_players,
             min_play_time=game.min_play_time,
             max_play_time=game.max_play_time,
+            best_player_counts=(
+                game.best_player_counts or []
+            ),
+            recommended_player_counts=(
+                game.recommended_player_counts
+                or []
+            ),
             complexity=game.complexity,
             rating=game.rating,
             owned=game.owned,
@@ -228,6 +235,14 @@ class GameRepository:
         )
         database_game.max_players = (
             game.max_players
+        )
+        database_game.best_player_counts = (
+            game.best_player_counts or []
+        )
+
+        database_game.recommended_player_counts = (
+            game.recommended_player_counts
+            or []
         )
         database_game.min_play_time = (
             game.min_play_time
@@ -356,6 +371,15 @@ class GameRepository:
             ),
             min_players=database_game.min_players,
             max_players=database_game.max_players,
+            best_player_counts=(
+                database_game.best_player_counts
+                or []
+            ),
+            recommended_player_counts=(
+                database_game
+                .recommended_player_counts
+                or []
+            ),
             min_play_time=(
                 database_game.min_play_time
             ),

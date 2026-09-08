@@ -6,8 +6,8 @@ from models.game import Game
 def parse_game_metadata(
     xml: str,
 ) -> Game:
-    games = (
-        parse_games_metadata(xml)
+    games = parse_games_metadata(
+        xml
     )
 
     if not games:
@@ -22,11 +22,14 @@ def parse_game_metadata(
 def parse_games_metadata(
     xml: str,
 ) -> list[Game]:
-    root = ET.fromstring(xml)
+    root = ET.fromstring(
+        xml
+    )
 
     return [
         _parse_game_item(item)
-        for item in root.findall(
+        for item
+        in root.findall(
             "item"
         )
     ]
@@ -35,6 +38,13 @@ def parse_games_metadata(
 def _parse_game_item(
     item,
 ) -> Game:
+    (
+        best_player_counts,
+        recommended_player_counts,
+    ) = _get_player_count_recommendations(
+        item
+    )
+
     return Game(
         bgg_id=int(
             item.attrib["id"]
@@ -93,6 +103,12 @@ def _parse_game_item(
         mechanics=_get_links(
             item,
             "boardgamemechanic",
+        ),
+        best_player_counts=(
+            best_player_counts
+        ),
+        recommended_player_counts=(
+            recommended_player_counts
         ),
     )
 
@@ -221,3 +237,110 @@ def _get_links(
             == link_type
         )
     ]
+
+
+def _get_player_count_recommendations(
+    item,
+) -> tuple[
+    list[int],
+    list[int],
+]:
+    poll = item.find(
+        (
+            "./poll"
+            "[@name='suggested_numplayers']"
+        )
+    )
+
+    if poll is None:
+        return [], []
+
+    best_player_counts: list[int] = []
+    recommended_player_counts: list[int] = []
+
+    for result in poll.findall(
+        "results"
+    ):
+        num_players = (
+            result.attrib.get(
+                "numplayers"
+            )
+        )
+
+        if num_players is None:
+            continue
+
+        try:
+            player_count = int(
+                num_players
+            )
+        except ValueError:
+            # BGG can include values
+            # such as "4+".
+            continue
+
+        votes = {
+            vote.attrib.get(
+                "value"
+            ): int(
+                vote.attrib.get(
+                    "numvotes",
+                    "0",
+                )
+            )
+            for vote
+            in result.findall(
+                "result"
+            )
+        }
+
+        best_votes = (
+            votes.get(
+                "Best",
+                0,
+            )
+        )
+
+        recommended_votes = (
+            votes.get(
+                "Recommended",
+                0,
+            )
+        )
+
+        not_recommended_votes = (
+            votes.get(
+                "Not Recommended",
+                0,
+            )
+        )
+
+        if (
+            best_votes
+            > recommended_votes
+            and best_votes
+            > not_recommended_votes
+        ):
+            best_player_counts.append(
+                player_count
+            )
+
+            recommended_player_counts.append(
+                player_count
+            )
+
+            continue
+
+        if (
+            best_votes
+            + recommended_votes
+            > not_recommended_votes
+        ):
+            recommended_player_counts.append(
+                player_count
+            )
+
+    return (
+        best_player_counts,
+        recommended_player_counts,
+    )

@@ -106,7 +106,9 @@ function PickerView({
     matchIndex <
     matches.length - 1
 
-
+  const [mood, setMood] =
+    useState("")
+    
   function toggleCategory(
     category: string,
   ) {
@@ -173,10 +175,9 @@ function PickerView({
             undefined,
 
           preferredCategories,
-
           preferredMechanics,
-
           mode,
+          mood,
         })
 
 
@@ -220,24 +221,20 @@ function PickerView({
 
   function startOver() {
     setStep("players")
-
     setPlayers(null)
     setSelectedPlayerIds([])
     setMaxPlayTime(null)
     setMaxComplexity(null)
-
     setPreferredCategories(
       [],
     )
-
     setPreferredMechanics(
       [],
     )
-
     setMode(
       "best_match",
     )
-
+    setMood("")
     setMatches([])
     setMatchIndex(0)
     setError("")
@@ -334,6 +331,7 @@ function PickerView({
             maxComplexity
           }
           mode={mode}
+          mood={mood}
           error={error}
           loading={loading}
           onToggleCategory={
@@ -347,6 +345,9 @@ function PickerView({
           }
           onModeChange={
             setMode
+          }
+          onMoodChange={
+            setMood
           }
           onReveal={
             revealGame

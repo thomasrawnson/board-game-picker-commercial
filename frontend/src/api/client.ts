@@ -23,13 +23,13 @@ export interface Game {
   mechanics: string[]
 }
 
-
 export interface PickerMatch {
   game: Game
   score: number
   reasons: string[]
+  ai_used?: boolean
+  ai_explanation?: string | null
 }
-
 
 export type PickerMode =
   | "best_match"
@@ -45,6 +45,7 @@ export interface PickerCriteria {
   preferredCategories?: string[]
   preferredMechanics?: string[]
   mode?: PickerMode
+  mood?: string
 }
 
 
@@ -420,7 +421,15 @@ export async function getPickerMatches(
         .toString(),
     )
   }
-
+  if (
+    criteria.mood
+    && criteria.mood.trim()
+  ) {
+    params.set(
+      "mood",
+      criteria.mood.trim(),
+    )
+  }
   if (
     criteria.maxComplexity !==
     undefined

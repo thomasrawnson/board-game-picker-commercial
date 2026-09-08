@@ -19,7 +19,12 @@ from services.picker_service import (
     PickerCriteria,
     PickerService,
 )
-
+from models.ai_picker import (
+    AiPickerCandidate,
+)
+from services.ai_picker_service import (
+    AiPickerService,
+)
 
 router = APIRouter()
 
@@ -64,6 +69,10 @@ def pick_games(
     ),
     play_repository: PlayRepository = Depends(
         get_play_repository
+    ),
+    mood: str | None = Query(
+        None,
+        max_length=300,
     ),
 ):
     if (
@@ -152,13 +161,110 @@ def pick_games(
             ),
         )
     )
+    if (
+        mood is None
+        or not mood.strip()
+    ):
+        return [
+            {
+                "game": match.game,
+                "score": match.score,
+                "reasons": match.reasons,
+                "ai_used": False,
+                "ai_explanation": None,
+            }
+            for match
+            in matches[:limit]
+        ]
 
-    return [
-        {
-            "game": match.game,
-            "score": match.score,
-            "reasons": match.reasons,
-        }
+    candidate_matches = (
+        matches[:10]
+    )
+
+    candidates = [
+        AiPickerCandidate(
+            bgg_id=(
+                match.game.bgg_id
+            ),
+            name=(
+                match.game.name
+            ),
+            deterministic_score=(
+                match.score
+            ),
+            min_players=(
+                match.game.min_players
+            ),
+            max_players=(
+                match.game.max_players
+            ),
+            min_play_time=(
+                match.game.min_play_time
+            ),
+            max_play_time=(
+                match.game.max_play_time
+            ),
+            complexity=(
+                match.game.complexity
+            ),
+            categories=(
+                match.game.categories
+                or []
+            ),
+            mechanics=(
+                match.game.mechanics
+                or []
+            ),
+            deterministic_reasons=(
+                match.reasons
+            ),
+        )
         for match
-        in matches[:limit]
+        in candidate_matches
     ]
+
+    ai_result = (
+        AiPickerService()
+        .rerank(
+            candidates,
+            mood=mood,
+        )
+    )
+
+    matches_by_bgg_id = {
+        match.game.bgg_id:
+            match
+        for match
+        in candidate_matches
+    }
+
+    results = []
+
+    for recommendation in (
+        ai_result.recommendations
+    ):
+        match = (
+            matches_by_bgg_id.get(
+                recommendation.bgg_id
+            )
+        )
+
+        if match is None:
+            continue
+
+        results.append(
+            {
+                "game": match.game,
+                "score": match.score,
+                "reasons": match.reasons,
+                "ai_used": (
+                    ai_result.used_ai
+                ),
+                "ai_explanation": (
+                    recommendation
+                    .explanation
+                ),
+            }
+        )
+
+    return results

@@ -7,11 +7,13 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Integer,
+    JSON,
     String,
     Table,
     UniqueConstraint,
     func,
 )
+
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -178,6 +180,18 @@ class Game(Base):
 
     max_players: Mapped[int | None] = mapped_column(
         Integer,
+    )
+
+    best_player_counts: Mapped[list[int]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+
+    recommended_player_counts: Mapped[list[int]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
     )
 
     min_play_time: Mapped[int | None] = mapped_column(

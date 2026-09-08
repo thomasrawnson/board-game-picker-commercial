@@ -8,6 +8,7 @@ type Props = {
   preferredMechanics: string[]
   maxComplexity: number | null
   mode: PickerMode
+  mood: string
   error: string
   loading: boolean
   onToggleCategory: (
@@ -21,6 +22,9 @@ type Props = {
   ) => void
   onModeChange: (
     mode: PickerMode,
+  ) => void
+  onMoodChange: (
+    value: string,
   ) => void
   onReveal: () => void
   onBack: () => void
@@ -98,12 +102,14 @@ function PreferenceStep({
   preferredMechanics,
   maxComplexity,
   mode,
+  mood,
   error,
   loading,
   onToggleCategory,
   onToggleMechanic,
   onComplexityChange,
   onModeChange,
+  onMoodChange,
   onReveal,
   onBack,
 }: Props) {
@@ -125,7 +131,32 @@ function PreferenceStep({
         </p>
       </header>
 
+      <div className="preference-section">
+        <p className="preference-label">
+          Tell us the vibe
+        </p>
 
+        <textarea
+          className="picker-mood-input"
+          value={mood}
+          maxLength={300}
+          rows={3}
+          placeholder={
+            "e.g. Something interactive, not too heavy, and good for a tired group"
+          }
+          onChange={(event) =>
+            onMoodChange(
+              event.target.value,
+            )
+          }
+        />
+
+        <p className="picker-mood-hint">
+          Optional — we'll use this to refine
+          the strongest matches from your
+          collection.
+        </p>
+      </div>
       <div className="preference-section">
         <p className="preference-label">
           How should we pick?

@@ -111,3 +111,81 @@ def test_parse_multiple_games():
         games[1].name
         == "Terraforming Mars"
     )
+
+def test_player_count_recommendations_are_parsed():
+    xml = """
+    <items>
+        <item
+            type="boardgame"
+            id="1"
+        >
+            <name
+                type="primary"
+                value="Example Game"
+            />
+
+            <poll
+                name="suggested_numplayers"
+            >
+                <results numplayers="2">
+                    <result
+                        value="Best"
+                        numvotes="40"
+                    />
+                    <result
+                        value="Recommended"
+                        numvotes="20"
+                    />
+                    <result
+                        value="Not Recommended"
+                        numvotes="5"
+                    />
+                </results>
+
+                <results numplayers="3">
+                    <result
+                        value="Best"
+                        numvotes="10"
+                    />
+                    <result
+                        value="Recommended"
+                        numvotes="30"
+                    />
+                    <result
+                        value="Not Recommended"
+                        numvotes="5"
+                    />
+                </results>
+
+                <results numplayers="4">
+                    <result
+                        value="Best"
+                        numvotes="2"
+                    />
+                    <result
+                        value="Recommended"
+                        numvotes="3"
+                    />
+                    <result
+                        value="Not Recommended"
+                        numvotes="20"
+                    />
+                </results>
+            </poll>
+        </item>
+    </items>
+    """
+
+    game = parse_game_metadata(
+        xml
+    )
+
+    assert (
+        game.best_player_counts
+        == [2]
+    )
+
+    assert (
+        game.recommended_player_counts
+        == [2, 3]
+    )

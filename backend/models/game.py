@@ -1,4 +1,7 @@
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass,
+    field,
+)
 
 
 @dataclass
@@ -22,5 +25,18 @@ class Game:
     image_url: str | None = None
     thumbnail_url: str | None = None
 
-    categories: list[str] = field(default_factory=list)
-    mechanics: list[str] = field(default_factory=list)
+    categories: list[str] = field(
+        default_factory=list
+    )
+
+    mechanics: list[str] = field(
+        default_factory=list
+    )
+
+    best_player_counts: list[int] = field(
+        default_factory=list
+    )
+
+    recommended_player_counts: list[int] = field(
+        default_factory=list
+    )

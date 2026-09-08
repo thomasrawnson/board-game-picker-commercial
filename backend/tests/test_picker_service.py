@@ -672,3 +672,98 @@ def test_recent_group_play_gets_penalty():
         "This group played it recently"
         in matches[0].reasons
     )
+
+def test_best_player_count_gets_bonus():
+    service = PickerService()
+
+    best_count_game = Game(
+        bgg_id=1,
+        name="Best At Two",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        owned=True,
+        best_player_counts=[
+            2,
+        ],
+        recommended_player_counts=[
+            2,
+            3,
+        ],
+    )
+
+    supported_only_game = Game(
+        bgg_id=2,
+        name="Supported At Two",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        owned=True,
+    )
+
+    matches = service.rank_matches(
+        [
+            supported_only_game,
+            best_count_game,
+        ],
+        PickerCriteria(
+            players=2,
+            max_play_time=60,
+        ),
+    )
+
+    assert (
+        matches[0].game.bgg_id
+        == 1
+    )
+
+    assert (
+        "Best at 2 players"
+        in matches[0].reasons
+    )
+
+
+def test_recommended_player_count_gets_bonus():
+    service = PickerService()
+
+    recommended_game = Game(
+        bgg_id=1,
+        name="Recommended At Three",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        owned=True,
+        recommended_player_counts=[
+            3,
+        ],
+    )
+
+    supported_only_game = Game(
+        bgg_id=2,
+        name="Supported At Three",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        owned=True,
+    )
+
+    matches = service.rank_matches(
+        [
+            supported_only_game,
+            recommended_game,
+        ],
+        PickerCriteria(
+            players=3,
+            max_play_time=60,
+        ),
+    )
+
+    assert (
+        matches[0].game.bgg_id
+        == 1
+    )
+
+    assert (
+        "Recommended at 3 players"
+        in matches[0].reasons
+    )

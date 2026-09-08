@@ -58,7 +58,10 @@ function PickerResult({
 
   async function sharePick() {
     const reason =
-      match.reasons[0]
+      match.ai_used
+      && match.ai_explanation
+        ? match.ai_explanation
+        : match.reasons[0]
 
     const text = [
       `Tonight's pick: ${match.game.name}`,
@@ -229,6 +232,20 @@ function PickerResult({
         <p className="preference-label">
           Why this one?
         </p>
+
+        {match.ai_used
+          && match.ai_explanation
+          && (
+            <div className="ai-picker-explanation">
+              <span>
+                AI refined
+              </span>
+
+              <p>
+                {match.ai_explanation}
+              </p>
+            </div>
+          )}
 
         {match.reasons
           .slice(0, 4)

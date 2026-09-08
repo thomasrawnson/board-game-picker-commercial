@@ -143,6 +143,21 @@ class PickerService:
         ]
 
         (
+            player_count_score,
+            player_count_reason,
+        ) = self._score_player_count_quality(
+            game,
+            criteria.players,
+        )
+
+        score += player_count_score
+
+        if player_count_reason:
+            reasons.append(
+                player_count_reason
+            )
+
+        (
             play_time_score,
             play_time_reason,
         ) = self._score_play_time(
@@ -715,3 +730,34 @@ class PickerService:
             game.complexity
             <= max_complexity
         )
+
+    @staticmethod
+    def _score_player_count_quality(
+        game: Game,
+        players: int,
+    ) -> tuple[
+        int,
+        str | None,
+    ]:
+        if (
+            players
+            in game.best_player_counts
+        ):
+            return (
+                10,
+                f"Best at {players} players",
+            )
+
+        if (
+            players
+            in game.recommended_player_counts
+        ):
+            return (
+                5,
+                (
+                    f"Recommended at "
+                    f"{players} players"
+                ),
+            )
+
+        return 0, None
