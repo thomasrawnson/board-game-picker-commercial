@@ -995,3 +995,22 @@
 
   color: var(--gold) !important;
 }
+
+.delete-play-button {
+  margin-top: 10px;
+  padding: 8px 0;
+
+  color: #d9856a;
+  background: transparent;
+
+  border: 0;
+
+  font: inherit;
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.delete-play-button:hover {
+  text-decoration: underline;
+}

@@ -25,6 +25,9 @@ from models.ai_picker import (
 from services.ai_picker_service import (
     AiPickerService,
 )
+from services.ai_picker_provider import (
+    build_ai_picker_provider,
+)
 
 router = APIRouter()
 

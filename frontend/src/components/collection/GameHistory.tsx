@@ -1,6 +1,7 @@
-import type {
-  Game,
-  GameHistory as GameHistoryData,
+import {
+  deletePlay,
+  type Game,
+  type GameHistory as GameHistoryData,
 } from "../../api/client"
 
 import {
@@ -12,6 +13,7 @@ type Props = {
   game: Game
   history: GameHistoryData | null
   loading: boolean
+  onPlayDeleted: () => Promise<void>
 }
 
 
@@ -19,7 +21,35 @@ function GameHistory({
   game,
   history,
   loading,
+  onPlayDeleted,
 }: Props) {
+  
+  async function handleDeletePlay(
+    playId: number,
+  ) {
+    const confirmed =
+      window.confirm(
+        "Delete this play?"
+      )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      await deletePlay(
+        playId
+      )
+
+      await onPlayDeleted()
+    } catch (err) {
+      console.error(err)
+
+      window.alert(
+        "Couldn't delete this play."
+      )
+    }
+  }
   return (
     <div className="detail-section game-history">
       <p className="preference-label">
@@ -175,6 +205,17 @@ function GameHistory({
                         Send to BG Stats
                       </a>
                     )}
+                    <button
+                      type="button"
+                      className="delete-play-button"
+                      onClick={() =>
+                        handleDeletePlay(
+                          play.id
+                        )
+                      }
+                    >
+                      Delete play
+                  </button>
                   </div>
                 ),
               )}

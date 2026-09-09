@@ -3,9 +3,20 @@ from models.ai_picker import (
     AiPickerRecommendation,
     AiPickerResult,
 )
+from services.ai_picker_provider import (
+    AiPickerProvider,
+)
 
 
 class AiPickerService:
+    def __init__(
+        self,
+        provider:
+            AiPickerProvider | None = None,
+    ):
+        self.provider = provider
+
+
     def rerank(
         self,
         candidates: list[
@@ -30,16 +41,42 @@ class AiPickerService:
                 candidates
             )
 
-        #
-        # External AI provider will be
-        # plugged in here next.
-        #
-        return self._fallback(
-            candidates,
-            fallback_reason=(
-                "AI provider not configured."
-            ),
-        )
+        if self.provider is None:
+            return self._fallback(
+                candidates,
+                fallback_reason=(
+                    "AI provider not configured."
+                ),
+            )
+
+        try:
+            recommendations = (
+                self.provider.rerank(
+                    candidates,
+                    mood.strip(),
+                )
+            )
+
+            return AiPickerResult(
+                recommendations=(
+                    recommendations
+                ),
+                used_ai=True,
+            )
+
+        except Exception as exc:
+            print(
+                "AI picker error:",
+                repr(exc),
+            )
+
+            return self._fallback(
+                candidates,
+                fallback_reason=(
+                    "AI reranking unavailable."
+                ),
+            )
+
 
     @staticmethod
     def _fallback(

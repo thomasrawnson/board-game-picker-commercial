@@ -30,12 +30,14 @@ type Step =
 
 
 type Props = {
-  onViewCollection: () => void
+  onViewGame: (
+    bggId: number,
+  ) => void
 }
 
 
 function PickerView({
-  onViewCollection,
+  onViewGame,
 }: Props) {
   const [step, setStep] =
     useState<Step>("players")
@@ -106,9 +108,7 @@ function PickerView({
     matchIndex <
     matches.length - 1
 
-  const [mood, setMood] =
-    useState("")
-    
+
   function toggleCategory(
     category: string,
   ) {
@@ -155,6 +155,7 @@ function PickerView({
     if (players === null) {
       return
     }
+
     setLoading(true)
     setError("")
 
@@ -162,7 +163,8 @@ function PickerView({
       const results =
         await getPickerMatches({
           players,
-          playerIds: selectedPlayerIds,
+          playerIds:
+            selectedPlayerIds,
 
           maxPlayTime:
             maxPlayTime === 0
@@ -177,9 +179,7 @@ function PickerView({
           preferredCategories,
           preferredMechanics,
           mode,
-          mood,
         })
-
 
       if (
         results.length === 0
@@ -190,7 +190,6 @@ function PickerView({
 
         return
       }
-
 
       setMatches(results)
       setMatchIndex(0)
@@ -225,16 +224,19 @@ function PickerView({
     setSelectedPlayerIds([])
     setMaxPlayTime(null)
     setMaxComplexity(null)
+
     setPreferredCategories(
       [],
     )
+
     setPreferredMechanics(
       [],
     )
+
     setMode(
       "best_match",
     )
-    setMood("")
+
     setMatches([])
     setMatchIndex(0)
     setError("")
@@ -331,7 +333,6 @@ function PickerView({
             maxComplexity
           }
           mode={mode}
-          mood={mood}
           error={error}
           loading={loading}
           onToggleCategory={
@@ -345,9 +346,6 @@ function PickerView({
           }
           onModeChange={
             setMode
-          }
-          onMoodChange={
-            setMood
           }
           onReveal={
             revealGame
@@ -379,8 +377,10 @@ function PickerView({
           onTryAnother={
             tryAnother
           }
-          onViewGame={
-            onViewCollection
+          onViewGame={() =>
+            onViewGame(
+              match.game.bgg_id
+            )
           }
           onStartOver={
             startOver

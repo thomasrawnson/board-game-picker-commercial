@@ -88,3 +88,29 @@ def get_player_stats(
         )
 
     return stats
+
+@router.delete(
+    "/plays/{play_id}",
+)
+def delete_play(
+    play_id: int,
+    service: PlayService = Depends(
+        get_play_service
+    ),
+):
+    deleted = (
+        service.delete_play(
+            play_id
+        )
+    )
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Play not found",
+        )
+
+    return {
+        "message":
+            "Play deleted"
+    }

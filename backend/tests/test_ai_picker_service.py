@@ -114,3 +114,94 @@ def test_empty_candidates_return_empty_result():
     assert result.recommendations == []
 
     assert result.used_ai is False
+
+def test_provider_can_rerank_candidates():
+    class FakeProvider:
+        def rerank(
+            self,
+            candidates,
+            mood,
+        ):
+            from models.ai_picker import (
+                AiPickerRecommendation,
+            )
+
+            return [
+                AiPickerRecommendation(
+                    bgg_id=2,
+                    ai_rank=1,
+                    explanation=(
+                        "Best fit for "
+                        "the requested mood."
+                    ),
+                )
+            ]
+
+    service = AiPickerService(
+        provider=FakeProvider()
+    )
+
+    candidates = [
+        make_candidate(
+            1,
+            "Game One",
+            95,
+        ),
+        make_candidate(
+            2,
+            "Game Two",
+            90,
+        ),
+    ]
+
+    result = service.rerank(
+        candidates,
+        mood="Something relaxed",
+    )
+
+    assert result.used_ai is True
+
+    assert (
+        result.recommendations[
+            0
+        ].bgg_id
+        == 2
+    )
+
+
+def test_provider_failure_uses_fallback():
+    class BrokenProvider:
+        def rerank(
+            self,
+            candidates,
+            mood,
+        ):
+            raise RuntimeError(
+                "Provider failed"
+            )
+
+    service = AiPickerService(
+        provider=BrokenProvider()
+    )
+
+    candidates = [
+        make_candidate(
+            1,
+            "Game One",
+            95,
+        )
+    ]
+
+    result = service.rerank(
+        candidates,
+        mood="Something relaxed",
+    )
+
+    assert result.used_ai is False
+
+    assert (
+        result.recommendations[
+            0
+        ].bgg_id
+        == 1
+    )

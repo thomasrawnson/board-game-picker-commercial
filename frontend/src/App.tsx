@@ -181,11 +181,17 @@ function App() {
         {view ===
           "picker" && (
           <PickerView
-            onViewCollection={() =>
-              setView(
-                "collection",
+            onViewGame={(
+              bggId,
+            ) => {
+              setSelectedCollectionGameId(
+                bggId
               )
-            }
+
+              setView(
+                "collection"
+              )
+            }}
           />
         )}
 

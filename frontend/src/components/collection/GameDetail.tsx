@@ -154,6 +154,9 @@ function GameDetail({
           loading={
             historyLoading
           }
+          onPlayDeleted={
+            onPlaySaved
+          }
         />
 
         <div className="detail-section collection-danger-zone">

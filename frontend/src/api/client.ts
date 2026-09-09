@@ -695,3 +695,20 @@ Promise<Player[]> {
   return response.json()
 }
 
+export async function deletePlay(
+  playId: number,
+): Promise<void> {
+  const response =
+    await apiFetch(
+      `/plays/${playId}`,
+      {
+        method: "DELETE",
+      },
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      `Play deletion failed: ${response.status}`,
+    )
+  }
+}

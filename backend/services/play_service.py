@@ -61,3 +61,13 @@ class PlayService:
             ),
             participants=participants,
         )
+
+    def delete_play(
+        self,
+        play_id: int,
+    ) -> bool:
+        return (
+            self.repository.delete(
+                play_id
+            )
+        )

@@ -314,3 +314,34 @@ class PlayWriteRepository:
         self.db.commit()
 
         return True
+
+    def delete(
+        self,
+        play_id: int,
+    ) -> bool:
+        if self.user_id is None:
+            return False
+
+        play = (
+            self.db.query(
+                DatabasePlay
+            )
+            .filter(
+                DatabasePlay.id
+                == play_id,
+                DatabasePlay.user_id
+                == self.user_id,
+            )
+            .first()
+        )
+
+        if play is None:
+            return False
+
+        self.db.delete(
+            play
+        )
+
+        self.db.commit()
+
+        return True
