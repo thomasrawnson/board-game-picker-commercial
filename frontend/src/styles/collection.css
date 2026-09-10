@@ -552,7 +552,7 @@
 
 /* Mobile collection height */
 
-@media (max-width: 390px) {
+@media (max-width: 480px) {
   .collection-list {
     max-height: calc(100vh - 235px);
   }
@@ -1411,4 +1411,58 @@
   .remove-collection-button {
     width: 100%;
   }
+}
+
+/* =========================================================
+   Slice 8 - game detail mobile cleanup
+   ========================================================= */
+
+.collection-back {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+}
+
+.collection-detail {
+  width: 100%;
+  min-width: 0;
+}
+
+.collection-detail-image {
+  max-width: 100%;
+}
+
+.log-play-button {
+  min-height: 48px;
+}
+
+.play-form input {
+  min-height: 44px;
+}
+
+.add-player-button,
+.delete-play-button,
+.remove-collection-button,
+.bgstats-history-link,
+.bgstats-button {
+  min-height: 44px;
+}
+
+.add-player-button,
+.delete-play-button,
+.remove-collection-button {
+  touch-action: manipulation;
+}
+
+.recent-play-detail {
+  min-width: 0;
+}
+
+.recent-play-header {
+  gap: 10px;
+}
+
+.play-participants {
+  min-width: 0;
 }

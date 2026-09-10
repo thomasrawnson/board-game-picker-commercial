@@ -226,7 +226,7 @@ button:focus-visible {
 
 /* Small phones */
 
-@media (max-width: 390px) {
+@media (max-width: 480px) {
   .app-shell {
     padding: 0;
   }
@@ -352,7 +352,7 @@ textarea:focus-visible {
   }
 }
 
-@media (max-width: 390px) {
+@media (max-width: 480px) {
   h1 {
     font-size: 28px;
   }
