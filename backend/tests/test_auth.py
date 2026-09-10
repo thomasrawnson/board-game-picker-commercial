@@ -17,9 +17,10 @@ from api.main import app
 from auth.security import (
     JWT_ALGORITHM,
     JWT_ISSUER,
-    JWT_SECRET,
     create_access_token,
 )
+from config import settings
+
 from database.connection import (
     Base,
     get_db,
@@ -242,7 +243,7 @@ def test_me_rejects_expired_token(
             - timedelta(hours=1),
             "iss": JWT_ISSUER,
         },
-        JWT_SECRET,
+        settings.jwt_secret,
         algorithm=JWT_ALGORITHM,
     )
 
@@ -468,8 +469,7 @@ def test_authenticated_user_can_sync_collection(
         )
 
     finally:
-        app.dependency_overrides[
-            get_collection_service
-        ] = (
-            get_collection_service
+        app.dependency_overrides.pop(
+            get_collection_service,
+            None,
         )

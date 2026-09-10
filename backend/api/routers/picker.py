@@ -28,6 +28,7 @@ from services.ai_picker_service import (
 from services.ai_picker_provider import (
     build_ai_picker_provider,
 )
+from config import settings
 
 router = APIRouter()
 
@@ -227,8 +228,13 @@ def pick_games(
     ]
 
     ai_result = (
-        AiPickerService()
-        .rerank(
+        AiPickerService(
+            provider = (
+                build_ai_picker_provider()
+                if settings.ai_picker_enabled
+                else None
+            )
+        ).rerank(
             candidates,
             mood=mood,
         )

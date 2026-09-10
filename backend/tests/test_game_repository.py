@@ -226,3 +226,4 @@ def test_update_replaces_categories_and_mechanics():
 
     repository.delete(test_bgg_id)
     session.close()
+

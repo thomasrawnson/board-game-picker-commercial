@@ -452,3 +452,139 @@ def test_picker_uses_preferred_mechanic():
         "Deck Building"
         in data[0]["reasons"]
     )
+
+def test_get_player_stats():
+    class FakePlayRepository:
+        def get_player_stats(
+            self,
+            player_id: int,
+        ):
+            assert player_id == 7
+
+            return {
+                "player": {
+                    "id": 7,
+                    "name": "Alex",
+                },
+                "total_plays": 12,
+                "unique_games": 6,
+                "wins": 4,
+                "win_rate": 33.3,
+                "most_played_games": [
+                    {
+                        "bgg_id": 1,
+                        "name": "Dune",
+                        "play_count": 3,
+                        "last_played_at": (
+                            datetime(
+                                2026,
+                                9,
+                                1,
+                                20,
+                                0,
+                                tzinfo=timezone.utc,
+                            )
+                        ),
+                    },
+                ],
+                "recent_games": [
+                    {
+                        "play_id": 10,
+                        "bgg_id": 1,
+                        "name": "Dune",
+                        "played_at": (
+                            datetime(
+                                2026,
+                                9,
+                                1,
+                                20,
+                                0,
+                                tzinfo=timezone.utc,
+                            )
+                        ),
+                        "is_winner": True,
+                        "score": 85,
+                    },
+                ],
+                "common_partners": [
+                    {
+                        "id": 2,
+                        "name": "Tom",
+                        "play_count": 8,
+                    },
+                ],
+            }
+
+    app.dependency_overrides[
+        get_play_repository
+    ] = lambda: FakePlayRepository()
+
+    try:
+        response = client.get(
+            "/players/7/stats"
+        )
+
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["player"] == {
+        "id": 7,
+        "name": "Alex",
+    }
+
+    assert data["total_plays"] == 12
+    assert data["unique_games"] == 6
+    assert data["wins"] == 4
+    assert data["win_rate"] == 33.3
+
+    assert (
+        data["most_played_games"][0][
+            "name"
+        ]
+        == "Dune"
+    )
+
+    assert (
+        data["recent_games"][0][
+            "is_winner"
+        ]
+        is True
+    )
+
+    assert (
+        data["common_partners"][0][
+            "name"
+        ]
+        == "Tom"
+    )
+
+
+def test_get_unknown_player_stats_returns_404():
+    class FakePlayRepository:
+        def get_player_stats(
+            self,
+            player_id: int,
+        ):
+            return None
+
+    app.dependency_overrides[
+        get_play_repository
+    ] = lambda: FakePlayRepository()
+
+    try:
+        response = client.get(
+            "/players/999999/stats"
+        )
+
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 404
+
+    assert response.json() == {
+        "detail": "Player not found"
+    }
