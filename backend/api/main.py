@@ -14,12 +14,16 @@ from api.routers import (
     auth,
     collection,
     games,
+    health,
     imports,
     insights,
     picker,
     plays,
 )
 
+from logging_config import (
+    configure_logging,
+)
 
 # Backwards-compatible name used by the
 # existing API tests.
@@ -27,6 +31,7 @@ get_picker_play_repository = (
     get_play_repository
 )
 
+configure_logging()
 
 app = FastAPI(
     title="BoardGamePicker API",
@@ -51,6 +56,10 @@ app.add_middleware(
         "Authorization",
         "Content-Type",
     ],
+)
+
+app.include_router(
+    health.router
 )
 
 app.include_router(
@@ -80,4 +89,3 @@ app.include_router(
 app.include_router(
     auth.router
 )
-

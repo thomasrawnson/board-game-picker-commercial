@@ -1,11 +1,9 @@
 from logging.config import fileConfig
-
 from alembic import context
 from sqlalchemy import engine_from_config, pool
-
-from database.connection import Base, DATABASE_URL
+from config import settings
+from database.connection import Base
 from database import models  # noqa: F401
-
 
 config = context.config
 
@@ -16,7 +14,10 @@ if config.config_file_name is not None:
 # Escape % because Alembic uses ConfigParser interpolation.
 config.set_main_option(
     "sqlalchemy.url",
-    DATABASE_URL.replace("%", "%%"),
+    settings.database_url.replace(
+        "%",
+        "%%",
+    ),
 )
 
 target_metadata = Base.metadata
