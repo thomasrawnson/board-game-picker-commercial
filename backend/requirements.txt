@@ -21,6 +21,7 @@ packaging==26.3
 pluggy==1.6.0
 psycopg==3.3.4
 psycopg-binary==3.3.4
+psycopg2-binary==2.9.10
 pwdlib==0.3.0
 pycparser==3.0
 pydantic==2.13.4
