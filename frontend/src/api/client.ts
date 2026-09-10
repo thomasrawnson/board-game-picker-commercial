@@ -227,10 +227,30 @@ export interface MonthlyPlay {
   player_count: number
 }
 
-const API_BASE_URL =
+const configuredApiUrl =
   import.meta.env
-    .VITE_API_BASE_URL ??
-  "http://127.0.0.1:8000"
+    .VITE_API_BASE_URL
+    ?.trim()
+
+
+if (
+  import.meta.env.PROD
+  && !configuredApiUrl
+) {
+  throw new Error(
+    "VITE_API_BASE_URL must be configured for production"
+  )
+}
+
+
+const API_BASE_URL =
+  (
+    configuredApiUrl
+    ?? "http://127.0.0.1:8000"
+  ).replace(
+    /\/+$/,
+    "",
+  )
 
 
 async function apiFetch(
