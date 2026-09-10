@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import {
   deletePlay,
   type Game,
@@ -23,18 +25,50 @@ function GameHistory({
   loading,
   onPlayDeleted,
 }: Props) {
-  
-  async function handleDeletePlay(
+  const [
+    confirmingPlayId,
+    setConfirmingPlayId,
+  ] = useState<number | null>(
+    null,
+  )
+
+  const [
+    deletingPlayId,
+    setDeletingPlayId,
+  ] = useState<number | null>(
+    null,
+  )
+
+  const [
+    deleteErrorPlayId,
+    setDeleteErrorPlayId,
+  ] = useState<number | null>(
+    null,
+  )
+
+  const [
+    deleteError,
+    setDeleteError,
+  ] = useState("")
+
+  function requestDeletePlay(
     playId: number,
   ) {
-    const confirmed =
-      window.confirm(
-        "Delete this play?"
-      )
+    setDeleteErrorPlayId(null)
+    setDeleteError("")
+    setConfirmingPlayId(playId)
+  }
 
-    if (!confirmed) {
-      return
-    }
+  function cancelDeletePlay() {
+    setConfirmingPlayId(null)
+  }
+
+  async function confirmDeletePlay(
+    playId: number,
+  ) {
+    setDeletingPlayId(playId)
+    setDeleteErrorPlayId(null)
+    setDeleteError("")
 
     try {
       await deletePlay(
@@ -45,9 +79,13 @@ function GameHistory({
     } catch (err) {
       console.error(err)
 
-      window.alert(
-        "Couldn't delete this play."
+      setDeleteErrorPlayId(playId)
+      setDeleteError(
+        "Couldn't delete this play.",
       )
+    } finally {
+      setDeletingPlayId(null)
+      setConfirmingPlayId(null)
     }
   }
   return (
@@ -205,17 +243,70 @@ function GameHistory({
                         Send to BG Stats
                       </a>
                     )}
-                    <button
-                      type="button"
-                      className="delete-play-button"
-                      onClick={() =>
-                        handleDeletePlay(
-                          play.id
-                        )
-                      }
-                    >
-                      Delete play
-                  </button>
+                    {confirmingPlayId ===
+                    play.id ? (
+                      <div className="delete-play-confirm">
+                        <span>
+                          Delete this
+                          play?
+                        </span>
+
+                        <div className="delete-play-confirm-actions">
+                          <button
+                            type="button"
+                            className="ghost-button"
+                            disabled={
+                              deletingPlayId ===
+                              play.id
+                            }
+                            onClick={
+                              cancelDeletePlay
+                            }
+                          >
+                            Cancel
+                          </button>
+
+                          <button
+                            type="button"
+                            className="delete-play-confirm-button"
+                            disabled={
+                              deletingPlayId ===
+                              play.id
+                            }
+                            onClick={() =>
+                              confirmDeletePlay(
+                                play.id,
+                              )
+                            }
+                          >
+                            {deletingPlayId ===
+                            play.id
+                              ? "Deleting..."
+                              : "Delete play"}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="delete-play-button"
+                        onClick={() =>
+                          requestDeletePlay(
+                            play.id,
+                          )
+                        }
+                      >
+                        Delete play
+                      </button>
+                    )}
+
+                    {deleteError &&
+                      deleteErrorPlayId ===
+                        play.id && (
+                        <p className="error-message">
+                          {deleteError}
+                        </p>
+                      )}
                   </div>
                 ),
               )}

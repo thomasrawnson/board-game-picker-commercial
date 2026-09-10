@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import type {
   Game,
   GameHistory as GameHistoryData,
@@ -23,6 +25,39 @@ function GameDetail({
   onPlaySaved,
   onRemove,
 }: Props) {
+  const [
+    confirmingRemove,
+    setConfirmingRemove,
+  ] = useState(false)
+
+  const [
+    removing,
+    setRemoving,
+  ] = useState(false)
+
+  const [
+    removeError,
+    setRemoveError,
+  ] = useState("")
+
+  async function confirmRemove() {
+    setRemoving(true)
+    setRemoveError("")
+
+    try {
+      await onRemove()
+    } catch (err) {
+      console.error(err)
+
+      setRemoveError(
+        "Couldn't remove this game from your collection.",
+      )
+
+      setRemoving(false)
+      setConfirmingRemove(false)
+    }
+  }
+
   return (
     <section className="screen collection-screen">
       <button
@@ -160,12 +195,57 @@ function GameDetail({
         />
 
         <div className="detail-section collection-danger-zone">
-          <button
-            className="remove-collection-button"
-            onClick={onRemove}
-          >
-            Remove from collection
-          </button>
+          {confirmingRemove ? (
+            <div className="remove-collection-confirm">
+              <span>
+                Remove {game.name}{" "}
+                from your collection?
+              </span>
+
+              <div className="remove-collection-confirm-actions">
+                <button
+                  className="ghost-button"
+                  disabled={removing}
+                  onClick={() =>
+                    setConfirmingRemove(
+                      false,
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+
+                <button
+                  className="remove-collection-button"
+                  disabled={removing}
+                  onClick={
+                    confirmRemove
+                  }
+                >
+                  {removing
+                    ? "Removing..."
+                    : "Remove from collection"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              className="remove-collection-button"
+              onClick={() =>
+                setConfirmingRemove(
+                  true,
+                )
+              }
+            >
+              Remove from collection
+            </button>
+          )}
+
+          {removeError && (
+            <p className="error-message">
+              {removeError}
+            </p>
+          )}
         </div>
       </article>
     </section>

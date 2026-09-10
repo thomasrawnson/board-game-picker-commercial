@@ -477,48 +477,31 @@ function CollectionView({
       return
     }
 
-    const confirmed =
-      window.confirm(
-        `Remove ${selectedGame.name} from your collection?`,
-      )
+    await removeFromCollection(
+      selectedGame.bgg_id,
+    )
 
-    if (!confirmed) {
-      return
-    }
+    setGames(
+      (current) =>
+        current.filter(
+          (game) =>
+            game.bgg_id
+            !== selectedGame
+              .bgg_id,
+        ),
+    )
 
-    try {
-      await removeFromCollection(
-        selectedGame.bgg_id,
-      )
+    setCollectionStats(
+      (current) =>
+        current.filter(
+          (stats) =>
+            stats.bgg_id
+            !== selectedGame
+              .bgg_id,
+        ),
+    )
 
-      setGames(
-        (current) =>
-          current.filter(
-            (game) =>
-              game.bgg_id
-              !== selectedGame
-                .bgg_id,
-          ),
-      )
-
-      setCollectionStats(
-        (current) =>
-          current.filter(
-            (stats) =>
-              stats.bgg_id
-              !== selectedGame
-                .bgg_id,
-          ),
-      )
-
-      closeGame()
-    } catch (err) {
-      console.error(err)
-
-      window.alert(
-        "Couldn't remove this game from your collection.",
-      )
-    }
+    closeGame()
   }
 
 

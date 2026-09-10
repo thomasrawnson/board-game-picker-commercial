@@ -426,10 +426,31 @@ class InsightsRepository:
             or 0
         )
 
-        repeat_plays = max(
-            plays_this_month
-            - new_games,
-            0,
+        repeat_plays = (
+            self.db.query(
+                func.count(
+                    Play.id
+                )
+            )
+            .join(
+                first_play_dates,
+                first_play_dates
+                .c
+                .game_id
+                == Play.game_id,
+            )
+            .filter(
+                Play.user_id
+                == self.user_id,
+                Play.played_at
+                >= month_start,
+                first_play_dates
+                .c
+                .first_played_at
+                < month_start,
+            )
+            .scalar()
+            or 0
         )
 
         recent_rows = (

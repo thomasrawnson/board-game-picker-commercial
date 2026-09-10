@@ -953,6 +953,48 @@
     rgba(229, 165, 142, 0.5);
 }
 
+.remove-collection-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 12px 14px;
+
+  background: rgba(229, 165, 142, 0.08);
+
+  border:
+    1px solid
+    rgba(229, 165, 142, 0.28);
+  border-radius: 10px;
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+}
+
+.remove-collection-confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.remove-collection-confirm-actions
+  .ghost-button {
+  flex: 1;
+}
+
+.remove-collection-confirm-actions
+  .remove-collection-button {
+  flex: 1;
+  width: auto;
+}
+
+.remove-collection-button:disabled,
+.remove-collection-confirm-actions
+  .ghost-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .collection-filter-tabs {
   display: grid;
   grid-template-columns:
@@ -1013,4 +1055,66 @@
 
 .delete-play-button:hover {
   text-decoration: underline;
+}
+
+.delete-play-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  margin-top: 10px;
+  padding: 8px 10px;
+
+  background: rgba(217, 133, 106, 0.1);
+
+  border: 1px solid rgba(217, 133, 106, 0.3);
+  border-radius: 8px;
+
+  color: var(--text-secondary);
+
+  font-size: 11px;
+}
+
+.delete-play-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.delete-play-confirm-actions
+  .ghost-button {
+  width: auto;
+  padding: 6px 12px;
+
+  font-size: 11px;
+}
+
+.delete-play-confirm-button {
+  padding: 6px 12px;
+
+  color: #f3ead8;
+  background: #d9856a;
+
+  border: 0;
+  border-radius: 6px;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 160ms ease;
+}
+
+.delete-play-confirm-button:hover {
+  background: #c96f52;
+}
+
+.delete-play-confirm-button:disabled,
+.delete-play-confirm-actions
+  .ghost-button:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
