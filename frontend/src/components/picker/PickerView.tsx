@@ -12,11 +12,20 @@ import {
   PlayerStep,
 } from "./PlayerStep"
 
+import PlayerSelectionStep
+  from "./PlayerSelectionStep"
+
 import TimeStep
   from "./TimeStep"
 
 import PreferenceStep
   from "./PreferenceStep"
+
+import ThemeStep
+  from "./ThemeStep"
+
+import PlayStyleStep
+  from "./PlayStyleStep"
 
 import PickerResult
   from "./PickerResult"
@@ -24,8 +33,11 @@ import PickerResult
 
 type Step =
   | "players"
+  | "player_selection"
   | "time"
   | "preferences"
+  | "theme"
+  | "play_style"
   | "reveal"
 
 
@@ -49,7 +61,7 @@ function PickerView({
 
   const [players, setPlayers] =
     useState<number | null>(
-      null,
+      null
     )
 
   const [
@@ -57,7 +69,7 @@ function PickerView({
     setMaxPlayTime,
   ] =
     useState<number | null>(
-      null,
+      null
     )
 
   const [
@@ -65,7 +77,7 @@ function PickerView({
     setMaxComplexity,
   ] =
     useState<number | null>(
-      null,
+      null
     )
 
   const [
@@ -82,7 +94,7 @@ function PickerView({
 
   const [mode, setMode] =
     useState<PickerMode>(
-      "best_match",
+      "best_match"
     )
 
   const [matches, setMatches] =
@@ -91,8 +103,7 @@ function PickerView({
   const [
     matchIndex,
     setMatchIndex,
-  ] =
-    useState(0)
+  ] = useState(0)
 
   const [loading, setLoading] =
     useState(false)
@@ -115,17 +126,16 @@ function PickerView({
     setPreferredCategories(
       (current) =>
         current.includes(
-          category,
+          category
         )
           ? current.filter(
               (item) =>
-                item !==
-                category,
+                item !== category
             )
           : [
               ...current,
               category,
-            ],
+            ]
     )
   }
 
@@ -136,17 +146,41 @@ function PickerView({
     setPreferredMechanics(
       (current) =>
         current.includes(
-          mechanic,
+          mechanic
         )
           ? current.filter(
               (item) =>
-                item !==
-                mechanic,
+                item !== mechanic
             )
           : [
               ...current,
               mechanic,
-            ],
+            ]
+    )
+  }
+
+
+  function handlePlayerSelection(
+    playerIds: number[],
+  ) {
+    setSelectedPlayerIds(
+      playerIds
+    )
+
+    setPlayers(
+      playerIds.length > 0
+        ? playerIds.length
+        : null
+    )
+  }
+
+
+  function chooseGroupSize(
+    count: number | null,
+  ) {
+    setSelectedPlayerIds([])
+    setPlayers(
+      count
     )
   }
 
@@ -185,20 +219,28 @@ function PickerView({
         results.length === 0
       ) {
         setError(
-          "No games matched those choices. Try allowing more time or weight.",
+          "No games matched those choices. Try allowing more time or weight."
         )
 
         return
       }
 
-      setMatches(results)
-      setMatchIndex(0)
-      setStep("reveal")
+      setMatches(
+        results
+      )
+
+      setMatchIndex(
+        0
+      )
+
+      setStep(
+        "reveal"
+      )
     } catch (err) {
       console.error(err)
 
       setError(
-        "Couldn't reach the Board Game Picker API.",
+        "Couldn't reach the Board Game Picker API."
       )
     } finally {
       setLoading(false)
@@ -213,88 +255,138 @@ function PickerView({
 
     setMatchIndex(
       (current) =>
-        current + 1,
+        current + 1
     )
   }
 
 
   function startOver() {
-    setStep("players")
-    setPlayers(null)
-    setSelectedPlayerIds([])
-    setMaxPlayTime(null)
-    setMaxComplexity(null)
+    setStep(
+      "players"
+    )
+
+    setPlayers(
+      null
+    )
+
+    setSelectedPlayerIds(
+      []
+    )
+
+    setMaxPlayTime(
+      null
+    )
+
+    setMaxComplexity(
+      null
+    )
 
     setPreferredCategories(
-      [],
+      []
     )
 
     setPreferredMechanics(
-      [],
+      []
     )
 
     setMode(
-      "best_match",
+      "best_match"
     )
 
-    setMatches([])
-    setMatchIndex(0)
-    setError("")
+    setMatches(
+      []
+    )
+
+    setMatchIndex(
+      0
+    )
+
+    setError(
+      ""
+    )
   }
+
+
+  const progressStep =
+    step === "players"
+    || step === "player_selection"
+      ? 0
+      : step === "time"
+        ? 1
+        : step === "preferences"
+          || step === "theme"
+          || step === "play_style"
+          ? 2
+          : 3
 
 
   return (
     <>
-      <div className="progress-dots">
-        <span
-          className={
-            step === "players"
-              ? "dot active"
-              : "dot"
-          }
-        />
-
-        <span
-          className={
-            step === "time"
-              ? "dot active"
-              : "dot"
-          }
-        />
-
-        <span
-          className={
-            step ===
-            "preferences"
-              ? "dot active"
-              : "dot"
-          }
-        />
-
-        <span
-          className={
-            step === "reveal"
-              ? "dot active"
-              : "dot"
-          }
-        />
+      <div
+        className="progress-dots"
+        aria-label={`Picker step ${
+          progressStep + 1
+        } of 4`}
+      >
+        {[0, 1, 2, 3].map(
+          (index) => (
+            <span
+              key={index}
+              className={
+                progressStep ===
+                index
+                  ? "dot active"
+                  : "dot"
+              }
+            />
+          ),
+        )}
       </div>
 
 
       {step === "players" && (
         <PlayerStep
-          players={players}
+          players={
+            players
+          }
           selectedPlayerIds={
             selectedPlayerIds
           }
           onSelectCount={
-            setPlayers
+            chooseGroupSize
           }
-          onSelectPlayers={
-            setSelectedPlayerIds
+          onChoosePlayers={() =>
+            setStep(
+              "player_selection"
+            )
           }
           onContinue={() =>
-            setStep("time")
+            setStep(
+              "time"
+            )
+          }
+        />
+      )}
+
+
+      {step ===
+        "player_selection" && (
+        <PlayerSelectionStep
+          selectedPlayerIds={
+            selectedPlayerIds
+          }
+          onChange={
+            handlePlayerSelection
+          }
+          onDone={() =>
+            setStep(
+              "players"
+            )
+          }
+          onBack={() =>
+            setStep(
+              "players"
+            )
           }
         />
       )}
@@ -310,11 +402,13 @@ function PickerView({
           }
           onContinue={() =>
             setStep(
-              "preferences",
+              "preferences"
             )
           }
           onBack={() =>
-            setStep("players")
+            setStep(
+              "players"
+            )
           }
         />
       )}
@@ -332,14 +426,14 @@ function PickerView({
           maxComplexity={
             maxComplexity
           }
-          mode={mode}
-          error={error}
-          loading={loading}
-          onToggleCategory={
-            toggleCategory
+          mode={
+            mode
           }
-          onToggleMechanic={
-            toggleMechanic
+          error={
+            error
+          }
+          loading={
+            loading
           }
           onComplexityChange={
             setMaxComplexity
@@ -347,27 +441,98 @@ function PickerView({
           onModeChange={
             setMode
           }
+          onOpenTheme={() =>
+            setStep(
+              "theme"
+            )
+          }
+          onOpenPlayStyle={() =>
+            setStep(
+              "play_style"
+            )
+          }
           onReveal={
             revealGame
           }
           onBack={() =>
-            setStep("time")
+            setStep(
+              "time"
+            )
           }
         />
       )}
 
 
-      {step === "reveal" &&
-        match && (
+      {step === "theme" && (
+        <ThemeStep
+          selected={
+            preferredCategories
+          }
+          onToggle={
+            toggleCategory
+          }
+          onClear={() =>
+            setPreferredCategories(
+              []
+            )
+          }
+          onDone={() =>
+            setStep(
+              "preferences"
+            )
+          }
+          onBack={() =>
+            setStep(
+              "preferences"
+            )
+          }
+        />
+      )}
+
+
+      {step ===
+        "play_style" && (
+        <PlayStyleStep
+          selected={
+            preferredMechanics
+          }
+          onToggle={
+            toggleMechanic
+          }
+          onClear={() =>
+            setPreferredMechanics(
+              []
+            )
+          }
+          onDone={() =>
+            setStep(
+              "preferences"
+            )
+          }
+          onBack={() =>
+            setStep(
+              "preferences"
+            )
+          }
+        />
+      )}
+
+
+      {step === "reveal"
+        && match && (
         <PickerResult
-          match={match}
+          match={
+            match
+          }
           matchIndex={
             matchIndex
           }
           totalMatches={
             matches.length
           }
-          mode={mode}
+          mode={
+            mode
+          }
           playerCount={
             players ?? 1
           }

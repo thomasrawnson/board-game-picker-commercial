@@ -560,7 +560,7 @@
 
 /* Desktop preview */
 
-@media (min-width: 391px) {
+@media (min-width: 481px) {
   .collection-list {
     max-height: 560px;
   }
@@ -1039,13 +1039,23 @@
 }
 
 .delete-play-button {
-  margin-top: 10px;
-  padding: 8px 0;
+  min-height: 44px;
 
-  color: #d9856a;
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
 
-  border: 0;
+  margin-top: 6px;
+  padding: 8px 10px;
+
+  color: #e79a80;
+  background:
+    rgba(181, 84, 43, 0.08);
+
+  border:
+    1px solid
+    rgba(181, 84, 43, 0.25);
+
+  border-radius: 8px;
 
   font: inherit;
   font-size: 11px;
@@ -1117,4 +1127,288 @@
   .ghost-button:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.collection-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.collection-filter-tabs {
+  display: grid;
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 6px;
+}
+
+.collection-filter-tabs button {
+  min-height: 42px;
+}
+
+.collection-search-wrap {
+  display: block;
+}
+
+.collection-search {
+  width: 100%;
+}
+
+.collection-toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.collection-count {
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 11px;
+}
+
+.collection-sort-wrap {
+  flex-shrink: 0;
+}
+
+.collection-sort {
+  min-height: 40px;
+  max-width: 150px;
+}
+
+@media (max-width: 480px) {
+  .collection-tools {
+    gap: 10px;
+  }
+
+  .collection-filter-tabs {
+    gap: 5px;
+  }
+
+  .collection-filter-tabs button {
+    padding: 9px 6px;
+
+    font-size: 11px;
+  }
+
+  .collection-toolbar-row {
+    margin-bottom: 2px;
+  }
+
+  .collection-sort {
+    max-width: 135px;
+  }
+}
+/* =========================================================
+   Slice 8 - game detail mobile cleanup
+   ========================================================= */
+
+.collection-back {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+}
+
+.collection-detail {
+  width: 100%;
+  min-width: 0;
+}
+
+.collection-detail-image {
+  max-width: 100%;
+}
+
+.log-play-button {
+  min-height: 48px;
+}
+
+.play-form input {
+  min-height: 44px;
+}
+
+.add-player-button,
+.delete-play-button,
+.remove-collection-button,
+.bgstats-history-link,
+.bgstats-button {
+  min-height: 44px;
+}
+
+.add-player-button,
+.delete-play-button,
+.remove-collection-button {
+  touch-action: manipulation;
+}
+
+.recent-play-detail {
+  min-width: 0;
+}
+
+.recent-play-header {
+  gap: 10px;
+}
+
+.play-participants {
+  min-width: 0;
+}
+
+
+/* Mobile game detail */
+
+@media (max-width: 480px) {
+  .collection-screen {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .collection-detail-image {
+    width: min(
+      170px,
+      48vw
+    );
+
+    height: min(
+      170px,
+      48vw
+    );
+
+    margin-bottom: 14px;
+  }
+
+  .collection-detail h1 {
+    font-size: 27px;
+    line-height: 1.08;
+  }
+
+  .detail-stats {
+    gap: 6px;
+
+    margin:
+      16px 0;
+  }
+
+  .detail-stats div {
+    min-width: 0;
+
+    padding:
+      10px 4px;
+  }
+
+  .detail-stats strong {
+    font-size: 18px;
+  }
+
+  .detail-section {
+    margin-top: 16px;
+  }
+
+  .detail-tags {
+    gap: 5px;
+  }
+
+  .detail-tags span {
+    padding:
+      6px 8px;
+  }
+
+
+  /* Play form */
+
+  .play-form {
+    padding: 13px;
+
+    margin-top: 12px;
+  }
+
+  .play-form-grid {
+    grid-template-columns:
+      1fr;
+
+    gap: 10px;
+
+    margin-bottom: 14px;
+  }
+
+  .player-form-card {
+    padding: 11px;
+  }
+
+  .player-input-row {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      82px;
+
+    gap: 8px;
+  }
+
+  .player-input-row label {
+    min-width: 0;
+  }
+
+  .score-field {
+    min-width: 0;
+  }
+
+  .winner-toggle {
+    min-height: 44px;
+
+    justify-content: center;
+  }
+
+
+  /* History */
+
+  .history-stats {
+    gap: 5px;
+  }
+
+  .history-stats div {
+    padding:
+      9px 3px;
+  }
+
+  .recent-play-detail {
+    padding:
+      12px;
+  }
+
+  .recent-play-header {
+    align-items:
+      flex-start;
+  }
+
+  .history-player {
+    gap: 8px;
+  }
+
+  .delete-play-button {
+    padding:
+      10px 0;
+  }
+
+
+  /* Removal confirmation */
+
+  .remove-collection-confirm-actions {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+  }
+
+  .remove-collection-confirm-actions
+    .ghost-button {
+    margin-top: 0;
+  }
+
+  .remove-collection-button {
+    width: 100%;
+  }
 }

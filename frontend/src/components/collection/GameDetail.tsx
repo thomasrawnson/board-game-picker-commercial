@@ -61,6 +61,7 @@ function GameDetail({
   return (
     <section className="screen collection-screen">
       <button
+        type="button"
         className="collection-back"
         onClick={onBack}
       >
@@ -204,6 +205,7 @@ function GameDetail({
 
               <div className="remove-collection-confirm-actions">
                 <button
+                  type="button"
                   className="ghost-button"
                   disabled={removing}
                   onClick={() =>
@@ -216,6 +218,7 @@ function GameDetail({
                 </button>
 
                 <button
+                  type="button"
                   className="remove-collection-button"
                   disabled={removing}
                   onClick={
@@ -230,6 +233,7 @@ function GameDetail({
             </div>
           ) : (
             <button
+              type="button"
               className="remove-collection-button"
               onClick={() =>
                 setConfirmingRemove(

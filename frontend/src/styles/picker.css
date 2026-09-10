@@ -1029,3 +1029,41 @@
   font-size: 12px;
   line-height: 1.45;
 }
+
+/* Picker accessibility */
+
+.player-chip,
+.time-option,
+.picker-mode-option,
+.complexity-option,
+.picker-navigation-card,
+.picker-selection-row {
+  min-height: 44px;
+}
+
+@media (max-width: 480px) {
+  .picker-selection-list {
+    overscroll-behavior:
+      contain;
+  }
+
+  .picker-selection-footer {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(
+          31,
+          61,
+          46,
+          0
+        ),
+        rgba(
+          31,
+          61,
+          46,
+          0.98
+        )
+        18%
+      );
+  }
+}

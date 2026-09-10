@@ -46,71 +46,6 @@ function formatHours(
 }
 
 
-function formatNeglectedGame(
-  lastPlayedAt: string | null,
-): string {
-  if (!lastPlayedAt) {
-    return "Never played"
-  }
-
-  const playedAt =
-    new Date(lastPlayedAt)
-
-  const today =
-    new Date()
-
-  const millisecondsPerDay =
-    1000
-    * 60
-    * 60
-    * 24
-
-  const days =
-    Math.max(
-      0,
-      Math.floor(
-        (
-          today.getTime()
-          - playedAt.getTime()
-        )
-        / millisecondsPerDay
-      ),
-    )
-
-  if (days === 0) {
-    return "Played today"
-  }
-
-  if (days === 1) {
-    return "1 day ago"
-  }
-
-  if (days < 30) {
-    return `${days} days ago`
-  }
-
-  const months =
-    Math.floor(
-      days / 30
-    )
-
-  if (months < 12) {
-    return months === 1
-      ? "1 month ago"
-      : `${months} months ago`
-  }
-
-  const years =
-    Math.floor(
-      months / 12
-    )
-
-  return years === 1
-    ? "1 year ago"
-    : `${years} years ago`
-}
-
-
 type Props = {
   onOpenGame:
     (bggId: number) => void
@@ -654,14 +589,6 @@ function InsightsView({
                             }
                           </strong>
 
-                          <span>
-                            {
-                              formatNeglectedGame(
-                                game
-                                  .last_played_at
-                              )
-                            }
-                          </span>
                         </button>
 
                         <div className="player-stat">

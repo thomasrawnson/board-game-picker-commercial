@@ -10,37 +10,17 @@ type Props = {
   mode: PickerMode
   error: string
   loading: boolean
-  onToggleCategory: (
-    category: string,
-  ) => void
-  onToggleMechanic: (
-    mechanic: string,
-  ) => void
   onComplexityChange: (
     value: number | null,
   ) => void
   onModeChange: (
     mode: PickerMode,
   ) => void
+  onOpenTheme: () => void
+  onOpenPlayStyle: () => void
   onReveal: () => void
   onBack: () => void
 }
-
-
-const categoryOptions = [
-  "Adventure",
-  "Economic",
-  "Fantasy",
-  "Science Fiction",
-]
-
-
-const mechanicOptions = [
-  "Cooperative Game",
-  "Deck Building",
-  "Hand Management",
-  "Worker Placement",
-]
 
 
 const complexityOptions = [
@@ -93,6 +73,21 @@ const modeOptions: {
 ]
 
 
+function selectionSummary(
+  values: string[],
+) {
+  if (values.length === 0) {
+    return "Any"
+  }
+
+  if (values.length === 1) {
+    return values[0]
+  }
+
+  return `${values.length} selected`
+}
+
+
 function PreferenceStep({
   preferredCategories,
   preferredMechanics,
@@ -100,30 +95,30 @@ function PreferenceStep({
   mode,
   error,
   loading,
-  onToggleCategory,
-  onToggleMechanic,
   onComplexityChange,
   onModeChange,
+  onOpenTheme,
+  onOpenPlayStyle,
   onReveal,
   onBack,
 }: Props) {
   return (
-    <section className="screen">
+    <section className="screen picker-step-screen">
       <header>
         <p className="eyebrow">
           Game night
         </p>
 
         <h1>
-          What are you in the mood
-          for?
+          Fine-tune the pick
         </h1>
 
         <p className="subtitle">
-          Fine-tune it, or leave the
-          choices open.
+          Keep it broad or add a few
+          preferences.
         </p>
       </header>
+
 
       <div className="preference-section">
         <p className="preference-label">
@@ -135,14 +130,18 @@ function PreferenceStep({
             (option) => (
               <button
                 key={option.value}
+                type="button"
                 className={
                   mode === option.value
                     ? "picker-mode-option selected"
                     : "picker-mode-option"
                 }
+                aria-pressed={
+                  mode === option.value
+                }
                 onClick={() =>
                   onModeChange(
-                    option.value,
+                    option.value
                   )
                 }
               >
@@ -175,14 +174,18 @@ function PreferenceStep({
               return (
                 <button
                   key={option.label}
+                  type="button"
                   className={
                     selected
                       ? "complexity-option selected"
                       : "complexity-option"
                   }
+                  aria-pressed={
+                    selected
+                  }
                   onClick={() =>
                     onComplexityChange(
-                      option.value,
+                      option.value
                     )
                   }
                 >
@@ -191,9 +194,7 @@ function PreferenceStep({
                   </strong>
 
                   <span>
-                    {
-                      option.description
-                    }
+                    {option.description}
                   </span>
                 </button>
               )
@@ -203,65 +204,61 @@ function PreferenceStep({
       </div>
 
 
-      <div className="preference-section">
-        <p className="preference-label">
-          Theme
-        </p>
+      <div className="preference-link-list">
+        <button
+          type="button"
+          className="picker-navigation-card"
+          onClick={
+            onOpenTheme
+          }
+        >
+          <span>
+            <strong>
+              Theme
+            </strong>
 
-        <div className="preference-grid">
-          {categoryOptions.map(
-            (category) => (
-              <button
-                key={category}
-                className={
-                  preferredCategories.includes(
-                    category,
-                  )
-                    ? "preference-chip selected"
-                    : "preference-chip"
-                }
-                onClick={() =>
-                  onToggleCategory(
-                    category,
-                  )
-                }
-              >
-                {category}
-              </button>
-            ),
-          )}
-        </div>
-      </div>
+            <small>
+              {selectionSummary(
+                preferredCategories
+              )}
+            </small>
+          </span>
+
+          <span
+            className="picker-navigation-chevron"
+            aria-hidden="true"
+          >
+            ›
+          </span>
+        </button>
 
 
-      <div className="preference-section">
-        <p className="preference-label">
-          Play style
-        </p>
+        <button
+          type="button"
+          className="picker-navigation-card"
+          onClick={
+            onOpenPlayStyle
+          }
+        >
+          <span>
+            <strong>
+              Play style
+            </strong>
 
-        <div className="preference-grid">
-          {mechanicOptions.map(
-            (mechanic) => (
-              <button
-                key={mechanic}
-                className={
-                  preferredMechanics.includes(
-                    mechanic,
-                  )
-                    ? "preference-chip selected"
-                    : "preference-chip"
-                }
-                onClick={() =>
-                  onToggleMechanic(
-                    mechanic,
-                  )
-                }
-              >
-                {mechanic}
-              </button>
-            ),
-          )}
-        </div>
+            <small>
+              {selectionSummary(
+                preferredMechanics
+              )}
+            </small>
+          </span>
+
+          <span
+            className="picker-navigation-chevron"
+            aria-hidden="true"
+          >
+            ›
+          </span>
+        </button>
       </div>
 
 
@@ -272,25 +269,34 @@ function PreferenceStep({
       )}
 
 
-      <button
-        className="primary-button"
-        onClick={onReveal}
-        disabled={loading}
-      >
-        {loading
-          ? "Searching the shelf..."
-          : mode === "surprise"
-            ? "Surprise me"
-            : "Reveal a game"}
-      </button>
+      <div className="picker-step-actions">
+        <button
+          type="button"
+          className="primary-button"
+          onClick={
+            onReveal
+          }
+          disabled={
+            loading
+          }
+        >
+          {loading
+            ? "Searching the shelf..."
+            : mode === "surprise"
+              ? "Surprise me"
+              : "Reveal a game"}
+        </button>
 
-
-      <button
-        className="ghost-button"
-        onClick={onBack}
-      >
-        Back
-      </button>
+        <button
+          type="button"
+          className="ghost-button"
+          onClick={
+            onBack
+          }
+        >
+          Back
+        </button>
+      </div>
     </section>
   )
 }

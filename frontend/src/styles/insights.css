@@ -651,7 +651,24 @@
   letter-spacing: 0.04em;
 }
 
-.neglected-game-name,
+.neglected-game-name strong {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.neglected-game-name {
+  min-width: 0;
+}
+
+.neglected-game-name strong {
+  display: block;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .favourite-game-copy {
   display: flex;
   flex: 1;
@@ -660,7 +677,11 @@
   min-width: 0;
 }
 
-.neglected-game-row .neglected-game-name strong {
+.neglected-game-row {
+  min-height: 52px;
+}
+
+.neglected-game-name strong {
   color: var(--ink) !important;
 }
 .favourite-game-copy strong {
@@ -969,4 +990,52 @@
 .favourite-game-link:hover,
 .monthly-play-game:hover {
   text-decoration: underline;
+}
+
+/* =========================================================
+   Slice 8 - setup mobile cleanup
+   ========================================================= */
+
+.setup-input,
+.file-picker,
+.setup-button {
+  min-height: 44px;
+}
+
+.file-picker:focus-within {
+  outline:
+    2px solid var(--gold);
+
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .setup-screen {
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-bottom: 18px;
+  }
+
+  .setup-card {
+    padding: 16px;
+
+    border-radius: 14px;
+  }
+
+  .setup-step {
+    margin-bottom: 14px;
+  }
+
+  .setup-divider {
+    margin:
+      14px 0;
+  }
+
+  .file-picker {
+    padding:
+      12px;
+  }
 }

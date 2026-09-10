@@ -206,3 +206,213 @@
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
+
+/* =========================================================
+   Slice 8 - game detail mobile cleanup
+   ========================================================= */
+
+.collection-back {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+}
+
+.collection-detail {
+  width: 100%;
+  min-width: 0;
+}
+
+.collection-detail-image {
+  max-width: 100%;
+}
+
+.log-play-button {
+  min-height: 48px;
+}
+
+.play-form input {
+  min-height: 44px;
+}
+
+.add-player-button,
+.delete-play-button,
+.remove-collection-button,
+.bgstats-history-link,
+.bgstats-button {
+  min-height: 44px;
+}
+
+.add-player-button,
+.delete-play-button,
+.remove-collection-button {
+  touch-action: manipulation;
+}
+
+.recent-play-detail {
+  min-width: 0;
+}
+
+.recent-play-header {
+  gap: 10px;
+}
+
+.play-participants {
+  min-width: 0;
+}
+
+
+/* Mobile game detail */
+
+@media (max-width: 390px) {
+  .collection-screen {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .collection-detail-image {
+    width: min(
+      170px,
+      48vw
+    );
+
+    height: min(
+      170px,
+      48vw
+    );
+
+    margin-bottom: 14px;
+  }
+
+  .collection-detail h1 {
+    font-size: 27px;
+    line-height: 1.08;
+  }
+
+  .detail-stats {
+    gap: 6px;
+
+    margin:
+      16px 0;
+  }
+
+  .detail-stats div {
+    min-width: 0;
+
+    padding:
+      10px 4px;
+  }
+
+  .detail-stats strong {
+    font-size: 18px;
+  }
+
+  .detail-section {
+    margin-top: 16px;
+  }
+
+  .detail-tags {
+    gap: 5px;
+  }
+
+  .detail-tags span {
+    padding:
+      6px 8px;
+  }
+
+
+  /* Play form */
+
+  .play-form {
+    padding: 13px;
+
+    margin-top: 12px;
+  }
+
+  .play-form-grid {
+    grid-template-columns:
+      1fr;
+
+    gap: 10px;
+
+    margin-bottom: 14px;
+  }
+
+  .player-form-card {
+    padding: 11px;
+  }
+
+  .player-input-row {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      82px;
+
+    gap: 8px;
+  }
+
+  .player-input-row label {
+    min-width: 0;
+  }
+
+  .score-field {
+    min-width: 0;
+  }
+
+  .winner-toggle {
+    min-height: 44px;
+
+    justify-content: center;
+  }
+
+
+  /* History */
+
+  .history-stats {
+    gap: 5px;
+  }
+
+  .history-stats div {
+    padding:
+      9px 3px;
+  }
+
+  .recent-play-detail {
+    padding:
+      12px;
+  }
+
+  .recent-play-header {
+    align-items:
+      flex-start;
+  }
+
+  .history-player {
+    gap: 8px;
+  }
+
+  .delete-play-button {
+    padding:
+      10px 0;
+  }
+
+
+  /* Removal confirmation */
+
+  .remove-collection-confirm-actions {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+  }
+
+  .remove-collection-confirm-actions
+    .ghost-button {
+    margin-top: 0;
+  }
+
+  .remove-collection-button {
+    width: 100%;
+  }
+}

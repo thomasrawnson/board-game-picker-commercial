@@ -5,20 +5,29 @@ export type SortOption =
   | "rating"
   | "complexity"
 
+
 export type PlayFilter =
   | "all"
   | "played"
   | "never"
+
 
 type Props = {
   search: string
   sort: SortOption
   playFilter: PlayFilter
   resultCount: number
-  onSearchChange: (value: string) => void
-  onSortChange: (value: SortOption) => void
-  onPlayFilterChange: (value: PlayFilter) => void
+  onSearchChange: (
+    value: string,
+  ) => void
+  onSortChange: (
+    value: SortOption,
+  ) => void
+  onPlayFilterChange: (
+    value: PlayFilter,
+  ) => void
 }
+
 
 function CollectionFilters({
   search,
@@ -30,105 +39,138 @@ function CollectionFilters({
   onPlayFilterChange,
 }: Props) {
   return (
-    <>
-      <div className="collection-tools">
+    <div className="collection-tools">
+      <div
+        className="collection-filter-tabs"
+        aria-label="Filter collection"
+      >
+        <button
+          type="button"
+          className={
+            playFilter === "all"
+              ? "active"
+              : ""
+          }
+          aria-pressed={
+            playFilter === "all"
+          }
+          onClick={() =>
+            onPlayFilterChange(
+              "all"
+            )
+          }
+        >
+          All
+        </button>
+
+        <button
+          type="button"
+          className={
+            playFilter === "played"
+              ? "active"
+              : ""
+          }
+          aria-pressed={
+            playFilter === "played"
+          }
+          onClick={() =>
+            onPlayFilterChange(
+              "played"
+            )
+          }
+        >
+          Played
+        </button>
+
+        <button
+          type="button"
+          className={
+            playFilter === "never"
+              ? "active"
+              : ""
+          }
+          aria-pressed={
+            playFilter === "never"
+          }
+          onClick={() =>
+            onPlayFilterChange(
+              "never"
+            )
+          }
+        >
+          Never played
+        </button>
+      </div>
+
+
+      <label className="collection-search-wrap">
+        <span className="sr-only">
+          Search your games
+        </span>
+
         <input
           className="collection-search"
           type="search"
           value={search}
-          placeholder="Search games, themes or mechanics"
+          placeholder="Search your games..."
           onChange={(event) =>
             onSearchChange(
-              event.target.value,
+              event.target.value
             )
           }
         />
+      </label>
 
-        <div className="collection-filter-tabs">
-          <button
-            className={
-              playFilter === "all"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              onPlayFilterChange("all")
-            }
-          >
-            All
-          </button>
 
-          <button
-            className={
-              playFilter === "played"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              onPlayFilterChange(
-                "played",
+      <div className="collection-toolbar-row">
+        <p className="collection-count">
+          {resultCount}{" "}
+          {resultCount === 1
+            ? "game"
+            : "games"}
+        </p>
+
+        <label className="collection-sort-wrap">
+          <span className="sr-only">
+            Sort games
+          </span>
+
+          <select
+            className="collection-sort"
+            value={sort}
+            aria-label="Sort games"
+            onChange={(event) =>
+              onSortChange(
+                event.target
+                  .value as SortOption
               )
             }
           >
-            Played
-          </button>
+            <option value="name">
+              A–Z
+            </option>
 
-          <button
-            className={
-              playFilter === "never"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              onPlayFilterChange(
-                "never",
-              )
-            }
-          >
-            Never played
-          </button>
-        </div>
+            <option value="recent">
+              Recently played
+            </option>
 
-        <select
-          className="collection-sort"
-          value={sort}
-          onChange={(event) =>
-            onSortChange(
-              event.target
-                .value as SortOption,
-            )
-          }
-        >
-          <option value="name">
-            A–Z
-          </option>
+            <option value="most-played">
+              Most played
+            </option>
 
-          <option value="recent">
-            Recently played
-          </option>
+            <option value="rating">
+              Highest rated
+            </option>
 
-          <option value="most-played">
-            Most played
-          </option>
-
-          <option value="rating">
-            Highest rated
-          </option>
-
-          <option value="complexity">
-            Heaviest
-          </option>
-        </select>
+            <option value="complexity">
+              Heaviest
+            </option>
+          </select>
+        </label>
       </div>
-
-      <p className="collection-count">
-        {resultCount}{" "}
-        {resultCount === 1
-          ? "game"
-          : "games"}
-      </p>
-    </>
+    </div>
   )
 }
+
 
 export default CollectionFilters

@@ -232,12 +232,30 @@ button:focus-visible {
   }
 
   .phone {
-    min-height: 100vh;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+
+    padding:
+      20px 18px
+      calc(
+        18px
+        + env(safe-area-inset-bottom)
+      );
 
     border: 0;
     border-radius: 0;
 
     box-shadow: none;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .screen {
+    min-height: 0;
   }
 }
 
@@ -277,4 +295,78 @@ button:focus-visible {
 
 .phone {
   position: relative;
+}
+
+/* =========================================================
+   Slice 8 - mobile and accessibility
+   ========================================================= */
+
+button,
+input,
+select,
+textarea,
+a {
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline:
+    2px solid var(--gold);
+
+  outline-offset: 3px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color:
+    rgba(201, 162, 39, 0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.01ms !important;
+  }
+}
+
+@media (max-width: 390px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    margin-bottom: 22px;
+
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .ghost-button {
+    min-height: 48px;
+  }
 }
