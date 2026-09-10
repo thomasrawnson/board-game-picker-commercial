@@ -1466,3 +1466,63 @@
 .play-participants {
   min-width: 0;
 }
+
+/* Mobile game detail */
+
+@media (max-width: 480px) {
+  .collection-screen {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .collection-detail-image {
+    width: min(
+      170px,
+      48vw
+    );
+
+    height: min(
+      170px,
+      48vw
+    );
+
+    margin-bottom: 14px;
+  }
+
+  .collection-detail h1 {
+    font-size: 27px;
+    line-height: 1.08;
+  }
+
+  .detail-stats {
+    gap: 6px;
+
+    margin:
+      16px 0;
+  }
+
+  .detail-stats div {
+    min-width: 0;
+
+    padding:
+      10px 4px;
+  }
+
+  .detail-stats strong {
+    font-size: 18px;
+  }
+
+  .detail-section {
+    margin-top: 16px;
+  }
+
+  .detail-tags {
+    gap: 5px;
+  }
+
+  .detail-tags span {
+    padding:
+      6px 8px;
+  }
+
+}

@@ -207,157 +207,97 @@
   outline-offset: 2px;
 }
 
-/* Mobile game detail */
+/* Play form */
 
-@media (max-width: 480px) {
-  .collection-screen {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+.play-form {
+  padding: 13px;
 
-  .collection-detail-image {
-    width: min(
-      170px,
-      48vw
-    );
+  margin-top: 12px;
+}
 
-    height: min(
-      170px,
-      48vw
-    );
+.play-form-grid {
+  grid-template-columns:
+    1fr;
 
-    margin-bottom: 14px;
-  }
+  gap: 10px;
 
-  .collection-detail h1 {
-    font-size: 27px;
-    line-height: 1.08;
-  }
+  margin-bottom: 14px;
+}
 
-  .detail-stats {
-    gap: 6px;
+.player-form-card {
+  padding: 11px;
+}
 
-    margin:
-      16px 0;
-  }
+.player-input-row {
+  display: grid;
 
-  .detail-stats div {
-    min-width: 0;
+  grid-template-columns:
+    minmax(0, 1fr)
+    82px;
 
-    padding:
-      10px 4px;
-  }
+  gap: 8px;
+}
 
-  .detail-stats strong {
-    font-size: 18px;
-  }
+.player-input-row label {
+  min-width: 0;
+}
 
-  .detail-section {
-    margin-top: 16px;
-  }
+.score-field {
+  min-width: 0;
+}
 
-  .detail-tags {
-    gap: 5px;
-  }
+.winner-toggle {
+  min-height: 44px;
 
-  .detail-tags span {
-    padding:
-      6px 8px;
-  }
+  justify-content: center;
+}
 
 
-  /* Play form */
+/* History */
 
-  .play-form {
-    padding: 13px;
+.history-stats {
+  gap: 5px;
+}
 
-    margin-top: 12px;
-  }
+.history-stats div {
+  padding:
+    9px 3px;
+}
 
-  .play-form-grid {
-    grid-template-columns:
-      1fr;
+.recent-play-detail {
+  padding:
+    12px;
+}
 
-    gap: 10px;
+.recent-play-header {
+  align-items:
+    flex-start;
+}
 
-    margin-bottom: 14px;
-  }
+.history-player {
+  gap: 8px;
+}
 
-  .player-form-card {
-    padding: 11px;
-  }
-
-  .player-input-row {
-    display: grid;
-
-    grid-template-columns:
-      minmax(0, 1fr)
-      82px;
-
-    gap: 8px;
-  }
-
-  .player-input-row label {
-    min-width: 0;
-  }
-
-  .score-field {
-    min-width: 0;
-  }
-
-  .winner-toggle {
-    min-height: 44px;
-
-    justify-content: center;
-  }
+.delete-play-button {
+  padding:
+    10px 0;
+}
 
 
-  /* History */
+/* Removal confirmation */
 
-  .history-stats {
-    gap: 5px;
-  }
+.remove-collection-confirm-actions {
+  display: flex;
+  flex-direction: column;
 
-  .history-stats div {
-    padding:
-      9px 3px;
-  }
+  gap: 8px;
+}
 
-  .recent-play-detail {
-    padding:
-      12px;
-  }
+.remove-collection-confirm-actions
+  .ghost-button {
+  margin-top: 0;
+}
 
-  .recent-play-header {
-    align-items:
-      flex-start;
-  }
-
-  .history-player {
-    gap: 8px;
-  }
-
-  .delete-play-button {
-    padding:
-      10px 0;
-  }
-
-
-  /* Removal confirmation */
-
-  .remove-collection-confirm-actions {
-    display: flex;
-    flex-direction: column;
-
-    gap: 8px;
-  }
-
-  .remove-collection-confirm-actions
-    .ghost-button {
-    margin-top: 0;
-  }
-
-  .remove-collection-button {
-    width: 100%;
-  }
+.remove-collection-button {
+  width: 100%;
 }
