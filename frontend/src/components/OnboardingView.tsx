@@ -130,6 +130,11 @@ function OnboardingView({
     }
   }
 
+  function skipCollection() {
+    setUsername("")
+    setSyncResult(null)
+    setStep("history")
+  }
 
   function skipHistory() {
     setStep("complete")
@@ -254,7 +259,14 @@ function OnboardingView({
               ? "Importing collection..."
               : "Import collection"}
           </button>
-
+          <button
+            type="button"
+            className="onboarding-skip"
+            disabled={syncing}
+            onClick={skipCollection}
+          >
+            Skip for now
+          </button>
           {syncError && (
             <p className="error-message">
               {syncError}
@@ -395,7 +407,12 @@ function OnboardingView({
               added too.
             </p>
           )}
-
+          {!syncResult && !importResult && (
+            <p>
+              You can add your collection and
+              play history later from Setup.
+            </p>
+          )}
           <button
             type="button"
             className="primary-button setup-button"
