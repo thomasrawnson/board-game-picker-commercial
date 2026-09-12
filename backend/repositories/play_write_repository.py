@@ -1,5 +1,3 @@
-from sqlalchemy.exc import IntegrityError
-
 from database.models import (
     Game as DatabaseGame,
 )
@@ -247,6 +245,28 @@ class PlayWriteRepository:
                 "to import plays"
             )
 
+        existing_play = (
+            self.db.query(DatabasePlay)
+            .filter(
+                DatabasePlay.user_id
+                == self.user_id,
+                DatabasePlay.source
+                == source,
+                DatabasePlay.source_play_id
+                == source_play_id,
+            )
+            .first()
+        )
+
+        if existing_play is not None:
+            self.enrich_imported_participants(
+                source=source,
+                source_play_id=source_play_id,
+                participants=participants,
+            )
+
+            return False
+
         database_game = (
             self.db.query(DatabaseGame)
             .join(
@@ -276,20 +296,11 @@ class PlayWriteRepository:
             source_play_id=source_play_id,
         )
 
-        self.db.add(database_play)
+        self.db.add(
+            database_play
+        )
 
-        try:
-            self.db.flush()
-        except IntegrityError:
-            self.db.rollback()
-
-            self.enrich_imported_participants(
-                source=source,
-                source_play_id=source_play_id,
-                participants=participants,
-            )
-
-            return True
+        self.db.flush()
 
         for participant in participants:
             player = (
@@ -311,6 +322,7 @@ class PlayWriteRepository:
                     ),
                 )
             )
+
         self.db.commit()
 
         return True
