@@ -32,6 +32,78 @@ from config import settings
 
 router = APIRouter()
 
+@router.get("/picker/options")
+def get_picker_options(
+    game_service: GameService = Depends(
+        get_game_service
+    ),
+):
+    games = game_service.get_games()
+
+    categories = sorted(
+        {
+            category
+            for game in games
+            for category in (
+                game.categories or []
+            )
+            if category.strip()
+        },
+        key=str.casefold,
+    )
+
+    mechanics = sorted(
+        {
+            mechanic
+            for game in games
+            for mechanic in (
+                game.mechanics or []
+            )
+            if mechanic.strip()
+        },
+        key=str.casefold,
+    )
+
+    return {
+        "categories": categories,
+        "mechanics": mechanics,
+    }
+@router.get("/picker/options")
+def get_picker_options(
+    game_service: GameService = Depends(
+        get_game_service
+    ),
+):
+    games = game_service.get_games()
+
+    categories = sorted(
+        {
+            category
+            for game in games
+            for category in (
+                game.categories or []
+            )
+            if category.strip()
+        },
+        key=str.casefold,
+    )
+
+    mechanics = sorted(
+        {
+            mechanic
+            for game in games
+            for mechanic in (
+                game.mechanics or []
+            )
+            if mechanic.strip()
+        },
+        key=str.casefold,
+    )
+
+    return {
+        "categories": categories,
+        "mechanics": mechanics,
+    }
 
 @router.get("/picker")
 def pick_games(
