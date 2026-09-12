@@ -1,3 +1,7 @@
+from sqlalchemy.exc import (
+    IntegrityError,
+)
+
 from database.models import (
     Game as DatabaseGame,
 )
@@ -300,7 +304,26 @@ class PlayWriteRepository:
             database_play
         )
 
-        self.db.flush()
+        try:
+            self.db.flush()
+        except IntegrityError:
+            # Narrow race window: another
+            # request imported the same
+            # source_play_id between our
+            # existence check above and
+            # this insert. Fall back to
+            # the same "already exists"
+            # handling rather than
+            # surfacing a raw 500.
+            self.db.rollback()
+
+            self.enrich_imported_participants(
+                source=source,
+                source_play_id=source_play_id,
+                participants=participants,
+            )
+
+            return False
 
         for participant in participants:
             player = (
