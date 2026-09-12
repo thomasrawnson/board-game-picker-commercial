@@ -23,6 +23,11 @@ export interface Game {
   mechanics: string[]
 }
 
+export interface PickerOptions {
+  categories: string[]
+  mechanics: string[]
+}
+
 export interface PickerMatch {
   game: Game
   score: number
@@ -414,6 +419,22 @@ export async function getPlayerStats(
   if (!response.ok) {
     throw new Error(
       `Player stats request failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
+}
+
+export async function getPickerOptions():
+Promise<PickerOptions> {
+  const response =
+    await apiFetch(
+      "/picker/options",
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      `Picker options request failed: ${response.status}`,
     )
   }
 

@@ -1,97 +1,242 @@
 /* Application navigation */
 
+
 /* Main navigation */
 
 .app-nav {
+  position: fixed;
+
+  left: 50%;
+  bottom: 16px;
+
+  z-index: 100;
+
+  width:
+    calc(
+      min(390px, 100vw)
+      - 44px
+    );
+
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, 1fr);
 
   gap: 5px;
 
   padding: 4px;
 
-  margin-bottom: 22px;
+  margin: 0;
 
-  background: rgba(0, 0, 0, 0.12);
+  background:
+    rgba(
+      23,
+      48,
+      35,
+      0.96
+    );
 
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  border:
+    1px solid
+    var(--line);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 30px
+    rgba(
+      0,
+      0,
+      0,
+      0.3
+    );
+
+  backdrop-filter:
+    blur(12px);
+
+  transform:
+    translateX(-50%);
 }
 
+
 .nav-button {
-  padding: 9px 12px;
+  min-height: 44px;
 
-  color: rgba(243, 234, 216, 0.5);
+  padding:
+    9px 12px;
 
-  background: transparent;
+  color:
+    #c7cebd;
+
+  background:
+    transparent;
 
   border: 0;
-  border-radius: 9px;
 
-  font-size: 11px;
-  font-weight: 600;
+  border-radius:
+    10px;
 
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  font-size:
+    11px;
 
-  cursor: pointer;
+  font-weight:
+    600;
+
+  letter-spacing:
+    0.07em;
+
+  text-transform:
+    uppercase;
+
+  cursor:
+    pointer;
 
   transition:
-    background 180ms ease,
-    color 180ms ease;
+    background
+    180ms ease,
+    color
+    180ms ease;
 }
 
-.nav-button.active {
-  color: var(--ink);
-
-  background: var(--gold);
-}
-
-.nav-button {
-  color: #c7cebd;
-}
 
 .nav-button:hover {
-  color: var(--text-primary);
+  color:
+    var(--text-primary);
 }
+
 
 .nav-button.active {
-  color: var(--ink);
+  color:
+    var(--ink);
+
+  background:
+    var(--gold);
 }
 
+
+/* Setup utility button */
+
 .settings-button {
-  align-self: flex-end;
+  align-self:
+    flex-end;
 
   width: 30px;
   height: 30px;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
 
-  margin: -6px 0 8px;
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  margin:
+    -6px 0 8px;
 
   padding: 0;
 
-  color: var(--text-muted);
-  background: rgba(243, 234, 216, 0.06);
+  color:
+    var(--text-muted);
 
-  border: 1px solid rgba(243, 234, 216, 0.14);
-  border-radius: 50%;
+  background:
+    rgba(
+      243,
+      234,
+      216,
+      0.06
+    );
 
-  font-size: 15px;
-  line-height: 1;
+  border:
+    1px solid
+    rgba(
+      243,
+      234,
+      216,
+      0.14
+    );
 
-  cursor: pointer;
+  border-radius:
+    50%;
+
+  font-size:
+    15px;
+
+  line-height:
+    1;
+
+  cursor:
+    pointer;
 
   transition:
-    color 160ms ease,
-    border-color 160ms ease,
-    background 160ms ease;
+    color
+    160ms ease,
+    border-color
+    160ms ease,
+    background
+    160ms ease;
 }
 
+
 .settings-button:hover {
-  color: var(--gold);
-  background: rgba(243, 234, 216, 0.09);
-  border-color: rgba(201, 162, 39, 0.5);
+  color:
+    var(--gold);
+
+  background:
+    rgba(
+      243,
+      234,
+      216,
+      0.09
+    );
+
+  border-color:
+    rgba(
+      201,
+      162,
+      39,
+      0.5
+    );
+}
+
+
+/*
+  Leave enough room for the
+  fixed navigation bar.
+*/
+
+.phone {
+  padding-bottom:
+    100px;
+}
+
+
+@media (
+  max-width: 480px
+) {
+  .app-nav {
+    bottom:
+      calc(
+        10px
+        + env(
+          safe-area-inset-bottom
+        )
+      );
+
+    width:
+      calc(
+        100vw
+        - 28px
+      );
+  }
+
+  .phone {
+    padding-bottom:
+      calc(
+        100px
+        + env(
+          safe-area-inset-bottom
+        )
+      );
+  }
 }

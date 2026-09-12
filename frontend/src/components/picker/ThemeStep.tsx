@@ -1,4 +1,10 @@
+import {
+  useState,
+} from "react"
+
+
 type Props = {
+  options: string[]
   selected: string[]
   onToggle: (
     value: string,
@@ -9,21 +15,29 @@ type Props = {
 }
 
 
-const themeOptions = [
-  "Adventure",
-  "Economic",
-  "Fantasy",
-  "Science Fiction",
-]
-
-
 function ThemeStep({
+  options,
   selected,
   onToggle,
   onClear,
   onDone,
   onBack,
 }: Props) {
+  const [search, setSearch] =
+    useState("")
+
+  const filteredOptions =
+    options.filter(
+      (theme) =>
+        theme
+          .toLowerCase()
+          .includes(
+            search
+              .trim()
+              .toLowerCase()
+          )
+    )
+
   return (
     <section className="screen picker-selection-screen">
       <header>
@@ -42,8 +56,24 @@ function ThemeStep({
       </header>
 
 
+      {options.length > 8 && (
+        <input
+          className="setup-input"
+          type="search"
+          value={search}
+          placeholder="Search themes"
+          aria-label="Search themes"
+          onChange={(event) =>
+            setSearch(
+              event.target.value
+            )
+          }
+        />
+      )}
+
+
       <div className="picker-selection-list">
-        {themeOptions.map(
+        {filteredOptions.map(
           (theme) => {
             const isSelected =
               selected.includes(
@@ -87,6 +117,12 @@ function ThemeStep({
               </button>
             )
           },
+        )}
+
+        {filteredOptions.length === 0 && (
+          <p className="subtitle">
+            No matching themes.
+          </p>
         )}
       </div>
 

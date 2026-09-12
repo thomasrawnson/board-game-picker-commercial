@@ -1,9 +1,11 @@
 import {
+  useEffect,
   useState,
 } from "react"
 
 import {
   getPickerMatches,
+  getPickerOptions,
   type PickerMatch,
   type PickerMode,
 } from "../../api/client"
@@ -57,9 +59,13 @@ function PickerView({
   const [
     selectedPlayerIds,
     setSelectedPlayerIds,
-  ] = useState<number[]>([])
+  ] =
+    useState<number[]>([])
 
-  const [players, setPlayers] =
+  const [
+    players,
+    setPlayers,
+  ] =
     useState<number | null>(
       null
     )
@@ -92,28 +98,90 @@ function PickerView({
   ] =
     useState<string[]>([])
 
-  const [mode, setMode] =
+  const [
+    categoryOptions,
+    setCategoryOptions,
+  ] =
+    useState<string[]>([])
+
+  const [
+    mechanicOptions,
+    setMechanicOptions,
+  ] =
+    useState<string[]>([])
+
+  const [
+    mode,
+    setMode,
+  ] =
     useState<PickerMode>(
       "best_match"
     )
 
-  const [matches, setMatches] =
+  const [
+    matches,
+    setMatches,
+  ] =
     useState<PickerMatch[]>([])
 
   const [
     matchIndex,
     setMatchIndex,
-  ] = useState(0)
+  ] =
+    useState(0)
 
-  const [loading, setLoading] =
+  const [
+    loading,
+    setLoading,
+  ] =
     useState(false)
 
-  const [error, setError] =
+  const [
+    error,
+    setError,
+  ] =
     useState("")
 
 
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadOptions() {
+      try {
+        const options =
+          await getPickerOptions()
+
+        if (cancelled) {
+          return
+        }
+
+        setCategoryOptions(
+          options.categories
+        )
+
+        setMechanicOptions(
+          options.mechanics
+        )
+      } catch (err) {
+        console.error(
+          "Couldn't load picker options",
+          err,
+        )
+      }
+    }
+
+    void loadOptions()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+
   const match =
-    matches[matchIndex]
+    matches[
+      matchIndex
+    ]
 
   const hasMoreMatches =
     matchIndex <
@@ -130,7 +198,8 @@ function PickerView({
         )
           ? current.filter(
               (item) =>
-                item !== category
+                item !==
+                category
             )
           : [
               ...current,
@@ -150,7 +219,8 @@ function PickerView({
         )
           ? current.filter(
               (item) =>
-                item !== mechanic
+                item !==
+                mechanic
             )
           : [
               ...current,
@@ -178,7 +248,10 @@ function PickerView({
   function chooseGroupSize(
     count: number | null,
   ) {
-    setSelectedPlayerIds([])
+    setSelectedPlayerIds(
+      []
+    )
+
     setPlayers(
       count
     )
@@ -186,32 +259,42 @@ function PickerView({
 
 
   async function revealGame() {
-    if (players === null) {
+    if (
+      players === null
+    ) {
       return
     }
 
-    setLoading(true)
-    setError("")
+    setLoading(
+      true
+    )
+
+    setError(
+      ""
+    )
 
     try {
       const results =
         await getPickerMatches({
           players,
+
           playerIds:
             selectedPlayerIds,
 
           maxPlayTime:
             maxPlayTime === 0
               ? undefined
-              : maxPlayTime ??
-                undefined,
+              : maxPlayTime
+                ?? undefined,
 
           maxComplexity:
-            maxComplexity ??
-            undefined,
+            maxComplexity
+            ?? undefined,
 
           preferredCategories,
+
           preferredMechanics,
+
           mode,
         })
 
@@ -237,19 +320,25 @@ function PickerView({
         "reveal"
       )
     } catch (err) {
-      console.error(err)
+      console.error(
+        err
+      )
 
       setError(
         "Couldn't reach the Board Game Picker API."
       )
     } finally {
-      setLoading(false)
+      setLoading(
+        false
+      )
     }
   }
 
 
   function tryAnother() {
-    if (!hasMoreMatches) {
+    if (
+      !hasMoreMatches
+    ) {
       return
     }
 
@@ -309,13 +398,18 @@ function PickerView({
 
   const progressStep =
     step === "players"
-    || step === "player_selection"
+    || step ===
+      "player_selection"
       ? 0
-      : step === "time"
+      : step ===
+        "time"
         ? 1
-        : step === "preferences"
-          || step === "theme"
-          || step === "play_style"
+        : step ===
+            "preferences"
+          || step ===
+            "theme"
+          || step ===
+            "play_style"
           ? 2
           : 3
 
@@ -324,14 +418,23 @@ function PickerView({
     <>
       <div
         className="progress-dots"
-        aria-label={`Picker step ${
-          progressStep + 1
-        } of 4`}
+        aria-label={
+          `Picker step ${
+            progressStep + 1
+          } of 4`
+        }
       >
-        {[0, 1, 2, 3].map(
+        {[
+          0,
+          1,
+          2,
+          3,
+        ].map(
           (index) => (
             <span
-              key={index}
+              key={
+                index
+              }
               className={
                 progressStep ===
                 index
@@ -344,7 +447,8 @@ function PickerView({
       </div>
 
 
-      {step === "players" && (
+      {step ===
+        "players" && (
         <PlayerStep
           players={
             players
@@ -392,7 +496,8 @@ function PickerView({
       )}
 
 
-      {step === "time" && (
+      {step ===
+        "time" && (
         <TimeStep
           maxPlayTime={
             maxPlayTime
@@ -463,8 +568,12 @@ function PickerView({
       )}
 
 
-      {step === "theme" && (
+      {step ===
+        "theme" && (
         <ThemeStep
+          options={
+            categoryOptions
+          }
           selected={
             preferredCategories
           }
@@ -493,6 +602,9 @@ function PickerView({
       {step ===
         "play_style" && (
         <PlayStyleStep
+          options={
+            mechanicOptions
+          }
           selected={
             preferredMechanics
           }
@@ -518,7 +630,8 @@ function PickerView({
       )}
 
 
-      {step === "reveal"
+      {step ===
+        "reveal"
         && match && (
         <PickerResult
           match={
@@ -544,7 +657,8 @@ function PickerView({
           }
           onViewGame={() =>
             onViewGame(
-              match.game.bgg_id
+              match.game
+                .bgg_id
             )
           }
           onStartOver={

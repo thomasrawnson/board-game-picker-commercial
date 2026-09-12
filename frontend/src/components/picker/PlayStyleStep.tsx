@@ -1,4 +1,10 @@
+import {
+  useState,
+} from "react"
+
+
 type Props = {
+  options: string[]
   selected: string[]
   onToggle: (
     value: string,
@@ -9,21 +15,29 @@ type Props = {
 }
 
 
-const playStyleOptions = [
-  "Cooperative Game",
-  "Deck Building",
-  "Hand Management",
-  "Worker Placement",
-]
-
-
 function PlayStyleStep({
+  options,
   selected,
   onToggle,
   onClear,
   onDone,
   onBack,
 }: Props) {
+  const [search, setSearch] =
+    useState("")
+
+  const filteredOptions =
+    options.filter(
+      (style) =>
+        style
+          .toLowerCase()
+          .includes(
+            search
+              .trim()
+              .toLowerCase()
+          )
+    )
+
   return (
     <section className="screen picker-selection-screen">
       <header>
@@ -42,8 +56,24 @@ function PlayStyleStep({
       </header>
 
 
+      {options.length > 8 && (
+        <input
+          className="setup-input"
+          type="search"
+          value={search}
+          placeholder="Search play styles"
+          aria-label="Search play styles"
+          onChange={(event) =>
+            setSearch(
+              event.target.value
+            )
+          }
+        />
+      )}
+
+
       <div className="picker-selection-list">
-        {playStyleOptions.map(
+        {filteredOptions.map(
           (style) => {
             const isSelected =
               selected.includes(
@@ -87,6 +117,12 @@ function PlayStyleStep({
               </button>
             )
           },
+        )}
+
+        {filteredOptions.length === 0 && (
+          <p className="subtitle">
+            No matching play styles.
+          </p>
         )}
       </div>
 
