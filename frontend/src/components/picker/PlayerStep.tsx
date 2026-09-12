@@ -9,6 +9,7 @@ type Props = {
 
 
 const playerOptions = [
+  1,
   2,
   3,
   4,
@@ -117,7 +118,9 @@ function PlayerStep({
               </strong>
 
               <span>
-                Players
+                {option === 1
+                  ? "Solo"
+                  : "Players"}
               </span>
             </button>
           ),

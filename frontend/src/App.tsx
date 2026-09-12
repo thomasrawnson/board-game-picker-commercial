@@ -34,6 +34,9 @@ import PickerView
 
 import "./App.css"
 
+import DiscoverView
+  from "./components/DiscoverView"
+
 import OnboardingView from "./components/OnboardingView"
 
 function App() {
@@ -208,7 +211,10 @@ function App() {
             }
           />
         )}
-
+        {view ===
+          "discover" && (
+          <DiscoverView />
+        )}
         {view ===
           "insights" && (
           <InsightsView

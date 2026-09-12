@@ -161,7 +161,7 @@ function PreferenceStep({
 
       <div className="preference-section">
         <p className="preference-label">
-          Weight
+          Complexity
         </p>
 
         <div className="complexity-grid">

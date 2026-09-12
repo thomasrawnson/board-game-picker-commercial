@@ -1,13 +1,18 @@
 export type AppView =
   | "picker"
   | "collection"
+  | "discover"
   | "insights"
   | "setup"
 
+
 type Props = {
   view: AppView
-  onChangeView: (view: AppView) => void
+  onChangeView: (
+    view: AppView,
+  ) => void
 }
+
 
 function AppNavigation({
   view,
@@ -18,7 +23,9 @@ function AppNavigation({
       <button
         className="settings-button"
         onClick={() =>
-          onChangeView("setup")
+          onChangeView(
+            "setup",
+          )
         }
         aria-label="Setup"
         title="Setup"
@@ -26,21 +33,26 @@ function AppNavigation({
         ⚙
       </button>
 
+
       <nav className="app-nav">
         <button
+          type="button"
           className={
             view === "picker"
               ? "nav-button active"
               : "nav-button"
           }
           onClick={() =>
-            onChangeView("picker")
+            onChangeView(
+              "picker",
+            )
           }
         >
           Picker
         </button>
 
         <button
+          type="button"
           className={
             view === "collection"
               ? "nav-button active"
@@ -56,6 +68,23 @@ function AppNavigation({
         </button>
 
         <button
+          type="button"
+          className={
+            view === "discover"
+              ? "nav-button active"
+              : "nav-button"
+          }
+          onClick={() =>
+            onChangeView(
+              "discover",
+            )
+          }
+        >
+          Discover
+        </button>
+
+        <button
+          type="button"
           className={
             view === "insights"
               ? "nav-button active"
@@ -73,5 +102,6 @@ function AppNavigation({
     </>
   )
 }
+
 
 export default AppNavigation

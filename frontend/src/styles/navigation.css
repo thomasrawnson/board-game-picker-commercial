@@ -20,7 +20,7 @@
   display: grid;
 
   grid-template-columns:
-    repeat(3, 1fr);
+    repeat(4, 1fr);
 
   gap: 5px;
 
@@ -63,7 +63,7 @@
   min-height: 44px;
 
   padding:
-    9px 12px;
+    9px 6px;
 
   color:
     #c7cebd;
