@@ -675,11 +675,14 @@ export async function importBGStatsPlays(
       },
     )
 
-  if (!response.ok) {
-    throw new Error(
-      `BG Stats import failed: ${response.status}`,
-    )
-  }
+if (!response.ok) {
+  throw new Error(
+    await readError(
+      response,
+      "Couldn't import that BG Stats file.",
+    ),
+  )
+}
 
   return response.json()
 }

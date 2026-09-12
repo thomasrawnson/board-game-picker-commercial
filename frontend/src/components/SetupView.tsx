@@ -76,11 +76,13 @@ function SetupView({
       onUsernameChange?.(
         result.username,
       )
-    } catch (err) {
+   } catch (err) {
       console.error(err)
 
       setSyncError(
-        "Couldn't sync that BGG collection.",
+        err instanceof Error
+          ? err.message
+          : "Couldn't sync that BGG collection.",
       )
     } finally {
       setSyncing(false)
@@ -106,9 +108,11 @@ function SetupView({
       console.error(err)
 
       setImportError(
-        "Couldn't import that BG Stats export.",
+        err instanceof Error
+          ? err.message
+          : "Couldn't import that BG Stats export.",
       )
-    } finally {
+    }finally {
       setImporting(false)
     }
   }

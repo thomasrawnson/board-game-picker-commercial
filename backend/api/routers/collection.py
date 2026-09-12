@@ -3,7 +3,7 @@ from fastapi import (
     Depends,
     HTTPException,
 )
-
+import httpx
 from api.dependencies import (
     get_collection_service,
     get_game_service,
@@ -52,10 +52,61 @@ def sync_collection(
         games = service.sync_collection(
             username
         )
+
     except ValueError as exc:
         raise HTTPException(
             status_code=400,
             detail=str(exc),
+        ) from exc
+
+    except httpx.TimeoutException as exc:
+        raise HTTPException(
+            status_code=504,
+            detail=(
+                "BoardGameGeek took too long "
+                "to respond. Please try again."
+            ),
+        ) from exc
+
+    except httpx.HTTPStatusError as exc:
+        status = (
+            exc.response.status_code
+        )
+
+        if status == 404:
+            detail = (
+                "That BoardGameGeek account "
+                "couldn't be found."
+            )
+        elif status == 401:
+            detail = (
+                "BoardGameGeek rejected the "
+                "request. Please try again later."
+            )
+        elif status == 429:
+            detail = (
+                "BoardGameGeek is temporarily "
+                "rate limiting requests. "
+                "Please try again shortly."
+            )
+        else:
+            detail = (
+                "BoardGameGeek couldn't be "
+                "reached. Please try again."
+            )
+
+        raise HTTPException(
+            status_code=502,
+            detail=detail,
+        ) from exc
+
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "BoardGameGeek is temporarily "
+                "busy. Please try again shortly."
+            ),
         ) from exc
 
     current_user.bgg_username = (
