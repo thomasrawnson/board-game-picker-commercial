@@ -15,6 +15,10 @@ from auth.schemas import (
     LoginRequest,
     RegisterRequest,
     UserResponse,
+    EmailRequest,
+    MessageResponse,
+    ResetPasswordRequest,
+    TokenRequest,
 )
 from auth.security import (
     create_access_token,
@@ -26,6 +30,16 @@ from database.models import User
 from auth.login_rate_limiter import (
     LOGIN_WINDOW_SECONDS,
     login_rate_limiter,
+)
+from datetime import (
+    datetime,
+    timezone,
+)
+from auth.one_time_tokens import (
+    EMAIL_VERIFY,
+    PASSWORD_RESET,
+    consume_one_time_token,
+    create_one_time_token,
 )
 
 router = APIRouter(
@@ -69,6 +83,10 @@ def user_response(
         email=user.email,
         display_name=user.display_name,
         bgg_username=user.bgg_username,
+        email_verified=(
+            user.email_verified_at
+            is not None
+        ),
     )
 
 
@@ -238,6 +256,168 @@ def complete_onboarding(
 
     return user_response(
         current_user
+    )
+
+@router.post(
+    "/verification/request",
+    response_model=MessageResponse,
+)
+def request_verification(
+    current_user: User = Depends(
+        get_current_user
+    ),
+    db: Session = Depends(get_db),
+):
+    if (
+        current_user.email_verified_at
+        is None
+    ):
+        create_one_time_token(
+            db,
+            current_user.id,
+            EMAIL_VERIFY,
+        )
+
+    return MessageResponse(
+        message=(
+            "Verification requested"
+        )
+    )
+
+
+@router.post(
+    "/verification/confirm",
+    response_model=MessageResponse,
+)
+def confirm_verification(
+    request: TokenRequest,
+    db: Session = Depends(get_db),
+):
+    token = consume_one_time_token(
+        db,
+        request.token,
+        EMAIL_VERIFY,
+    )
+
+    if token is None:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Invalid or expired "
+                "verification token"
+            ),
+        )
+
+    user = db.get(
+        User,
+        token.user_id,
+    )
+
+    if user is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid token",
+        )
+
+    user.email_verified_at = (
+        datetime.now(
+            timezone.utc
+        )
+    )
+
+    db.commit()
+
+    return MessageResponse(
+        message="Email verified"
+    )
+
+
+@router.post(
+    "/password-reset/request",
+    response_model=MessageResponse,
+)
+def request_password_reset(
+    request: EmailRequest,
+    db: Session = Depends(get_db),
+):
+    email = (
+        request.email
+        .strip()
+        .lower()
+    )
+
+    user = (
+        db.query(User)
+        .filter(
+            User.email == email
+        )
+        .first()
+    )
+
+    if user is not None:
+        create_one_time_token(
+            db,
+            user.id,
+            PASSWORD_RESET,
+        )
+
+    # Deliberately identical response
+    # whether the account exists or not.
+    return MessageResponse(
+        message=(
+            "If an account exists for "
+            "that email, reset "
+            "instructions will be sent."
+        )
+    )
+
+
+@router.post(
+    "/password-reset/confirm",
+    response_model=MessageResponse,
+)
+def confirm_password_reset(
+    request: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+):
+    token = consume_one_time_token(
+        db,
+        request.token,
+        PASSWORD_RESET,
+    )
+
+    if token is None:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Invalid or expired "
+                "password reset token"
+            ),
+        )
+
+    user = db.get(
+        User,
+        token.user_id,
+    )
+
+    if user is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid token",
+        )
+
+    user.password_hash = (
+        hash_password(
+            request.password
+        )
+    )
+
+    db.commit()
+
+    return MessageResponse(
+        message=(
+            "Password updated"
+        )
     )
 
 @router.get(

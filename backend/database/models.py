@@ -11,6 +11,7 @@ from sqlalchemy import (
     JSON,
     String,
     Table,
+    Text,
     UniqueConstraint,
     func,
 )
@@ -103,6 +104,13 @@ class User(Base):
         server_default=func.now(),
     )
 
+    email_verified_at: Mapped[
+        datetime | None
+        ] = mapped_column(
+            DateTime(timezone=True),
+            nullable=True,
+        )
+    
     user_games = relationship(
         "UserGame",
         back_populates="user",
@@ -115,7 +123,58 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+class AuthToken(Base):
+    __tablename__ = "auth_tokens"
 
+    __table_args__ = (
+        Index(
+            "ix_auth_tokens_lookup",
+            "token_hash",
+            "purpose",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
+    )
+
+    token_hash: Mapped[str] = mapped_column(
+        String(64),
+        nullable=False,
+    )
+
+    purpose: Mapped[str] = mapped_column(
+        String(30),
+        nullable=False,
+    )
+
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+    )
+
+    used_at: Mapped[
+        datetime | None
+    ] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
 class UserGame(Base):
     __tablename__ = "user_games"
 
