@@ -1,6 +1,5 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
-
 from api.current_user import get_current_user
 from bgg.client import BGGClient
 from database.connection import get_db
@@ -15,7 +14,9 @@ from services.collection_service import CollectionService
 from services.game_service import GameService
 from services.insights_service import InsightsService
 from services.play_service import PlayService
-
+from services.discover_service import (
+    DiscoverService,
+)
 
 def get_game_service(
     db: Session = Depends(get_db),
@@ -85,4 +86,20 @@ def get_bgstats_play_import_service(
 ) -> BGStatsPlayImportService:
     return BGStatsPlayImportService(
         repository
+    )
+
+def get_discover_service(
+    current_user: User = Depends(
+        get_current_user
+    ),
+    db: Session = Depends(
+        get_db
+    ),
+) -> DiscoverService:
+    return DiscoverService(
+        repository=GameRepository(
+            db
+        ),
+        bgg_client=BGGClient(),
+        user_id=current_user.id,
     )

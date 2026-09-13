@@ -105,6 +105,23 @@ class BGGClient:
             "BGG games request",
         )
 
+    def get_hot_games(
+        self,
+    ) -> str:
+        url = (
+            f"{self.BASE_URL}/hot"
+        )
+
+        params = {
+            "type": "boardgame",
+        }
+
+        return self._get(
+            url,
+            params,
+            "BGG hot games request",
+        )
+    
     def _get(
         self,
         url: str,
@@ -215,6 +232,9 @@ class BGGClient:
 
     @staticmethod
     def _sleep(
-        seconds: float,
-    ) -> None:
-        time.sleep(seconds)
+            seconds: float,
+        ) -> None:
+            time.sleep(seconds)
+
+
+        

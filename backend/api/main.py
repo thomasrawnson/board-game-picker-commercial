@@ -13,6 +13,7 @@ from api.dependencies import (
 from api.routers import (
     auth,
     collection,
+    discover,
     games,
     health,
     imports,
@@ -88,4 +89,8 @@ app.include_router(
 
 app.include_router(
     auth.router
+)
+
+app.include_router(
+    discover.router
 )

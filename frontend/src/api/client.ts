@@ -232,6 +232,12 @@ export interface MonthlyPlay {
   player_count: number
 }
 
+export interface DiscoverRecommendation {
+  game: Game
+  score: number
+  reasons: string[]
+}
+
 const configuredApiUrl =
   import.meta.env
     .VITE_API_BASE_URL
@@ -755,4 +761,23 @@ export async function deletePlay(
       `Play deletion failed: ${response.status}`,
     )
   }
+}
+
+export async function getDiscoverRecommendations():
+Promise<DiscoverRecommendation[]> {
+  const response =
+    await apiFetch(
+      "/discover",
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't load recommendations.",
+      ),
+    )
+  }
+
+  return response.json()
 }
