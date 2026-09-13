@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Request,
     status,
 )
 from sqlalchemy.orm import Session
@@ -22,13 +23,43 @@ from auth.security import (
 )
 from database.connection import get_db
 from database.models import User
-
+from auth.login_rate_limiter import (
+    LOGIN_WINDOW_SECONDS,
+    login_rate_limiter,
+)
 
 router = APIRouter(
     prefix="/auth",
     tags=["auth"],
 )
 
+def login_rate_limit_key(
+    request: Request,
+    email: str,
+) -> str:
+    forwarded_for = (
+        request.headers.get(
+            "x-forwarded-for"
+        )
+    )
+
+    if forwarded_for:
+        client_ip = (
+            forwarded_for
+            .split(",")[0]
+            .strip()
+        )
+    elif request.client:
+        client_ip = (
+            request.client.host
+        )
+    else:
+        client_ip = "unknown"
+
+    return (
+        f"{client_ip}:"
+        f"{email}"
+    )
 
 def user_response(
     user: User,
@@ -102,14 +133,44 @@ def register(
     response_model=AuthResponse,
 )
 def login(
-    request: LoginRequest,
+    request: Request,
+    credentials: LoginRequest,
     db: Session = Depends(get_db),
 ):
     email = (
-        request.email
+        credentials.email
         .strip()
         .lower()
     )
+
+    rate_limit_key = (
+        login_rate_limit_key(
+            request,
+            email,
+        )
+    )
+
+    if (
+        login_rate_limiter
+        .is_limited(
+            rate_limit_key
+        )
+    ):
+        raise HTTPException(
+            status_code=(
+                status.HTTP_429_TOO_MANY_REQUESTS
+            ),
+            detail=(
+                "Too many failed login "
+                "attempts. Please try "
+                "again later."
+            ),
+            headers={
+                "Retry-After": str(
+                    LOGIN_WINDOW_SECONDS
+                ),
+            },
+        )
 
     user = (
         db.query(User)
@@ -124,10 +185,14 @@ def login(
         or user.password_hash
         is None
         or not verify_password(
-            request.password,
+            credentials.password,
             user.password_hash,
         )
     ):
+        login_rate_limiter.record_failure(
+            rate_limit_key
+        )
+
         raise HTTPException(
             status_code=(
                 status.HTTP_401_UNAUTHORIZED
@@ -136,6 +201,10 @@ def login(
                 "Invalid email or password"
             ),
         )
+
+    login_rate_limiter.reset(
+        rate_limit_key
+    )
 
     token = create_access_token(
         user.id
@@ -170,7 +239,7 @@ def complete_onboarding(
     return user_response(
         current_user
     )
-    
+
 @router.get(
     "/me",
     response_model=UserResponse,

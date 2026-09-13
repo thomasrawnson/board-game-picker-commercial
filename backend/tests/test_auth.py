@@ -34,6 +34,10 @@ from api.dependencies import (
     get_collection_service,
 )
 
+from auth.login_rate_limiter import (
+    login_rate_limiter,
+)
+
 engine = create_engine(
     "sqlite://",
     connect_args={
@@ -51,6 +55,8 @@ TestingSessionLocal = sessionmaker(
 
 @pytest.fixture(autouse=True)
 def test_database():
+    login_rate_limiter.clear()
+
     Base.metadata.create_all(
         bind=engine
     )
@@ -60,6 +66,8 @@ def test_database():
     Base.metadata.drop_all(
         bind=engine
     )
+
+    login_rate_limiter.clear()
 
 
 @pytest.fixture
@@ -473,3 +481,111 @@ def test_authenticated_user_can_sync_collection(
             get_collection_service,
             None,
         )
+
+def test_login_rate_limits_failed_attempts(
+    client: TestClient,
+):
+    register_user(
+        client
+    )
+
+    for _ in range(5):
+        response = client.post(
+            "/auth/login",
+            json={
+                "email":
+                    "tom@example.com",
+                "password":
+                    "wrong-password",
+            },
+        )
+
+        assert (
+            response.status_code
+            == 401
+        )
+
+    blocked = client.post(
+        "/auth/login",
+        json={
+            "email":
+                "tom@example.com",
+            "password":
+                "wrong-password",
+        },
+    )
+
+    assert (
+        blocked.status_code
+        == 429
+    )
+
+    assert (
+        blocked.json()["detail"]
+        == (
+            "Too many failed login "
+            "attempts. Please try "
+            "again later."
+        )
+    )
+
+    assert (
+        blocked.headers[
+            "retry-after"
+        ]
+        == "900"
+    )
+
+
+def test_successful_login_resets_rate_limit(
+    client: TestClient,
+):
+    register_user(
+        client
+    )
+
+    for _ in range(4):
+        response = client.post(
+            "/auth/login",
+            json={
+                "email":
+                    "tom@example.com",
+                "password":
+                    "wrong-password",
+            },
+        )
+
+        assert (
+            response.status_code
+            == 401
+        )
+
+    success = client.post(
+        "/auth/login",
+        json={
+            "email":
+                "tom@example.com",
+            "password":
+                "password123",
+        },
+    )
+
+    assert (
+        success.status_code
+        == 200
+    )
+
+    after_success = client.post(
+        "/auth/login",
+        json={
+            "email":
+                "tom@example.com",
+            "password":
+                "wrong-password",
+        },
+    )
+
+    assert (
+        after_success.status_code
+        == 401
+    )
