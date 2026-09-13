@@ -9,7 +9,9 @@ from bgg.game_parser import (
 from repositories.game_repository import (
     GameRepository,
 )
-
+from bgg.search_parser import (
+    parse_search_results,
+)
 
 THING_BATCH_SIZE = 20
 
@@ -123,6 +125,110 @@ class CollectionService:
 
         return games
 
+    def search_games(
+        self,
+        query: str,
+    ) -> list[dict]:
+        cleaned_query = (
+            query.strip()
+        )
+
+        if len(cleaned_query) < 2:
+            return []
+
+        xml = (
+            self.bgg_client
+            .search_games(
+                cleaned_query
+            )
+        )
+
+        results = (
+            parse_search_results(
+                xml
+            )
+        )
+
+        if self.user_id is None:
+            return results[:20]
+
+        owned_ids = {
+            game.bgg_id
+            for game
+            in self.repository
+            .get_owned_by_user(
+                self.user_id
+            )
+        }
+
+        return [
+            {
+                **result,
+                "owned": (
+                    result["bgg_id"]
+                    in owned_ids
+                ),
+            }
+            for result
+            in results[:20]
+        ]
+
+
+    def add_game(
+        self,
+        bgg_id: int,
+    ):
+        if self.user_id is None:
+            raise ValueError(
+                "User is required"
+            )
+
+        existing_game = (
+            self.repository
+            .get_by_bgg_id(
+                bgg_id
+            )
+        )
+
+        if existing_game is None:
+            xml = (
+                self.bgg_client
+                .get_game(
+                    bgg_id
+                )
+            )
+
+            game = (
+                parse_game_metadata(
+                    xml
+                )
+            )
+
+            self.repository.create(
+                game
+            )
+
+        added = (
+            self.repository
+            .add_to_user_collection(
+                self.user_id,
+                bgg_id,
+            )
+        )
+
+        if not added:
+            raise ValueError(
+                "Unable to add game "
+                "to collection"
+            )
+
+        return (
+            self.repository
+            .get_owned_by_bgg_id(
+                self.user_id,
+                bgg_id,
+            )
+        )
 
     def _sync_missing_games(
         self,

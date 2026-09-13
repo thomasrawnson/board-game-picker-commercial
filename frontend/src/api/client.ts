@@ -238,6 +238,14 @@ export interface DiscoverRecommendation {
   reasons: string[]
 }
 
+export interface BGGSearchResult {
+  bgg_id: number
+  name: string
+  year_published:
+    number | null
+  owned: boolean
+}
+
 const configuredApiUrl =
   import.meta.env
     .VITE_API_BASE_URL
@@ -775,6 +783,55 @@ Promise<DiscoverRecommendation[]> {
       await readError(
         response,
         "Couldn't load recommendations.",
+      ),
+    )
+  }
+
+  return response.json()
+}
+
+export async function searchBGGGames(
+  query: string,
+): Promise<BGGSearchResult[]> {
+  const params =
+    new URLSearchParams({
+      query,
+    })
+
+  const response =
+    await apiFetch(
+      `/collection/search?${params.toString()}`,
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't search BoardGameGeek.",
+      ),
+    )
+  }
+
+  return response.json()
+}
+
+
+export async function addGameToCollection(
+  bggId: number,
+): Promise<Game> {
+  const response =
+    await apiFetch(
+      `/collection/games/${bggId}`,
+      {
+        method: "POST",
+      },
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't add that game.",
       ),
     )
   }

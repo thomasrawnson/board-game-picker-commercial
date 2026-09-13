@@ -5,6 +5,9 @@ import {
   useState,
 } from "react"
 
+import AddGameSearch
+  from "./collection/AddGameSearch"
+
 import {
   getCollectionStats,
   getGameHistory,
@@ -25,7 +28,6 @@ import CollectionGameList
 
 import GameDetail
   from "./collection/GameDetail"
-
 
 type Props = {
   initialGameBggId:
@@ -98,6 +100,11 @@ function CollectionView({
     error,
     setError,
   ] = useState("")
+
+  const [
+    addingGame,
+    setAddingGame,
+  ] = useState(false)
 
   const savedScrollPosition =
     useRef(0)
@@ -584,7 +591,51 @@ function CollectionView({
         </p>
       </header>
 
+      <button
+        type="button"
+        className="ghost-button collection-add-button"
+        onClick={() =>
+          setAddingGame(
+            (current) =>
+              !current
+          )
+        }
+      >
+        + Add game
+      </button>
 
+
+      {addingGame && (
+        <AddGameSearch
+          onClose={() =>
+            setAddingGame(
+              false
+            )
+          }
+          onGameAdded={(
+            game,
+          ) => {
+            setGames(
+              (current) => {
+                if (
+                  current.some(
+                    (existing) =>
+                      existing.bgg_id
+                      === game.bgg_id
+                  )
+                ) {
+                  return current
+                }
+
+                return [
+                  ...current,
+                  game,
+                ]
+              }
+            )
+          }}
+        />
+      )}
       <CollectionFilters
         search={
           search

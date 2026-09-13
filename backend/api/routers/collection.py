@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Query,
 )
 import httpx
 from api.dependencies import (
@@ -120,6 +121,61 @@ def sync_collection(
         "games_synced": len(games),
     }
 
+@router.get(
+    "/collection/search"
+)
+def search_collection_games(
+    query: str = Query(
+        ...,
+        min_length=2,
+        max_length=100,
+    ),
+    service: CollectionService = Depends(
+        get_collection_service
+    ),
+):
+    try:
+        return service.search_games(
+            query
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                "Couldn't search "
+                "BoardGameGeek right now."
+            ),
+        ) from exc
+
+
+@router.post(
+    "/collection/games/{bgg_id}"
+)
+def add_collection_game(
+    bgg_id: int,
+    service: CollectionService = Depends(
+        get_collection_service
+    ),
+):
+    try:
+        game = service.add_game(
+            bgg_id
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                "Couldn't add that game "
+                "from BoardGameGeek."
+            ),
+        ) from exc
+
+    return game
 
 @router.get("/collection/stats")
 def get_collection_stats(

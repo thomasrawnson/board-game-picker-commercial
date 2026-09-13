@@ -122,6 +122,25 @@ class BGGClient:
             "BGG hot games request",
         )
     
+    def search_games(
+        self,
+        query: str,
+    ) -> str:
+        url = (
+            f"{self.BASE_URL}/search"
+        )
+
+        params = {
+            "query": query,
+            "type": "boardgame",
+        }
+
+        return self._get(
+            url,
+            params,
+            "BGG search request",
+        )
+
     def _get(
         self,
         url: str,
