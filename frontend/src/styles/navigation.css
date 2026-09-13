@@ -4,18 +4,13 @@
 /* Main navigation */
 
 .app-nav {
-  position: fixed;
+  position: absolute;
 
-  left: 50%;
+  left: 22px;
+  right: 22px;
   bottom: 16px;
 
   z-index: 100;
-
-  width:
-    calc(
-      min(390px, 100vw)
-      - 44px
-    );
 
   display: grid;
 
@@ -53,9 +48,6 @@
 
   backdrop-filter:
     blur(12px);
-
-  transform:
-    translateX(-50%);
 }
 
 
@@ -202,7 +194,7 @@
 
 /*
   Leave enough room for the
-  fixed navigation bar.
+  navigation bar.
 */
 
 .phone {
@@ -215,18 +207,17 @@
   max-width: 480px
 ) {
   .app-nav {
+    position: fixed;
+
+    left: 14px;
+    right: 14px;
+
     bottom:
       calc(
         10px
         + env(
           safe-area-inset-bottom
         )
-      );
-
-    width:
-      calc(
-        100vw
-        - 28px
       );
   }
 
