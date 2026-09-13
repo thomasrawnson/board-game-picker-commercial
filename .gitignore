@@ -25,3 +25,6 @@ Thumbs.db
 
 # Private Board Game Stats export
 data/BGStatsExport.json
+
+# Local test credentials
+docs/test-users.local.md
