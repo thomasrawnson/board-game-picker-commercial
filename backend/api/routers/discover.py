@@ -1,6 +1,10 @@
+import xml.etree.ElementTree as ET
+
+import httpx
 from fastapi import (
     APIRouter,
     Depends,
+    HTTPException,
     Query,
 )
 
@@ -28,8 +32,30 @@ def get_discover_recommendations(
         get_discover_service
     ),
 ):
-    return (
-        service.get_recommendations(
-            limit=limit
+    try:
+        return (
+            service.get_recommendations(
+                limit=limit
+            )
         )
-    )
+    except httpx.TimeoutException as exc:
+        raise HTTPException(
+            status_code=504,
+            detail=(
+                "BoardGameGeek took too long "
+                "to respond. Please try again."
+            ),
+        ) from exc
+    except (
+        httpx.HTTPStatusError,
+        RuntimeError,
+        ET.ParseError,
+        ValueError,
+    ) as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=(
+                "Recommendations are temporarily "
+                "unavailable. Please try again."
+            ),
+        ) from exc

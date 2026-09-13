@@ -1,5 +1,10 @@
 from models.game import Game
-
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+)
 
 def enrich_collection(
     collection: list[Game],

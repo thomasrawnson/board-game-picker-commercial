@@ -1,3 +1,5 @@
+import xml.etree.ElementTree as ET
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -138,7 +140,19 @@ def search_collection_games(
         return service.search_games(
             query
         )
-    except Exception as exc:
+    except httpx.TimeoutException as exc:
+        raise HTTPException(
+            status_code=504,
+            detail=(
+                "BoardGameGeek took too long "
+                "to respond. Please try again."
+            ),
+        ) from exc
+    except (
+        httpx.HTTPStatusError,
+        RuntimeError,
+        ET.ParseError,
+    ) as exc:
         raise HTTPException(
             status_code=502,
             detail=(
@@ -166,7 +180,19 @@ def add_collection_game(
             status_code=400,
             detail=str(exc),
         ) from exc
-    except Exception as exc:
+    except httpx.TimeoutException as exc:
+        raise HTTPException(
+            status_code=504,
+            detail=(
+                "BoardGameGeek took too long "
+                "to respond. Please try again."
+            ),
+        ) from exc
+    except (
+        httpx.HTTPStatusError,
+        RuntimeError,
+        ET.ParseError,
+    ) as exc:
         raise HTTPException(
             status_code=502,
             detail=(

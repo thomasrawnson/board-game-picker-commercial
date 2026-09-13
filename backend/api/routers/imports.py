@@ -1,3 +1,5 @@
+import json
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -26,7 +28,9 @@ async def import_bgstats_plays(
         get_bgstats_play_import_service
     ),
 ):
-    if not file.filename.lower().endswith(
+    filename = file.filename or ""
+
+    if not filename.lower().endswith(
         ".json"
     ):
         raise HTTPException(
@@ -43,17 +47,31 @@ async def import_bgstats_plays(
         json_text = contents.decode(
             "utf-8"
         )
-    except UnicodeDecodeError:
+    except UnicodeDecodeError as exc:
         raise HTTPException(
             status_code=400,
             detail=(
                 "Unable to read JSON file"
             ),
-        )
+        ) from exc
 
-    result = service.import_plays(
-        json_text
-    )
+    try:
+        result = service.import_plays(
+            json_text
+        )
+    except (
+        json.JSONDecodeError,
+        KeyError,
+        TypeError,
+        ValueError,
+    ) as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "That file is not a valid "
+                "BG Stats JSON export"
+            ),
+        ) from exc
 
     return {
         "imported": result.imported,

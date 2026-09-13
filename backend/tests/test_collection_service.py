@@ -331,3 +331,118 @@ def test_sync_collection_batches_uncached_games():
     assert len(
         bgg_client.batches[2]
     ) == 5
+
+def test_search_games_marks_owned_results():
+    search_xml = """
+    <items>
+        <item type="boardgame" id="1">
+            <name type="primary" value="Owned Game"/>
+            <yearpublished value="2020"/>
+        </item>
+        <item type="boardgame" id="2">
+            <name type="primary" value="New Game"/>
+            <yearpublished value="2021"/>
+        </item>
+    </items>
+    """
+
+    class FakeBGGClient:
+        def search_games(self, query):
+            assert query == "game"
+            return search_xml
+
+    class FakeRepository:
+        def get_owned_by_user(self, user_id):
+            assert user_id == 7
+            return [
+                Game(
+                    bgg_id=1,
+                    name="Owned Game",
+                )
+            ]
+
+    service = CollectionService(
+        FakeBGGClient(),
+        FakeRepository(),
+        user_id=7,
+    )
+
+    results = service.search_games(
+        " game "
+    )
+
+    assert results == [
+        {
+            "bgg_id": 1,
+            "name": "Owned Game",
+            "year_published": 2020,
+            "owned": True,
+        },
+        {
+            "bgg_id": 2,
+            "name": "New Game",
+            "year_published": 2021,
+            "owned": False,
+        },
+    ]
+
+
+def test_add_game_fetches_uncached_game():
+    class FakeBGGClient:
+        def __init__(self):
+            self.requested_ids = []
+
+        def get_game(self, bgg_id):
+            self.requested_ids.append(
+                bgg_id
+            )
+            return GAME_XML
+
+    class FakeRepository:
+        def __init__(self):
+            self.game = None
+            self.added = []
+
+        def get_by_bgg_id(self, bgg_id):
+            return self.game
+
+        def create(self, game):
+            self.game = game
+            return game
+
+        def add_to_user_collection(
+            self,
+            user_id,
+            bgg_id,
+        ):
+            self.added.append(
+                (user_id, bgg_id)
+            )
+            return True
+
+        def get_owned_by_bgg_id(
+            self,
+            user_id,
+            bgg_id,
+        ):
+            self.game.owned = True
+            return self.game
+
+    client = FakeBGGClient()
+    repository = FakeRepository()
+    service = CollectionService(
+        client,
+        repository,
+        user_id=7,
+    )
+
+    game = service.add_game(174430)
+
+    assert client.requested_ids == [
+        174430
+    ]
+    assert repository.added == [
+        (7, 174430)
+    ]
+    assert game.bgg_id == 174430
+    assert game.owned is True
