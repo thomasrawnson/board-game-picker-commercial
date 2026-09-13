@@ -25,6 +25,9 @@ from api.routers import (
 from logging_config import (
     configure_logging,
 )
+from middleware.request_logging import (
+    RequestLoggingMiddleware,
+)
 
 # Backwards-compatible name used by the
 # existing API tests.
@@ -41,6 +44,10 @@ app = FastAPI(
 
 
 app.add_middleware(
+    RequestLoggingMiddleware
+)
+
+app.add_middleware(
     CORSMiddleware,
     allow_origins=(
         settings.cors_origins
@@ -54,10 +61,14 @@ app.add_middleware(
         "OPTIONS",
     ],
     allow_headers=[
-        "Authorization",
-        "Content-Type",
+    "Authorization",
+    "Content-Type",
+    "X-Request-ID",
     ],
-)
+    expose_headers=[
+        "X-Request-ID",
+    ],
+    )
 
 app.include_router(
     health.router
