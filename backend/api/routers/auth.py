@@ -146,7 +146,31 @@ def login(
         user=user_response(user),
     )
 
+@router.post(
+    "/onboarding/complete",
+    response_model=UserResponse,
+)
+def complete_onboarding(
+    current_user: User = Depends(
+        get_current_user
+    ),
+    db: Session = Depends(get_db),
+):
+    if (
+        current_user.bgg_username
+        is None
+    ):
+        current_user.bgg_username = ""
 
+        db.commit()
+        db.refresh(
+            current_user
+        )
+
+    return user_response(
+        current_user
+    )
+    
 @router.get(
     "/me",
     response_model=UserResponse,

@@ -213,6 +213,7 @@ class CollectionService:
             .add_to_user_collection(
                 self.user_id,
                 bgg_id,
+                source="manual",
             )
         )
 

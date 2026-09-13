@@ -75,6 +75,7 @@ class GameRepository:
         self,
         user_id: int,
         bgg_id: int,
+        source: str = "manual",
     ) -> bool:
         database_game = (
             self.db.query(DatabaseGame)
@@ -101,9 +102,10 @@ class GameRepository:
             return True
 
         self.db.add(
-            UserGame(
+           UserGame(
                 user_id=user_id,
                 game_id=database_game.id,
+                source=source,
             )
         )
 
@@ -497,8 +499,12 @@ class GameRepository:
             membership
             for membership
             in existing_memberships
-            if membership.game_id
-            not in target_game_ids
+            if (
+                membership.source
+                == "bgg"
+                and membership.game_id
+                not in target_game_ids
+            )
         ]
 
         for game_id in game_ids_to_add:
@@ -506,6 +512,7 @@ class GameRepository:
                 UserGame(
                     user_id=user_id,
                     game_id=game_id,
+                    source="bgg",
                 )
             )
 

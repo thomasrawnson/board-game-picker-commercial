@@ -19,8 +19,14 @@ import AuthView
 import CollectionView
   from "./components/CollectionView"
 
+import DiscoverView
+  from "./components/DiscoverView"
+
 import InsightsView
   from "./components/InsightsView"
+
+import OnboardingView
+  from "./components/OnboardingView"
 
 import SetupView
   from "./components/SetupView"
@@ -34,28 +40,32 @@ import PickerView
 
 import "./App.css"
 
-import DiscoverView
-  from "./components/DiscoverView"
-
-import OnboardingView from "./components/OnboardingView"
 
 function App() {
-  const [view, setView] =
-    useState<AppView>(
-      "picker",
-    )
+  const [
+    view,
+    setView,
+  ] = useState<AppView>(
+    "picker",
+  )
 
   const [
     selectedCollectionGameId,
     setSelectedCollectionGameId,
-  ] = useState<number | null>(
+  ] = useState<
+    number | null
+  >(
     null,
   )
 
-  const [user, setUser] =
-    useState<AuthUser | null>(
-      null,
-    )
+  const [
+    user,
+    setUser,
+  ] = useState<
+    AuthUser | null
+  >(
+    null,
+  )
 
   const [
     checkingAuth,
@@ -87,10 +97,13 @@ function App() {
     restoreSession()
   }, [])
 
+
   useEffect(() => {
     function handleAuthExpired() {
       setUser(null)
-      setView("picker")
+      setView(
+        "picker",
+      )
     }
 
     window.addEventListener(
@@ -106,30 +119,37 @@ function App() {
     }
   }, [])
 
-    function handleLogout() {
-      clearToken()
-      setUser(null)
-      setView("picker")
-    }
+
+  function handleLogout() {
+    clearToken()
+
+    setUser(
+      null,
+    )
+
+    setView(
+      "picker",
+    )
+  }
 
 
-    if (checkingAuth) {
-      return (
-        <main className="app-shell">
-          <section className="phone">
-            <section className="auth-loading">
-              <p className="eyebrow">
-                Board Game Picker
-              </p>
+  if (checkingAuth) {
+    return (
+      <main className="app-shell">
+        <section className="phone">
+          <section className="auth-loading">
+            <p className="eyebrow">
+              Board Game Picker
+            </p>
 
-              <h1>
-                Loading...
-              </h1>
-            </section>
+            <h1>
+              Loading...
+            </h1>
           </section>
-        </main>
-      )
-    }
+        </section>
+      </main>
+    )
+  }
 
 
   if (!user) {
@@ -146,7 +166,10 @@ function App() {
     )
   }
 
-  if (!user.bgg_username) {
+
+  if (
+    user.bgg_username === null
+  ) {
     return (
       <main className="app-shell">
         <section className="phone">
@@ -163,77 +186,86 @@ function App() {
                   username,
               })
 
-              setView("picker")
+              setView(
+                username
+                  ? "picker"
+                  : "collection",
+              )
             }}
           />
         </section>
       </main>
     )
   }
-  
+
+
   return (
     <main className="app-shell">
       <section className="phone">
         <AppNavigation
-          view={view}
+          view={
+            view
+          }
           onChangeView={
             setView
           }
         />
 
-        {view ===
-          "picker" && (
+
+        {view === "picker" && (
           <PickerView
             onViewGame={(
               bggId,
             ) => {
               setSelectedCollectionGameId(
-                bggId
+                bggId,
               )
 
               setView(
-                "collection"
+                "collection",
               )
             }}
           />
         )}
 
-        {view ===
-          "collection" && (
+
+        {view === "collection" && (
           <CollectionView
             initialGameBggId={
               selectedCollectionGameId
             }
             onInitialGameHandled={() =>
               setSelectedCollectionGameId(
-                null
+                null,
               )
             }
           />
         )}
-        {view ===
-          "discover" && (
+
+
+        {view === "discover" && (
           <DiscoverView />
         )}
-        {view ===
-          "insights" && (
+
+
+        {view === "insights" && (
           <InsightsView
             onOpenGame={(
               bggId: number,
             ) => {
               setSelectedCollectionGameId(
-                bggId
+                bggId,
               )
 
               setView(
-                "collection"
+                "collection",
               )
             }}
           />
         )}
 
-        {view ===
-          "setup" && (
+
+        {view === "setup" && (
           <>
             <SetupView
               initialUsername={
@@ -257,8 +289,8 @@ function App() {
                 </p>
 
                 <strong>
-                  {user.display_name ??
-                    user.email}
+                  {user.display_name
+                    ?? user.email}
                 </strong>
 
                 <span>

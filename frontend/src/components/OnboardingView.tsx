@@ -3,6 +3,7 @@ import {
 } from "react"
 
 import {
+  completeOnboarding,
   importBGStatsPlays,
   syncBGGCollection,
   type BGStatsImportResult,
@@ -28,44 +29,67 @@ function OnboardingView({
   displayName,
   onComplete,
 }: Props) {
-  const [step, setStep] =
-    useState<OnboardingStep>(
-      "collection",
-    )
+  const [
+    step,
+    setStep,
+  ] = useState<OnboardingStep>(
+    "collection",
+  )
 
-  const [username, setUsername] =
-    useState("")
+  const [
+    username,
+    setUsername,
+  ] = useState("")
 
-  const [syncing, setSyncing] =
-    useState(false)
+  const [
+    syncing,
+    setSyncing,
+  ] = useState(false)
 
-  const [syncError, setSyncError] =
-    useState("")
+  const [
+    syncError,
+    setSyncError,
+  ] = useState("")
 
   const [
     syncResult,
     setSyncResult,
-  ] =
-    useState<
-      CollectionSyncResult | null
-    >(null)
+  ] = useState<
+    CollectionSyncResult | null
+  >(
+    null,
+  )
 
-  const [file, setFile] =
-    useState<File | null>(null)
+  const [
+    file,
+    setFile,
+  ] = useState<File | null>(
+    null,
+  )
 
-  const [importing, setImporting] =
-    useState(false)
+  const [
+    importing,
+    setImporting,
+  ] = useState(false)
 
-  const [importError, setImportError] =
-    useState("")
+  const [
+    importError,
+    setImportError,
+  ] = useState("")
 
   const [
     importResult,
     setImportResult,
-  ] =
-    useState<
-      BGStatsImportResult | null
-    >(null)
+  ] = useState<
+    BGStatsImportResult | null
+  >(
+    null,
+  )
+
+  const [
+    finishing,
+    setFinishing,
+  ] = useState(false)
 
 
   async function handleSync() {
@@ -85,8 +109,13 @@ function OnboardingView({
           cleanedUsername,
         )
 
-      setSyncResult(result)
-      setStep("history")
+      setSyncResult(
+        result,
+      )
+
+      setStep(
+        "history",
+      )
     } catch (err) {
       console.error(err)
 
@@ -115,8 +144,13 @@ function OnboardingView({
           file,
         )
 
-      setImportResult(result)
-      setStep("complete")
+      setImportResult(
+        result,
+      )
+
+      setStep(
+        "complete",
+      )
     } catch (err) {
       console.error(err)
 
@@ -130,22 +164,59 @@ function OnboardingView({
     }
   }
 
+
   function skipCollection() {
     setUsername("")
     setSyncResult(null)
-    setStep("history")
-  }
+    setSyncError("")
 
-  function skipHistory() {
-    setStep("complete")
-  }
-
-
-  function finishOnboarding() {
-    onComplete(
-      username.trim(),
+    setStep(
+      "history",
     )
   }
+
+
+  function skipHistory() {
+    setImportResult(null)
+    setImportError("")
+
+    setStep(
+      "complete",
+    )
+  }
+
+
+  async function finishOnboarding() {
+    const cleanedUsername =
+      username.trim()
+
+    setFinishing(true)
+    setImportError("")
+
+    try {
+      if (!cleanedUsername) {
+        await completeOnboarding()
+      }
+
+      onComplete(
+        cleanedUsername,
+      )
+    } catch (err) {
+      console.error(err)
+
+      setImportError(
+        err instanceof Error
+          ? err.message
+          : "Couldn't finish setup.",
+      )
+    } finally {
+      setFinishing(false)
+    }
+  }
+
+
+  const hasCollection =
+    syncResult !== null
 
 
   return (
@@ -249,24 +320,31 @@ function OnboardingView({
             type="button"
             className="primary-button setup-button"
             disabled={
-              syncing ||
-              username.trim()
-                .length === 0
+              syncing
+              || username.trim().length === 0
             }
-            onClick={handleSync}
+            onClick={
+              handleSync
+            }
           >
             {syncing
               ? "Importing collection..."
               : "Import collection"}
           </button>
+
           <button
             type="button"
             className="onboarding-skip"
-            disabled={syncing}
-            onClick={skipCollection}
+            disabled={
+              syncing
+            }
+            onClick={
+              skipCollection
+            }
           >
             Skip for now
           </button>
+
           {syncError && (
             <p className="error-message">
               {syncError}
@@ -334,9 +412,8 @@ function OnboardingView({
             accept=".json,application/json"
             onChange={(event) =>
               setFile(
-                event.target
-                  .files?.[0] ??
-                  null,
+                event.target.files?.[0]
+                ?? null,
               )
             }
           />
@@ -345,10 +422,12 @@ function OnboardingView({
             type="button"
             className="primary-button setup-button"
             disabled={
-              importing ||
-              file === null
+              importing
+              || file === null
             }
-            onClick={handleImport}
+            onClick={
+              handleImport
+            }
           >
             {importing
               ? "Importing history..."
@@ -358,7 +437,12 @@ function OnboardingView({
           <button
             type="button"
             className="onboarding-skip"
-            onClick={skipHistory}
+            disabled={
+              importing
+            }
+            onClick={
+              skipHistory
+            }
           >
             Skip for now
           </button>
@@ -383,7 +467,9 @@ function OnboardingView({
           </p>
 
           <h2>
-            Time to pick a game
+            {hasCollection
+              ? "Time to pick a game"
+              : "Let's add some games"}
           </h2>
 
           {syncResult && (
@@ -407,20 +493,37 @@ function OnboardingView({
               added too.
             </p>
           )}
-          {!syncResult && !importResult && (
+
+          {!syncResult
+            && !importResult && (
             <p>
-              You can add your collection and
-              play history later from Setup.
+              You can add your collection
+              and play history later
+              from Setup.
             </p>
           )}
+
+          {importError && (
+            <p className="error-message">
+              {importError}
+            </p>
+          )}
+
           <button
             type="button"
             className="primary-button setup-button"
+            disabled={
+              finishing
+            }
             onClick={
               finishOnboarding
             }
           >
-            Start picking
+            {finishing
+              ? "Finishing..."
+              : hasCollection
+                ? "Start picking"
+                : "Add my first game"}
           </button>
         </div>
       )}

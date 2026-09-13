@@ -414,9 +414,14 @@ def test_add_game_fetches_uncached_game():
             self,
             user_id,
             bgg_id,
+            source="manual",
         ):
             self.added.append(
-                (user_id, bgg_id)
+                (
+                    user_id,
+                    bgg_id,
+                    source,
+                )
             )
             return True
 
@@ -442,7 +447,7 @@ def test_add_game_fetches_uncached_game():
         174430
     ]
     assert repository.added == [
-        (7, 174430)
+        (7, 174430, "manual")
     ]
     assert game.bgg_id == 174430
     assert game.owned is True

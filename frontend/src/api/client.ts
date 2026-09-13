@@ -838,3 +838,25 @@ export async function addGameToCollection(
 
   return response.json()
 }
+
+export async function completeOnboarding():
+Promise<AuthUser> {
+  const response =
+    await apiFetch(
+      "/auth/onboarding/complete",
+      {
+        method: "POST",
+      },
+    )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't finish setup.",
+      ),
+    )
+  }
+
+  return response.json()
+}

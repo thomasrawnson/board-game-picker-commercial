@@ -134,6 +134,14 @@ class UserGame(Base):
         primary_key=True,
     )
 
+    source: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="bgg",
+        server_default="bgg",
+    )
+
+
     added_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
@@ -149,8 +157,6 @@ class UserGame(Base):
         "Game",
         back_populates="user_games",
     )
-
-
 class Game(Base):
     __tablename__ = "games"
 
