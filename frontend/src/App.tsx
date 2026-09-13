@@ -40,6 +40,14 @@ import PickerView
 
 import "./App.css"
 
+import ForgotPasswordView
+  from "./components/ForgotPasswordView"
+
+import ResetPasswordView
+  from "./components/ResetPasswordView"
+
+import VerifyEmailView
+  from "./components/VerifyEmailView"
 
 function App() {
   const [
@@ -57,6 +65,42 @@ function App() {
   >(
     null,
   )
+
+  const path =
+    window.location.pathname
+
+
+  if (path === "/forgot-password") {
+    return (
+      <main className="app-shell">
+        <section className="phone">
+          <ForgotPasswordView />
+        </section>
+      </main>
+    )
+  }
+
+
+  if (path === "/reset-password") {
+    return (
+      <main className="app-shell">
+        <section className="phone">
+          <ResetPasswordView />
+        </section>
+      </main>
+    )
+  }
+
+
+  if (path === "/verify-email") {
+    return (
+      <main className="app-shell">
+        <section className="phone">
+          <VerifyEmailView />
+        </section>
+      </main>
+    )
+  }
 
   const [
     user,

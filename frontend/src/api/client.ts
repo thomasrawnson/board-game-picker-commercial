@@ -860,3 +860,100 @@ Promise<AuthUser> {
 
   return response.json()
 }
+
+export async function requestPasswordReset(
+  email: string,
+): Promise<string> {
+  const response = await fetch(
+    `${API_BASE_URL}/auth/password-reset/request`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        email,
+      }),
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't request password reset",
+      ),
+    )
+  }
+
+  const data = await response.json()
+
+  return data.message
+}
+
+
+export async function confirmPasswordReset(
+  token: string,
+  password: string,
+): Promise<string> {
+  const response = await fetch(
+    `${API_BASE_URL}/auth/password-reset/confirm`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        token,
+        password,
+      }),
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't reset password",
+      ),
+    )
+  }
+
+  const data = await response.json()
+
+  return data.message
+}
+
+
+export async function confirmEmailVerification(
+  token: string,
+): Promise<string> {
+  const response = await fetch(
+    `${API_BASE_URL}/auth/verification/confirm`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        token,
+      }),
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't verify email",
+      ),
+    )
+  }
+
+  const data = await response.json()
+
+  return data.message
+}

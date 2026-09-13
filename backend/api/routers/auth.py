@@ -1,3 +1,6 @@
+import logging
+from config import settings
+from email_service import send_email
 from fastapi import (
     APIRouter,
     Depends,
@@ -46,6 +49,63 @@ router = APIRouter(
     prefix="/auth",
     tags=["auth"],
 )
+
+logger = logging.getLogger(
+    "boardgamepicker.auth"
+)
+
+
+def verification_email_html(
+    token: str,
+) -> str:
+    url = (
+        f"{settings.frontend_url}"
+        f"/verify-email?token={token}"
+    )
+
+    return f"""
+    <h2>Verify your BoardGamePicker email</h2>
+    <p>
+        Thanks for creating an account.
+    </p>
+    <p>
+        <a href="{url}">
+            Verify my email
+        </a>
+    </p>
+    <p>
+        This link expires in 24 hours.
+    </p>
+    """
+
+
+def password_reset_email_html(
+    token: str,
+) -> str:
+    url = (
+        f"{settings.frontend_url}"
+        f"/reset-password?token={token}"
+    )
+
+    return f"""
+    <h2>Reset your BoardGamePicker password</h2>
+    <p>
+        We received a request to reset
+        your password.
+    </p>
+    <p>
+        <a href="{url}">
+            Reset my password
+        </a>
+    </p>
+    <p>
+        This link expires in 30 minutes.
+    </p>
+    <p>
+        If you did not request this,
+        you can ignore this email.
+    </p>
+    """
 
 def login_rate_limit_key(
     request: Request,
@@ -136,6 +196,33 @@ def register(
     db.commit()
     db.refresh(user)
 
+    verification_token = (
+        create_one_time_token(
+            db,
+            user.id,
+            EMAIL_VERIFY,
+        )
+    )
+
+    try:
+        send_email(
+            to_email=user.email,
+            subject=(
+                "Verify your "
+                "BoardGamePicker email"
+            ),
+            html=(
+                verification_email_html(
+                    verification_token
+                )
+            ),
+        )
+    except Exception:
+        logger.exception(
+            "verification_email_failed "
+            "user_id=%s",
+            user.id,
+        )
     token = create_access_token(
         user.id
     )
@@ -270,17 +357,52 @@ def request_verification(
 ):
     if (
         current_user.email_verified_at
-        is None
+        is not None
     ):
-        create_one_time_token(
-            db,
+        return MessageResponse(
+            message=(
+                "Email is already verified"
+            )
+        )
+
+    token = create_one_time_token(
+        db,
+        current_user.id,
+        EMAIL_VERIFY,
+    )
+
+    try:
+        send_email(
+            to_email=current_user.email,
+            subject=(
+                "Verify your "
+                "BoardGamePicker email"
+            ),
+            html=(
+                verification_email_html(
+                    token
+                )
+            ),
+        )
+    except Exception:
+        logger.exception(
+            "verification_email_failed "
+            "user_id=%s",
             current_user.id,
-            EMAIL_VERIFY,
+        )
+
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Unable to send "
+                "verification email "
+                "right now"
+            ),
         )
 
     return MessageResponse(
         message=(
-            "Verification requested"
+            "Verification email sent"
         )
     )
 
@@ -355,11 +477,34 @@ def request_password_reset(
     )
 
     if user is not None:
-        create_one_time_token(
-            db,
-            user.id,
-            PASSWORD_RESET,
+        reset_token = (
+            create_one_time_token(
+                db,
+                user.id,
+                PASSWORD_RESET,
+            )
         )
+
+        try:
+            send_email(
+                to_email=user.email,
+                subject=(
+                    "Reset your "
+                    "BoardGamePicker "
+                    "password"
+                ),
+                html=(
+                    password_reset_email_html(
+                        reset_token
+                    )
+                ),
+            )
+        except Exception:
+            logger.exception(
+                "password_reset_email_failed "
+                "user_id=%s",
+                user.id,
+            )
 
     # Deliberately identical response
     # whether the account exists or not.

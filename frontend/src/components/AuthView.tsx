@@ -153,9 +153,7 @@ function AuthView({
 
         <form
           className="auth-form"
-          onSubmit={
-            handleSubmit
-          }
+          onSubmit={handleSubmit}
         >
           {mode === "register" && (
             <label>
@@ -215,14 +213,12 @@ function AuthView({
                 )
               }
               autoComplete={
-                mode ===
-                "login"
+                mode === "login"
                   ? "current-password"
                   : "new-password"
               }
               minLength={
-                mode ===
-                "register"
+                mode === "register"
                   ? 8
                   : undefined
               }
@@ -230,8 +226,20 @@ function AuthView({
             />
           </label>
 
-          {mode ===
-            "register" && (
+          {mode === "login" && (
+            <button
+              type="button"
+              className="auth-link-button"
+              onClick={() => {
+                window.location.href =
+                  "/forgot-password"
+              }}
+            >
+              Forgot password?
+            </button>
+          )}
+
+          {mode === "register" && (
             <p className="auth-hint">
               Use at least 8
               characters.
@@ -253,8 +261,7 @@ function AuthView({
           >
             {submitting
               ? "Please wait..."
-              : mode ===
-                  "login"
+              : mode === "login"
                 ? "Log in"
                 : "Create account"}
           </button>

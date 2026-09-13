@@ -44,6 +44,9 @@ class Settings:
     access_token_minutes: int
     cors_origins: list[str]
     ai_picker_enabled: bool
+    frontend_url: str
+    resend_api_key: str
+    email_from: str
 
 
 def get_settings() -> Settings:
@@ -86,6 +89,21 @@ def get_settings() -> Settings:
         False,
     )
 
+    frontend_url = os.getenv(
+        "FRONTEND_URL",
+        "http://localhost:5173",
+    ).strip()
+
+    resend_api_key = os.getenv(
+        "RESEND_API_KEY",
+        "",
+    ).strip()
+
+    email_from = os.getenv(
+        "EMAIL_FROM",
+        "BoardGamePicker <onboarding@resend.dev>",
+    ).strip()
+
     if not database_url:
         raise RuntimeError(
             "DATABASE_URL must be configured"
@@ -123,6 +141,14 @@ def get_settings() -> Settings:
             "for the first production release"
         )
 
+    if (
+        environment == "production"
+        and not resend_api_key
+    ):
+        raise RuntimeError(
+            "RESEND_API_KEY must be configured"
+        )
+    
     return Settings(
         environment=environment,
         database_url=database_url,
@@ -134,6 +160,9 @@ def get_settings() -> Settings:
         ai_picker_enabled=(
             ai_picker_enabled
         ),
+        frontend_url=frontend_url,
+        resend_api_key=resend_api_key,
+        email_from=email_from,
     )
 
 

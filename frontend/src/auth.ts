@@ -3,6 +3,7 @@ export interface AuthUser {
   email: string
   display_name: string | null
   bgg_username: string | null
+  email_verified: boolean
 }
 
 export interface AuthResult {
