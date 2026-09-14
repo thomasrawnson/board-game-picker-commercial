@@ -358,6 +358,12 @@ Build the frontend with:
 npm run build
 ```
 
+The authenticated frontend uses client-side routes. A production static
+host must rewrite unknown, non-asset navigation requests to `/index.html`
+with a successful response so direct links and refreshes work. The PWA
+service worker also uses `/index.html` as its navigation fallback, but it
+does not replace the host rewrite for a visitor's first request.
+
 ## Roadmap
 
 Development is organised so new product features also strengthen the underlying engineering and data model.

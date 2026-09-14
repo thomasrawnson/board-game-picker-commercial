@@ -1,0 +1,106 @@
+import type {
+  AppView,
+} from "./components/AppNavigation"
+
+import type {
+  CollectionSection,
+} from "./components/CollectionView"
+
+
+export const APP_PATHS = {
+  login: "/login",
+  forgotPassword: "/forgot-password",
+  resetPassword: "/reset-password",
+  verifyEmail: "/verify-email",
+  onboarding: "/onboarding",
+  picker: "/picker",
+  collection: "/collection",
+  collectionOwned: "/collection/owned",
+  collectionWishlist:
+    "/collection/want-to-play",
+  discover: "/discover",
+  insights: "/insights",
+  setup: "/setup",
+} as const
+
+
+export function collectionPath(
+  section: CollectionSection,
+): string {
+  return section === "wishlist"
+    ? APP_PATHS.collectionWishlist
+    : APP_PATHS.collectionOwned
+}
+
+
+export function collectionGamePath(
+  bggId: number,
+): string {
+  return `${APP_PATHS.collectionOwned}/${bggId}`
+}
+
+
+export function appViewForPath(
+  pathname: string,
+): AppView {
+  if (
+    pathname === APP_PATHS.collection
+    || pathname.startsWith(
+      `${APP_PATHS.collection}/`,
+    )
+  ) {
+    return "collection"
+  }
+
+  if (pathname === APP_PATHS.discover) {
+    return "discover"
+  }
+
+  if (pathname === APP_PATHS.insights) {
+    return "insights"
+  }
+
+  if (pathname === APP_PATHS.setup) {
+    return "setup"
+  }
+
+  return "picker"
+}
+
+
+export function isProtectedAppPath(
+  pathname: string,
+): boolean {
+  return (
+    pathname === APP_PATHS.picker
+    || pathname === APP_PATHS.collection
+    || pathname.startsWith(
+      `${APP_PATHS.collection}/`,
+    )
+    || pathname === APP_PATHS.discover
+    || pathname === APP_PATHS.insights
+    || pathname === APP_PATHS.setup
+  )
+}
+
+
+export function safeReturnPath(
+  value: unknown,
+): string | null {
+  if (
+    typeof value !== "string"
+    || !value.startsWith("/")
+    || value.startsWith("//")
+  ) {
+    return null
+  }
+
+  const url = new URL(
+    value,
+    "https://boardgamepicker.local",
+  )
+
+  return isProtectedAppPath(url.pathname)
+    ? `${url.pathname}${url.search}${url.hash}`
+    : null
+}

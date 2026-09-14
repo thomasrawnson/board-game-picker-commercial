@@ -60,10 +60,18 @@ type Props = {
     RefObject<HTMLElement | null>
   scrollPositionsRef:
     RefObject<CollectionScrollPositions>
-  initialGameBggId:
+  gameBggId:
     number | null
-  onInitialGameHandled:
+  onOpenGame: (
+    bggId: number,
+  ) => void
+  onCloseGame:
     () => void
+  onGameUnavailable:
+    () => void
+  onSectionChange: (
+    section: CollectionSection,
+  ) => void
 }
 
 
@@ -72,8 +80,11 @@ function CollectionView({
   onUiStateChange,
   scrollContainerRef,
   scrollPositionsRef,
-  initialGameBggId,
-  onInitialGameHandled,
+  gameBggId,
+  onOpenGame,
+  onCloseGame,
+  onGameUnavailable,
+  onSectionChange,
 }: Props) {
   const {
     section,
@@ -93,13 +104,6 @@ function CollectionView({
   ] = useState<
     CollectionGameStats[]
   >([])
-
-  const [
-    selectedGame,
-    setSelectedGame,
-  ] = useState<
-    Game | null
-  >(null)
 
   const [
     gameHistory,
@@ -130,6 +134,48 @@ function CollectionView({
 
   const pendingScrollRestore =
     useRef(true)
+
+  const previousSection =
+    useRef(section)
+
+  const previousGameBggId =
+    useRef(gameBggId)
+
+  const selectedGame =
+    gameBggId === null
+      ? null
+      : games.find(
+          (game) =>
+            game.bgg_id
+            === gameBggId,
+        ) ?? null
+
+
+  useLayoutEffect(() => {
+    if (
+      previousSection.current
+      === section
+    ) {
+      return
+    }
+
+    previousSection.current = section
+    pendingScrollRestore.current = true
+  }, [section])
+
+
+  useLayoutEffect(() => {
+    if (
+      previousGameBggId.current
+      !== null
+      && gameBggId === null
+    ) {
+      pendingScrollRestore.current = true
+    }
+
+    previousGameBggId.current =
+      gameBggId
+  }, [gameBggId])
 
   const saveScrollPosition =
     useCallback(() => {
@@ -197,6 +243,8 @@ function CollectionView({
         section: nextSection,
       }),
     )
+
+    onSectionChange(nextSection)
   }
 
   const sectionTabs = (
@@ -303,33 +351,19 @@ function CollectionView({
 
   useEffect(() => {
     if (
-      initialGameBggId === null
-      || games.length === 0
+      gameBggId === null
+      || loading
+      || selectedGame
     ) {
       return
     }
 
-    const game =
-      games.find(
-        (candidate) =>
-          candidate.bgg_id
-          === initialGameBggId,
-      )
-
-    if (!game) {
-      onInitialGameHandled()
-      return
-    }
-
-    setSelectedGame(
-      game,
-    )
-
-    onInitialGameHandled()
+    onGameUnavailable()
   }, [
-    games,
-    initialGameBggId,
-    onInitialGameHandled,
+    gameBggId,
+    loading,
+    onGameUnavailable,
+    selectedGame,
   ])
 
 
@@ -612,22 +646,14 @@ function CollectionView({
   ) {
     saveScrollPosition()
 
-    setSelectedGame(
-      game,
+    onOpenGame(
+      game.bgg_id,
     )
   }
 
 
   function closeGame() {
-    pendingScrollRestore.current = true
-
-    setSelectedGame(
-      null,
-    )
-
-    setGameHistory(
-      null,
-    )
+    onCloseGame()
   }
 
 

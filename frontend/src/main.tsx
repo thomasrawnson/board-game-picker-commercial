@@ -7,6 +7,10 @@ import {
 } from "react-dom/client"
 
 import {
+  BrowserRouter,
+} from "react-router-dom"
+
+import {
   registerSW,
 } from "virtual:pwa-register"
 
@@ -59,6 +63,8 @@ createRoot(
   )!,
 ).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 )

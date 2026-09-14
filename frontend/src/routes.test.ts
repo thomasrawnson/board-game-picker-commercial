@@ -1,0 +1,62 @@
+import assert from "node:assert/strict"
+import test from "node:test"
+
+import {
+  APP_PATHS,
+  appViewForPath,
+  collectionGamePath,
+  collectionPath,
+  safeReturnPath,
+} from "./routes.ts"
+
+
+test("collection routes represent section and game selection", () => {
+  assert.equal(
+    collectionPath("owned"),
+    "/collection/owned",
+  )
+  assert.equal(
+    collectionPath("wishlist"),
+    "/collection/want-to-play",
+  )
+  assert.equal(
+    collectionGamePath(42),
+    "/collection/owned/42",
+  )
+})
+
+
+test("collection detail routes keep Collection navigation active", () => {
+  assert.equal(
+    appViewForPath(
+      "/collection/owned/42",
+    ),
+    "collection",
+  )
+  assert.equal(
+    appViewForPath(APP_PATHS.discover),
+    "discover",
+  )
+})
+
+
+test("return routes accept app deep links but reject unsafe paths", () => {
+  assert.equal(
+    safeReturnPath(
+      "/collection/want-to-play?from=login",
+    ),
+    "/collection/want-to-play?from=login",
+  )
+  assert.equal(
+    safeReturnPath("https://example.com"),
+    null,
+  )
+  assert.equal(
+    safeReturnPath("//example.com/picker"),
+    null,
+  )
+  assert.equal(
+    safeReturnPath("/reset-password?token=secret"),
+    null,
+  )
+})

@@ -1,8 +1,20 @@
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
+  type Dispatch,
+  type SetStateAction,
 } from "react"
+
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom"
 
 import {
   getMe,
@@ -19,6 +31,7 @@ import AuthView
 
 import CollectionView, {
   type CollectionScrollPositions,
+  type CollectionSection,
   type CollectionUiState,
 } from "./components/CollectionView"
 
@@ -41,8 +54,6 @@ import AppNavigation, {
 import PickerView
   from "./components/picker/PickerView"
 
-import "./App.css"
-
 import ForgotPasswordView
   from "./components/ForgotPasswordView"
 
@@ -52,22 +63,219 @@ import ResetPasswordView
 import VerifyEmailView
   from "./components/VerifyEmailView"
 
-function App() {
-  const [
-    view,
-    setView,
-  ] = useState<AppView>(
-    "picker",
+import {
+  APP_PATHS,
+  appViewForPath,
+  collectionGamePath,
+  collectionPath,
+  isProtectedAppPath,
+  safeReturnPath,
+} from "./routes"
+
+import "./App.css"
+
+
+type NavigationState = {
+  from?: string
+  detailOrigin?: "collection"
+}
+
+
+type CollectionRouteProps = {
+  uiState: CollectionUiState
+  onUiStateChange: Dispatch<
+    SetStateAction<CollectionUiState>
+  >
+  scrollContainerRef:
+    React.RefObject<HTMLElement | null>
+  scrollPositionsRef:
+    React.RefObject<CollectionScrollPositions>
+}
+
+
+function pageShell(
+  content: React.ReactNode,
+) {
+  return (
+    <main className="app-shell">
+      <section className="phone">
+        {content}
+      </section>
+    </main>
   )
+}
+
+
+function CollectionRoute({
+  uiState,
+  onUiStateChange,
+  scrollContainerRef,
+  scrollPositionsRef,
+}: CollectionRouteProps) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const wildcard =
+    useParams()["*"] ?? ""
+
+  let section:
+    CollectionSection | null = null
+  let gameBggId: number | null = null
+  let validRoute = true
+
+  if (wildcard === "owned") {
+    section = "owned"
+  } else if (
+    wildcard === "want-to-play"
+  ) {
+    section = "wishlist"
+  } else if (
+    wildcard.startsWith("owned/")
+  ) {
+    const gameIdText =
+      wildcard.slice("owned/".length)
+    const parsedGameId =
+      Number(gameIdText)
+
+    if (
+      /^\d+$/.test(gameIdText)
+      && Number.isSafeInteger(
+        parsedGameId,
+      )
+      && parsedGameId > 0
+    ) {
+      section = "owned"
+      gameBggId = parsedGameId
+    } else {
+      validRoute = false
+    }
+  } else if (wildcard !== "") {
+    validRoute = false
+  }
+
+  useEffect(() => {
+    if (
+      section
+      && uiState.section !== section
+    ) {
+      onUiStateChange(
+        (current) => ({
+          ...current,
+          section,
+        }),
+      )
+    }
+  }, [
+    onUiStateChange,
+    section,
+    uiState.section,
+  ])
+
+  const handleGameUnavailable =
+    useCallback(() => {
+      navigate(
+        APP_PATHS.collectionOwned,
+        { replace: true },
+      )
+    }, [navigate])
+
+  const handleCloseGame =
+    useCallback(() => {
+      const navigationState =
+        location.state as
+          NavigationState | null
+
+      if (
+        navigationState?.detailOrigin
+        === "collection"
+      ) {
+        navigate(-1)
+        return
+      }
+
+      navigate(
+        APP_PATHS.collectionOwned,
+      )
+    }, [
+      location.state,
+      navigate,
+    ])
+
+  if (wildcard === "") {
+    return (
+      <Navigate
+        to={collectionPath(
+          uiState.section,
+        )}
+        replace
+      />
+    )
+  }
+
+  if (!validRoute || section === null) {
+    return (
+      <Navigate
+        to={APP_PATHS.collectionOwned}
+        replace
+      />
+    )
+  }
+
+  return (
+    <CollectionView
+      uiState={{
+        ...uiState,
+        section,
+      }}
+      onUiStateChange={
+        onUiStateChange
+      }
+      scrollContainerRef={
+        scrollContainerRef
+      }
+      scrollPositionsRef={
+        scrollPositionsRef
+      }
+      gameBggId={gameBggId}
+      onOpenGame={(bggId) => {
+        navigate(
+          collectionGamePath(bggId),
+          {
+            state: {
+              detailOrigin:
+                "collection",
+            } satisfies NavigationState,
+          },
+        )
+      }}
+      onCloseGame={handleCloseGame}
+      onGameUnavailable={
+        handleGameUnavailable
+      }
+      onSectionChange={(
+        nextSection,
+      ) => {
+        navigate(
+          collectionPath(nextSection),
+        )
+      }}
+    />
+  )
+}
+
+
+function App() {
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const [
-    selectedCollectionGameId,
-    setSelectedCollectionGameId,
-  ] = useState<
-    number | null
-  >(
-    null,
-  )
+    user,
+    setUser,
+  ] = useState<AuthUser | null>(null)
+
+  const [
+    checkingAuth,
+    setCheckingAuth,
+  ] = useState(true)
 
   const [
     collectionUiState,
@@ -88,56 +296,20 @@ function App() {
   const appScrollRef =
     useRef<HTMLElement | null>(null)
 
-  const path =
-    window.location.pathname
+  const resetCollectionUiState =
+    useCallback(() => {
+      setCollectionUiState({
+        section: "owned",
+        search: "",
+        sort: "name",
+        playFilter: "all",
+      })
 
-
-  if (path === "/forgot-password") {
-    return (
-      <main className="app-shell">
-        <section className="phone">
-          <ForgotPasswordView />
-        </section>
-      </main>
-    )
-  }
-
-
-  if (path === "/reset-password") {
-    return (
-      <main className="app-shell">
-        <section className="phone">
-          <ResetPasswordView />
-        </section>
-      </main>
-    )
-  }
-
-
-  if (path === "/verify-email") {
-    return (
-      <main className="app-shell">
-        <section className="phone">
-          <VerifyEmailView />
-        </section>
-      </main>
-    )
-  }
-
-  const [
-    user,
-    setUser,
-  ] = useState<
-    AuthUser | null
-  >(
-    null,
-  )
-
-  const [
-    checkingAuth,
-    setCheckingAuth,
-  ] = useState(true)
-
+      collectionScrollPositions.current = {
+        owned: 0,
+        wishlist: 0,
+      }
+    }, [])
 
   useEffect(() => {
     async function restoreSession() {
@@ -150,9 +322,7 @@ function App() {
         const currentUser =
           await getMe()
 
-        setUser(
-          currentUser,
-        )
+        setUser(currentUser)
       } catch {
         clearToken()
       } finally {
@@ -160,16 +330,29 @@ function App() {
       }
     }
 
-    restoreSession()
+    void restoreSession()
   }, [])
-
 
   useEffect(() => {
     function handleAuthExpired() {
+      const from =
+        isProtectedAppPath(
+          location.pathname,
+        )
+          ? `${location.pathname}${location.search}`
+          : null
+
       resetCollectionUiState()
       setUser(null)
-      setView(
-        "picker",
+
+      navigate(
+        APP_PATHS.login,
+        {
+          replace: true,
+          state: from
+            ? { from }
+            : null,
+        },
       )
     }
 
@@ -184,141 +367,217 @@ function App() {
         handleAuthExpired,
       )
     }
-  }, [])
+  }, [
+    location.pathname,
+    location.search,
+    navigate,
+    resetCollectionUiState,
+  ])
 
+  const navigationState =
+    location.state as
+      NavigationState | null
 
-  function resetCollectionUiState() {
-    setCollectionUiState({
-      section: "owned",
-      search: "",
-      sort: "name",
-      playFilter: "all",
-    })
-
-    collectionScrollPositions.current = {
-      owned: 0,
-      wishlist: 0,
-    }
-
-    setSelectedCollectionGameId(
-      null,
+  const intendedRoute =
+    safeReturnPath(
+      navigationState?.from,
     )
-  }
-
 
   function handleAuthenticated(
     nextUser: AuthUser,
   ) {
     resetCollectionUiState()
     setUser(nextUser)
-  }
 
+    if (
+      nextUser.bgg_username === null
+    ) {
+      navigate(
+        APP_PATHS.onboarding,
+        {
+          replace: true,
+          state: intendedRoute
+            ? { from: intendedRoute }
+            : null,
+        },
+      )
+      return
+    }
+
+    navigate(
+      intendedRoute ?? APP_PATHS.picker,
+      { replace: true },
+    )
+  }
 
   function handleLogout() {
     clearToken()
-
     resetCollectionUiState()
-
-    setUser(
-      null,
-    )
-
-    setView(
-      "picker",
+    setUser(null)
+    navigate(
+      APP_PATHS.login,
+      { replace: true },
     )
   }
 
+  function navigateToView(
+    nextView: AppView,
+  ) {
+    if (nextView === "collection") {
+      navigate(APP_PATHS.collection)
+      return
+    }
+
+    navigate(APP_PATHS[nextView])
+  }
 
   function openOwnedCollectionGame(
     bggId: number,
   ) {
-    setSelectedCollectionGameId(
-      bggId,
-    )
     setCollectionUiState(
       (current) => ({
         ...current,
         section: "owned",
       }),
     )
-    setView(
-      "collection",
+    navigate(
+      collectionGamePath(bggId),
     )
   }
-
-
-  function handleViewChange(
-    nextView: AppView,
-  ) {
-    setView(nextView)
-  }
-
-
-  if (checkingAuth) {
-    return (
-      <main className="app-shell">
-        <section className="phone">
-          <section className="auth-loading">
-            <p className="eyebrow">
-              Board Game Picker
-            </p>
-
-            <h1>
-              Loading...
-            </h1>
-          </section>
-        </section>
-      </main>
-    )
-  }
-
-
-  if (!user) {
-    return (
-      <main className="app-shell">
-        <section className="phone">
-          <AuthView
-            onAuthenticated={
-              handleAuthenticated
-            }
-          />
-        </section>
-      </main>
-    )
-  }
-
 
   if (
-    user.bgg_username === null
+    location.pathname
+    === APP_PATHS.forgotPassword
   ) {
-    return (
-      <main className="app-shell">
-        <section className="phone">
-          <OnboardingView
-            displayName={
-              user.display_name
-            }
-            onComplete={(
-              username,
-            ) => {
-              setUser({
-                ...user,
-                bgg_username:
-                  username,
-              })
-
-              setView(
-                username
-                  ? "picker"
-                  : "collection",
-              )
-            }}
-          />
-        </section>
-      </main>
+    return pageShell(
+      <ForgotPasswordView />,
     )
   }
 
+  if (
+    location.pathname
+    === APP_PATHS.resetPassword
+  ) {
+    return pageShell(
+      <ResetPasswordView />,
+    )
+  }
+
+  if (
+    location.pathname
+    === APP_PATHS.verifyEmail
+  ) {
+    return pageShell(
+      <VerifyEmailView />,
+    )
+  }
+
+  if (checkingAuth) {
+    return pageShell(
+      <section className="auth-loading">
+        <p className="eyebrow">
+          Board Game Picker
+        </p>
+
+        <h1>
+          Loading...
+        </h1>
+      </section>,
+    )
+  }
+
+  if (!user) {
+    if (
+      location.pathname
+      !== APP_PATHS.login
+    ) {
+      const from =
+        isProtectedAppPath(
+          location.pathname,
+        )
+          ? `${location.pathname}${location.search}`
+          : null
+
+      return (
+        <Navigate
+          to={APP_PATHS.login}
+          replace
+          state={from ? { from } : null}
+        />
+      )
+    }
+
+    return pageShell(
+      <AuthView
+        onAuthenticated={
+          handleAuthenticated
+        }
+      />,
+    )
+  }
+
+  if (user.bgg_username === null) {
+    if (
+      location.pathname
+      !== APP_PATHS.onboarding
+    ) {
+      const from =
+        isProtectedAppPath(
+          location.pathname,
+        )
+          ? `${location.pathname}${location.search}`
+          : intendedRoute
+
+      return (
+        <Navigate
+          to={APP_PATHS.onboarding}
+          replace
+          state={from ? { from } : null}
+        />
+      )
+    }
+
+    return pageShell(
+      <OnboardingView
+        displayName={user.display_name}
+        onComplete={(username) => {
+          setUser({
+            ...user,
+            bgg_username: username,
+          })
+
+          navigate(
+            intendedRoute
+            ?? (
+              username
+                ? APP_PATHS.picker
+                : APP_PATHS.collectionOwned
+            ),
+            { replace: true },
+          )
+        }}
+      />,
+    )
+  }
+
+  if (
+    location.pathname === APP_PATHS.login
+    || location.pathname
+      === APP_PATHS.onboarding
+  ) {
+    return (
+      <Navigate
+        to={
+          intendedRoute
+          ?? APP_PATHS.picker
+        }
+        replace
+      />
+    )
+  }
+
+  const view =
+    appViewForPath(location.pathname)
 
   return (
     <main className="app-shell">
@@ -327,133 +586,134 @@ function App() {
         ref={appScrollRef}
       >
         <AppNavigation
-          view={
-            view
-          }
-          onChangeView={
-            handleViewChange
-          }
+          view={view}
+          onChangeView={navigateToView}
         />
 
-
-        {view === "picker" && (
-          <PickerView
-            onViewGame={(
-              bggId,
-            ) => {
-              openOwnedCollectionGame(
-                bggId,
-              )
-            }}
-          />
-        )}
-
-
-        {view === "collection" && (
-          <CollectionView
-            uiState={
-              collectionUiState
-            }
-            onUiStateChange={
-              setCollectionUiState
-            }
-            scrollContainerRef={
-              appScrollRef
-            }
-            scrollPositionsRef={
-              collectionScrollPositions
-            }
-            initialGameBggId={
-              selectedCollectionGameId
-            }
-            onInitialGameHandled={() =>
-              setSelectedCollectionGameId(
-                null,
-              )
-            }
-          />
-        )}
-
-
-        {view === "discover" && (
-          <DiscoverView
-            onViewWishlist={() => {
-              setSelectedCollectionGameId(
-                null,
-              )
-              setCollectionUiState(
-                (current) => ({
-                  ...current,
-                  section:
-                    "wishlist",
-                }),
-              )
-              setView(
-                "collection",
-              )
-            }}
-          />
-        )}
-
-
-        {view === "insights" && (
-          <InsightsView
-            onOpenGame={(
-              bggId: number,
-            ) => {
-              openOwnedCollectionGame(
-                bggId,
-              )
-            }}
-          />
-        )}
-
-
-        {view === "setup" && (
-          <>
-            <SetupView
-              initialUsername={
-                user.bgg_username
-              }
-              onUsernameChange={(
-                username,
-              ) => {
-                setUser({
-                  ...user,
-                  bgg_username:
-                    username,
-                })
-              }}
-            />
-
-            <div className="account-panel">
-              <div>
-                <p className="account-label">
-                  Signed in as
-                </p>
-
-                <strong>
-                  {user.display_name
-                    ?? user.email}
-                </strong>
-
-                <span>
-                  {user.email}
-                </span>
-              </div>
-
-              <button
-                type="button"
-                className="logout-button"
-                onClick={
-                  handleLogout
+        <Routes>
+          <Route
+            path={APP_PATHS.picker}
+            element={
+              <PickerView
+                onViewGame={
+                  openOwnedCollectionGame
                 }
-              >
-                Log out
-              </button>
-            </div>
-          </>
-        )}
+              />
+            }
+          />
+
+          <Route
+            path={`${APP_PATHS.collection}/*`}
+            element={
+              <CollectionRoute
+                uiState={
+                  collectionUiState
+                }
+                onUiStateChange={
+                  setCollectionUiState
+                }
+                scrollContainerRef={
+                  appScrollRef
+                }
+                scrollPositionsRef={
+                  collectionScrollPositions
+                }
+              />
+            }
+          />
+
+          <Route
+            path={APP_PATHS.discover}
+            element={
+              <DiscoverView
+                onViewWishlist={() => {
+                  navigate(
+                    APP_PATHS
+                      .collectionWishlist,
+                  )
+                }}
+              />
+            }
+          />
+
+          <Route
+            path={APP_PATHS.insights}
+            element={
+              <InsightsView
+                onOpenGame={
+                  openOwnedCollectionGame
+                }
+              />
+            }
+          />
+
+          <Route
+            path={APP_PATHS.setup}
+            element={
+              <>
+                <SetupView
+                  initialUsername={
+                    user.bgg_username
+                  }
+                  onUsernameChange={(
+                    username,
+                  ) => {
+                    setUser({
+                      ...user,
+                      bgg_username:
+                        username,
+                    })
+                  }}
+                />
+
+                <div className="account-panel">
+                  <div>
+                    <p className="account-label">
+                      Signed in as
+                    </p>
+
+                    <strong>
+                      {user.display_name
+                        ?? user.email}
+                    </strong>
+
+                    <span>
+                      {user.email}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="logout-button"
+                    onClick={handleLogout}
+                  >
+                    Log out
+                  </button>
+                </div>
+              </>
+            }
+          />
+
+          <Route
+            path="/"
+            element={
+              <Navigate
+                to={APP_PATHS.picker}
+                replace
+              />
+            }
+          />
+
+          <Route
+            path="*"
+            element={
+              <Navigate
+                to={APP_PATHS.picker}
+                replace
+              />
+            }
+          />
+        </Routes>
       </section>
     </main>
   )
