@@ -1,6 +1,7 @@
 import httpx
 import pytest
 from bgg.client import BGGClient
+from bgg.client import BGGSourceUnavailableError
 
 
 def test_bgg_client_can_be_created():
@@ -474,6 +475,7 @@ def test_get_ranked_games_requests_browse_page(
     ):
         requested["url"] = url
         requested["params"] = params
+        requested["headers"] = headers
         return httpx.Response(
             200,
             request=httpx.Request("GET", url),
@@ -490,4 +492,83 @@ def test_get_ranked_games_requests_browse_page(
     assert requested["params"] == {
         "sort": "rank",
         "page": 3,
+    }
+    assert requested["headers"] == {}
+
+
+def test_ranked_403_is_not_retried(
+    monkeypatch,
+):
+    calls = []
+
+    def mock_get(
+        url,
+        params,
+        headers,
+        timeout,
+    ):
+        calls.append(url)
+        return httpx.Response(
+            403,
+            request=httpx.Request(
+                "GET",
+                url,
+            ),
+        )
+
+    monkeypatch.setattr(
+        httpx,
+        "get",
+        mock_get,
+    )
+
+    with pytest.raises(
+        BGGSourceUnavailableError,
+    ) as error:
+        BGGClient(
+            max_retries=5,
+        ).get_ranked_games_page(1)
+
+    assert error.value.source == "ranked"
+    assert error.value.status_code == 403
+    assert len(calls) == 1
+
+
+def test_xml_requests_keep_api_authentication(
+    monkeypatch,
+):
+    requested = {}
+
+    def mock_get(
+        url,
+        params,
+        headers,
+        timeout,
+    ):
+        requested["headers"] = headers
+        return httpx.Response(
+            200,
+            request=httpx.Request(
+                "GET",
+                url,
+            ),
+            text="<items />",
+        )
+
+    monkeypatch.setenv(
+        "BGG_API_TOKEN",
+        "test-token-not-a-real-secret",
+    )
+    monkeypatch.setattr(
+        httpx,
+        "get",
+        mock_get,
+    )
+
+    BGGClient().get_game(1)
+
+    assert requested["headers"] == {
+        "Authorization": (
+            "Bearer test-token-not-a-real-secret"
+        )
     }

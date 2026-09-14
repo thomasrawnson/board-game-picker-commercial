@@ -1,10 +1,14 @@
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from threading import Lock
 from typing import Protocol
 
-from bgg.client import BGGClient
+from bgg.client import (
+    BGGClient,
+    BGGSourceUnavailableError,
+)
 from bgg.hot_parser import parse_hot_game_ids
 from bgg.ranked_parser import parse_ranked_game_ids
 
@@ -15,6 +19,7 @@ logger = logging.getLogger(
 
 RANKED_PAGE_COUNT = 5
 RANKED_CACHE_TTL_SECONDS = 24 * 60 * 60
+RANKED_UNAVAILABLE_COOLDOWN_SECONDS = 60 * 60
 
 
 @dataclass
@@ -38,20 +43,31 @@ class DiscoverCandidateSource(Protocol):
 class RankedCandidateCache:
     def __init__(
         self,
-        ttl_seconds: int = (
+        ttl_seconds: float = (
             RANKED_CACHE_TTL_SECONDS
+        ),
+        unavailable_cooldown_seconds: float = (
+            RANKED_UNAVAILABLE_COOLDOWN_SECONDS
+        ),
+        clock: Callable[[], float] = (
+            time.monotonic
         ),
     ):
         self.ttl_seconds = ttl_seconds
+        self.unavailable_cooldown_seconds = (
+            unavailable_cooldown_seconds
+        )
+        self.clock = clock
         self._game_ids: list[int] | None = None
         self._expires_at = 0.0
+        self._unavailable_until = 0.0
         self._lock = Lock()
 
     def get(self) -> list[int] | None:
         with self._lock:
             if (
                 self._game_ids is None
-                or time.monotonic()
+                or self.clock()
                 >= self._expires_at
             ):
                 return None
@@ -62,14 +78,30 @@ class RankedCandidateCache:
         with self._lock:
             self._game_ids = list(game_ids)
             self._expires_at = (
-                time.monotonic()
+                self.clock()
                 + self.ttl_seconds
+            )
+            self._unavailable_until = 0.0
+
+    def is_unavailable(self) -> bool:
+        with self._lock:
+            return (
+                self.clock()
+                < self._unavailable_until
+            )
+
+    def mark_unavailable(self) -> None:
+        with self._lock:
+            self._unavailable_until = (
+                self.clock()
+                + self.unavailable_cooldown_seconds
             )
 
     def clear(self) -> None:
         with self._lock:
             self._game_ids = None
             self._expires_at = 0.0
+            self._unavailable_until = 0.0
 
 
 ranked_candidate_cache = RankedCandidateCache()
@@ -114,19 +146,26 @@ class RankedDiscoverSource:
         game_ids = self.cache.get()
 
         if game_ids is None:
+            if self.cache.is_unavailable():
+                return []
+
             game_ids = []
 
-            for page in range(
-                1,
-                RANKED_PAGE_COUNT + 1,
-            ):
-                html = (
-                    self.bgg_client
-                    .get_ranked_games_page(page)
-                )
-                game_ids.extend(
-                    parse_ranked_game_ids(html)
-                )
+            try:
+                for page in range(
+                    1,
+                    RANKED_PAGE_COUNT + 1,
+                ):
+                    html = (
+                        self.bgg_client
+                        .get_ranked_games_page(page)
+                    )
+                    game_ids.extend(
+                        parse_ranked_game_ids(html)
+                    )
+            except BGGSourceUnavailableError:
+                self.cache.mark_unavailable()
+                raise
 
             game_ids = list(
                 dict.fromkeys(game_ids)
@@ -169,6 +208,15 @@ class DiscoverCandidateProvider:
             try:
                 source_results.append(
                     source.get_candidates()
+                )
+            except BGGSourceUnavailableError as exc:
+                logger.warning(
+                    "discover_source_unavailable "
+                    "source=%s status=%s "
+                    "fallback=continuing_with_"
+                    "available_sources",
+                    exc.source,
+                    exc.status_code,
                 )
             except Exception:
                 logger.exception(

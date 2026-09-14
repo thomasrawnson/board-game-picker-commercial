@@ -6,6 +6,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+class BGGSourceUnavailableError(
+    RuntimeError
+):
+    def __init__(
+        self,
+        source: str,
+        status_code: int,
+    ):
+        self.source = source
+        self.status_code = status_code
+
+        super().__init__(
+            f"BGG {source} source unavailable "
+            f"with HTTP {status_code}"
+        )
+
+
 class BGGClient:
     BASE_URL = (
         "https://boardgamegeek.com/"
@@ -134,11 +151,21 @@ class BGGClient:
             "page": page,
         }
 
-        return self._get(
-            url,
-            params,
-            "BGG ranked games request",
-        )
+        try:
+            return self._get(
+                url,
+                params,
+                "BGG ranked games request",
+                headers={},
+            )
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 403:
+                raise BGGSourceUnavailableError(
+                    source="ranked",
+                    status_code=403,
+                ) from exc
+
+            raise
     
     def search_games(
         self,
@@ -164,6 +191,7 @@ class BGGClient:
         url: str,
         params: dict,
         description: str,
+        headers: dict | None = None,
     ) -> str:
         for attempt in range(
             self.max_retries
@@ -171,7 +199,11 @@ class BGGClient:
             response = httpx.get(
                 url,
                 params=params,
-                headers=self.headers,
+                headers=(
+                    self.headers
+                    if headers is None
+                    else headers
+                ),
                 timeout=self.timeout,
             )
 
