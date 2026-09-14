@@ -146,6 +146,13 @@
   }
 }
 
+.discover-wishlist-link {
+  width: 100%;
+  min-height: 44px;
+  justify-content: center;
+  margin-top: -18px;
+}
+
 .discover-actions {
   display: grid;
   gap: 8px;

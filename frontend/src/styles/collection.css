@@ -1600,3 +1600,24 @@
   }
 
 }
+
+/*
+  Authenticated views scroll in .app-phone.
+  Avoid clipping or nesting Collection scrolling
+  inside that shared container.
+*/
+
+.collection-screen {
+  flex: 0 0 auto;
+  min-height: 100%;
+
+  overflow: visible;
+}
+
+.collection-list {
+  max-height: none;
+
+  overflow: visible;
+
+  padding-bottom: 0;
+}

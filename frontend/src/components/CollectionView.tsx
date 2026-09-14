@@ -32,7 +32,19 @@ import GameDetail
 import WishlistView
   from "./WishlistView"
 
+export type CollectionSection =
+  | "owned"
+  | "wishlist"
+
+
+function getScrollContainer() {
+  return document.querySelector<HTMLElement>(
+    ".app-phone",
+  )
+}
+
 type Props = {
+  initialSection: CollectionSection
   initialGameBggId:
     number | null
   onInitialGameHandled:
@@ -41,14 +53,15 @@ type Props = {
 
 
 function CollectionView({
+  initialSection,
   initialGameBggId,
   onInitialGameHandled,
 }: Props) {
   const [
     section,
     setSection,
-  ] = useState<"owned" | "wishlist">(
-    "owned",
+  ] = useState<CollectionSection>(
+    initialSection,
   )
   const [
     games,
@@ -195,7 +208,8 @@ function CollectionView({
     }
 
     savedScrollPosition.current =
-      window.scrollY
+      getScrollContainer()?.scrollTop
+      ?? window.scrollY
 
     setSelectedGame(
       game,
@@ -217,6 +231,20 @@ function CollectionView({
     }
 
     requestAnimationFrame(() => {
+      const scrollContainer =
+        getScrollContainer()
+
+      if (scrollContainer) {
+        scrollContainer.scrollTo({
+          top:
+            savedScrollPosition.current,
+          behavior:
+            "instant",
+        })
+
+        return
+      }
+
       window.scrollTo({
         top:
           savedScrollPosition.current,
@@ -488,7 +516,8 @@ function CollectionView({
     game: Game,
   ) {
     savedScrollPosition.current =
-      window.scrollY
+      getScrollContainer()?.scrollTop
+      ?? window.scrollY
 
     setSelectedGame(
       game,

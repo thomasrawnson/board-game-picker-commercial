@@ -16,8 +16,9 @@ import {
 import AuthView
   from "./components/AuthView"
 
-import CollectionView
-  from "./components/CollectionView"
+import CollectionView, {
+  type CollectionSection,
+} from "./components/CollectionView"
 
 import DiscoverView
   from "./components/DiscoverView"
@@ -64,6 +65,13 @@ function App() {
     number | null
   >(
     null,
+  )
+
+  const [
+    collectionSection,
+    setCollectionSection,
+  ] = useState<CollectionSection>(
+    "owned",
   )
 
   const path =
@@ -177,6 +185,34 @@ function App() {
   }
 
 
+  function openOwnedCollectionGame(
+    bggId: number,
+  ) {
+    setSelectedCollectionGameId(
+      bggId,
+    )
+    setCollectionSection(
+      "owned",
+    )
+    setView(
+      "collection",
+    )
+  }
+
+
+  function handleViewChange(
+    nextView: AppView,
+  ) {
+    if (nextView === "collection") {
+      setCollectionSection(
+        "owned",
+      )
+    }
+
+    setView(nextView)
+  }
+
+
   if (checkingAuth) {
     return (
       <main className="app-shell">
@@ -245,13 +281,13 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="phone">
+      <section className="phone app-phone">
         <AppNavigation
           view={
             view
           }
           onChangeView={
-            setView
+            handleViewChange
           }
         />
 
@@ -261,12 +297,8 @@ function App() {
             onViewGame={(
               bggId,
             ) => {
-              setSelectedCollectionGameId(
+              openOwnedCollectionGame(
                 bggId,
-              )
-
-              setView(
-                "collection",
               )
             }}
           />
@@ -275,6 +307,9 @@ function App() {
 
         {view === "collection" && (
           <CollectionView
+            initialSection={
+              collectionSection
+            }
             initialGameBggId={
               selectedCollectionGameId
             }
@@ -288,7 +323,19 @@ function App() {
 
 
         {view === "discover" && (
-          <DiscoverView />
+          <DiscoverView
+            onViewWishlist={() => {
+              setSelectedCollectionGameId(
+                null,
+              )
+              setCollectionSection(
+                "wishlist",
+              )
+              setView(
+                "collection",
+              )
+            }}
+          />
         )}
 
 
@@ -297,12 +344,8 @@ function App() {
             onOpenGame={(
               bggId: number,
             ) => {
-              setSelectedCollectionGameId(
+              openOwnedCollectionGame(
                 bggId,
-              )
-
-              setView(
-                "collection",
               )
             }}
           />

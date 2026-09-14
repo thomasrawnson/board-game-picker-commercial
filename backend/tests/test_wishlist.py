@@ -97,6 +97,38 @@ def test_add_and_duplicate_add_are_safe(client):
     db.close()
 
 
+def test_seven_adds_preserve_every_wishlist_game(client):
+    user_id, headers = seed_user("seven@example.com")
+
+    for bgg_id in range(1, 8):
+        seed_game(bgg_id, f"Game {bgg_id}")
+
+        response = client.post(
+            f"/wishlist/{bgg_id}",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+        assert response.json()["owned"] is False
+
+    listed = client.get("/wishlist", headers=headers)
+
+    assert listed.status_code == 200
+    assert {
+        game["bgg_id"]
+        for game in listed.json()
+    } == set(range(1, 8))
+
+    db = TestingSessionLocal()
+    assert (
+        db.query(UserWishlistGame)
+        .filter(UserWishlistGame.user_id == user_id)
+        .count()
+        == 7
+    )
+    db.close()
+
+
 def test_remove_from_wishlist(client):
     _, headers = seed_user("one@example.com")
     seed_game(1, "First")

@@ -11,7 +11,14 @@ import {
 } from "../api/client"
 
 
-function DiscoverView() {
+type Props = {
+  onViewWishlist: () => void
+}
+
+
+function DiscoverView({
+  onViewWishlist,
+}: Props) {
   const [
     recommendations,
     setRecommendations,
@@ -154,6 +161,14 @@ function DiscoverView() {
           matched against your collection
           and what's popular right now.
         </p>
+
+        <button
+          type="button"
+          className="ghost-button discover-wishlist-link"
+          onClick={onViewWishlist}
+        >
+          View Want to Play
+        </button>
       </header>
 
 

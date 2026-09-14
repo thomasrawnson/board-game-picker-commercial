@@ -4,13 +4,24 @@
 /* Main navigation */
 
 .app-nav {
-  position: absolute;
+  position: fixed;
 
-  left: 22px;
-  right: 22px;
-  bottom: 16px;
+  left: 50%;
+  bottom:
+    calc(
+      32px
+      + env(safe-area-inset-bottom)
+    );
+
+  width:
+    min(
+      calc(100vw - 32px),
+      346px
+    );
 
   z-index: 100;
+
+  transform: translateX(-50%);
 
   display: grid;
 
@@ -197,9 +208,27 @@
   navigation bar.
 */
 
-.phone {
+.app-phone {
+  min-height:
+    calc(100dvh - 48px);
+
+  max-height:
+    calc(100dvh - 48px);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
   padding-bottom:
-    100px;
+    calc(
+      112px
+      + env(safe-area-inset-bottom)
+    );
+
+  scroll-padding-bottom:
+    calc(
+      112px
+      + env(safe-area-inset-bottom)
+    );
 }
 
 
@@ -207,11 +236,6 @@
   max-width: 480px
 ) {
   .app-nav {
-    position: fixed;
-
-    left: 14px;
-    right: 14px;
-
     bottom:
       calc(
         10px
@@ -221,10 +245,13 @@
       );
   }
 
-  .phone {
+  .app-phone {
+    min-height: 100dvh;
+    max-height: 100dvh;
+
     padding-bottom:
       calc(
-        100px
+        112px
         + env(
           safe-area-inset-bottom
         )
