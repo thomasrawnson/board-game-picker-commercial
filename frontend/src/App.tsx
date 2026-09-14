@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useRef,
   useState,
 } from "react"
 
@@ -17,7 +18,8 @@ import AuthView
   from "./components/AuthView"
 
 import CollectionView, {
-  type CollectionSection,
+  type CollectionScrollPositions,
+  type CollectionUiState,
 } from "./components/CollectionView"
 
 import DiscoverView
@@ -68,11 +70,23 @@ function App() {
   )
 
   const [
-    collectionSection,
-    setCollectionSection,
-  ] = useState<CollectionSection>(
-    "owned",
-  )
+    collectionUiState,
+    setCollectionUiState,
+  ] = useState<CollectionUiState>({
+    section: "owned",
+    search: "",
+    sort: "name",
+    playFilter: "all",
+  })
+
+  const collectionScrollPositions =
+    useRef<CollectionScrollPositions>({
+      owned: 0,
+      wishlist: 0,
+    })
+
+  const appScrollRef =
+    useRef<HTMLElement | null>(null)
 
   const path =
     window.location.pathname
@@ -152,6 +166,7 @@ function App() {
 
   useEffect(() => {
     function handleAuthExpired() {
+      resetCollectionUiState()
       setUser(null)
       setView(
         "picker",
@@ -172,8 +187,37 @@ function App() {
   }, [])
 
 
+  function resetCollectionUiState() {
+    setCollectionUiState({
+      section: "owned",
+      search: "",
+      sort: "name",
+      playFilter: "all",
+    })
+
+    collectionScrollPositions.current = {
+      owned: 0,
+      wishlist: 0,
+    }
+
+    setSelectedCollectionGameId(
+      null,
+    )
+  }
+
+
+  function handleAuthenticated(
+    nextUser: AuthUser,
+  ) {
+    resetCollectionUiState()
+    setUser(nextUser)
+  }
+
+
   function handleLogout() {
     clearToken()
+
+    resetCollectionUiState()
 
     setUser(
       null,
@@ -191,8 +235,11 @@ function App() {
     setSelectedCollectionGameId(
       bggId,
     )
-    setCollectionSection(
-      "owned",
+    setCollectionUiState(
+      (current) => ({
+        ...current,
+        section: "owned",
+      }),
     )
     setView(
       "collection",
@@ -203,12 +250,6 @@ function App() {
   function handleViewChange(
     nextView: AppView,
   ) {
-    if (nextView === "collection") {
-      setCollectionSection(
-        "owned",
-      )
-    }
-
     setView(nextView)
   }
 
@@ -238,7 +279,7 @@ function App() {
         <section className="phone">
           <AuthView
             onAuthenticated={
-              setUser
+              handleAuthenticated
             }
           />
         </section>
@@ -281,7 +322,10 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="phone app-phone">
+      <section
+        className="phone app-phone"
+        ref={appScrollRef}
+      >
         <AppNavigation
           view={
             view
@@ -307,8 +351,17 @@ function App() {
 
         {view === "collection" && (
           <CollectionView
-            initialSection={
-              collectionSection
+            uiState={
+              collectionUiState
+            }
+            onUiStateChange={
+              setCollectionUiState
+            }
+            scrollContainerRef={
+              appScrollRef
+            }
+            scrollPositionsRef={
+              collectionScrollPositions
             }
             initialGameBggId={
               selectedCollectionGameId
@@ -328,8 +381,12 @@ function App() {
               setSelectedCollectionGameId(
                 null,
               )
-              setCollectionSection(
-                "wishlist",
+              setCollectionUiState(
+                (current) => ({
+                  ...current,
+                  section:
+                    "wishlist",
+                }),
               )
               setView(
                 "collection",

@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useLayoutEffect,
   useState,
 } from "react"
 
@@ -10,7 +11,14 @@ import {
 } from "../api/client"
 
 
-function WishlistView() {
+type Props = {
+  onContentReady: () => void
+}
+
+
+function WishlistView({
+  onContentReady,
+}: Props) {
   const [games, setGames] = useState<Game[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
@@ -33,6 +41,16 @@ function WishlistView() {
 
     void loadWishlist()
   }, [])
+
+
+  useLayoutEffect(() => {
+    if (!loading) {
+      onContentReady()
+    }
+  }, [
+    loading,
+    onContentReady,
+  ])
 
   async function removeGame(game: Game) {
     setRemovingId(game.bgg_id)

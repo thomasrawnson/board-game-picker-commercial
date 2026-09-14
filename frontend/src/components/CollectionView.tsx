@@ -1,8 +1,13 @@
 import {
+  useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type Dispatch,
+  type RefObject,
+  type SetStateAction,
 } from "react"
 
 import AddGameSearch
@@ -36,15 +41,25 @@ export type CollectionSection =
   | "owned"
   | "wishlist"
 
+export type CollectionScrollPositions =
+  Record<CollectionSection, number>
 
-function getScrollContainer() {
-  return document.querySelector<HTMLElement>(
-    ".app-phone",
-  )
+export type CollectionUiState = {
+  section: CollectionSection
+  search: string
+  sort: SortOption
+  playFilter: PlayFilter
 }
 
 type Props = {
-  initialSection: CollectionSection
+  uiState: CollectionUiState
+  onUiStateChange: Dispatch<
+    SetStateAction<CollectionUiState>
+  >
+  scrollContainerRef:
+    RefObject<HTMLElement | null>
+  scrollPositionsRef:
+    RefObject<CollectionScrollPositions>
   initialGameBggId:
     number | null
   onInitialGameHandled:
@@ -53,16 +68,20 @@ type Props = {
 
 
 function CollectionView({
-  initialSection,
+  uiState,
+  onUiStateChange,
+  scrollContainerRef,
+  scrollPositionsRef,
   initialGameBggId,
   onInitialGameHandled,
 }: Props) {
-  const [
+  const {
     section,
-    setSection,
-  ] = useState<CollectionSection>(
-    initialSection,
-  )
+    search,
+    sort,
+    playFilter,
+  } = uiState
+
   const [
     games,
     setGames,
@@ -74,25 +93,6 @@ function CollectionView({
   ] = useState<
     CollectionGameStats[]
   >([])
-
-  const [
-    search,
-    setSearch,
-  ] = useState("")
-
-  const [
-    sort,
-    setSort,
-  ] = useState<SortOption>(
-    "name",
-  )
-
-  const [
-    playFilter,
-    setPlayFilter,
-  ] = useState<PlayFilter>(
-    "all",
-  )
 
   const [
     selectedGame,
@@ -128,22 +128,90 @@ function CollectionView({
     setAddingGame,
   ] = useState(false)
 
-  const savedScrollPosition =
-    useRef(0)
+  const pendingScrollRestore =
+    useRef(true)
+
+  const saveScrollPosition =
+    useCallback(() => {
+      const scrollContainer =
+        scrollContainerRef.current
+
+      if (scrollContainer) {
+        scrollPositionsRef.current[
+          section
+        ] = scrollContainer.scrollTop
+      }
+    }, [
+      scrollContainerRef,
+      scrollPositionsRef,
+      section,
+    ])
+
+  const restoreScrollPosition =
+    useCallback((
+      targetSection: CollectionSection,
+    ) => {
+      if (
+        !pendingScrollRestore.current
+        || section !== targetSection
+      ) {
+        return
+      }
+
+      const scrollContainer =
+        scrollContainerRef.current
+
+      if (!scrollContainer) {
+        return
+      }
+
+      scrollContainer.scrollTo({
+        top:
+          scrollPositionsRef.current[
+            targetSection
+          ],
+        behavior: "instant",
+      })
+
+      pendingScrollRestore.current =
+        false
+    }, [
+      scrollContainerRef,
+      scrollPositionsRef,
+      section,
+    ])
+
+  function changeSection(
+    nextSection: CollectionSection,
+  ) {
+    if (nextSection === section) {
+      return
+    }
+
+    saveScrollPosition()
+    pendingScrollRestore.current = true
+
+    onUiStateChange(
+      (current) => ({
+        ...current,
+        section: nextSection,
+      }),
+    )
+  }
 
   const sectionTabs = (
     <div className="collection-section-tabs">
       <button
         type="button"
         className={section === "owned" ? "active" : ""}
-        onClick={() => setSection("owned")}
+        onClick={() => changeSection("owned")}
       >
         Owned
       </button>
       <button
         type="button"
         className={section === "wishlist" ? "active" : ""}
-        onClick={() => setSection("wishlist")}
+        onClick={() => changeSection("wishlist")}
       >
         Want to Play
       </button>
@@ -187,6 +255,52 @@ function CollectionView({
   }, [])
 
 
+  useLayoutEffect(() => {
+    if (selectedGame) {
+      return
+    }
+
+    const scrollContainer =
+      scrollContainerRef.current
+
+    if (!scrollContainer) {
+      return
+    }
+
+    scrollContainer.addEventListener(
+      "scroll",
+      saveScrollPosition,
+      { passive: true },
+    )
+
+    return () => {
+      scrollContainer.removeEventListener(
+        "scroll",
+        saveScrollPosition,
+      )
+    }
+  }, [
+    saveScrollPosition,
+    scrollContainerRef,
+    selectedGame,
+  ])
+
+
+  useLayoutEffect(() => {
+    if (!selectedGame) {
+      return
+    }
+
+    scrollContainerRef.current?.scrollTo({
+      top: 0,
+      behavior: "instant",
+    })
+  }, [
+    scrollContainerRef,
+    selectedGame,
+  ])
+
+
   useEffect(() => {
     if (
       initialGameBggId === null
@@ -207,10 +321,6 @@ function CollectionView({
       return
     }
 
-    savedScrollPosition.current =
-      getScrollContainer()?.scrollTop
-      ?? window.scrollY
-
     setSelectedGame(
       game,
     )
@@ -220,40 +330,6 @@ function CollectionView({
     games,
     initialGameBggId,
     onInitialGameHandled,
-  ])
-
-
-  useEffect(() => {
-    if (
-      selectedGame !== null
-    ) {
-      return
-    }
-
-    requestAnimationFrame(() => {
-      const scrollContainer =
-        getScrollContainer()
-
-      if (scrollContainer) {
-        scrollContainer.scrollTo({
-          top:
-            savedScrollPosition.current,
-          behavior:
-            "instant",
-        })
-
-        return
-      }
-
-      window.scrollTo({
-        top:
-          savedScrollPosition.current,
-        behavior:
-          "instant",
-      })
-    })
-  }, [
-    selectedGame,
   ])
 
 
@@ -512,12 +588,29 @@ function CollectionView({
     ])
 
 
+  useLayoutEffect(() => {
+    if (
+      section === "owned"
+      && !loading
+      && !selectedGame
+    ) {
+      restoreScrollPosition(
+        "owned",
+      )
+    }
+  }, [
+    filteredGames.length,
+    loading,
+    restoreScrollPosition,
+    section,
+    selectedGame,
+  ])
+
+
   function openGame(
     game: Game,
   ) {
-    savedScrollPosition.current =
-      getScrollContainer()?.scrollTop
-      ?? window.scrollY
+    saveScrollPosition()
 
     setSelectedGame(
       game,
@@ -526,6 +619,8 @@ function CollectionView({
 
 
   function closeGame() {
+    pendingScrollRestore.current = true
+
     setSelectedGame(
       null,
     )
@@ -583,7 +678,13 @@ function CollectionView({
         </header>
 
         {sectionTabs}
-        <WishlistView />
+        <WishlistView
+          onContentReady={() =>
+            restoreScrollPosition(
+              "wishlist",
+            )
+          }
+        />
       </section>
     )
   }
@@ -729,13 +830,31 @@ function CollectionView({
           filteredGames.length
         }
         onSearchChange={
-          setSearch
+          (value) =>
+            onUiStateChange(
+              (current) => ({
+                ...current,
+                search: value,
+              }),
+            )
         }
         onSortChange={
-          setSort
+          (value) =>
+            onUiStateChange(
+              (current) => ({
+                ...current,
+                sort: value,
+              }),
+            )
         }
         onPlayFilterChange={
-          setPlayFilter
+          (value) =>
+            onUiStateChange(
+              (current) => ({
+                ...current,
+                playFilter: value,
+              }),
+            )
         }
       />
 
