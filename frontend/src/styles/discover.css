@@ -145,3 +145,26 @@
     font-size: 0.88rem;
   }
 }
+
+.discover-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.discover-actions .ghost-button,
+.wishlist-button {
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.wishlist-button.saved {
+  color: var(--ink);
+  background: var(--gold);
+}
+
+.wishlist-button:disabled {
+  opacity: 0.65;
+  cursor: default;
+}

@@ -29,6 +29,9 @@ import CollectionGameList
 import GameDetail
   from "./collection/GameDetail"
 
+import WishlistView
+  from "./WishlistView"
+
 type Props = {
   initialGameBggId:
     number | null
@@ -41,6 +44,12 @@ function CollectionView({
   initialGameBggId,
   onInitialGameHandled,
 }: Props) {
+  const [
+    section,
+    setSection,
+  ] = useState<"owned" | "wishlist">(
+    "owned",
+  )
   const [
     games,
     setGames,
@@ -108,6 +117,25 @@ function CollectionView({
 
   const savedScrollPosition =
     useRef(0)
+
+  const sectionTabs = (
+    <div className="collection-section-tabs">
+      <button
+        type="button"
+        className={section === "owned" ? "active" : ""}
+        onClick={() => setSection("owned")}
+      >
+        Owned
+      </button>
+      <button
+        type="button"
+        className={section === "wishlist" ? "active" : ""}
+        onClick={() => setSection("wishlist")}
+      >
+        Want to Play
+      </button>
+    </div>
+  )
 
 
   useEffect(() => {
@@ -512,6 +540,26 @@ function CollectionView({
   }
 
 
+  if (section === "wishlist") {
+    return (
+      <section className="screen collection-screen">
+        <header>
+          <p className="eyebrow">
+            Your collection
+          </p>
+          <h1>Want to Play</h1>
+          <p className="subtitle">
+            Games you have saved for later.
+          </p>
+        </header>
+
+        {sectionTabs}
+        <WishlistView />
+      </section>
+    )
+  }
+
+
   if (loading) {
     return (
       <section className="screen collection-screen">
@@ -590,6 +638,8 @@ function CollectionView({
           your shelf.
         </p>
       </header>
+
+      {sectionTabs}
 
       <button
         type="button"

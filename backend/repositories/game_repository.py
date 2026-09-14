@@ -5,6 +5,7 @@ from database.models import Game as DatabaseGame
 from database.models import Mechanic
 from models.game import Game as DomainGame
 from database.models import UserGame
+from database.models import UserWishlistGame
 
 
 class GameRepository:
@@ -127,6 +128,123 @@ class GameRepository:
             )
             .filter(
                 UserGame.user_id == user_id,
+                DatabaseGame.bgg_id == bgg_id,
+            )
+            .first()
+        )
+
+        if membership is None:
+            return False
+
+        self.db.delete(membership)
+        self.db.commit()
+
+        return True
+
+    def get_wishlist_by_user(
+        self,
+        user_id: int,
+    ) -> list[DomainGame]:
+        database_games = (
+            self.db.query(DatabaseGame)
+            .join(
+                UserWishlistGame,
+                UserWishlistGame.game_id
+                == DatabaseGame.id,
+            )
+            .filter(
+                UserWishlistGame.user_id
+                == user_id
+            )
+            .order_by(
+                UserWishlistGame.added_at.desc()
+            )
+            .all()
+        )
+
+        return [
+            self._to_domain(game)
+            for game in database_games
+        ]
+
+    def get_wishlisted_bgg_ids(
+        self,
+        user_id: int,
+    ) -> set[int]:
+        rows = (
+            self.db.query(DatabaseGame.bgg_id)
+            .join(
+                UserWishlistGame,
+                UserWishlistGame.game_id
+                == DatabaseGame.id,
+            )
+            .filter(
+                UserWishlistGame.user_id
+                == user_id
+            )
+            .all()
+        )
+
+        return {
+            row[0]
+            for row in rows
+        }
+
+    def add_to_wishlist(
+        self,
+        user_id: int,
+        bgg_id: int,
+    ) -> bool:
+        database_game = (
+            self.db.query(DatabaseGame)
+            .filter(
+                DatabaseGame.bgg_id == bgg_id
+            )
+            .first()
+        )
+
+        if database_game is None:
+            return False
+
+        existing = (
+            self.db.query(UserWishlistGame)
+            .filter(
+                UserWishlistGame.user_id
+                == user_id,
+                UserWishlistGame.game_id
+                == database_game.id,
+            )
+            .first()
+        )
+
+        if existing is not None:
+            return True
+
+        self.db.add(
+            UserWishlistGame(
+                user_id=user_id,
+                game_id=database_game.id,
+            )
+        )
+        self.db.commit()
+
+        return True
+
+    def remove_from_wishlist(
+        self,
+        user_id: int,
+        bgg_id: int,
+    ) -> bool:
+        membership = (
+            self.db.query(UserWishlistGame)
+            .join(
+                DatabaseGame,
+                DatabaseGame.id
+                == UserWishlistGame.game_id,
+            )
+            .filter(
+                UserWishlistGame.user_id
+                == user_id,
                 DatabaseGame.bgg_id == bgg_id,
             )
             .first()

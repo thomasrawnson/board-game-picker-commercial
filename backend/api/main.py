@@ -20,6 +20,7 @@ from api.routers import (
     insights,
     picker,
     plays,
+    wishlist,
 )
 
 from logging_config import (
@@ -104,4 +105,8 @@ app.include_router(
 
 app.include_router(
     discover.router
+)
+
+app.include_router(
+    wishlist.router
 )

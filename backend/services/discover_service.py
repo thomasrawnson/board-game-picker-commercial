@@ -4,11 +4,11 @@ from bgg.client import BGGClient
 from bgg.game_parser import (
     parse_games_metadata,
 )
-from bgg.hot_parser import (
-    parse_hot_game_ids,
-)
 from repositories.game_repository import (
     GameRepository,
+)
+from services.discover_sources import (
+    DiscoverCandidateProvider,
 )
 
 
@@ -17,10 +17,12 @@ class DiscoverService:
         self,
         repository: GameRepository,
         bgg_client: BGGClient,
+        candidate_provider: DiscoverCandidateProvider,
         user_id: int,
     ):
         self.repository = repository
         self.bgg_client = bgg_client
+        self.candidate_provider = candidate_provider
         self.user_id = user_id
 
 
@@ -56,23 +58,15 @@ class DiscoverService:
             )
         )
 
-        hot_xml = (
-            self.bgg_client
-            .get_hot_games()
-        )
-
-        hot_ids = (
-            parse_hot_game_ids(
-                hot_xml
-            )
-        )
+        source_candidates = (
+            self.candidate_provider
+            .get_candidates(owned_bgg_ids)
+        )[:30]
 
         candidate_ids = [
-            bgg_id
-            for bgg_id in hot_ids
-            if bgg_id
-            not in owned_bgg_ids
-        ][:30]
+            candidate.bgg_id
+            for candidate in source_candidates
+        ]
 
         if not candidate_ids:
             return []
@@ -101,11 +95,24 @@ class DiscoverService:
                 )
             )
 
+        source_by_bgg_id = {
+            candidate.bgg_id: candidate
+            for candidate in source_candidates
+        }
+        wishlisted_ids = (
+            self.repository
+            .get_wishlisted_bgg_ids(
+                self.user_id
+            )
+        )
         recommendations = []
 
         for game in candidates:
             score = 0.0
             reasons: list[str] = []
+            source = source_by_bgg_id[
+                game.bgg_id
+            ]
 
             category_matches = [
                 category
@@ -182,6 +189,26 @@ class DiscoverService:
                     / 2
                 )
 
+            if source.sources == {
+                "hot",
+                "ranked",
+            }:
+                score += 0.5
+                reasons.append(
+                    "Both currently hot and "
+                    "highly ranked on BoardGameGeek"
+                )
+            elif "hot" in source.sources:
+                score += 0.2
+                reasons.append(
+                    "Currently hot on BoardGameGeek"
+                )
+            elif "ranked" in source.sources:
+                score += 0.2
+                reasons.append(
+                    "Highly ranked on BoardGameGeek"
+                )
+
             if not reasons:
                 reasons.append(
                      "Currently popular on BoardGameGeek"
@@ -195,6 +222,10 @@ class DiscoverService:
                         2,
                     ),
                     "reasons": reasons,
+                    "wishlisted": (
+                        game.bgg_id
+                        in wishlisted_ids
+                    ),
                 }
             )
 

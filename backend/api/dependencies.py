@@ -17,6 +17,12 @@ from services.play_service import PlayService
 from services.discover_service import (
     DiscoverService,
 )
+from services.discover_sources import (
+    DiscoverCandidateProvider,
+    HotDiscoverSource,
+    RankedDiscoverSource,
+)
+from services.wishlist_service import WishlistService
 
 def get_game_service(
     db: Session = Depends(get_db),
@@ -96,10 +102,31 @@ def get_discover_service(
         get_db
     ),
 ) -> DiscoverService:
+    bgg_client = BGGClient()
+
     return DiscoverService(
-        repository=GameRepository(
-            db
+        repository=GameRepository(db),
+        bgg_client=bgg_client,
+        candidate_provider=(
+            DiscoverCandidateProvider(
+                sources=[
+                    HotDiscoverSource(bgg_client),
+                    RankedDiscoverSource(bgg_client),
+                ]
+            )
         ),
+        user_id=current_user.id,
+    )
+
+
+def get_wishlist_service(
+    current_user: User = Depends(
+        get_current_user
+    ),
+    db: Session = Depends(get_db),
+) -> WishlistService:
+    return WishlistService(
+        repository=GameRepository(db),
         bgg_client=BGGClient(),
         user_id=current_user.id,
     )

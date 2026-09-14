@@ -117,6 +117,13 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    wishlist_games = relationship(
+        "UserWishlistGame",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
     players = relationship(
         "Player",
         back_populates="user",
@@ -217,6 +224,44 @@ class UserGame(Base):
         "Game",
         back_populates="user_games",
     )
+
+
+class UserWishlistGame(Base):
+    __tablename__ = "user_wishlist_games"
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+        primary_key=True,
+    )
+
+    game_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "games.id",
+            ondelete="CASCADE",
+        ),
+        primary_key=True,
+    )
+
+    added_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+
+    user = relationship(
+        "User",
+        back_populates="wishlist_games",
+    )
+
+    game = relationship(
+        "Game",
+        back_populates="wishlist_users",
+    )
+
+
 class Game(Base):
     __tablename__ = "games"
 
@@ -308,6 +353,13 @@ class Game(Base):
         "UserGame",
         back_populates="game",
         cascade="all, delete-orphan",
+    )
+
+    wishlist_users = relationship(
+        "UserWishlistGame",
+        back_populates="game",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
 
 class Player(Base):

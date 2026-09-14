@@ -4,7 +4,9 @@ import {
 } from "react"
 
 import {
+  addToWishlist,
   getDiscoverRecommendations,
+  removeFromWishlist,
   type DiscoverRecommendation,
 } from "../api/client"
 
@@ -29,6 +31,18 @@ function DiscoverView() {
     setError,
   ] =
     useState("")
+
+  const [
+    updatingIds,
+    setUpdatingIds,
+  ] = useState<Set<number>>(
+    new Set(),
+  )
+
+  const [
+    actionError,
+    setActionError,
+  ] = useState("")
 
 
   useEffect(() => {
@@ -71,6 +85,59 @@ function DiscoverView() {
   }, [])
 
 
+  async function toggleWishlist(
+    recommendation: DiscoverRecommendation,
+  ) {
+    const bggId = recommendation.game.bgg_id
+    const wasWishlisted = recommendation.wishlisted
+
+    setActionError("")
+    setUpdatingIds(
+      (current) => new Set(current).add(bggId),
+    )
+    setRecommendations(
+      (current) => current.map(
+        (item) => item.game.bgg_id === bggId
+          ? {
+              ...item,
+              wishlisted: !wasWishlisted,
+            }
+          : item,
+      ),
+    )
+
+    try {
+      if (wasWishlisted) {
+        await removeFromWishlist(bggId)
+      } else {
+        await addToWishlist(bggId)
+      }
+    } catch (err) {
+      setRecommendations(
+        (current) => current.map(
+          (item) => item.game.bgg_id === bggId
+            ? {
+                ...item,
+                wishlisted: wasWishlisted,
+              }
+            : item,
+        ),
+      )
+      setActionError(
+        err instanceof Error
+          ? err.message
+          : "Couldn't update your Want to Play list.",
+      )
+    } finally {
+      setUpdatingIds((current) => {
+        const next = new Set(current)
+        next.delete(bggId)
+        return next
+      })
+    }
+  }
+
+
   return (
     <section className="screen discover-screen">
       <header>
@@ -103,6 +170,12 @@ function DiscoverView() {
         </p>
       )}
 
+      {actionError && (
+        <p className="error-message">
+          {actionError}
+        </p>
+      )}
+
 
       {!loading &&
         !error &&
@@ -123,10 +196,14 @@ function DiscoverView() {
 
       <div className="discover-list">
         {recommendations.map(
-          ({
-            game,
-            reasons,
-          }) => (
+          (recommendation) => {
+            const {
+              game,
+              reasons,
+              wishlisted,
+            } = recommendation
+
+            return (
             <article
               key={game.bgg_id}
               className="discover-card"
@@ -171,19 +248,41 @@ function DiscoverView() {
                         )}
                 </ul>
 
-                <a
-                  className="ghost-button"
-                  href={
-                    `https://boardgamegeek.com/boardgame/${game.bgg_id}`
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View on BGG
-                </a>
+                <div className="discover-actions">
+                  <button
+                    type="button"
+                    className={
+                      wishlisted
+                        ? "primary-button wishlist-button saved"
+                        : "primary-button wishlist-button"
+                    }
+                    disabled={
+                      updatingIds.has(game.bgg_id)
+                    }
+                    onClick={() =>
+                      toggleWishlist(recommendation)
+                    }
+                  >
+                    {wishlisted
+                      ? "Saved to Want to Play"
+                      : "Want to Play"}
+                  </button>
+
+                  <a
+                    className="ghost-button"
+                    href={
+                      `https://boardgamegeek.com/boardgame/${game.bgg_id}`
+                    }
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View on BGG
+                  </a>
+                </div>
               </div>
             </article>
-          ),
+            )
+          },
         )}
       </div>
     </section>

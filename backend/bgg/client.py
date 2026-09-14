@@ -3,8 +3,6 @@ import time
 
 import httpx
 from dotenv import load_dotenv
-
-
 load_dotenv()
 
 
@@ -120,6 +118,26 @@ class BGGClient:
             url,
             params,
             "BGG hot games request",
+        )
+
+    def get_ranked_games_page(
+        self,
+        page: int,
+    ) -> str:
+        url = (
+            "https://boardgamegeek.com/"
+            "browse/boardgame"
+        )
+
+        params = {
+            "sort": "rank",
+            "page": page,
+        }
+
+        return self._get(
+            url,
+            params,
+            "BGG ranked games request",
         )
     
     def search_games(
@@ -254,6 +272,3 @@ class BGGClient:
             seconds: float,
         ) -> None:
             time.sleep(seconds)
-
-
-        

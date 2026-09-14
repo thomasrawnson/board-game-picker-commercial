@@ -236,6 +236,7 @@ export interface DiscoverRecommendation {
   game: Game
   score: number
   reasons: string[]
+  wishlisted: boolean
 }
 
 export interface BGGSearchResult {
@@ -788,6 +789,69 @@ Promise<DiscoverRecommendation[]> {
   }
 
   return response.json()
+}
+
+
+export async function getWishlist():
+Promise<Game[]> {
+  const response = await apiFetch(
+    "/wishlist",
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't load your Want to Play list.",
+      ),
+    )
+  }
+
+  return response.json()
+}
+
+
+export async function addToWishlist(
+  bggId: number,
+): Promise<Game> {
+  const response = await apiFetch(
+    `/wishlist/${bggId}`,
+    {
+      method: "POST",
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't save that game.",
+      ),
+    )
+  }
+
+  return response.json()
+}
+
+
+export async function removeFromWishlist(
+  bggId: number,
+): Promise<void> {
+  const response = await apiFetch(
+    `/wishlist/${bggId}`,
+    {
+      method: "DELETE",
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't remove that game.",
+      ),
+    )
+  }
 }
 
 export async function searchBGGGames(

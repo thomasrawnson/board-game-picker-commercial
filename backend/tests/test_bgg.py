@@ -459,3 +459,35 @@ def test_get_games_handles_empty_list(
 
     assert result == "<items />"
     assert called is False
+
+
+def test_get_ranked_games_requests_browse_page(
+    monkeypatch,
+):
+    requested = {}
+
+    def mock_get(
+        url,
+        params,
+        headers,
+        timeout,
+    ):
+        requested["url"] = url
+        requested["params"] = params
+        return httpx.Response(
+            200,
+            request=httpx.Request("GET", url),
+            text="<html />",
+        )
+
+    monkeypatch.setattr(httpx, "get", mock_get)
+
+    BGGClient().get_ranked_games_page(3)
+
+    assert requested["url"] == (
+        "https://boardgamegeek.com/browse/boardgame"
+    )
+    assert requested["params"] == {
+        "sort": "rank",
+        "page": 3,
+    }
