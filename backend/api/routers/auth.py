@@ -31,8 +31,11 @@ from auth.security import (
 from database.connection import get_db
 from database.models import User
 from auth.login_rate_limiter import (
+    AUTH_REQUEST_WINDOW_SECONDS,
     LOGIN_WINDOW_SECONDS,
     login_rate_limiter,
+    password_reset_request_rate_limiter,
+    verification_request_rate_limiter,
 )
 from datetime import (
     datetime,
@@ -350,11 +353,43 @@ def complete_onboarding(
     response_model=MessageResponse,
 )
 def request_verification(
+    request: Request,
     current_user: User = Depends(
         get_current_user
     ),
     db: Session = Depends(get_db),
 ):
+    rate_limit_key = (
+        login_rate_limit_key(
+            request,
+            str(current_user.id),
+        )
+    )
+
+    if (
+        verification_request_rate_limiter
+        .is_limited(rate_limit_key)
+    ):
+        raise HTTPException(
+            status_code=(
+                status.HTTP_429_TOO_MANY_REQUESTS
+            ),
+            detail=(
+                "Too many verification "
+                "requests. Please try "
+                "again later."
+            ),
+            headers={
+                "Retry-After": str(
+                    AUTH_REQUEST_WINDOW_SECONDS
+                ),
+            },
+        )
+
+    verification_request_rate_limiter.record_request(
+        rate_limit_key
+    )
+
     if (
         current_user.email_verified_at
         is not None
@@ -460,12 +495,44 @@ def confirm_verification(
 )
 def request_password_reset(
     request: EmailRequest,
+    http_request: Request,
     db: Session = Depends(get_db),
 ):
     email = (
         request.email
         .strip()
         .lower()
+    )
+
+    rate_limit_key = (
+        login_rate_limit_key(
+            http_request,
+            email,
+        )
+    )
+
+    if (
+        password_reset_request_rate_limiter
+        .is_limited(rate_limit_key)
+    ):
+        raise HTTPException(
+            status_code=(
+                status.HTTP_429_TOO_MANY_REQUESTS
+            ),
+            detail=(
+                "Too many password reset "
+                "requests. Please try "
+                "again later."
+            ),
+            headers={
+                "Retry-After": str(
+                    AUTH_REQUEST_WINDOW_SECONDS
+                ),
+            },
+        )
+
+    password_reset_request_rate_limiter.record_request(
+        rate_limit_key
     )
 
     user = (

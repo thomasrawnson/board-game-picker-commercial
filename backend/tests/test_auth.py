@@ -36,6 +36,8 @@ from api.dependencies import (
 
 from auth.login_rate_limiter import (
     login_rate_limiter,
+    password_reset_request_rate_limiter,
+    verification_request_rate_limiter,
 )
 
 engine = create_engine(
@@ -56,6 +58,8 @@ TestingSessionLocal = sessionmaker(
 @pytest.fixture(autouse=True)
 def test_database():
     login_rate_limiter.clear()
+    password_reset_request_rate_limiter.clear()
+    verification_request_rate_limiter.clear()
 
     Base.metadata.create_all(
         bind=engine
@@ -68,6 +72,8 @@ def test_database():
     )
 
     login_rate_limiter.clear()
+    password_reset_request_rate_limiter.clear()
+    verification_request_rate_limiter.clear()
 
 
 @pytest.fixture
@@ -106,6 +112,42 @@ def register_user(
     )
 
 
+def capture_sent_emails(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    sent_emails = []
+
+    def fake_send_email(
+        to_email: str,
+        subject: str,
+        html: str,
+    ):
+        sent_emails.append(
+            {
+                "to_email": to_email,
+                "subject": subject,
+                "html": html,
+            }
+        )
+
+    monkeypatch.setattr(
+        "api.routers.auth.send_email",
+        fake_send_email,
+    )
+
+    return sent_emails
+
+
+def token_from_email(
+    email: dict[str, str],
+) -> str:
+    return (
+        email["html"]
+        .split("token=", 1)[1]
+        .split('"', 1)[0]
+    )
+
+
 def test_register_returns_token_and_user(
     client: TestClient,
 ):
@@ -132,6 +174,178 @@ def test_register_returns_token_and_user(
         data["user"]["bgg_username"]
         is None
     )
+
+    assert (
+        data["user"]["email_verified"]
+        is False
+    )
+
+
+def test_valid_verification_token_verifies_user_once(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    sent_emails = capture_sent_emails(
+        monkeypatch
+    )
+
+    registration = register_user(client)
+    access_token = registration.json()[
+        "access_token"
+    ]
+    verification_token = token_from_email(
+        sent_emails[-1]
+    )
+
+    response = client.post(
+        "/auth/verification/confirm",
+        json={
+            "token": verification_token,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "message": "Email verified"
+    }
+
+    me_response = client.get(
+        "/auth/me",
+        headers={
+            "Authorization": (
+                f"Bearer {access_token}"
+            ),
+        },
+    )
+
+    assert (
+        me_response.json()[
+            "email_verified"
+        ]
+        is True
+    )
+
+    reused = client.post(
+        "/auth/verification/confirm",
+        json={
+            "token": verification_token,
+        },
+    )
+
+    assert reused.status_code == 400
+
+
+def test_invalid_verification_token_returns_400(
+    client: TestClient,
+):
+    response = client.post(
+        "/auth/verification/confirm",
+        json={
+            "token": "not-a-valid-token",
+        },
+    )
+
+    assert response.status_code == 400
+
+
+def test_password_reset_request_is_generic(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    capture_sent_emails(monkeypatch)
+    register_user(client)
+
+    existing = client.post(
+        "/auth/password-reset/request",
+        json={
+            "email": "tom@example.com",
+        },
+    )
+    missing = client.post(
+        "/auth/password-reset/request",
+        json={
+            "email": "missing@example.com",
+        },
+    )
+
+    assert existing.status_code == 200
+    assert missing.status_code == 200
+    assert existing.json() == missing.json()
+
+
+def test_valid_password_reset_token_changes_password_once(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    sent_emails = capture_sent_emails(
+        monkeypatch
+    )
+    register_user(client)
+
+    request_response = client.post(
+        "/auth/password-reset/request",
+        json={
+            "email": "tom@example.com",
+        },
+    )
+
+    assert request_response.status_code == 200
+
+    reset_token = token_from_email(
+        sent_emails[-1]
+    )
+
+    response = client.post(
+        "/auth/password-reset/confirm",
+        json={
+            "token": reset_token,
+            "password": "new-password123",
+        },
+    )
+
+    assert response.status_code == 200
+
+    old_login = client.post(
+        "/auth/login",
+        json={
+            "email": "tom@example.com",
+            "password": "password123",
+        },
+    )
+    new_login = client.post(
+        "/auth/login",
+        json={
+            "email": "tom@example.com",
+            "password": "new-password123",
+        },
+    )
+
+    assert old_login.status_code == 401
+    assert new_login.status_code == 200
+
+    reused = client.post(
+        "/auth/password-reset/confirm",
+        json={
+            "token": reset_token,
+            "password": "another-password123",
+        },
+    )
+
+    assert reused.status_code == 400
+
+
+def test_invalid_password_reset_token_returns_400(
+    client: TestClient,
+):
+    response = client.post(
+        "/auth/password-reset/confirm",
+        json={
+            "token": "not-a-valid-token",
+            "password": "new-password123",
+        },
+    )
+
+    assert response.status_code == 400
 
 def test_duplicate_registration_returns_409(
     client: TestClient,
@@ -535,6 +749,68 @@ def test_login_rate_limits_failed_attempts(
         ]
         == "900"
     )
+
+
+def test_verification_requests_are_rate_limited(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    capture_sent_emails(monkeypatch)
+    registration = register_user(client)
+    access_token = registration.json()[
+        "access_token"
+    ]
+    headers = {
+        "Authorization": (
+            f"Bearer {access_token}"
+        ),
+    }
+
+    for _ in range(5):
+        response = client.post(
+            "/auth/verification/request",
+            headers=headers,
+        )
+
+        assert response.status_code == 200
+
+    blocked = client.post(
+        "/auth/verification/request",
+        headers=headers,
+    )
+
+    assert blocked.status_code == 429
+    assert blocked.headers[
+        "retry-after"
+    ] == "900"
+
+
+def test_password_reset_requests_are_rate_limited(
+    client: TestClient,
+):
+    for _ in range(5):
+        response = client.post(
+            "/auth/password-reset/request",
+            json={
+                "email": (
+                    "missing@example.com"
+                ),
+            },
+        )
+
+        assert response.status_code == 200
+
+    blocked = client.post(
+        "/auth/password-reset/request",
+        json={
+            "email": "missing@example.com",
+        },
+    )
+
+    assert blocked.status_code == 429
+    assert blocked.headers[
+        "retry-after"
+    ] == "900"
 
 
 def test_successful_login_resets_rate_limit(

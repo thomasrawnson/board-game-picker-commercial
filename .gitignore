@@ -28,3 +28,6 @@ data/BGStatsExport.json
 
 # Local test credentials
 docs/test-users.local.md
+
+# Backup files
+*.backup

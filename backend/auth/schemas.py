@@ -62,25 +62,3 @@ class ResetPasswordRequest(
 class MessageResponse(BaseModel):
     message: str
 
-class EmailRequest(BaseModel):
-    email: EmailStr
-
-
-class TokenRequest(BaseModel):
-    token: str = Field(
-        min_length=1,
-        max_length=512,
-    )
-
-
-class ResetPasswordRequest(
-    TokenRequest
-):
-    password: str = Field(
-        min_length=8,
-        max_length=128,
-    )
-
-
-class MessageResponse(BaseModel):
-    message: str
