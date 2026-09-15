@@ -424,6 +424,11 @@ class Play(Base):
                 "uq_plays_user_source_play_id"
             ),
         ),
+        Index(
+            "ix_plays_user_id_played_at",
+            "user_id",
+            "played_at",
+        ),
     )
 
     id: Mapped[int] = mapped_column(

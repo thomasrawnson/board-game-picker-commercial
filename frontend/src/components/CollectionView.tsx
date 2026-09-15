@@ -132,7 +132,7 @@ function CollectionView({
   const [
     historyLoading,
     setHistoryLoading,
-  ] = useState(false)
+  ] = useState(true)
 
   const [
     loading,
@@ -169,6 +169,20 @@ function CollectionView({
             game.bgg_id
             === gameBggId,
         ) ?? null
+
+  const selectedGameHistory =
+    selectedGame
+    && gameHistory?.bgg_id
+      === selectedGame.bgg_id
+      ? gameHistory
+      : null
+
+  const selectedGameHistoryLoading =
+    historyLoading
+    || (
+      gameHistory !== null
+      && selectedGameHistory === null
+    )
 
 
   useLayoutEffect(() => {
@@ -411,8 +425,6 @@ function CollectionView({
   async function refreshHistory(
     game: Game,
   ) {
-    setHistoryLoading(true)
-
     try {
       const history =
         await getGameHistory(
@@ -469,13 +481,73 @@ function CollectionView({
 
   useEffect(() => {
     if (!selectedGame) {
-      setGameHistory(null)
       return
     }
 
-    refreshHistory(
-      selectedGame,
+    let active = true
+
+    getGameHistory(
+      selectedGame.bgg_id,
     )
+      .then((history) => {
+        if (!active) {
+          return
+        }
+
+        setGameHistory(history)
+
+        setCollectionStats(
+          (current) => {
+            const updated = {
+              bgg_id:
+                selectedGame.bgg_id,
+              play_count:
+                history.play_count,
+              last_played_at:
+                history.last_played_at,
+            }
+
+            const exists =
+              current.some(
+                (stats) =>
+                  stats.bgg_id
+                  === selectedGame.bgg_id,
+              )
+
+            if (!exists) {
+              return [
+                ...current,
+                updated,
+              ]
+            }
+
+            return current.map(
+              (stats) =>
+                stats.bgg_id
+                === selectedGame.bgg_id
+                  ? updated
+                  : stats,
+            )
+          },
+        )
+      })
+      .catch((err) => {
+        if (!active) {
+          return
+        }
+
+        console.error(err)
+        setGameHistory(null)
+      })
+      .finally(() => {
+        if (active) {
+          setHistoryLoading(false)
+        }
+      })
+
+    return () => {
+      active = false
+    }
   }, [
     selectedGame,
   ])
@@ -686,6 +758,7 @@ function CollectionView({
     game: Game,
   ) {
     saveScrollPosition()
+    setHistoryLoading(true)
 
     onOpenGame(
       game.bgg_id,
@@ -818,19 +891,21 @@ function CollectionView({
           selectedGame
         }
         history={
-          gameHistory
+          selectedGameHistory
         }
         historyLoading={
-          historyLoading
+          selectedGameHistoryLoading
         }
         onBack={
           closeGame
         }
-        onPlaySaved={() =>
-          refreshHistory(
+        onPlaySaved={() => {
+          setHistoryLoading(true)
+
+          return refreshHistory(
             selectedGame,
           )
-        }
+        }}
         onRemove={
           removeGame
         }

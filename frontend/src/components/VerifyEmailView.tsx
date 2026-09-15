@@ -9,24 +9,28 @@ import {
 
 
 function VerifyEmailView() {
+  const token =
+    new URLSearchParams(
+      window.location.search,
+    ).get("token")
+
   const [message, setMessage] =
-    useState("Verifying your email...")
+    useState(
+      token
+        ? "Verifying your email..."
+        : "",
+    )
 
   const [error, setError] =
-    useState("")
+    useState(
+      token
+        ? ""
+        : "Invalid verification link",
+    )
 
 
   useEffect(() => {
-    const token =
-      new URLSearchParams(
-        window.location.search,
-      ).get("token")
-
     if (!token) {
-      setMessage("")
-      setError(
-        "Invalid verification link",
-      )
       return
     }
 
@@ -44,7 +48,7 @@ function VerifyEmailView() {
             : "Verification failed",
         )
       })
-  }, [])
+  }, [token])
 
 
   return (

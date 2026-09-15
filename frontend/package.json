@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "check:pwa": "node scripts/check-pwa-assets.mjs",
     "lint": "eslint .",
     "test": "node --test src/routes.test.ts",
     "preview": "vite preview"

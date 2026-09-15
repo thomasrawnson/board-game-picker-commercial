@@ -295,6 +295,21 @@ Check that SQLAlchemy models and Alembic migrations remain aligned:
 alembic check
 ```
 
+From `frontend`, run the routing tests, lint, production build and generated
+PWA asset check:
+
+```bash
+npm test
+npm run lint
+npm run build
+npm run check:pwa
+```
+
+GitHub Actions runs these frontend checks and the complete backend suite on
+every push and pull request. Its PostgreSQL 16 service starts empty, so the CI
+backend job also proves that the full Alembic migration history upgrades a
+clean database and remains aligned with the SQLAlchemy models.
+
 ## Local development
 
 ### Prerequisites
