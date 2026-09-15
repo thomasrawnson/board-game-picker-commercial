@@ -4,13 +4,13 @@ Board Game Picker is a mobile-first application for answering a familiar game-ni
 
 The application imports a board game collection, stores game and play-history data in PostgreSQL, and recommends suitable games based on player count, available play time, complexity and recent play history.
 
-The longer-term product direction expands the picker into a broader board-game collection, session-tracking and analytics application, while keeping the picker and collection experience at its core.
+The product is being developed as a decision engine for people with growing board game collections. Collection management, play logging and discovery support the central goal: making a useful, explainable game-night choice.
 
 It is also being developed as a data-engineering portfolio project, with an emphasis on ingestion, transformation, relational modelling, API design, testing and explainable recommendation logic.
 
 ## Current progress
 
-Board Game Picker now has a working end-to-end application flow covering collection ingestion, recommendation, play tracking and collection analytics.
+Board Game Picker now has a working end-to-end application flow covering account onboarding, collection ingestion, recommendation, discovery, play tracking and collection analytics.
 
 Currently implemented:
 
@@ -22,6 +22,7 @@ Currently implemented:
 - Alembic database migrations
 - layered API, service and repository architecture
 - user accounts with registration, login and JWT-based authentication
+- email verification and password-reset flows
 - Argon2 password hashing (pwdlib) and PyJWT-signed access tokens
 - per-user data isolation across collection, plays and insights
 - BoardGameGeek XML API client and parsers
@@ -42,13 +43,20 @@ Currently implemented:
 - collection resynchronisation that reconciles additions and removals against the current BoardGameGeek collection
 - collection-insights API and React dashboard
 - PostgreSQL aggregate queries for most played, last played and never played games
+- Discover recommendations drawn from BoardGameGeek hot and ranked sources
+- fail-open handling, caching and cooldown behaviour for unavailable discovery sources
+- per-user Want to Play lists with add, remove, detail and move-to-collection flows
+- route-aware navigation and refresh-safe Collection and Want to Play detail pages
+- GitHub Actions quality gates for migrations, backend tests and frontend validation
+- Render Blueprint configuration for the PWA, API and managed PostgreSQL database
+- Resend integration for production verification and password-reset email
 - automated tests across parsers, repositories, services and API endpoints
 
-Development currently uses a BG Stats export as the primary source for collection and historical play data. BoardGameGeek integration is also available for collection and metadata synchronisation.
+BoardGameGeek is the primary source for collection and metadata synchronisation. BG Stats exports provide historical play data and can also be processed by the collection-ingestion service.
 
 ## Product direction
 
-The picker remains the main entry point, but the application is intended to grow around four connected areas:
+The picker remains the main entry point, but the application is intended to grow around five connected areas:
 
 ### Pick
 
@@ -65,6 +73,17 @@ The picker remains the main entry point, but the application is intended to grow
 - import and synchronise games from BoardGameGeek, including removing games that are no longer owned on a resync
 - add games manually
 - category and mechanic metadata is persisted; designers and publishers are not yet retained
+
+### Discover
+
+- combine BoardGameGeek hot and ranked candidates without duplicating games
+- exclude games already owned by the current user
+- rank candidates using category and mechanic overlap with the owned collection
+- explain whether a result is currently popular, highly ranked or similar to owned games
+- save a recommendation to a per-user Want to Play list
+- review a saved game's details, remove it or move it into the owned collection
+
+Discover currently uses ownership as an initial preference signal. Explicit favourites, dismissals and preference controls are intentionally deferred until closed-alpha feedback shows which signals are most useful.
 
 ### Play
 
@@ -181,7 +200,7 @@ Historical plays are also idempotent: imported play UUIDs are stored with their 
 
 Data also flows in the other direction for plays logged directly in the app: a one-tap link builds a BG Stats-compatible payload client-side and hands it to the BG Stats app, so a session recorded here doesn't have to be re-entered there.
 
-A future import screen is intended to provide explicit choices for **BG Stats**, **BoardGameGeek**, and **manual game entry** rather than tying collection management to a single source.
+Onboarding supports BoardGameGeek collection synchronisation and BG Stats historical-play import. Games can also be added individually through collection search, so collection management is not tied to a single source.
 
 ## Recommendation engine
 
@@ -254,14 +273,15 @@ The reusable player identities introduced for play recording provide the foundat
 
 ### Planned / next
 
-- player-based insights (win rate, head-to-head, most-played-together) built on the existing player identities
-- expanded play and collection analytics
-- designer and publisher persistence
-- multi-source import UI and manual game entry
-- personal ranking and preference signals
-- similar-game discovery
 - production observability and feedback capture
-- AI-assisted natural-language game filtering
+- privacy information, account deletion and essential product events
+- production smoke testing, backup/restore rehearsal and rollback verification
+- closed-alpha testing with 3–5 users
+- explicit Discover preferences, favourites and Not Interested signals after alpha feedback
+- recommendation-engine refinement based on observed user behaviour
+- player-based insights and expanded play and collection analytics
+- designer and publisher persistence
+- AI-assisted natural-language filtering only where it adds clear value
 
 ## Testing
 
@@ -278,7 +298,10 @@ The test suite covers areas including:
 - repository CRUD operations
 - service-layer behaviour
 - recommendation scoring
+- Discover source handling and wishlist behaviour
 - collection insights
+- authentication, verification and password recovery
+- production configuration and transactional-email behaviour
 - FastAPI endpoints
 
 External dependencies are replaced with fakes, mocks or dependency overrides where appropriate so individual application layers can be tested independently.
@@ -396,21 +419,19 @@ backup/restore rehearsal and rollback.
 
 ## Roadmap
 
-Development is organised so new product features also strengthen the underlying engineering and data model.
+Development is currently organised around reaching a small closed alpha before expanding the recommendation engine.
 
-1. **Recommendation refinement** — complete and validate play-history-aware scoring against real historical data.
-2. ~~Players and game sessions~~ — done: `players` and `play_participants` are implemented with Alembic migrations, a backfill migration for existing data, and repository/service coverage.
-3. ~~Rich play recording~~ — done: the application records participants, winners and scores, with reusable player identities and autocomplete.
-4. ~~Historical participant ingestion~~ — done: BG Stats play import populates player/session detail idempotently, resolving each participant to a persistent player record.
-5. **Play analytics** — add monthly, yearly and all-time views plus player wins, win rates, game rankings and head-to-head statistics, building on the player identities already captured.
-6. **Rich collection metadata** — persist designers and publishers using appropriate relational models (categories and mechanics are already persisted).
-7. **Collection analytics** — add top designers/publishers, collection distributions, utilisation and related ranked views.
-8. **Import and collection management UX** — provide BG Stats import, BoardGameGeek sync and manual game-entry options in the frontend.
-9. **Picker and mobile UX polish** — strengthen reveal-card readability, surface last winner/history and improve mobile component structure.
-10. **Personalisation and discovery** — add personal rankings, preference signals and similar-game discovery.
-11. **Engineering and deployment** — CI and repeatable Render deployment are implemented; production observability remains next.
-12. **Release exploration** — evaluate packaging/distribution for iOS and Android and validate the product with real users.
-13. **Optional advanced features** — explore AI-assisted natural-language filtering once the deterministic recommendation and data foundations are mature.
+1. ~~**Release Foundation A**~~ — done: GitHub Actions, clean frontend linting, production builds and valid PWA assets provide an automated quality gate.
+2. ~~**Release Foundation B configuration**~~ — done: the Render Blueprint, production configuration validation, Resend integration and deployment/recovery runbook are in the repository.
+3. **Release Foundation B verification** — provision the Render environment, verify real email delivery, rehearse backup recovery and complete the production smoke tests.
+4. **Release Foundation C** — add production monitoring, feedback capture, privacy information, account deletion, essential product events and an authenticated journey check.
+5. **Personal production use** — use the deployed application for 24–48 hours and resolve release-blocking issues.
+6. **Closed alpha** — invite 3–5 independent testers and observe onboarding, first recommendation, return use and failure points.
+7. **Discover preferences** — add favourites, Not Interested and explicit preference controls using evidence from the alpha.
+8. **Recommendation Engine v2** — improve ranking and explanations based on accepted choices, redraws, recorded plays and tester feedback.
+9. **Early beta** — expand to 10–20 testers once the main journeys and recommendation loop are reliable.
+
+Player analytics, richer metadata, billing, social and group features, wider AI use and BoardGameGeek write-back remain later or dependency-gated work. They do not block the closed alpha.
 
 ## Potential product model
 
@@ -439,12 +460,13 @@ The project is intended to demonstrate practical experience with:
 - explainable recommendation logic
 - React and TypeScript frontend integration
 - analytical data modelling for game, session and player-level reporting
-- CI/CD and cloud deployment as later milestones
+- CI/CD and repeatable cloud deployment configuration
+- production operations, recovery planning and release validation
 
 ## Status
 
 **Active development**
 
-The core application is functional end to end: user accounts, collection ingestion, PostgreSQL persistence, recommendation, rich play tracking with reusable player identities, and collection insights are all implemented, alongside a two-way integration with BG Stats for both importing and sending play data.
+The core application is functional end to end: account onboarding and recovery, collection ingestion, PostgreSQL persistence, explainable recommendations, Discover, Want to Play, rich play tracking and collection insights are implemented. BG Stats supports both historical-play import and one-tap hand-off for plays logged in the app.
 
-Current development is focused on recommendation refinement and building player-level analytics (win rate, head-to-head, most-played-together) on top of the player identities now captured, before expanding collection metadata to include designers and publishers. The longer-term direction is a release-capable board-game collection, picker, play-tracking and analytics application.
+Automated quality gates and repeatable Render deployment configuration are also in place. Current development is focused on provisioning and verifying the production environment, then adding the monitoring, privacy, feedback and operational safeguards needed for a 3–5 person closed alpha. Recommendation expansion will follow evidence from those testers rather than delaying the first release.
