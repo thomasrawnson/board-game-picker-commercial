@@ -62,6 +62,8 @@ type Props = {
     RefObject<CollectionScrollPositions>
   gameBggId:
     number | null
+  wishlistGameBggId:
+    number | null
   onOpenGame: (
     bggId: number,
   ) => void
@@ -69,6 +71,16 @@ type Props = {
     () => void
   onGameUnavailable:
     () => void
+  onOpenWishlistGame: (
+    bggId: number,
+  ) => void
+  onCloseWishlistGame:
+    () => void
+  onWishlistGameUnavailable:
+    () => void
+  onWishlistGameConverted: (
+    bggId: number,
+  ) => void
   onSectionChange: (
     section: CollectionSection,
   ) => void
@@ -81,9 +93,14 @@ function CollectionView({
   scrollContainerRef,
   scrollPositionsRef,
   gameBggId,
+  wishlistGameBggId,
   onOpenGame,
   onCloseGame,
   onGameUnavailable,
+  onOpenWishlistGame,
+  onCloseWishlistGame,
+  onWishlistGameUnavailable,
+  onWishlistGameConverted,
   onSectionChange,
 }: Props) {
   const {
@@ -141,6 +158,9 @@ function CollectionView({
   const previousGameBggId =
     useRef(gameBggId)
 
+  const previousWishlistGameBggId =
+    useRef(wishlistGameBggId)
+
   const selectedGame =
     gameBggId === null
       ? null
@@ -176,6 +196,19 @@ function CollectionView({
     previousGameBggId.current =
       gameBggId
   }, [gameBggId])
+
+  useLayoutEffect(() => {
+    if (
+      previousWishlistGameBggId.current
+      !== null
+      && wishlistGameBggId === null
+    ) {
+      pendingScrollRestore.current = true
+    }
+
+    previousWishlistGameBggId.current =
+      wishlistGameBggId
+  }, [wishlistGameBggId])
 
   const saveScrollPosition =
     useCallback(() => {
@@ -304,7 +337,10 @@ function CollectionView({
 
 
   useLayoutEffect(() => {
-    if (selectedGame) {
+    if (
+      selectedGame
+      || wishlistGameBggId !== null
+    ) {
       return
     }
 
@@ -331,11 +367,15 @@ function CollectionView({
     saveScrollPosition,
     scrollContainerRef,
     selectedGame,
+    wishlistGameBggId,
   ])
 
 
   useLayoutEffect(() => {
-    if (!selectedGame) {
+    if (
+      !selectedGame
+      && wishlistGameBggId === null
+    ) {
       return
     }
 
@@ -346,6 +386,7 @@ function CollectionView({
   }, [
     scrollContainerRef,
     selectedGame,
+    wishlistGameBggId,
   ])
 
 
@@ -705,6 +746,26 @@ function CollectionView({
 
         {sectionTabs}
         <WishlistView
+          gameBggId={wishlistGameBggId}
+          onOpenGame={(bggId) => {
+            saveScrollPosition()
+            onOpenWishlistGame(bggId)
+          }}
+          onCloseGame={onCloseWishlistGame}
+          onGameUnavailable={
+            onWishlistGameUnavailable
+          }
+          onGameConverted={(game) => {
+            setGames((current) => (
+              current.some(
+                (item) =>
+                  item.bgg_id === game.bgg_id,
+              )
+                ? current
+                : [...current, game]
+            ))
+            onWishlistGameConverted(game.bgg_id)
+          }}
           onContentReady={() =>
             restoreScrollPosition(
               "wishlist",

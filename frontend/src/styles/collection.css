@@ -48,13 +48,30 @@
 }
 
 .wishlist-card {
-  display: grid;
-  grid-template-columns: 82px minmax(0, 1fr);
-  gap: 12px;
   padding: 13px;
   background: rgba(243, 234, 216, 0.06);
   border: 1px solid rgba(243, 234, 216, 0.14);
   border-radius: 15px;
+}
+
+.wishlist-card-main {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.wishlist-card-main:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 5px;
+  border-radius: 8px;
 }
 
 .wishlist-image {
@@ -69,8 +86,15 @@
   min-width: 0;
 }
 
-.wishlist-card h2 {
+.wishlist-card-body strong,
+.wishlist-card-body span {
+  display: block;
+}
+
+.wishlist-card-body strong {
   margin: 0 0 6px;
+  color: var(--text-primary);
+  font-family: "Fraunces", serif;
   font-size: 16px;
 }
 
@@ -85,6 +109,70 @@
   min-height: 38px;
   margin-top: 10px;
   padding: 7px 12px;
+}
+
+.wishlist-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  font-family: "Fraunces", serif;
+  font-size: 28px;
+}
+
+.wishlist-status {
+  display: inline-flex;
+  margin: 8px 0 0;
+  padding: 6px 10px;
+  color: var(--gold);
+  background: rgba(201, 162, 39, 0.12);
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.wishlist-detail-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.wishlist-add-owned,
+.wishlist-detail-remove {
+  width: 100%;
+  min-height: 44px;
+}
+
+.wishlist-add-confirm {
+  padding: 14px;
+  color: var(--text-primary);
+  background: rgba(243, 234, 216, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-align: left;
+}
+
+.wishlist-add-confirm p {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.wishlist-add-confirm div,
+.wishlist-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wishlist-load-error {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
 }
 
 .collection-screen {

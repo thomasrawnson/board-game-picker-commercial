@@ -7,6 +7,7 @@ import {
   collectionGamePath,
   collectionPath,
   safeReturnPath,
+  wishlistGamePath,
 } from "./routes.ts"
 
 
@@ -23,6 +24,10 @@ test("collection routes represent section and game selection", () => {
     collectionGamePath(42),
     "/collection/owned/42",
   )
+  assert.equal(
+    wishlistGamePath(42),
+    "/collection/want-to-play/42",
+  )
 })
 
 
@@ -30,6 +35,12 @@ test("collection detail routes keep Collection navigation active", () => {
   assert.equal(
     appViewForPath(
       "/collection/owned/42",
+    ),
+    "collection",
+  )
+  assert.equal(
+    appViewForPath(
+      "/collection/want-to-play/42",
     ),
     "collection",
   )

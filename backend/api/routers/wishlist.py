@@ -4,7 +4,10 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException
 
 from api.dependencies import get_wishlist_service
-from services.wishlist_service import WishlistService
+from services.wishlist_service import (
+    WishlistGameNotFoundError,
+    WishlistService,
+)
 
 
 router = APIRouter(
@@ -55,6 +58,38 @@ def add_to_wishlist(
                 "Couldn't add that game "
                 "from BoardGameGeek."
             ),
+        ) from exc
+
+
+@router.get("/{bgg_id}")
+def get_wishlist_game(
+    bgg_id: int,
+    service: WishlistService = Depends(
+        get_wishlist_service
+    ),
+):
+    try:
+        return service.get_game(bgg_id)
+    except WishlistGameNotFoundError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail="Wishlist game not found",
+        ) from exc
+
+
+@router.post("/{bgg_id}/move-to-collection")
+def move_wishlist_game_to_collection(
+    bgg_id: int,
+    service: WishlistService = Depends(
+        get_wishlist_service
+    ),
+):
+    try:
+        return service.move_to_collection(bgg_id)
+    except WishlistGameNotFoundError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail="Wishlist game not found",
         ) from exc
 
 

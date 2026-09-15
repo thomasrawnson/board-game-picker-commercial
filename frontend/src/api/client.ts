@@ -811,6 +811,30 @@ Promise<Game[]> {
 }
 
 
+export async function getWishlistGame(
+  bggId: number,
+): Promise<Game | null> {
+  const response = await apiFetch(
+    `/wishlist/${bggId}`,
+  )
+
+  if (response.status === 404) {
+    return null
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't load that saved game.",
+      ),
+    )
+  }
+
+  return response.json()
+}
+
+
 export async function addToWishlist(
   bggId: number,
 ): Promise<Game> {
@@ -852,6 +876,29 @@ export async function removeFromWishlist(
       ),
     )
   }
+}
+
+
+export async function moveWishlistGameToCollection(
+  bggId: number,
+): Promise<Game> {
+  const response = await apiFetch(
+    `/wishlist/${bggId}/move-to-collection`,
+    {
+      method: "POST",
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      await readError(
+        response,
+        "Couldn't add that game to your collection.",
+      ),
+    )
+  }
+
+  return response.json()
 }
 
 export async function searchBGGGames(

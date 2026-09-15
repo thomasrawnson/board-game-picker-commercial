@@ -7,7 +7,14 @@ from sqlalchemy.pool import StaticPool
 from api.main import app
 from auth.security import create_access_token, hash_password
 from database.connection import Base, get_db
-from database.models import Game, User, UserWishlistGame
+from database.models import (
+    Game,
+    Play,
+    User,
+    UserGame,
+    UserWishlistGame,
+)
+from repositories.game_repository import GameRepository
 
 
 engine = create_engine(
@@ -155,3 +162,162 @@ def test_wishlist_is_scoped_to_current_user(client):
 
     assert [game["bgg_id"] for game in first.json()] == [1]
     assert [game["bgg_id"] for game in second.json()] == [2]
+
+
+def test_wishlist_detail_is_scoped_to_current_user(client):
+    _, first_headers = seed_user("one@example.com")
+    _, second_headers = seed_user("two@example.com")
+    seed_game(1, "First")
+    client.post("/wishlist/1", headers=first_headers)
+
+    db = TestingSessionLocal()
+    database_game = (
+        db.query(Game)
+        .filter(Game.bgg_id == 1)
+        .one()
+    )
+    database_game.owned = True
+    db.commit()
+    db.close()
+
+    found = client.get("/wishlist/1", headers=first_headers)
+    hidden = client.get("/wishlist/1", headers=second_headers)
+
+    assert found.status_code == 200
+    assert found.json()["name"] == "First"
+    assert found.json()["owned"] is False
+    assert hidden.status_code == 404
+
+
+def test_move_to_collection_is_atomic_and_idempotent(client):
+    user_id, headers = seed_user("move@example.com")
+    seed_game(1, "First")
+    client.post("/wishlist/1", headers=headers)
+
+    moved = client.post(
+        "/wishlist/1/move-to-collection",
+        headers=headers,
+    )
+    repeated = client.post(
+        "/wishlist/1/move-to-collection",
+        headers=headers,
+    )
+
+    assert moved.status_code == 200
+    assert moved.json()["owned"] is True
+    assert repeated.status_code == 200
+    assert repeated.json()["owned"] is True
+
+    db = TestingSessionLocal()
+    assert (
+        db.query(UserGame)
+        .filter(UserGame.user_id == user_id)
+        .count()
+        == 1
+    )
+    assert (
+        db.query(UserWishlistGame)
+        .filter(UserWishlistGame.user_id == user_id)
+        .count()
+        == 0
+    )
+    assert (
+        db.query(Game)
+        .filter(Game.bgg_id == 1)
+        .one()
+        .owned
+        is False
+    )
+    db.close()
+
+
+def test_move_reconciles_owned_wishlist_and_preserves_other_user(client):
+    first_user_id, first_headers = seed_user("one@example.com")
+    second_user_id, second_headers = seed_user("two@example.com")
+    seed_game(1, "First")
+    client.post("/wishlist/1", headers=first_headers)
+    client.post("/wishlist/1", headers=second_headers)
+
+    db = TestingSessionLocal()
+    game = db.query(Game).filter(Game.bgg_id == 1).one()
+    db.add(
+        UserGame(
+            user_id=first_user_id,
+            game_id=game.id,
+            source="bgg",
+        )
+    )
+    db.add(
+        Play(
+            user_id=first_user_id,
+            game_id=game.id,
+            player_count=2,
+            source="app",
+        )
+    )
+    db.commit()
+    db.close()
+
+    moved = client.post(
+        "/wishlist/1/move-to-collection",
+        headers=first_headers,
+    )
+
+    assert moved.status_code == 200
+
+    db = TestingSessionLocal()
+    assert db.query(Play).count() == 1
+    assert (
+        db.query(UserGame)
+        .filter(UserGame.user_id == first_user_id)
+        .count()
+        == 1
+    )
+    assert (
+        db.query(UserWishlistGame)
+        .filter(
+            UserWishlistGame.user_id == first_user_id
+        )
+        .count()
+        == 0
+    )
+    assert (
+        db.query(UserWishlistGame)
+        .filter(
+            UserWishlistGame.user_id == second_user_id
+        )
+        .count()
+        == 1
+    )
+    db.close()
+
+
+def test_failed_move_rolls_back_ownership_and_wishlist_removal(client):
+    user_id, headers = seed_user("rollback@example.com")
+    seed_game(1, "First")
+    client.post("/wishlist/1", headers=headers)
+
+    db = TestingSessionLocal()
+    repository = GameRepository(db)
+
+    def fail_commit():
+        raise RuntimeError("commit failed")
+
+    db.commit = fail_commit
+
+    with pytest.raises(RuntimeError, match="commit failed"):
+        repository.move_wishlist_to_collection(user_id, 1)
+
+    assert (
+        db.query(UserGame)
+        .filter(UserGame.user_id == user_id)
+        .count()
+        == 0
+    )
+    assert (
+        db.query(UserWishlistGame)
+        .filter(UserWishlistGame.user_id == user_id)
+        .count()
+        == 1
+    )
+    db.close()

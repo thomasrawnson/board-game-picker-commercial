@@ -162,10 +162,43 @@ class GameRepository:
             .all()
         )
 
-        return [
+        games = [
             self._to_domain(game)
             for game in database_games
         ]
+
+        for game in games:
+            game.owned = False
+
+        return games
+
+    def get_wishlisted_by_bgg_id(
+        self,
+        user_id: int,
+        bgg_id: int,
+    ) -> DomainGame | None:
+        database_game = (
+            self.db.query(DatabaseGame)
+            .join(
+                UserWishlistGame,
+                UserWishlistGame.game_id
+                == DatabaseGame.id,
+            )
+            .filter(
+                UserWishlistGame.user_id
+                == user_id,
+                DatabaseGame.bgg_id == bgg_id,
+            )
+            .first()
+        )
+
+        if database_game is None:
+            return None
+
+        game = self._to_domain(database_game)
+        game.owned = False
+
+        return game
 
     def get_wishlisted_bgg_ids(
         self,
@@ -257,6 +290,74 @@ class GameRepository:
         self.db.commit()
 
         return True
+
+    def move_wishlist_to_collection(
+        self,
+        user_id: int,
+        bgg_id: int,
+    ) -> DomainGame | None:
+        database_game = (
+            self.db.query(DatabaseGame)
+            .filter(
+                DatabaseGame.bgg_id == bgg_id
+            )
+            .first()
+        )
+
+        if database_game is None:
+            return None
+
+        wishlist_membership = (
+            self.db.query(UserWishlistGame)
+            .filter(
+                UserWishlistGame.user_id
+                == user_id,
+                UserWishlistGame.game_id
+                == database_game.id,
+            )
+            .first()
+        )
+
+        ownership = (
+            self.db.query(UserGame)
+            .filter(
+                UserGame.user_id == user_id,
+                UserGame.game_id
+                == database_game.id,
+            )
+            .first()
+        )
+
+        if (
+            wishlist_membership is None
+            and ownership is None
+        ):
+            return None
+
+        try:
+            if ownership is None:
+                self.db.add(
+                    UserGame(
+                        user_id=user_id,
+                        game_id=database_game.id,
+                        source="manual",
+                    )
+                )
+
+            if wishlist_membership is not None:
+                self.db.delete(
+                    wishlist_membership
+                )
+
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
+
+        game = self._to_domain(database_game)
+        game.owned = True
+
+        return game
     
     def get_by_bgg_id(
         self,

@@ -3,6 +3,10 @@ from bgg.game_parser import parse_game_metadata
 from repositories.game_repository import GameRepository
 
 
+class WishlistGameNotFoundError(Exception):
+    pass
+
+
 class WishlistService:
     def __init__(
         self,
@@ -18,6 +22,20 @@ class WishlistService:
         return self.repository.get_wishlist_by_user(
             self.user_id
         )
+
+    def get_game(self, bgg_id: int):
+        game = (
+            self.repository
+            .get_wishlisted_by_bgg_id(
+                self.user_id,
+                bgg_id,
+            )
+        )
+
+        if game is None:
+            raise WishlistGameNotFoundError
+
+        return game
 
     def add_game(self, bgg_id: int):
         game = self.repository.get_by_bgg_id(
@@ -50,3 +68,17 @@ class WishlistService:
             self.user_id,
             bgg_id,
         )
+
+    def move_to_collection(self, bgg_id: int):
+        game = (
+            self.repository
+            .move_wishlist_to_collection(
+                self.user_id,
+                bgg_id,
+            )
+        )
+
+        if game is None:
+            raise WishlistGameNotFoundError
+
+        return game

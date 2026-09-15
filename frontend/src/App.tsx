@@ -70,6 +70,7 @@ import {
   collectionPath,
   isProtectedAppPath,
   safeReturnPath,
+  wishlistGamePath,
 } from "./routes"
 
 import "./App.css"
@@ -120,6 +121,7 @@ function CollectionRoute({
   let section:
     CollectionSection | null = null
   let gameBggId: number | null = null
+  let wishlistGameBggId: number | null = null
   let validRoute = true
 
   if (wildcard === "owned") {
@@ -145,6 +147,23 @@ function CollectionRoute({
     ) {
       section = "owned"
       gameBggId = parsedGameId
+    } else {
+      validRoute = false
+    }
+  } else if (
+    wildcard.startsWith("want-to-play/")
+  ) {
+    const gameIdText =
+      wildcard.slice("want-to-play/".length)
+    const parsedGameId = Number(gameIdText)
+
+    if (
+      /^\d+$/.test(gameIdText)
+      && Number.isSafeInteger(parsedGameId)
+      && parsedGameId > 0
+    ) {
+      section = "wishlist"
+      wishlistGameBggId = parsedGameId
     } else {
       validRoute = false
     }
@@ -200,6 +219,39 @@ function CollectionRoute({
       navigate,
     ])
 
+  const handleOpenWishlistGame =
+    useCallback((bggId: number) => {
+      navigate(
+        wishlistGamePath(bggId),
+        {
+          state: {
+            detailOrigin: "collection",
+          } satisfies NavigationState,
+        },
+      )
+    }, [navigate])
+
+  const handleCloseWishlistGame =
+    useCallback(() => {
+      navigate(APP_PATHS.collectionWishlist)
+    }, [navigate])
+
+  const handleWishlistGameUnavailable =
+    useCallback(() => {
+      navigate(
+        APP_PATHS.collectionWishlist,
+        { replace: true },
+      )
+    }, [navigate])
+
+  const handleWishlistGameConverted =
+    useCallback((bggId: number) => {
+      navigate(
+        collectionGamePath(bggId),
+        { replace: true },
+      )
+    }, [navigate])
+
   if (wildcard === "") {
     return (
       <Navigate
@@ -236,6 +288,7 @@ function CollectionRoute({
         scrollPositionsRef
       }
       gameBggId={gameBggId}
+      wishlistGameBggId={wishlistGameBggId}
       onOpenGame={(bggId) => {
         navigate(
           collectionGamePath(bggId),
@@ -250,6 +303,14 @@ function CollectionRoute({
       onCloseGame={handleCloseGame}
       onGameUnavailable={
         handleGameUnavailable
+      }
+      onOpenWishlistGame={handleOpenWishlistGame}
+      onCloseWishlistGame={handleCloseWishlistGame}
+      onWishlistGameUnavailable={
+        handleWishlistGameUnavailable
+      }
+      onWishlistGameConverted={
+        handleWishlistGameConverted
       }
       onSectionChange={(
         nextSection,

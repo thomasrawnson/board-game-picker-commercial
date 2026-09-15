@@ -40,6 +40,13 @@ export function collectionGamePath(
 }
 
 
+export function wishlistGamePath(
+  bggId: number,
+): string {
+  return `${APP_PATHS.collectionWishlist}/${bggId}`
+}
+
+
 export function appViewForPath(
   pathname: string,
 ): AppView {
