@@ -1,6 +1,7 @@
 from sqlalchemy import inspect
 
 from database.connection import engine
+from database.models import Game
 from database.models import Play
 
 
@@ -22,3 +23,7 @@ def test_play_history_index_is_declared_in_model_metadata():
         "ix_plays_user_id_played_at"
         in index_names
     )
+
+
+def test_player_count_poll_is_declared_in_model_metadata():
+    assert "player_count_poll" in Game.__table__.columns

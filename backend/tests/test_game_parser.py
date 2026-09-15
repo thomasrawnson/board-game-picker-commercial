@@ -1,5 +1,6 @@
 from pathlib import Path
 from bgg.game_parser import parse_game_metadata
+from models.game import PlayerCountPoll
 
 
 FIXTURE = (
@@ -189,3 +190,44 @@ def test_player_count_recommendations_are_parsed():
         game.recommended_player_counts
         == [2, 3]
     )
+
+    assert game.player_count_poll == [
+        PlayerCountPoll(2, 40, 20, 5, 65),
+        PlayerCountPoll(3, 10, 30, 5, 45),
+        PlayerCountPoll(4, 2, 3, 20, 25),
+    ]
+
+
+def test_study_in_emerald_two_player_poll_is_retained():
+    xml = """
+    <items>
+        <item type="boardgame" id="178054">
+            <name
+                type="primary"
+                value="A Study in Emerald (Second Edition)"
+            />
+            <poll name="suggested_numplayers">
+                <results numplayers="2">
+                    <result value="Best" numvotes="0" />
+                    <result value="Recommended" numvotes="9" />
+                    <result
+                        value="Not Recommended"
+                        numvotes="40"
+                    />
+                </results>
+            </poll>
+        </item>
+    </items>
+    """
+
+    game = parse_game_metadata(xml)
+
+    assert game.player_count_poll == [
+        PlayerCountPoll(
+            player_count=2,
+            best_votes=0,
+            recommended_votes=9,
+            not_recommended_votes=40,
+            total_votes=49,
+        )
+    ]

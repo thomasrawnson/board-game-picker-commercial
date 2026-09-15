@@ -4,6 +4,7 @@ from database.models import Category
 from database.models import Game as DatabaseGame
 from database.models import Mechanic
 from models.game import Game as DomainGame
+from models.game import PlayerCountPoll
 from database.models import UserGame
 from database.models import UserWishlistGame
 
@@ -409,6 +410,11 @@ class GameRepository:
                 game.recommended_player_counts
                 or []
             ),
+            player_count_poll=(
+                self._serialize_player_count_poll(
+                    game.player_count_poll
+                )
+            ),
             complexity=game.complexity,
             rating=game.rating,
             owned=game.owned,
@@ -464,6 +470,11 @@ class GameRepository:
         database_game.recommended_player_counts = (
             game.recommended_player_counts
             or []
+        )
+        database_game.player_count_poll = (
+            self._serialize_player_count_poll(
+                game.player_count_poll
+            )
         )
         database_game.min_play_time = (
             game.min_play_time
@@ -601,6 +612,13 @@ class GameRepository:
                 .recommended_player_counts
                 or []
             ),
+            player_count_poll=(
+                GameRepository
+                ._deserialize_player_count_poll(
+                    database_game.player_count_poll
+                    or []
+                )
+            ),
             min_play_time=(
                 database_game.min_play_time
             ),
@@ -625,6 +643,44 @@ class GameRepository:
                 in database_game.mechanics
             ],
         )
+
+    @staticmethod
+    def _serialize_player_count_poll(
+        poll: list[PlayerCountPoll],
+    ) -> list[dict[str, int]]:
+        return [
+            {
+                "player_count": result.player_count,
+                "best_votes": result.best_votes,
+                "recommended_votes": (
+                    result.recommended_votes
+                ),
+                "not_recommended_votes": (
+                    result.not_recommended_votes
+                ),
+                "total_votes": result.total_votes,
+            }
+            for result in poll
+        ]
+
+    @staticmethod
+    def _deserialize_player_count_poll(
+        poll: list[dict[str, int]],
+    ) -> list[PlayerCountPoll]:
+        return [
+            PlayerCountPoll(
+                player_count=result["player_count"],
+                best_votes=result["best_votes"],
+                recommended_votes=(
+                    result["recommended_votes"]
+                ),
+                not_recommended_votes=(
+                    result["not_recommended_votes"]
+                ),
+                total_votes=result["total_votes"],
+            )
+            for result in poll
+        ]
 
     def get_existing_bgg_ids(
         self,

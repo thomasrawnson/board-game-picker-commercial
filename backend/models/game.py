@@ -5,6 +5,15 @@ from dataclasses import (
 
 
 @dataclass
+class PlayerCountPoll:
+    player_count: int
+    best_votes: int
+    recommended_votes: int
+    not_recommended_votes: int
+    total_votes: int
+
+
+@dataclass
 class Game:
     bgg_id: int
     name: str
@@ -38,5 +47,9 @@ class Game:
     )
 
     recommended_player_counts: list[int] = field(
+        default_factory=list
+    )
+
+    player_count_poll: list[PlayerCountPoll] = field(
         default_factory=list
     )

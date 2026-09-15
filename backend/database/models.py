@@ -305,6 +305,12 @@ class Game(Base):
         default=list,
     )
 
+    player_count_poll: Mapped[list[dict]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+
     min_play_time: Mapped[int | None] = mapped_column(
         Integer,
     )

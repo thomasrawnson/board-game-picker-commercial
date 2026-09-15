@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 
 from models.game import Game
+from models.game import PlayerCountPoll
 
 
 def parse_game_metadata(
@@ -41,6 +42,7 @@ def _parse_game_item(
     (
         best_player_counts,
         recommended_player_counts,
+        player_count_poll,
     ) = _get_player_count_recommendations(
         item
     )
@@ -109,6 +111,9 @@ def _parse_game_item(
         ),
         recommended_player_counts=(
             recommended_player_counts
+        ),
+        player_count_poll=(
+            player_count_poll
         ),
     )
 
@@ -244,6 +249,7 @@ def _get_player_count_recommendations(
 ) -> tuple[
     list[int],
     list[int],
+    list[PlayerCountPoll],
 ]:
     poll = item.find(
         (
@@ -253,10 +259,11 @@ def _get_player_count_recommendations(
     )
 
     if poll is None:
-        return [], []
+        return [], [], []
 
     best_player_counts: list[int] = []
     recommended_player_counts: list[int] = []
+    player_count_poll: list[PlayerCountPoll] = []
 
     for result in poll.findall(
         "results"
@@ -315,6 +322,24 @@ def _get_player_count_recommendations(
             )
         )
 
+        player_count_poll.append(
+            PlayerCountPoll(
+                player_count=player_count,
+                best_votes=best_votes,
+                recommended_votes=(
+                    recommended_votes
+                ),
+                not_recommended_votes=(
+                    not_recommended_votes
+                ),
+                total_votes=(
+                    best_votes
+                    + recommended_votes
+                    + not_recommended_votes
+                ),
+            )
+        )
+
         if (
             best_votes
             > recommended_votes
@@ -343,4 +368,5 @@ def _get_player_count_recommendations(
     return (
         best_player_counts,
         recommended_player_counts,
+        player_count_poll,
     )

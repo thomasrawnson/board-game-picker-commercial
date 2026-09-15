@@ -1,4 +1,5 @@
 from models.game import Game
+from models.game import PlayerCountPoll
 from services.collection_service import CollectionService
 
 
@@ -28,6 +29,14 @@ GAME_XML = """
         <link type="boardgamecategory" value="Adventure"/>
         <link type="boardgamecategory" value="Fantasy"/>
         <link type="boardgamemechanic" value="Cooperative Game"/>
+
+        <poll name="suggested_numplayers">
+            <results numplayers="2">
+                <result value="Best" numvotes="0"/>
+                <result value="Recommended" numvotes="9"/>
+                <result value="Not Recommended" numvotes="40"/>
+            </results>
+        </poll>
     </item>
 </items>
 """
@@ -54,6 +63,9 @@ def test_sync_game_creates_new_game():
 
     assert game.bgg_id == 174430
     assert game.name == "Gloomhaven"
+    assert game.player_count_poll == [
+        PlayerCountPoll(2, 0, 9, 40, 49)
+    ]
 
 
 def test_sync_game_updates_existing_game():
@@ -90,6 +102,9 @@ def test_sync_game_updates_existing_game():
 
     assert game.bgg_id == 174430
     assert game.name == "Gloomhaven"
+    assert game.player_count_poll == [
+        PlayerCountPoll(2, 0, 9, 40, 49)
+    ]
 
 def test_sync_collection():
     collection_xml = """

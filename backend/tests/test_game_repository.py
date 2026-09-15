@@ -1,6 +1,7 @@
 from database.connection import SessionLocal
 from database.models import Game as DatabaseGame
 from models.game import Game as DomainGame
+from models.game import PlayerCountPoll
 from repositories.game_repository import GameRepository
 from database.models import Category, Mechanic
 
@@ -31,6 +32,15 @@ def test_update_game():
             max_players=5,
             rating=8.5,
             complexity=3.5,
+            player_count_poll=[
+                PlayerCountPoll(
+                    player_count=2,
+                    best_votes=0,
+                    recommended_votes=9,
+                    not_recommended_votes=40,
+                    total_votes=49,
+                )
+            ],
         )
 
         result = repository.update(updated)
@@ -42,6 +52,9 @@ def test_update_game():
         assert result.max_players == 5
         assert result.rating == 8.5
         assert result.complexity == 3.5
+        assert result.player_count_poll == [
+            PlayerCountPoll(2, 0, 9, 40, 49)
+        ]
 
     finally:
         db.query(DatabaseGame).filter(
@@ -226,4 +239,3 @@ def test_update_replaces_categories_and_mechanics():
 
     repository.delete(test_bgg_id)
     session.close()
-
