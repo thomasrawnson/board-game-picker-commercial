@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 import random
 
 from models.game import Game
+from models.game import PlayerCountPoll
 from models.game_play_stats import GamePlayStats
 
 
@@ -11,6 +12,11 @@ PICKER_MODES = {
     "different",
     "surprise",
 }
+
+MIN_PLAYER_COUNT_POLL_VOTES = 10
+PLAYER_COUNT_PENALTY_PERCENT = 30
+PLAYER_COUNT_EXCLUSION_PERCENT = 50
+PLAYER_COUNT_MIXED_FIT_PENALTY = -15
 
 
 @dataclass
@@ -50,6 +56,12 @@ class PickerService:
                 continue
 
             if not self._supports_player_count(
+                game,
+                criteria.players,
+            ):
+                continue
+
+            if not self._has_acceptable_player_count_fit(
                 game,
                 criteria.players,
             ):
@@ -739,25 +751,143 @@ class PickerService:
         int,
         str | None,
     ]:
-        if (
-            players
-            in game.best_player_counts
-        ):
-            return (
-                10,
-                f"Best at {players} players",
-            )
+        poll = PickerService._get_player_count_poll(
+            game,
+            players,
+        )
+
+        if poll is None:
+            return 0, None
 
         if (
-            players
-            in game.recommended_player_counts
+            poll.total_votes
+            < MIN_PLAYER_COUNT_POLL_VOTES
         ):
             return (
-                5,
+                0,
                 (
-                    f"Recommended at "
+                    "Limited voting data at "
                     f"{players} players"
                 ),
             )
 
+        not_recommended_percent = (
+            PickerService
+            ._not_recommended_percent(poll)
+        )
+
+        if (
+            poll.not_recommended_votes * 100
+            >= poll.total_votes
+            * PLAYER_COUNT_PENALTY_PERCENT
+        ):
+            return (
+                PLAYER_COUNT_MIXED_FIT_PENALTY,
+                (
+                    f"Mixed at {players} players: "
+                    f"{PickerService._format_percent(not_recommended_percent)}% "
+                    "of voters do not recommend it"
+                ),
+            )
+
+        if (
+            poll.best_votes
+            > poll.recommended_votes
+            and poll.best_votes
+            > poll.not_recommended_votes
+        ):
+            best_percent = (
+                poll.best_votes
+                / poll.total_votes
+                * 100
+            )
+
+            return (
+                10,
+                (
+                    f"Best at {players} players "
+                    f"({PickerService._format_percent(best_percent)}% "
+                    "of voters)"
+                ),
+            )
+
+        positive_votes = (
+            poll.best_votes
+            + poll.recommended_votes
+        )
+
+        if positive_votes > poll.not_recommended_votes:
+            positive_percent = (
+                positive_votes
+                / poll.total_votes
+                * 100
+            )
+
+            return (
+                5,
+                (
+                    f"Recommended at "
+                    f"{players} players "
+                    f"({PickerService._format_percent(positive_percent)}% "
+                    "positive)"
+                ),
+            )
+
         return 0, None
+
+    @staticmethod
+    def _has_acceptable_player_count_fit(
+        game: Game,
+        players: int,
+    ) -> bool:
+        poll = PickerService._get_player_count_poll(
+            game,
+            players,
+        )
+
+        if (
+            poll is None
+            or poll.total_votes
+            < MIN_PLAYER_COUNT_POLL_VOTES
+        ):
+            return True
+
+        return (
+            poll.not_recommended_votes * 100
+            < poll.total_votes
+            * PLAYER_COUNT_EXCLUSION_PERCENT
+        )
+
+    @staticmethod
+    def _get_player_count_poll(
+        game: Game,
+        players: int,
+    ) -> PlayerCountPoll | None:
+        return next(
+            (
+                result
+                for result in game.player_count_poll
+                if result.player_count == players
+            ),
+            None,
+        )
+
+    @staticmethod
+    def _not_recommended_percent(
+        poll: PlayerCountPoll,
+    ) -> float:
+        return (
+            poll.not_recommended_votes
+            / poll.total_votes
+            * 100
+        )
+
+    @staticmethod
+    def _format_percent(
+        percent: float,
+    ) -> str:
+        return (
+            f"{percent:.1f}"
+            .rstrip("0")
+            .rstrip(".")
+        )

@@ -1,4 +1,5 @@
 from models.game import Game
+from models.game import PlayerCountPoll
 from services.picker_service import PickerCriteria, PickerService
 from datetime import datetime, timedelta, timezone
 from models.game_play_stats import GamePlayStats
@@ -690,6 +691,9 @@ def test_best_player_count_gets_bonus():
             2,
             3,
         ],
+        player_count_poll=[
+            PlayerCountPoll(2, 60, 30, 10, 100)
+        ],
     )
 
     supported_only_game = Game(
@@ -718,8 +722,12 @@ def test_best_player_count_gets_bonus():
     )
 
     assert (
-        "Best at 2 players"
-        in matches[0].reasons
+        any(
+            reason.startswith(
+                "Best at 2 players"
+            )
+            for reason in matches[0].reasons
+        )
     )
 
 
@@ -735,6 +743,9 @@ def test_recommended_player_count_gets_bonus():
         owned=True,
         recommended_player_counts=[
             3,
+        ],
+        player_count_poll=[
+            PlayerCountPoll(3, 20, 60, 20, 100)
         ],
     )
 
@@ -764,6 +775,173 @@ def test_recommended_player_count_gets_bonus():
     )
 
     assert (
-        "Recommended at 3 players"
-        in matches[0].reasons
+        any(
+            reason.startswith(
+                "Recommended at 3 players"
+            )
+            for reason in matches[0].reasons
+        )
     )
+
+
+def _game_with_two_player_poll(
+    not_recommended_votes: int,
+    total_votes: int,
+    bgg_id: int = 1,
+) -> Game:
+    positive_votes = (
+        total_votes
+        - not_recommended_votes
+    )
+
+    return Game(
+        bgg_id=bgg_id,
+        name=f"Poll Game {bgg_id}",
+        min_players=2,
+        max_players=5,
+        max_play_time=60,
+        owned=True,
+        player_count_poll=[
+            PlayerCountPoll(
+                player_count=2,
+                best_votes=0,
+                recommended_votes=(
+                    positive_votes
+                ),
+                not_recommended_votes=(
+                    not_recommended_votes
+                ),
+                total_votes=total_votes,
+            )
+        ],
+    )
+
+
+def test_study_in_emerald_is_excluded_at_two_players():
+    game = Game(
+        bgg_id=178054,
+        name="A Study in Emerald (Second Edition)",
+        min_players=2,
+        max_players=5,
+        max_play_time=60,
+        owned=True,
+        player_count_poll=[
+            PlayerCountPoll(2, 0, 9, 40, 49)
+        ],
+    )
+
+    matches = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
+    )
+
+    assert matches == []
+
+
+def test_29_9_percent_not_recommended_has_no_penalty():
+    game = _game_with_two_player_poll(299, 1000)
+
+    match = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
+    )[0]
+
+    assert match.score == 95
+    assert not any(
+        reason.startswith("Mixed at")
+        for reason in match.reasons
+    )
+
+
+def test_30_percent_not_recommended_gets_penalty():
+    game = _game_with_two_player_poll(30, 100)
+
+    match = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
+    )[0]
+
+    assert match.score == 75
+    assert (
+        "Mixed at 2 players: 30% of voters do not recommend it"
+        in match.reasons
+    )
+
+
+def test_49_9_percent_not_recommended_remains_eligible():
+    game = _game_with_two_player_poll(499, 1000)
+
+    matches = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
+    )
+
+    assert len(matches) == 1
+    assert any(
+        "49.9% of voters do not recommend it"
+        in reason
+        for reason in matches[0].reasons
+    )
+
+
+def test_50_percent_not_recommended_is_excluded():
+    game = _game_with_two_player_poll(50, 100)
+
+    matches = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
+    )
+
+    assert matches == []
+
+
+def test_low_sample_rejection_does_not_exclude_game():
+    game = _game_with_two_player_poll(5, 9)
+
+    match = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
+    )[0]
+
+    assert (
+        "Limited voting data at 2 players"
+        in match.reasons
+    )
+
+
+def test_missing_poll_data_falls_back_to_supported_range():
+    game = Game(
+        bgg_id=1,
+        name="No Poll Data",
+        min_players=2,
+        max_players=4,
+        owned=True,
+    )
+
+    matches = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
+    )
+
+    assert len(matches) == 1
+    assert matches[0].score == 90
+
+
+def test_poll_for_different_count_does_not_affect_selection():
+    game = Game(
+        bgg_id=1,
+        name="Rejected Only At Three",
+        min_players=2,
+        max_players=4,
+        owned=True,
+        player_count_poll=[
+            PlayerCountPoll(3, 0, 2, 18, 20)
+        ],
+    )
+
+    matches = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
+    )
+
+    assert len(matches) == 1
