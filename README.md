@@ -242,6 +242,8 @@ The reusable player identities introduced for play recording provide the foundat
 - **PostgreSQL 16** — relational application database
 - **Alembic** — version-controlled schema migrations
 - **Docker / Docker Compose** — reproducible local database environment
+- **Render** — production static hosting, FastAPI deployment and managed PostgreSQL
+- **Resend** — transactional email for verification and password resets
 
 ### Frontend
 
@@ -258,9 +260,7 @@ The reusable player identities introduced for play recording provide the foundat
 - multi-source import UI and manual game entry
 - personal ranking and preference signals
 - similar-game discovery
-- GitHub Actions CI/CD
-- Azure deployment
-- production configuration and observability
+- production observability and feedback capture
 - AI-assisted natural-language game filtering
 
 ## Testing
@@ -379,6 +379,21 @@ with a successful response so direct links and refreshes work. The PWA
 service worker also uses `/index.html` as its navigation fallback, but it
 does not replace the host rewrite for a visitor's first request.
 
+## Production deployment
+
+Production is defined in `render.yaml` as a Render Blueprint containing the
+static PWA, FastAPI service and private PostgreSQL 16 database. GitHub Actions
+must pass before Render deploys a commit. Alembic migrations run as an
+explicit pre-deploy command rather than inside the web process.
+
+Secrets and environment-specific URLs are prompted for by Render and are not
+stored in source control. The database must use a paid plan so point-in-time
+recovery and logical exports are available for the closed alpha.
+
+Follow [the production deployment runbook](docs/production-runbook.md) for
+domain setup, Resend verification, environment values, smoke testing,
+backup/restore rehearsal and rollback.
+
 ## Roadmap
 
 Development is organised so new product features also strengthen the underlying engineering and data model.
@@ -393,7 +408,7 @@ Development is organised so new product features also strengthen the underlying 
 8. **Import and collection management UX** — provide BG Stats import, BoardGameGeek sync and manual game-entry options in the frontend.
 9. **Picker and mobile UX polish** — strengthen reveal-card readability, surface last winner/history and improve mobile component structure.
 10. **Personalisation and discovery** — add personal rankings, preference signals and similar-game discovery.
-11. **Engineering and deployment** — add GitHub Actions CI/CD, production configuration, observability and Azure deployment.
+11. **Engineering and deployment** — CI and repeatable Render deployment are implemented; production observability remains next.
 12. **Release exploration** — evaluate packaging/distribution for iOS and Android and validate the product with real users.
 13. **Optional advanced features** — explore AI-assisted natural-language filtering once the deterministic recommendation and data foundations are mature.
 

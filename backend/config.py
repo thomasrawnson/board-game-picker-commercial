@@ -66,7 +66,7 @@ def get_settings() -> Settings:
     ).strip()
 
     cors_origins = [
-        origin.strip()
+        origin.strip().rstrip("/")
         for origin in os.getenv(
             "CORS_ORIGINS",
             (
@@ -92,7 +92,7 @@ def get_settings() -> Settings:
     frontend_url = os.getenv(
         "FRONTEND_URL",
         "http://localhost:5173",
-    ).strip()
+    ).strip().rstrip("/")
 
     resend_api_key = os.getenv(
         "RESEND_API_KEY",
@@ -114,41 +114,56 @@ def get_settings() -> Settings:
             "JWT_SECRET must be configured"
         )
 
-    if (
-        environment == "production"
-        and any(
-            origin.startswith(
-                "http://localhost"
+    if environment == "production":
+        if len(jwt_secret) < 32:
+            raise RuntimeError(
+                "Production JWT_SECRET must be "
+                "at least 32 characters"
             )
-            or origin.startswith(
-                "http://127.0.0.1"
+
+        if not cors_origins:
+            raise RuntimeError(
+                "Production CORS_ORIGINS must "
+                "contain the frontend origin"
             )
-            for origin
-            in cors_origins
-        )
-    ):
-        raise RuntimeError(
-            "Production CORS_ORIGINS "
-            "must not contain localhost"
-        )
 
-    if (
-        environment == "production"
-        and ai_picker_enabled
-    ):
-        raise RuntimeError(
-            "AI picker must remain disabled "
-            "for the first production release"
-        )
+        if any(
+            not origin.startswith("https://")
+            for origin in cors_origins
+        ):
+            raise RuntimeError(
+                "Production CORS_ORIGINS must "
+                "use HTTPS"
+            )
 
-    if (
-        environment == "production"
-        and not resend_api_key
-    ):
-        raise RuntimeError(
-            "RESEND_API_KEY must be configured"
-        )
-    
+        if not frontend_url.startswith(
+            "https://"
+        ):
+            raise RuntimeError(
+                "Production FRONTEND_URL must "
+                "use HTTPS"
+            )
+
+        if ai_picker_enabled:
+            raise RuntimeError(
+                "AI picker must remain disabled "
+                "for the first production release"
+            )
+
+        if not resend_api_key:
+            raise RuntimeError(
+                "RESEND_API_KEY must be configured"
+            )
+
+        if (
+            not email_from
+            or "@resend.dev" in email_from.lower()
+        ):
+            raise RuntimeError(
+                "Production EMAIL_FROM must use "
+                "a verified sending domain"
+            )
+
     return Settings(
         environment=environment,
         database_url=database_url,

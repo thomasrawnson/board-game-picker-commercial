@@ -14,7 +14,7 @@ def send_email(
     to_email: str,
     subject: str,
     html: str,
-) -> None:
+) -> str | None:
     if (
         settings.environment
         != "production"
@@ -31,7 +31,7 @@ def send_email(
             html,
         )
 
-        return
+        return None
 
     response = httpx.post(
         "https://api.resend.com/emails",
@@ -58,3 +58,15 @@ def send_email(
     )
 
     response.raise_for_status()
+
+    message_id = response.json().get(
+        "id"
+    )
+
+    logger.info(
+        "email_sent to=%s message_id=%s",
+        to_email,
+        message_id,
+    )
+
+    return message_id
