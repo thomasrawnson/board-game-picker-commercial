@@ -7,6 +7,11 @@ type Props = {
 
 const timeOptions = [
   {
+    label: "Filler",
+    description: "15 min or less",
+    value: 15,
+  },
+  {
     label: "Quick",
     description: "under 30 min",
     value: 30,
@@ -15,6 +20,11 @@ const timeOptions = [
     label: "Standard",
     description: "up to 60 min",
     value: 60,
+  },
+  {
+    label: "Main event",
+    description: "up to 90 min",
+    value: 90,
   },
   {
     label: "Deep dive",

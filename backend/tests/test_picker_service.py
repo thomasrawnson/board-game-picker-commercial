@@ -920,6 +920,100 @@ def test_expansions_are_never_picker_candidates():
     assert matches == []
 
 
+def test_cooperative_filter_only_returns_cooperative_games():
+    cooperative = Game(
+        bgg_id=1,
+        name="Cooperative Game",
+        min_players=1,
+        max_players=4,
+        owned=True,
+        mechanics=["Cooperative Game"],
+    )
+    competitive = Game(
+        bgg_id=2,
+        name="Competitive Game",
+        min_players=1,
+        max_players=4,
+        owned=True,
+        mechanics=["Area Majority / Influence"],
+    )
+
+    matches = PickerService().find_matches(
+        [cooperative, competitive],
+        PickerCriteria(
+            players=2,
+            play_style="cooperative",
+        ),
+    )
+
+    assert matches == [cooperative]
+
+
+def test_competitive_filter_excludes_cooperative_games():
+    cooperative = Game(
+        bgg_id=1,
+        name="Cooperative Game",
+        min_players=1,
+        max_players=4,
+        owned=True,
+        mechanics=["Cooperative Game"],
+    )
+    competitive = Game(
+        bgg_id=2,
+        name="Competitive Game",
+        min_players=1,
+        max_players=4,
+        owned=True,
+        mechanics=["Auction / Bidding"],
+    )
+
+    matches = PickerService().find_matches(
+        [cooperative, competitive],
+        PickerCriteria(
+            players=2,
+            play_style="competitive",
+        ),
+    )
+
+    assert matches == [competitive]
+
+
+def test_youngest_player_age_requires_known_suitable_age():
+    suitable = Game(
+        bgg_id=1,
+        name="Family Game",
+        min_players=1,
+        max_players=4,
+        min_age=8,
+        owned=True,
+    )
+    too_old = Game(
+        bgg_id=2,
+        name="Older Game",
+        min_players=1,
+        max_players=4,
+        min_age=12,
+        owned=True,
+    )
+    unknown = Game(
+        bgg_id=3,
+        name="Unknown Age",
+        min_players=1,
+        max_players=4,
+        owned=True,
+    )
+
+    matches = PickerService().find_matches(
+        [suitable, too_old, unknown],
+        PickerCriteria(
+            players=2,
+            youngest_player_age=10,
+        ),
+    )
+
+    assert matches == [suitable]
+
+
 def test_low_sample_rejection_does_not_exclude_game():
     game = _game_with_two_player_poll(5, 9)
 

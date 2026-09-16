@@ -549,6 +549,82 @@ def test_picker_uses_preferred_mechanic():
         in data[0]["reasons"]
     )
 
+
+def test_picker_filters_by_game_type_and_age():
+    class FakeGameService:
+        def get_games(self):
+            return [
+                Game(
+                    bgg_id=1,
+                    name="Family Co-op",
+                    min_players=2,
+                    max_players=4,
+                    min_age=8,
+                    owned=True,
+                    mechanics=[
+                        "Cooperative Game"
+                    ],
+                ),
+                Game(
+                    bgg_id=2,
+                    name="Older Co-op",
+                    min_players=2,
+                    max_players=4,
+                    min_age=14,
+                    owned=True,
+                    mechanics=[
+                        "Cooperative Game"
+                    ],
+                ),
+                Game(
+                    bgg_id=3,
+                    name="Competitive Game",
+                    min_players=2,
+                    max_players=4,
+                    min_age=8,
+                    owned=True,
+                    mechanics=["Auction / Bidding"],
+                ),
+            ]
+
+    class FakePlayRepository:
+        def get_players(self):
+            return []
+
+        def get_group_game_play_stats(
+            self,
+            player_ids,
+        ):
+            return {}
+
+        def get_game_play_stats(self):
+            return {}
+
+    app.dependency_overrides[
+        get_game_service
+    ] = lambda: FakeGameService()
+    app.dependency_overrides[
+        get_picker_play_repository
+    ] = lambda: FakePlayRepository()
+
+    try:
+        response = client.get(
+            "/picker",
+            params={
+                "players": 2,
+                "play_style": "cooperative",
+                "youngest_player_age": 10,
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert [
+        item["game"]["bgg_id"]
+        for item in response.json()
+    ] == [1]
+
 def test_get_player_stats():
     class FakePlayRepository:
         def get_player_stats(

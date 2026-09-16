@@ -15,6 +15,7 @@ GAME_XML = """
 
         <minplaytime value="60"/>
         <maxplaytime value="120"/>
+        <minage value="14"/>
 
         <image>https://example.com/image.jpg</image>
         <thumbnail>https://example.com/thumb.jpg</thumbnail>
@@ -66,6 +67,8 @@ def test_sync_game_creates_new_game():
     assert game.player_count_poll == [
         PlayerCountPoll(2, 0, 9, 40, 49)
     ]
+    assert game.min_age == 14
+    assert game.min_age_checked is True
 
 
 def test_sync_game_updates_existing_game():
@@ -167,6 +170,12 @@ def test_sync_collection():
             return set()
 
         def get_bgg_ids_needing_expansion_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_min_age_check(
             self,
             bgg_ids,
         ):
@@ -279,6 +288,12 @@ def test_sync_collection_ignores_and_marks_expansions():
             return set()
 
         def get_bgg_ids_needing_expansion_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_min_age_check(
             self,
             bgg_ids,
         ):
@@ -410,6 +425,12 @@ def test_sync_collection_batches_uncached_games():
         ):
             return set()
 
+        def get_bgg_ids_needing_min_age_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
         def get_by_bgg_id(
             self,
             bgg_id,
@@ -530,6 +551,12 @@ def test_sync_collection_refreshes_legacy_player_count_poll():
         ):
             return set()
 
+        def get_bgg_ids_needing_min_age_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
         def get_by_bgg_id(
             self,
             bgg_id,
@@ -622,6 +649,12 @@ def test_sync_collection_rechecks_legacy_expansion_status():
         ):
             return {999999}
 
+        def get_bgg_ids_needing_min_age_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
         def get_by_bgg_id(
             self,
             bgg_id,
@@ -646,6 +679,86 @@ def test_sync_collection_rechecks_legacy_expansion_status():
     assert client.requested_ids == [999999]
     assert games[0].is_expansion is True
     assert games[0].expansion_checked is True
+
+
+def test_sync_collection_rechecks_legacy_min_age():
+    class FakeBGGClient:
+        def __init__(self):
+            self.requested_ids = []
+
+        def get_collection(
+            self,
+            username,
+        ):
+            return (
+                '<items><item objectid="174430"/></items>'
+            )
+
+        def get_games(
+            self,
+            bgg_ids,
+        ):
+            self.requested_ids.extend(
+                bgg_ids
+            )
+            return GAME_XML
+
+    class FakeRepository:
+        def __init__(self):
+            self.game = Game(
+                bgg_id=174430,
+                name="Legacy Gloomhaven",
+                min_age_checked=False,
+            )
+
+        def get_existing_bgg_ids(
+            self,
+            bgg_ids,
+        ):
+            return {174430}
+
+        def get_bgg_ids_needing_player_count_poll_refresh(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_expansion_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_min_age_check(
+            self,
+            bgg_ids,
+        ):
+            return {174430}
+
+        def get_by_bgg_id(
+            self,
+            bgg_id,
+        ):
+            return self.game
+
+        def update(
+            self,
+            game,
+        ):
+            self.game = game
+            return game
+
+    client = FakeBGGClient()
+    repository = FakeRepository()
+
+    games = CollectionService(
+        client,
+        repository,
+    ).sync_collection("tom")
+
+    assert client.requested_ids == [174430]
+    assert games[0].min_age == 14
+    assert games[0].min_age_checked is True
 
 def test_search_games_marks_owned_results():
     search_xml = """

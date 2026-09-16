@@ -14,6 +14,7 @@
 
         <minplaytime value="30"/>
         <maxplaytime value="120"/>
+        <minage value="14"/>
         <playingtime value="120"/>
 
         <image>

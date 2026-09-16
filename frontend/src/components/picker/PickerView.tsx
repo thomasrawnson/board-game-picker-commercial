@@ -9,6 +9,7 @@ import {
   type PickerMatch,
   type PickerMode,
   type PickerNoMatchGuidance,
+  type PickerPlayStyle,
 } from "../../api/client"
 
 import {
@@ -90,6 +91,20 @@ function PickerView({
     useState<number | null>(
       null
     )
+
+  const [
+    youngestPlayerAge,
+    setYoungestPlayerAge,
+  ] = useState<number | null>(
+    null
+  )
+
+  const [
+    playStyle,
+    setPlayStyle,
+  ] = useState<PickerPlayStyle>(
+    "any"
+  )
 
   const [
     preferredCategories,
@@ -307,6 +322,12 @@ function PickerView({
             nextMaxComplexity
             ?? undefined,
 
+          youngestPlayerAge:
+            youngestPlayerAge
+            ?? undefined,
+
+          playStyle,
+
           preferredCategories,
 
           preferredMechanics,
@@ -379,6 +400,14 @@ function PickerView({
   function relaxComplexity() {
     setMaxComplexity(
       null
+    )
+
+    setYoungestPlayerAge(
+      null
+    )
+
+    setPlayStyle(
+      "any"
     )
 
     void loadMatches(
@@ -604,6 +633,12 @@ function PickerView({
           maxComplexity={
             maxComplexity
           }
+          youngestPlayerAge={
+            youngestPlayerAge
+          }
+          playStyle={
+            playStyle
+          }
           mode={
             mode
           }
@@ -615,6 +650,12 @@ function PickerView({
           }
           onComplexityChange={
             setMaxComplexity
+          }
+          onYoungestPlayerAgeChange={
+            setYoungestPlayerAge
+          }
+          onPlayStyleChange={
+            setPlayStyle
           }
           onModeChange={
             setMode

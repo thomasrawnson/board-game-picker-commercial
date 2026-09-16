@@ -123,10 +123,18 @@ class CollectionService:
             )
         )
 
+        min_age_check_ids = (
+            self.repository
+            .get_bgg_ids_needing_min_age_check(
+                bgg_ids
+            )
+        )
+
         metadata_refresh_ids = (
             set(missing_ids)
             | poll_refresh_ids
             | expansion_check_ids
+            | min_age_check_ids
         )
 
         metadata_ids = [

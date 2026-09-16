@@ -319,6 +319,16 @@ class Game(Base):
         Integer,
     )
 
+    min_age: Mapped[int | None] = mapped_column(
+        Integer,
+    )
+
+    min_age_checked: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
+
     complexity: Mapped[float | None] = mapped_column(
         Float,
     )

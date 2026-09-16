@@ -33,6 +33,8 @@ def test_update_game():
             max_players=5,
             rating=8.5,
             complexity=3.5,
+            min_age=14,
+            min_age_checked=True,
             player_count_poll=[
                 PlayerCountPoll(
                     player_count=2,
@@ -53,6 +55,8 @@ def test_update_game():
         assert result.max_players == 5
         assert result.rating == 8.5
         assert result.complexity == 3.5
+        assert result.min_age == 14
+        assert result.min_age_checked is True
         assert result.player_count_poll == [
             PlayerCountPoll(2, 0, 9, 40, 49)
         ]
@@ -233,6 +237,45 @@ def test_games_needing_expansion_check():
         assert (
             repository
             .get_bgg_ids_needing_expansion_check(
+                [unchecked_id, checked_id]
+            )
+            == {unchecked_id}
+        )
+    finally:
+        repository.delete(unchecked_id)
+        repository.delete(checked_id)
+        db.close()
+
+
+def test_games_needing_min_age_check():
+    db = SessionLocal()
+    repository = GameRepository(db)
+    unchecked_id = 999023
+    checked_id = 999024
+
+    try:
+        repository.delete(unchecked_id)
+        repository.delete(checked_id)
+
+        repository.create(
+            DomainGame(
+                bgg_id=unchecked_id,
+                name="Unchecked Age",
+                min_age_checked=False,
+            )
+        )
+        repository.create(
+            DomainGame(
+                bgg_id=checked_id,
+                name="Checked Age",
+                min_age=10,
+                min_age_checked=True,
+            )
+        )
+
+        assert (
+            repository
+            .get_bgg_ids_needing_min_age_check(
                 [unchecked_id, checked_id]
             )
             == {unchecked_id}

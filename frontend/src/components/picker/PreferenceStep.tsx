@@ -1,5 +1,6 @@
 import type {
   PickerMode,
+  PickerPlayStyle,
 } from "../../api/client"
 
 
@@ -7,11 +8,19 @@ type Props = {
   preferredCategories: string[]
   preferredMechanics: string[]
   maxComplexity: number | null
+  youngestPlayerAge: number | null
+  playStyle: PickerPlayStyle
   mode: PickerMode
   error: string
   loading: boolean
   onComplexityChange: (
     value: number | null,
+  ) => void
+  onYoungestPlayerAgeChange: (
+    value: number | null,
+  ) => void
+  onPlayStyleChange: (
+    value: PickerPlayStyle,
   ) => void
   onModeChange: (
     mode: PickerMode,
@@ -73,6 +82,36 @@ const modeOptions: {
 ]
 
 
+const playStyleOptions: {
+  value: PickerPlayStyle
+  label: string
+}[] = [
+  {
+    value: "any",
+    label: "Either",
+  },
+  {
+    value: "cooperative",
+    label: "Cooperative",
+  },
+  {
+    value: "competitive",
+    label: "Competitive",
+  },
+]
+
+
+const ageOptions = [
+  null,
+  6,
+  8,
+  10,
+  12,
+  14,
+  16,
+]
+
+
 function selectionSummary(
   values: string[],
 ) {
@@ -92,10 +131,14 @@ function PreferenceStep({
   preferredCategories,
   preferredMechanics,
   maxComplexity,
+  youngestPlayerAge,
+  playStyle,
   mode,
   error,
   loading,
   onComplexityChange,
+  onYoungestPlayerAgeChange,
+  onPlayStyleChange,
   onModeChange,
   onOpenTheme,
   onOpenPlayStyle,
@@ -161,6 +204,39 @@ function PreferenceStep({
 
       <div className="preference-section">
         <p className="preference-label">
+          Game type
+        </p>
+
+        <div className="play-style-grid">
+          {playStyleOptions.map(
+            (option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={
+                  playStyle === option.value
+                    ? "preference-chip selected"
+                    : "preference-chip"
+                }
+                aria-pressed={
+                  playStyle === option.value
+                }
+                onClick={() =>
+                  onPlayStyleChange(
+                    option.value
+                  )
+                }
+              >
+                {option.label}
+              </button>
+            ),
+          )}
+        </div>
+      </div>
+
+
+      <div className="preference-section">
+        <p className="preference-label">
           Complexity
         </p>
 
@@ -204,7 +280,17 @@ function PreferenceStep({
       </div>
 
 
-      <div className="preference-link-list">
+      <details className="advanced-filters">
+        <summary>
+          <span>
+            <strong>Advanced filters</strong>
+            <small>
+              Theme, mechanics and age
+            </small>
+          </span>
+        </summary>
+
+        <div className="preference-link-list">
         <button
           type="button"
           className="picker-navigation-card"
@@ -242,7 +328,7 @@ function PreferenceStep({
         >
           <span>
             <strong>
-              Play style
+              Mechanics
             </strong>
 
             <small>
@@ -259,7 +345,42 @@ function PreferenceStep({
             ›
           </span>
         </button>
-      </div>
+        </div>
+
+        <div className="advanced-age-filter">
+          <p className="preference-label">
+            Youngest player age
+          </p>
+
+          <div className="age-filter-grid">
+            {ageOptions.map(
+              (age) => (
+                <button
+                  key={age ?? "any"}
+                  type="button"
+                  className={
+                    youngestPlayerAge === age
+                      ? "preference-chip selected"
+                      : "preference-chip"
+                  }
+                  aria-pressed={
+                    youngestPlayerAge === age
+                  }
+                  onClick={() =>
+                    onYoungestPlayerAgeChange(
+                      age
+                    )
+                  }
+                >
+                  {age === null
+                    ? "Any"
+                    : `${age}+`}
+                </button>
+              ),
+            )}
+          </div>
+        </div>
+      </details>
 
 
       {error && (

@@ -70,6 +70,13 @@ class BGStatsImportService:
                     existing_game
                     .expansion_checked
                 )
+                game.min_age = (
+                    existing_game.min_age
+                )
+                game.min_age_checked = (
+                    existing_game
+                    .min_age_checked
+                )
 
                 saved_game = (
                     self.repository.update(

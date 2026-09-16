@@ -13,6 +13,12 @@ PICKER_MODES = {
     "surprise",
 }
 
+PLAY_STYLES = {
+    "any",
+    "cooperative",
+    "competitive",
+}
+
 MIN_PLAYER_COUNT_POLL_VOTES = 10
 PLAYER_COUNT_PENALTY_PERCENT = 30
 PLAYER_COUNT_EXCLUSION_PERCENT = 50
@@ -24,6 +30,8 @@ class PickerCriteria:
     players: int
     max_play_time: int | None = None
     max_complexity: float | None = None
+    youngest_player_age: int | None = None
+    play_style: str = "any"
     preferred_categories: list[str] = field(
         default_factory=list
     )
@@ -164,6 +172,18 @@ class PickerService:
             ):
                 continue
 
+            if not self._fits_min_age(
+                game,
+                criteria.youngest_player_age,
+            ):
+                continue
+
+            if not self._fits_play_style(
+                game,
+                criteria.play_style,
+            ):
+                continue
+
             matches.append(game)
 
         return matches
@@ -282,6 +302,24 @@ class PickerService:
         if complexity_reason:
             reasons.append(
                 complexity_reason
+            )
+
+        if criteria.play_style == "cooperative":
+            reasons.append(
+                "Cooperative game"
+            )
+        elif criteria.play_style == "competitive":
+            reasons.append(
+                "Competitive game"
+            )
+
+        if (
+            criteria.youngest_player_age
+            is not None
+            and game.min_age is not None
+        ):
+            reasons.append(
+                f"Suitable for ages {game.min_age}+"
             )
 
         (
@@ -795,6 +833,44 @@ class PickerService:
             <= players
             <= game.max_players
         )
+
+    @staticmethod
+    def _fits_min_age(
+        game: Game,
+        youngest_player_age: int | None,
+    ) -> bool:
+        if youngest_player_age is None:
+            return True
+
+        return (
+            game.min_age is not None
+            and game.min_age
+            <= youngest_player_age
+        )
+
+    @staticmethod
+    def _fits_play_style(
+        game: Game,
+        play_style: str,
+    ) -> bool:
+        if play_style == "any":
+            return True
+
+        is_cooperative = any(
+            mechanic.strip().casefold()
+            == "cooperative game"
+            for mechanic in (
+                game.mechanics or []
+            )
+        )
+
+        if play_style == "cooperative":
+            return is_cooperative
+
+        if play_style == "competitive":
+            return not is_cooperative
+
+        return False
 
     @staticmethod
     def _fits_play_time(

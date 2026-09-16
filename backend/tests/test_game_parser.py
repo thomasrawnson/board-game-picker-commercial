@@ -27,6 +27,8 @@ def test_parse_game_metadata():
 
     assert game.min_play_time == 30
     assert game.max_play_time == 120
+    assert game.min_age == 14
+    assert game.min_age_checked is True
 
     assert game.rating == 8.4
     assert game.complexity == 3.85

@@ -12,6 +12,7 @@ class GameCreate(BaseModel):
 
     min_play_time: int | None = Field(default=None, ge=0)
     max_play_time: int | None = Field(default=None, ge=0)
+    min_age: int | None = Field(default=None, ge=0)
 
     complexity: float | None = Field(default=None, ge=0)
     rating: float | None = Field(default=None, ge=0, le=10)

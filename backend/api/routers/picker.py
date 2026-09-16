@@ -89,6 +89,17 @@ def pick_games(
         ge=0,
         le=5,
     ),
+    youngest_player_age: int | None = Query(
+        None,
+        ge=1,
+        le=120,
+    ),
+    play_style: str = Query(
+        "any",
+        pattern=(
+            "^(any|cooperative|competitive)$"
+        ),
+    ),
     preferred_categories: list[str] = Query(
         default=[],
     ),
@@ -186,6 +197,10 @@ def pick_games(
         players=players,
         max_play_time=max_play_time,
         max_complexity=max_complexity,
+        youngest_player_age=(
+            youngest_player_age
+        ),
+        play_style=play_style,
         preferred_categories=(
             preferred_categories
         ),

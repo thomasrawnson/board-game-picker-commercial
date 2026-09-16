@@ -25,6 +25,8 @@ class Game:
 
     min_play_time: int | None = None
     max_play_time: int | None = None
+    min_age: int | None = None
+    min_age_checked: bool = False
 
     complexity: float | None = None
     rating: float | None = None

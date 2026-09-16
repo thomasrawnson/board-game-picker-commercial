@@ -84,6 +84,13 @@ def _parse_game_item(
                 "maxplaytime",
             )
         ),
+        min_age=(
+            _get_value_int(
+                item,
+                "minage",
+            )
+        ),
+        min_age_checked=True,
         image_url=_get_text(
             item,
             "image",

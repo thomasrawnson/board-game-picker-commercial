@@ -14,6 +14,7 @@ export interface Game {
   max_players: number | null
   min_play_time: number | null
   max_play_time: number | null
+  min_age: number | null
   complexity: number | null
   rating: number | null
   owned: boolean
@@ -53,12 +54,19 @@ export type PickerMode =
   | "different"
   | "surprise"
 
+export type PickerPlayStyle =
+  | "any"
+  | "cooperative"
+  | "competitive"
+
 
 export interface PickerCriteria {
   players: number
   playerIds?: number[]
   maxPlayTime?: number
   maxComplexity?: number
+  youngestPlayerAge?: number
+  playStyle?: PickerPlayStyle
   preferredCategories?: string[]
   preferredMechanics?: string[]
   mode?: PickerMode
@@ -507,6 +515,24 @@ export async function getPickerMatches(
       "max_complexity",
       criteria.maxComplexity
         .toString(),
+    )
+  }
+
+  if (
+    criteria.youngestPlayerAge !==
+    undefined
+  ) {
+    params.set(
+      "youngest_player_age",
+      criteria.youngestPlayerAge
+        .toString(),
+    )
+  }
+
+  if (criteria.playStyle) {
+    params.set(
+      "play_style",
+      criteria.playStyle,
     )
   }
 

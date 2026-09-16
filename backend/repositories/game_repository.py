@@ -411,6 +411,10 @@ class GameRepository:
             max_players=game.max_players,
             min_play_time=game.min_play_time,
             max_play_time=game.max_play_time,
+            min_age=game.min_age,
+            min_age_checked=(
+                game.min_age_checked
+            ),
             best_player_counts=(
                 game.best_player_counts or []
             ),
@@ -493,6 +497,12 @@ class GameRepository:
         )
         database_game.max_play_time = (
             game.max_play_time
+        )
+        database_game.min_age = (
+            game.min_age
+        )
+        database_game.min_age_checked = (
+            game.min_age_checked
         )
         database_game.complexity = (
             game.complexity
@@ -642,6 +652,10 @@ class GameRepository:
             ),
             max_play_time=(
                 database_game.max_play_time
+            ),
+            min_age=database_game.min_age,
+            min_age_checked=(
+                database_game.min_age_checked
             ),
             complexity=database_game.complexity,
             rating=database_game.rating,
@@ -798,6 +812,33 @@ class GameRepository:
                 ),
                 DatabaseGame
                 .expansion_checked
+                .is_(False),
+            )
+            .all()
+        )
+
+        return {
+            row[0]
+            for row in rows
+        }
+
+    def get_bgg_ids_needing_min_age_check(
+        self,
+        bgg_ids: list[int],
+    ) -> set[int]:
+        if not bgg_ids:
+            return set()
+
+        rows = (
+            self.db.query(
+                DatabaseGame.bgg_id
+            )
+            .filter(
+                DatabaseGame.bgg_id.in_(
+                    bgg_ids
+                ),
+                DatabaseGame
+                .min_age_checked
                 .is_(False),
             )
             .all()

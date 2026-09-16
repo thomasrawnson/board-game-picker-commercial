@@ -58,6 +58,8 @@ def test_import_updates_existing_game():
                     name="Existing game",
                     is_expansion=True,
                     expansion_checked=True,
+                    min_age=12,
+                    min_age_checked=True,
                     best_player_counts=[4],
                     recommended_player_counts=[3, 4],
                     player_count_poll=[poll],
@@ -92,5 +94,11 @@ def test_import_updates_existing_game():
     assert (
         repository.updated[0]
         .expansion_checked
+        is True
+    )
+    assert repository.updated[0].min_age == 12
+    assert (
+        repository.updated[0]
+        .min_age_checked
         is True
     )

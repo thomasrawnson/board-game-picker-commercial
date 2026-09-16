@@ -35,3 +35,5 @@ def test_expansion_flag_is_declared_in_model_metadata():
         "expansion_checked"
         in Game.__table__.columns
     )
+    assert "min_age" in Game.__table__.columns
+    assert "min_age_checked" in Game.__table__.columns
