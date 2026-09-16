@@ -130,6 +130,13 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    picker_sessions = relationship(
+        "PickerSession",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
 class AuthToken(Base):
     __tablename__ = "auth_tokens"
 
@@ -563,6 +570,111 @@ class PlayParticipant(Base):
     player = relationship(
         "Player",
         back_populates="participants",
+    )
+
+
+class PickerSession(Base):
+    __tablename__ = "picker_sessions"
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    public_id: Mapped[str] = mapped_column(
+        String(36),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
+    )
+
+    criteria: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=False,
+    )
+
+    recommendation_bgg_ids: Mapped[list[int]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+
+    user = relationship(
+        "User",
+        back_populates="picker_sessions",
+    )
+
+    events = relationship(
+        "PickerEvent",
+        back_populates="session",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+
+class PickerEvent(Base):
+    __tablename__ = "picker_events"
+
+    __table_args__ = (
+        Index(
+            "ix_picker_events_session_created_at",
+            "picker_session_id",
+            "created_at",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    picker_session_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "picker_sessions.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
+
+    event_type: Mapped[str] = mapped_column(
+        String(40),
+        nullable=False,
+    )
+
+    bgg_id: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    position: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+
+    session = relationship(
+        "PickerSession",
+        back_populates="events",
     )
 
 class Category(Base):

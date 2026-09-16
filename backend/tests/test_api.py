@@ -6,6 +6,7 @@ from api.main import (
     app,
     get_collection_service,
     get_game_service,
+    get_picker_analytics_repository,
     get_picker_play_repository,
     get_play_repository,
     get_play_service,
@@ -20,6 +21,46 @@ from models.play import Play
 
 
 client = TestClient(app)
+
+
+class FakePickerAnalyticsRepository:
+    def __init__(self):
+        self.sessions = []
+        self.events = []
+
+    def create_session(
+        self,
+        criteria,
+        recommendation_bgg_ids,
+    ):
+        self.sessions.append(
+            {
+                "criteria": criteria,
+                "recommendation_bgg_ids": (
+                    recommendation_bgg_ids
+                ),
+            }
+        )
+        return (
+            "00000000-0000-0000-0000-000000000001"
+        )
+
+    def record_event(
+        self,
+        public_id,
+        event_type,
+        bgg_id=None,
+        position=None,
+    ):
+        self.events.append(
+            {
+                "public_id": public_id,
+                "event_type": event_type,
+                "bgg_id": bgg_id,
+                "position": position,
+            }
+        )
+        return True
 
 
 def test_get_game_returns_game():
@@ -216,6 +257,13 @@ def test_picker_returns_ranked_matches():
         get_picker_play_repository
     ] = lambda: FakePlayRepository()
 
+    analytics = (
+        FakePickerAnalyticsRepository()
+    )
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: analytics
+
     try:
         response = client.get(
             "/picker",
@@ -256,6 +304,14 @@ def test_picker_returns_ranked_matches():
     assert (
         "Supports 2 players"
         in data[0]["reasons"]
+    )
+
+    assert len(analytics.sessions) == 1
+    assert (
+        analytics.sessions[0][
+            "recommendation_bgg_ids"
+        ]
+        == [2, 1]
     )
 
 
@@ -328,6 +384,13 @@ def test_picker_guidance_explains_safe_no_match_options():
         get_picker_play_repository
     ] = lambda: FakePlayRepository()
 
+    analytics = (
+        FakePickerAnalyticsRepository()
+    )
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: analytics
+
     try:
         response = client.get(
             "/picker",
@@ -352,6 +415,19 @@ def test_picker_guidance_explains_safe_no_match_options():
         "can_relax_complexity": False,
         "can_relax_both": True,
     }
+    assert data["session_id"] == (
+        "00000000-0000-0000-0000-000000000001"
+    )
+    assert (
+        analytics.sessions[0]["criteria"]
+        ["players"]
+        == 2
+    )
+    assert (
+        analytics.sessions[0]["criteria"]
+        ["mood_used"]
+        is False
+    )
 
 
 def test_picker_requires_valid_player_count():
@@ -386,6 +462,10 @@ def test_picker_requires_valid_player_count():
         get_picker_play_repository
     ] = lambda: FakePlayRepository()
 
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: FakePickerAnalyticsRepository()
+
     try:
         response = client.get(
             "/picker",
@@ -401,6 +481,69 @@ def test_picker_requires_valid_player_count():
         response.status_code
         == 422
     )
+
+
+def test_picker_event_is_recorded():
+    analytics = (
+        FakePickerAnalyticsRepository()
+    )
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: analytics
+
+    try:
+        response = client.post(
+            "/picker/events",
+            json={
+                "session_id": (
+                    "00000000-0000-0000-0000-000000000001"
+                ),
+                "event_type": "view_game",
+                "bgg_id": 42,
+                "position": 1,
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 204
+    assert analytics.events == [
+        {
+            "public_id": (
+                "00000000-0000-0000-0000-000000000001"
+            ),
+            "event_type": "view_game",
+            "bgg_id": 42,
+            "position": 1,
+        }
+    ]
+
+
+def test_picker_event_rejects_unknown_session():
+    class MissingSessionRepository(
+        FakePickerAnalyticsRepository
+    ):
+        def record_event(self, *args, **kwargs):
+            return False
+
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: MissingSessionRepository()
+
+    try:
+        response = client.post(
+            "/picker/events",
+            json={
+                "session_id": (
+                    "00000000-0000-0000-0000-000000000099"
+                ),
+                "event_type": "start_over",
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 404
 
 
 def test_record_play_returns_404_for_unknown_game():
@@ -419,6 +562,10 @@ def test_record_play_returns_404_for_unknown_game():
     app.dependency_overrides[
         get_play_service
     ] = lambda: FakePlayService()
+
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: FakePickerAnalyticsRepository()
 
     try:
         response = client.post(
@@ -452,6 +599,61 @@ def test_record_play_returns_404_for_unknown_game():
         response.json()["detail"]
         == "Game not found"
     )
+
+
+def test_record_play_links_picker_conversion():
+    class FakePlayService:
+        def record_play(
+            self,
+            bgg_id: int,
+            played_at,
+            duration_minutes: int | None,
+            participants: list[dict],
+        ):
+            return Play(
+                id=7,
+                bgg_id=bgg_id,
+                player_count=len(participants),
+                played_at=played_at,
+            )
+
+    analytics = (
+        FakePickerAnalyticsRepository()
+    )
+    app.dependency_overrides[
+        get_play_service
+    ] = lambda: FakePlayService()
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: analytics
+
+    try:
+        response = client.post(
+            "/plays",
+            json={
+                "bgg_id": 42,
+                "played_at": (
+                    "2026-09-16T20:00:00+00:00"
+                ),
+                "participants": [
+                    {
+                        "name": "Tom",
+                        "is_winner": True,
+                    }
+                ],
+                "picker_session_id": (
+                    "00000000-0000-0000-0000-000000000001"
+                ),
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 201
+    assert analytics.events[0][
+        "event_type"
+    ] == "log_play"
+    assert analytics.events[0]["bgg_id"] == 42
 
 
 def test_picker_uses_preferred_mechanic():
@@ -513,6 +715,10 @@ def test_picker_uses_preferred_mechanic():
     app.dependency_overrides[
         get_picker_play_repository
     ] = lambda: FakePlayRepository()
+
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: FakePickerAnalyticsRepository()
 
     try:
         response = client.get(
@@ -606,6 +812,10 @@ def test_picker_filters_by_game_type_and_age():
     app.dependency_overrides[
         get_picker_play_repository
     ] = lambda: FakePlayRepository()
+
+    app.dependency_overrides[
+        get_picker_analytics_repository
+    ] = lambda: FakePickerAnalyticsRepository()
 
     try:
         response = client.get(

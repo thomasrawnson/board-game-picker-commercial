@@ -32,3 +32,9 @@ class PlayCreate(BaseModel):
     ] = Field(
         min_length=1,
     )
+
+    picker_session_id: str | None = Field(
+        default=None,
+        min_length=36,
+        max_length=36,
+    )

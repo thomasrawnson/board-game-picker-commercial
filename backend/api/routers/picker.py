@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -7,7 +9,14 @@ from fastapi import (
 
 from api.dependencies import (
     get_game_service,
+    get_picker_analytics_repository,
     get_play_repository,
+)
+from api.schemas.picker_analytics import (
+    PickerEventCreate,
+)
+from repositories.picker_analytics_repository import (
+    PickerAnalyticsRepository,
 )
 from repositories.play_repository import (
     PlayRepository,
@@ -31,6 +40,9 @@ from services.ai_picker_provider import (
 from config import settings
 
 router = APIRouter()
+logger = logging.getLogger(
+    "boardgamepicker.picker_analytics"
+)
 
 
 @router.get("/picker/options")
@@ -125,6 +137,9 @@ def pick_games(
     ),
     play_repository: PlayRepository = Depends(
         get_play_repository
+    ),
+    analytics_repository: PickerAnalyticsRepository = Depends(
+        get_picker_analytics_repository
     ),
     mood: str | None = Query(
         None,
@@ -225,12 +240,9 @@ def pick_games(
     def build_response(
         results: list[dict],
     ):
-        if not include_guidance:
-            return results
-
         guidance = None
 
-        if not results:
+        if include_guidance and not results:
             no_match_guidance = (
                 picker_service
                 .get_no_match_guidance(
@@ -258,9 +270,58 @@ def pick_games(
                 ),
             }
 
+        session_id = None
+
+        try:
+            session_id = (
+                analytics_repository
+                .create_session(
+                    criteria={
+                        "players": players,
+                        "selected_player_count": len(
+                            player_ids
+                        ),
+                        "max_play_time": max_play_time,
+                        "max_complexity": max_complexity,
+                        "youngest_player_age": (
+                            youngest_player_age
+                        ),
+                        "play_style": play_style,
+                        "preferred_categories": (
+                            preferred_categories
+                        ),
+                        "preferred_mechanics": (
+                            preferred_mechanics
+                        ),
+                        "mode": mode,
+                        "advanced_filters_used": bool(
+                            preferred_categories
+                            or preferred_mechanics
+                            or youngest_player_age
+                            is not None
+                        ),
+                        "mood_used": bool(
+                            mood and mood.strip()
+                        ),
+                    },
+                    recommendation_bgg_ids=[
+                        result["game"].bgg_id
+                        for result in results
+                    ],
+                )
+            )
+        except Exception:
+            logger.exception(
+                "picker_analytics_session_failed"
+            )
+
+        if not include_guidance:
+            return results
+
         return {
             "matches": results,
             "guidance": guidance,
+            "session_id": session_id,
         }
 
     if (
@@ -375,3 +436,25 @@ def pick_games(
         )
 
     return build_response(results)
+
+
+@router.post(
+    "/picker/events",
+    status_code=204,
+)
+def record_picker_event(
+    event: PickerEventCreate,
+    repository: PickerAnalyticsRepository = Depends(
+        get_picker_analytics_repository
+    ),
+):
+    if not repository.record_event(
+        public_id=event.session_id,
+        event_type=event.event_type,
+        bgg_id=event.bgg_id,
+        position=event.position,
+    ):
+        raise HTTPException(
+            status_code=404,
+            detail="Picker session not found",
+        )

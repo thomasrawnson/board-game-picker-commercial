@@ -7,6 +7,9 @@ from database.models import User
 from repositories.game_repository import GameRepository
 from repositories.insights_repository import InsightsRepository
 from repositories.play_repository import PlayRepository
+from repositories.picker_analytics_repository import (
+    PickerAnalyticsRepository,
+)
 from services.bgstats_play_import_service import (
     BGStatsPlayImportService,
 )
@@ -69,6 +72,18 @@ def get_play_service(
     ),
 ) -> PlayService:
     return PlayService(repository)
+
+
+def get_picker_analytics_repository(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        get_current_user
+    ),
+) -> PickerAnalyticsRepository:
+    return PickerAnalyticsRepository(
+        db,
+        user_id=current_user.id,
+    )
 
 
 def get_insights_service(

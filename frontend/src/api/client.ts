@@ -47,7 +47,13 @@ export interface PickerNoMatchGuidance {
 export interface PickerResponse {
   matches: PickerMatch[]
   guidance: PickerNoMatchGuidance | null
+  session_id: string | null
 }
+
+export type PickerEventType =
+  | "try_another"
+  | "view_game"
+  | "start_over"
 
 export type PickerMode =
   | "best_match"
@@ -591,10 +597,47 @@ export async function getPickerMatches(
     return {
       matches: data,
       guidance: null,
+      session_id: null,
     }
   }
 
   return data
+}
+
+
+export async function recordPickerEvent(
+  sessionId: string | null,
+  eventType: PickerEventType,
+  bggId?: number,
+  position?: number,
+): Promise<void> {
+  if (!sessionId) {
+    return
+  }
+
+  try {
+    await apiFetch(
+      "/picker/events",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+          event_type: eventType,
+          bgg_id: bggId,
+          position,
+        }),
+      },
+    )
+  } catch (err) {
+    console.error(
+      "Couldn't record picker analytics",
+      err,
+    )
+  }
 }
 
 export async function getGames():
@@ -639,6 +682,7 @@ export async function recordPlay(
     number | null,
   participants:
     PlayParticipant[],
+  pickerSessionId?: string | null,
 ): Promise<Play> {
   const response =
     await apiFetch(
@@ -656,6 +700,8 @@ export async function recordPlay(
           duration_minutes:
             durationMinutes,
           participants,
+          picker_session_id:
+            pickerSessionId,
         }),
       },
     )

@@ -6,6 +6,7 @@ import {
 import {
   getPickerMatches,
   getPickerOptions,
+  recordPickerEvent,
   type PickerMatch,
   type PickerMode,
   type PickerNoMatchGuidance,
@@ -159,6 +160,13 @@ function PickerView({
     )
 
   const [
+    pickerSessionId,
+    setPickerSessionId,
+  ] = useState<string | null>(
+    null
+  )
+
+  const [
     loading,
     setLoading,
   ] =
@@ -289,6 +297,8 @@ function PickerView({
   async function loadMatches(
     nextMaxPlayTime = maxPlayTime,
     nextMaxComplexity = maxComplexity,
+    nextYoungestPlayerAge = youngestPlayerAge,
+    nextPlayStyle = playStyle,
   ) {
     if (
       players === null
@@ -298,6 +308,10 @@ function PickerView({
 
     setLoading(
       true
+    )
+
+    setPickerSessionId(
+      null
     )
 
     setError(
@@ -323,10 +337,11 @@ function PickerView({
             ?? undefined,
 
           youngestPlayerAge:
-            youngestPlayerAge
+            nextYoungestPlayerAge
             ?? undefined,
 
-          playStyle,
+          playStyle:
+            nextPlayStyle,
 
           preferredCategories,
 
@@ -334,6 +349,10 @@ function PickerView({
 
           mode,
         })
+
+      setPickerSessionId(
+        response.session_id
+      )
 
       if (
         response.matches.length === 0
@@ -413,6 +432,8 @@ function PickerView({
     void loadMatches(
       maxPlayTime,
       null,
+      null,
+      "any",
     )
   }
 
@@ -426,9 +447,19 @@ function PickerView({
       null
     )
 
+    setYoungestPlayerAge(
+      null
+    )
+
+    setPlayStyle(
+      "any"
+    )
+
     void loadMatches(
       null,
       null,
+      null,
+      "any",
     )
   }
 
@@ -440,14 +471,31 @@ function PickerView({
       return
     }
 
-    setMatchIndex(
-      (current) =>
-        current + 1
+    const nextIndex =
+      matchIndex + 1
+
+    const nextMatch =
+      matches[nextIndex]
+
+    void recordPickerEvent(
+      pickerSessionId,
+      "try_another",
+      nextMatch.game.bgg_id,
+      nextIndex,
     )
+
+    setMatchIndex(nextIndex)
   }
 
 
   function startOver() {
+    void recordPickerEvent(
+      pickerSessionId,
+      "start_over",
+      match?.game.bgg_id,
+      match ? matchIndex : undefined,
+    )
+
     setStep(
       "players"
     )
@@ -466,6 +514,14 @@ function PickerView({
 
     setMaxComplexity(
       null
+    )
+
+    setYoungestPlayerAge(
+      null
+    )
+
+    setPlayStyle(
+      "any"
     )
 
     setPreferredCategories(
@@ -494,6 +550,28 @@ function PickerView({
 
     setNoMatchGuidance(
       null
+    )
+
+    setPickerSessionId(
+      null
+    )
+  }
+
+
+  function viewGame() {
+    if (!match) {
+      return
+    }
+
+    void recordPickerEvent(
+      pickerSessionId,
+      "view_game",
+      match.game.bgg_id,
+      matchIndex,
+    )
+
+    onViewGame(
+      match.game.bgg_id
     )
   }
 
@@ -801,17 +879,17 @@ function PickerView({
           playerCount={
             players ?? 1
           }
+          pickerSessionId={
+            pickerSessionId
+          }
           hasMoreMatches={
             hasMoreMatches
           }
           onTryAnother={
             tryAnother
           }
-          onViewGame={() =>
-            onViewGame(
-              match.game
-                .bgg_id
-            )
+          onViewGame={
+            viewGame
           }
           onStartOver={
             startOver

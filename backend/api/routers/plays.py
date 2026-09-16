@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -5,8 +7,12 @@ from fastapi import (
 )
 
 from api.dependencies import (
+    get_picker_analytics_repository,
     get_play_repository,
     get_play_service,
+)
+from repositories.picker_analytics_repository import (
+    PickerAnalyticsRepository,
 )
 
 from repositories.play_repository import (
@@ -17,6 +23,9 @@ from services.play_service import PlayService
 
 
 router = APIRouter()
+logger = logging.getLogger(
+    "boardgamepicker.picker_analytics"
+)
 
 
 @router.post(
@@ -27,6 +36,9 @@ def record_play(
     play_data: PlayCreate,
     service: PlayService = Depends(
         get_play_service
+    ),
+    analytics_repository: PickerAnalyticsRepository = Depends(
+        get_picker_analytics_repository
     ),
 ):
     try:
@@ -53,6 +65,20 @@ def record_play(
             status_code=404,
             detail="Game not found",
         )
+
+    if play_data.picker_session_id:
+        try:
+            analytics_repository.record_event(
+                public_id=(
+                    play_data.picker_session_id
+                ),
+                event_type="log_play",
+                bgg_id=play_data.bgg_id,
+            )
+        except Exception:
+            logger.exception(
+                "picker_play_analytics_failed"
+            )
 
     return play
 

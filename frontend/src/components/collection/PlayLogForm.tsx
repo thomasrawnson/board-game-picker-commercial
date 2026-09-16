@@ -27,6 +27,7 @@ type Props = {
   game: Game
   onSaved: () => Promise<void>
   initialPlayerCount?: number
+  pickerSessionId?: string | null
 }
 
 function todayValue() {
@@ -73,6 +74,7 @@ function PlayLogForm({
   game,
   onSaved,
   initialPlayerCount = 1,
+  pickerSessionId = null,
 }: Props) {
   const [open, setOpen] =
     useState(false)
@@ -345,6 +347,7 @@ function PlayLogForm({
           playedAt,
           durationMinutes,
           participants,
+          pickerSessionId,
         )
 
       const url =

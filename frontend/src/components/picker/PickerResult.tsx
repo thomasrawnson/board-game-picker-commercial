@@ -17,6 +17,7 @@ type Props = {
   totalMatches: number
   mode: PickerMode
   playerCount: number
+  pickerSessionId: string | null
   hasMoreMatches: boolean
   onTryAnother: () => void
   onViewGame: () => void
@@ -45,6 +46,7 @@ function PickerResult({
   totalMatches,
   mode,
   playerCount,
+  pickerSessionId,
   hasMoreMatches,
   onTryAnother,
   onViewGame,
@@ -273,6 +275,9 @@ function PickerResult({
           game={match.game}
           initialPlayerCount={
             playerCount
+          }
+          pickerSessionId={
+            pickerSessionId
           }
           onSaved={async () => {}}
         />

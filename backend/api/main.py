@@ -6,6 +6,7 @@ from config import settings
 from api.dependencies import (
     get_collection_service,
     get_game_service,
+    get_picker_analytics_repository,
     get_play_repository,
     get_play_service,
 )
