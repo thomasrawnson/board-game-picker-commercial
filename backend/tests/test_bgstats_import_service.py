@@ -56,6 +56,8 @@ def test_import_updates_existing_game():
                 return Game(
                     bgg_id=bgg_id,
                     name="Existing game",
+                    is_expansion=True,
+                    expansion_checked=True,
                     best_player_counts=[4],
                     recommended_player_counts=[3, 4],
                     player_count_poll=[poll],
@@ -86,3 +88,9 @@ def test_import_updates_existing_game():
         4,
     ]
     assert repository.updated[0].player_count_poll == [poll]
+    assert repository.updated[0].is_expansion is True
+    assert (
+        repository.updated[0]
+        .expansion_checked
+        is True
+    )

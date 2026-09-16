@@ -113,6 +113,80 @@ def test_parse_multiple_games():
         == "Terraforming Mars"
     )
 
+
+def test_expansion_type_is_parsed():
+    game = parse_game_metadata(
+        """
+        <items>
+            <item
+                type="boardgameexpansion"
+                id="999"
+            >
+                <name
+                    type="primary"
+                    value="Example Expansion"
+                />
+            </item>
+        </items>
+        """
+    )
+
+    assert game.is_expansion is True
+    assert game.expansion_checked is True
+
+
+def test_inbound_expansion_link_identifies_expansion():
+    game = parse_game_metadata(
+        """
+        <items>
+            <item
+                type="boardgame"
+                id="999"
+            >
+                <name
+                    type="primary"
+                    value="Example Expansion"
+                />
+                <link
+                    type="boardgameexpansion"
+                    id="1"
+                    value="Base Game"
+                    inbound="true"
+                />
+            </item>
+        </items>
+        """
+    )
+
+    assert game.is_expansion is True
+    assert game.expansion_checked is True
+
+
+def test_outbound_expansion_link_keeps_base_game():
+    game = parse_game_metadata(
+        """
+        <items>
+            <item
+                type="boardgame"
+                id="1"
+            >
+                <name
+                    type="primary"
+                    value="Base Game"
+                />
+                <link
+                    type="boardgameexpansion"
+                    id="999"
+                    value="Example Expansion"
+                />
+            </item>
+        </items>
+        """
+    )
+
+    assert game.is_expansion is False
+    assert game.expansion_checked is True
+
 def test_player_count_recommendations_are_parsed():
     xml = """
     <items>

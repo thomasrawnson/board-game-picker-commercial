@@ -17,6 +17,7 @@ class GameCreate(BaseModel):
     rating: float | None = Field(default=None, ge=0, le=10)
 
     owned: bool = False
+    is_expansion: bool = False
 
     image_url: str | None = None
     thumbnail_url: str | None = None

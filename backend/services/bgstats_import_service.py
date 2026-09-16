@@ -62,6 +62,14 @@ class BGStatsImportService:
                     existing_game
                     .player_count_poll
                 )
+                game.is_expansion = (
+                    existing_game
+                    .is_expansion
+                )
+                game.expansion_checked = (
+                    existing_game
+                    .expansion_checked
+                )
 
                 saved_game = (
                     self.repository.update(

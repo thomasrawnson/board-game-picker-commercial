@@ -166,6 +166,12 @@ def test_sync_collection():
         ):
             return set()
 
+        def get_bgg_ids_needing_expansion_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
         def get_by_bgg_id(
             self,
             bgg_id,
@@ -216,6 +222,116 @@ def test_sync_collection():
     assert len(games) == 2
     assert games[0].bgg_id == 174430
     assert games[1].bgg_id == 167791
+
+
+def test_sync_collection_ignores_and_marks_expansions():
+    collection_xml = """
+    <items>
+        <item
+            objectid="174430"
+            subtype="boardgame"
+        />
+        <item
+            objectid="999999"
+            subtype="boardgameexpansion"
+        />
+    </items>
+    """
+
+    class FakeBGGClient:
+        def get_collection(
+            self,
+            username,
+        ):
+            return collection_xml
+
+        def get_games(
+            self,
+            bgg_ids,
+        ):
+            assert bgg_ids == [174430]
+            return GAME_XML
+
+    class FakeRepository:
+        def __init__(self):
+            self.game = None
+            self.marked_ids = []
+            self.synced_ids = []
+
+        def mark_as_expansions(
+            self,
+            bgg_ids,
+        ):
+            self.marked_ids = list(
+                bgg_ids
+            )
+
+        def get_existing_bgg_ids(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_player_count_poll_refresh(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_expansion_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def create(self, game):
+            self.game = game
+            return game
+
+        def update(self, game):
+            self.game = game
+            return game
+
+        def get_by_bgg_id(
+            self,
+            bgg_id,
+        ):
+            if (
+                self.game is not None
+                and self.game.bgg_id
+                == bgg_id
+            ):
+                return self.game
+
+            return None
+
+        def sync_user_collection(
+            self,
+            user_id,
+            bgg_ids,
+        ):
+            self.synced_ids = list(
+                bgg_ids
+            )
+
+    repository = FakeRepository()
+
+    games = CollectionService(
+        FakeBGGClient(),
+        repository,
+        user_id=7,
+    ).sync_collection("tom")
+
+    assert repository.marked_ids == [
+        999999
+    ]
+    assert repository.synced_ids == [
+        174430
+    ]
+    assert [
+        game.bgg_id
+        for game in games
+    ] == [174430]
 
 def test_sync_collection_batches_uncached_games():
     ids = list(range(1, 46))
@@ -283,6 +399,12 @@ def test_sync_collection_batches_uncached_games():
             return set()
 
         def get_bgg_ids_needing_player_count_poll_refresh(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_expansion_check(
             self,
             bgg_ids,
         ):
@@ -402,6 +524,12 @@ def test_sync_collection_refreshes_legacy_player_count_poll():
         ):
             return {174430}
 
+        def get_bgg_ids_needing_expansion_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
         def get_by_bgg_id(
             self,
             bgg_id,
@@ -427,6 +555,97 @@ def test_sync_collection_refreshes_legacy_player_count_poll():
     assert games[0].player_count_poll == [
         PlayerCountPoll(2, 0, 9, 40, 49)
     ]
+
+
+def test_sync_collection_rechecks_legacy_expansion_status():
+    expansion_xml = """
+    <items>
+        <item type="boardgame" id="999999">
+            <name
+                type="primary"
+                value="Example Expansion"
+            />
+            <link
+                type="boardgameexpansion"
+                id="1"
+                value="Base Game"
+                inbound="true"
+            />
+        </item>
+    </items>
+    """
+
+    class FakeBGGClient:
+        def __init__(self):
+            self.requested_ids = []
+
+        def get_collection(
+            self,
+            username,
+        ):
+            return (
+                '<items><item objectid="999999"/></items>'
+            )
+
+        def get_games(
+            self,
+            bgg_ids,
+        ):
+            self.requested_ids.extend(
+                bgg_ids
+            )
+            return expansion_xml
+
+    class FakeRepository:
+        def __init__(self):
+            self.game = Game(
+                bgg_id=999999,
+                name="Legacy Expansion",
+                expansion_checked=False,
+            )
+
+        def get_existing_bgg_ids(
+            self,
+            bgg_ids,
+        ):
+            return {999999}
+
+        def get_bgg_ids_needing_player_count_poll_refresh(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_expansion_check(
+            self,
+            bgg_ids,
+        ):
+            return {999999}
+
+        def get_by_bgg_id(
+            self,
+            bgg_id,
+        ):
+            return self.game
+
+        def update(
+            self,
+            game,
+        ):
+            self.game = game
+            return game
+
+    client = FakeBGGClient()
+    repository = FakeRepository()
+
+    games = CollectionService(
+        client,
+        repository,
+    ).sync_collection("tom")
+
+    assert client.requested_ids == [999999]
+    assert games[0].is_expansion is True
+    assert games[0].expansion_checked is True
 
 def test_search_games_marks_owned_results():
     search_xml = """
@@ -547,3 +766,51 @@ def test_add_game_fetches_uncached_game():
     ]
     assert game.bgg_id == 174430
     assert game.owned is True
+
+
+def test_add_game_rejects_expansion():
+    class FakeBGGClient:
+        def get_game(self, bgg_id):
+            return """
+            <items>
+                <item
+                    type="boardgameexpansion"
+                    id="999999"
+                >
+                    <name
+                        type="primary"
+                        value="Example Expansion"
+                    />
+                </item>
+            </items>
+            """
+
+    class FakeRepository:
+        def get_by_bgg_id(
+            self,
+            bgg_id,
+        ):
+            return None
+
+        def create(self, game):
+            raise AssertionError(
+                "Expansion must not be created"
+            )
+
+    service = CollectionService(
+        FakeBGGClient(),
+        FakeRepository(),
+        user_id=7,
+    )
+
+    try:
+        service.add_game(999999)
+    except ValueError as exc:
+        assert str(exc) == (
+            "Expansions aren't added "
+            "to the collection."
+        )
+    else:
+        raise AssertionError(
+            "Expected expansion rejection"
+        )

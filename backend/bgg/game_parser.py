@@ -115,6 +115,26 @@ def _parse_game_item(
         player_count_poll=(
             player_count_poll
         ),
+        is_expansion=_is_expansion(
+            item
+        ),
+        expansion_checked=True,
+    )
+
+
+def _is_expansion(item) -> bool:
+    if (
+        item.attrib.get("type")
+        == "boardgameexpansion"
+    ):
+        return True
+
+    return any(
+        link.attrib.get("type")
+        == "boardgameexpansion"
+        and link.attrib.get("inbound")
+        == "true"
+        for link in item.findall("link")
     )
 
 

@@ -327,6 +327,18 @@ class Game(Base):
         Float,
     )
 
+    is_expansion: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
+
+    expansion_checked: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
+
     # Temporary compatibility field.
     # Ownership will move entirely to UserGame.
     owned: Mapped[bool] = mapped_column(

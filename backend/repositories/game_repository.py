@@ -25,7 +25,9 @@ class GameRepository:
                 == DatabaseGame.id,
             )
             .filter(
-                UserGame.user_id == user_id
+                UserGame.user_id == user_id,
+                DatabaseGame.is_expansion
+                .is_(False),
             )
             .order_by(DatabaseGame.name)
             .all()
@@ -57,6 +59,8 @@ class GameRepository:
             .filter(
                 UserGame.user_id == user_id,
                 DatabaseGame.bgg_id == bgg_id,
+                DatabaseGame.is_expansion
+                .is_(False),
             )
             .first()
         )
@@ -382,6 +386,10 @@ class GameRepository:
     ) -> list[DomainGame]:
         database_games = (
             self.db.query(DatabaseGame)
+            .filter(
+                DatabaseGame.is_expansion
+                .is_(False)
+            )
             .order_by(DatabaseGame.name)
             .all()
         )
@@ -417,6 +425,10 @@ class GameRepository:
             ),
             complexity=game.complexity,
             rating=game.rating,
+            is_expansion=game.is_expansion,
+            expansion_checked=(
+                game.expansion_checked
+            ),
             owned=game.owned,
             image_url=game.image_url,
             thumbnail_url=game.thumbnail_url,
@@ -486,6 +498,12 @@ class GameRepository:
             game.complexity
         )
         database_game.rating = game.rating
+        database_game.is_expansion = (
+            game.is_expansion
+        )
+        database_game.expansion_checked = (
+            game.expansion_checked
+        )
         database_game.owned = game.owned
         database_game.image_url = (
             game.image_url
@@ -627,6 +645,13 @@ class GameRepository:
             ),
             complexity=database_game.complexity,
             rating=database_game.rating,
+            is_expansion=(
+                database_game.is_expansion
+            ),
+            expansion_checked=(
+                database_game
+                .expansion_checked
+            ),
             owned=database_game.owned,
             image_url=database_game.image_url,
             thumbnail_url=(
@@ -727,6 +752,60 @@ class GameRepository:
             game.bgg_id
             for game in database_games
             if not game.player_count_poll
+        }
+
+    def mark_as_expansions(
+        self,
+        bgg_ids: list[int],
+    ) -> None:
+        if not bgg_ids:
+            return
+
+        (
+            self.db.query(DatabaseGame)
+            .filter(
+                DatabaseGame.bgg_id.in_(
+                    bgg_ids
+                )
+            )
+            .update(
+                {
+                    DatabaseGame.is_expansion:
+                    True,
+                    DatabaseGame.expansion_checked:
+                    True,
+                },
+                synchronize_session=False,
+            )
+        )
+
+        self.db.commit()
+
+    def get_bgg_ids_needing_expansion_check(
+        self,
+        bgg_ids: list[int],
+    ) -> set[int]:
+        if not bgg_ids:
+            return set()
+
+        rows = (
+            self.db.query(
+                DatabaseGame.bgg_id
+            )
+            .filter(
+                DatabaseGame.bgg_id.in_(
+                    bgg_ids
+                ),
+                DatabaseGame
+                .expansion_checked
+                .is_(False),
+            )
+            .all()
+        )
+
+        return {
+            row[0]
+            for row in rows
         }
 
     def sync_user_collection(

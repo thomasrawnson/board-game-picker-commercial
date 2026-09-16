@@ -4,6 +4,7 @@ from models.game import Game as DomainGame
 from models.game import PlayerCountPoll
 from repositories.game_repository import GameRepository
 from database.models import Category, Mechanic
+from database.models import User, UserGame
 
 
 def test_update_game():
@@ -112,6 +113,84 @@ def test_update_missing_game_returns_none():
         db.close()
 
 
+def test_owned_collection_excludes_expansions():
+    db = SessionLocal()
+    repository = GameRepository(db)
+    game_id = 999020
+    user_email = (
+        "expansion-filter@example.com"
+    )
+    user_id = None
+
+    try:
+        repository.delete(game_id)
+        db.query(User).filter(
+            User.email == user_email
+        ).delete()
+        db.commit()
+
+        user = User(
+            email=user_email,
+            display_name="Expansion Filter",
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        user_id = user.id
+
+        repository.create(
+            DomainGame(
+                bgg_id=game_id,
+                name="Hidden Expansion",
+                is_expansion=True,
+            )
+        )
+
+        database_game = (
+            db.query(DatabaseGame)
+            .filter(
+                DatabaseGame.bgg_id
+                == game_id
+            )
+            .one()
+        )
+
+        db.add(
+            UserGame(
+                user_id=user.id,
+                game_id=database_game.id,
+                source="manual",
+            )
+        )
+        db.commit()
+
+        assert repository.get_owned_by_bgg_id(
+            user.id,
+            game_id,
+        ) is None
+        assert game_id not in {
+            game.bgg_id
+            for game
+            in repository.get_owned_by_user(
+                user.id
+            )
+        }
+    finally:
+        if user_id is not None:
+            db.query(UserGame).filter(
+                UserGame.user_id
+                == user_id
+            ).delete(
+                synchronize_session=False
+            )
+        repository.delete(game_id)
+        db.query(User).filter(
+            User.email == user_email
+        ).delete()
+        db.commit()
+        db.close()
+
+
 def test_delete_missing_game_returns_false():
     db = SessionLocal()
 
@@ -123,6 +202,44 @@ def test_delete_missing_game_returns_false():
         assert result is False
 
     finally:
+        db.close()
+
+
+def test_games_needing_expansion_check():
+    db = SessionLocal()
+    repository = GameRepository(db)
+    unchecked_id = 999021
+    checked_id = 999022
+
+    try:
+        repository.delete(unchecked_id)
+        repository.delete(checked_id)
+
+        repository.create(
+            DomainGame(
+                bgg_id=unchecked_id,
+                name="Unchecked Game",
+                expansion_checked=False,
+            )
+        )
+        repository.create(
+            DomainGame(
+                bgg_id=checked_id,
+                name="Checked Game",
+                expansion_checked=True,
+            )
+        )
+
+        assert (
+            repository
+            .get_bgg_ids_needing_expansion_check(
+                [unchecked_id, checked_id]
+            )
+            == {unchecked_id}
+        )
+    finally:
+        repository.delete(unchecked_id)
+        repository.delete(checked_id)
         db.close()
 
 def test_create_game_persists_categories_and_mechanics():

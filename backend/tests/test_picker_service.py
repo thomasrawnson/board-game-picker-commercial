@@ -896,6 +896,30 @@ def test_50_percent_not_recommended_is_excluded():
     assert matches == []
 
 
+def test_expansions_are_never_picker_candidates():
+    game = Game(
+        bgg_id=999999,
+        name="Example Expansion",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.0,
+        owned=True,
+        is_expansion=True,
+    )
+
+    matches = PickerService().find_matches(
+        [game],
+        PickerCriteria(
+            players=2,
+            max_play_time=60,
+            max_complexity=3.0,
+        ),
+    )
+
+    assert matches == []
+
+
 def test_low_sample_rejection_does_not_exclude_game():
     game = _game_with_two_player_poll(5, 9)
 

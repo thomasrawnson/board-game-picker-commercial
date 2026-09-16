@@ -27,3 +27,11 @@ def test_play_history_index_is_declared_in_model_metadata():
 
 def test_player_count_poll_is_declared_in_model_metadata():
     assert "player_count_poll" in Game.__table__.columns
+
+
+def test_expansion_flag_is_declared_in_model_metadata():
+    assert "is_expansion" in Game.__table__.columns
+    assert (
+        "expansion_checked"
+        in Game.__table__.columns
+    )

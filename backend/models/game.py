@@ -30,6 +30,8 @@ class Game:
     rating: float | None = None
 
     owned: bool = False
+    is_expansion: bool = False
+    expansion_checked: bool = False
 
     image_url: str | None = None
     thumbnail_url: str | None = None

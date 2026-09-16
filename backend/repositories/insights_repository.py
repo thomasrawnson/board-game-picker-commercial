@@ -39,9 +39,16 @@ class InsightsRepository:
             self.db.query(
                 func.count(UserGame.game_id)
             )
+            .join(
+                Game,
+                Game.id
+                == UserGame.game_id,
+            )
             .filter(
                 UserGame.user_id
-                == self.user_id
+                == self.user_id,
+                Game.is_expansion
+                .is_(False),
             )
             .scalar()
             or 0
@@ -80,11 +87,18 @@ class InsightsRepository:
                 UserGame.game_id
                 == Play.game_id,
             )
+            .join(
+                Game,
+                Game.id
+                == Play.game_id,
+            )
             .filter(
                 Play.user_id
                 == self.user_id,
                 UserGame.user_id
                 == self.user_id,
+                Game.is_expansion
+                .is_(False),
             )
             .scalar()
             or 0
@@ -248,9 +262,16 @@ class InsightsRepository:
                     UserGame.game_id
                 )
             )
+            .join(
+                Game,
+                Game.id
+                == UserGame.game_id,
+            )
             .filter(
                 UserGame.user_id
                 == self.user_id,
+                Game.is_expansion
+                .is_(False),
                 ~UserGame.game_id.in_(
                     played_game_ids
                 ),
@@ -537,7 +558,9 @@ class InsightsRepository:
             )
             .filter(
                 UserGame.user_id
-                == self.user_id
+                == self.user_id,
+                Game.is_expansion
+                .is_(False),
             )
             .group_by(
                 Game.id,

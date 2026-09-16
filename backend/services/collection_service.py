@@ -1,5 +1,6 @@
 from bgg.client import BGGClient
 from bgg.collection_parser import (
+    parse_collection_expansion_ids,
     parse_collection_ids,
 )
 from bgg.game_parser import (
@@ -83,6 +84,17 @@ class CollectionService:
             )
         )
 
+        expansion_ids = (
+            parse_collection_expansion_ids(
+                xml
+            )
+        )
+
+        if expansion_ids:
+            self.repository.mark_as_expansions(
+                expansion_ids
+            )
+
         existing_ids = (
             self.repository
             .get_existing_bgg_ids(
@@ -104,9 +116,17 @@ class CollectionService:
             )
         )
 
+        expansion_check_ids = (
+            self.repository
+            .get_bgg_ids_needing_expansion_check(
+                bgg_ids
+            )
+        )
+
         metadata_refresh_ids = (
             set(missing_ids)
             | poll_refresh_ids
+            | expansion_check_ids
         )
 
         metadata_ids = [
@@ -225,8 +245,20 @@ class CollectionService:
                 )
             )
 
+            if game.is_expansion:
+                raise ValueError(
+                    "Expansions aren't added "
+                    "to the collection."
+                )
+
             self.repository.create(
                 game
+            )
+
+        elif existing_game.is_expansion:
+            raise ValueError(
+                "Expansions aren't added "
+                "to the collection."
             )
 
         added = (

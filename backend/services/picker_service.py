@@ -134,6 +134,9 @@ class PickerService:
         matches = []
 
         for game in games:
+            if game.is_expansion:
+                continue
+
             if not game.owned:
                 continue
 
