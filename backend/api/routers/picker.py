@@ -106,6 +106,9 @@ def pick_games(
         ge=1,
         le=50,
     ),
+    include_guidance: bool = Query(
+        False,
+    ),
     game_service: GameService = Depends(
         get_game_service
     ),
@@ -203,11 +206,53 @@ def pick_games(
             ),
         )
     )
+
+    def build_response(
+        results: list[dict],
+    ):
+        if not include_guidance:
+            return results
+
+        guidance = None
+
+        if not results:
+            no_match_guidance = (
+                picker_service
+                .get_no_match_guidance(
+                    games,
+                    criteria,
+                )
+            )
+
+            guidance = {
+                "player_count_exclusions": (
+                    no_match_guidance
+                    .player_count_exclusions
+                ),
+                "can_relax_time": (
+                    no_match_guidance
+                    .can_relax_time
+                ),
+                "can_relax_complexity": (
+                    no_match_guidance
+                    .can_relax_complexity
+                ),
+                "can_relax_both": (
+                    no_match_guidance
+                    .can_relax_both
+                ),
+            }
+
+        return {
+            "matches": results,
+            "guidance": guidance,
+        }
+
     if (
         mood is None
         or not mood.strip()
     ):
-        return [
+        return build_response([
             {
                 "game": match.game,
                 "score": match.score,
@@ -217,7 +262,7 @@ def pick_games(
             }
             for match
             in matches[:limit]
-        ]
+        ])
 
     candidate_matches = (
         matches[:10]
@@ -314,4 +359,4 @@ def pick_games(
             }
         )
 
-    return results
+    return build_response(results)

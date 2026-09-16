@@ -877,6 +877,7 @@ def test_49_9_percent_not_recommended_remains_eligible():
     )
 
     assert len(matches) == 1
+
     assert any(
         "49.9% of voters do not recommend it"
         in reason
@@ -945,3 +946,117 @@ def test_poll_for_different_count_does_not_affect_selection():
     )
 
     assert len(matches) == 1
+
+    three_player_matches = (
+        PickerService().rank_matches(
+            [game],
+            PickerCriteria(players=3),
+        )
+    )
+
+    assert three_player_matches == []
+
+
+def test_no_match_guidance_never_relaxes_player_count_fit():
+    rejected = Game(
+        bgg_id=1,
+        name="Rejected At Two",
+        min_players=2,
+        max_players=4,
+        max_play_time=30,
+        complexity=2.0,
+        owned=True,
+        player_count_poll=[
+            PlayerCountPoll(2, 0, 2, 18, 20)
+        ],
+    )
+
+    guidance = PickerService().get_no_match_guidance(
+        [rejected],
+        PickerCriteria(
+            players=2,
+            max_play_time=60,
+            max_complexity=3.0,
+        ),
+    )
+
+    assert guidance.player_count_exclusions == 1
+    assert guidance.can_relax_time is False
+    assert guidance.can_relax_complexity is False
+    assert guidance.can_relax_both is False
+
+
+def test_no_match_guidance_identifies_safe_relaxations():
+    too_long = Game(
+        bgg_id=1,
+        name="Long but Suitable",
+        min_players=2,
+        max_players=4,
+        max_play_time=90,
+        complexity=2.0,
+        owned=True,
+        player_count_poll=[
+            PlayerCountPoll(2, 5, 12, 3, 20)
+        ],
+    )
+
+    too_complex = Game(
+        bgg_id=2,
+        name="Heavy but Suitable",
+        min_players=2,
+        max_players=4,
+        max_play_time=45,
+        complexity=4.0,
+        owned=True,
+        player_count_poll=[
+            PlayerCountPoll(2, 5, 12, 3, 20)
+        ],
+    )
+
+    guidance = PickerService().get_no_match_guidance(
+        [too_long, too_complex],
+        PickerCriteria(
+            players=2,
+            max_play_time=60,
+            max_complexity=3.0,
+        ),
+    )
+
+    assert guidance.player_count_exclusions == 0
+    assert guidance.can_relax_time is True
+    assert guidance.can_relax_complexity is True
+    assert guidance.can_relax_both is True
+
+
+def test_try_another_pool_never_contains_rejected_game():
+    suitable = Game(
+        bgg_id=1,
+        name="Suitable At Two",
+        min_players=2,
+        max_players=4,
+        owned=True,
+        player_count_poll=[
+            PlayerCountPoll(2, 5, 12, 3, 20)
+        ],
+    )
+
+    rejected = Game(
+        bgg_id=2,
+        name="Rejected At Two",
+        min_players=2,
+        max_players=4,
+        owned=True,
+        player_count_poll=[
+            PlayerCountPoll(2, 0, 2, 18, 20)
+        ],
+    )
+
+    matches = PickerService().rank_matches(
+        [suitable, rejected],
+        PickerCriteria(players=2),
+    )
+
+    assert [
+        match.game.bgg_id
+        for match in matches
+    ] == [1]

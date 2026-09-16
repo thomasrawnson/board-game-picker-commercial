@@ -36,6 +36,18 @@ export interface PickerMatch {
   ai_explanation?: string | null
 }
 
+export interface PickerNoMatchGuidance {
+  player_count_exclusions: number
+  can_relax_time: boolean
+  can_relax_complexity: boolean
+  can_relax_both: boolean
+}
+
+export interface PickerResponse {
+  matches: PickerMatch[]
+  guidance: PickerNoMatchGuidance | null
+}
+
 export type PickerMode =
   | "best_match"
   | "different"
@@ -458,13 +470,14 @@ Promise<PickerOptions> {
 
 export async function getPickerMatches(
   criteria: PickerCriteria,
-): Promise<PickerMatch[]> {
+): Promise<PickerResponse> {
   const params =
     new URLSearchParams({
       players:
         criteria.players
           .toString(),
       limit: "20",
+      include_guidance: "true",
     })
 
   if (
@@ -546,7 +559,16 @@ export async function getPickerMatches(
     )
   }
 
-  return response.json()
+  const data = await response.json()
+
+  if (Array.isArray(data)) {
+    return {
+      matches: data,
+      guidance: null,
+    }
+  }
+
+  return data
 }
 
 export async function getGames():

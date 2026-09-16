@@ -8,6 +8,7 @@ import {
   getPickerOptions,
   type PickerMatch,
   type PickerMode,
+  type PickerNoMatchGuidance,
 } from "../../api/client"
 
 import {
@@ -32,6 +33,9 @@ import PlayStyleStep
 import PickerResult
   from "./PickerResult"
 
+import PickerNoMatch
+  from "./PickerNoMatch"
+
 
 type Step =
   | "players"
@@ -40,6 +44,7 @@ type Step =
   | "preferences"
   | "theme"
   | "play_style"
+  | "no_match"
   | "reveal"
 
 
@@ -129,6 +134,14 @@ function PickerView({
     setMatchIndex,
   ] =
     useState(0)
+
+  const [
+    noMatchGuidance,
+    setNoMatchGuidance,
+  ] =
+    useState<PickerNoMatchGuidance | null>(
+      null
+    )
 
   const [
     loading,
@@ -258,7 +271,10 @@ function PickerView({
   }
 
 
-  async function revealGame() {
+  async function loadMatches(
+    nextMaxPlayTime = maxPlayTime,
+    nextMaxComplexity = maxComplexity,
+  ) {
     if (
       players === null
     ) {
@@ -274,7 +290,7 @@ function PickerView({
     )
 
     try {
-      const results =
+      const response =
         await getPickerMatches({
           players,
 
@@ -282,13 +298,13 @@ function PickerView({
             selectedPlayerIds,
 
           maxPlayTime:
-            maxPlayTime === 0
+            nextMaxPlayTime === 0
               ? undefined
-              : maxPlayTime
+              : nextMaxPlayTime
                 ?? undefined,
 
           maxComplexity:
-            maxComplexity
+            nextMaxComplexity
             ?? undefined,
 
           preferredCategories,
@@ -299,17 +315,25 @@ function PickerView({
         })
 
       if (
-        results.length === 0
+        response.matches.length === 0
       ) {
-        setError(
-          "No games matched those choices. Try allowing more time or weight."
+        setNoMatchGuidance(
+          response.guidance
+        )
+
+        setStep(
+          "no_match"
         )
 
         return
       }
 
       setMatches(
-        results
+        response.matches
+      )
+
+      setNoMatchGuidance(
+        null
       )
 
       setMatchIndex(
@@ -332,6 +356,51 @@ function PickerView({
         false
       )
     }
+  }
+
+
+  function revealGame() {
+    void loadMatches()
+  }
+
+
+  function relaxTime() {
+    setMaxPlayTime(
+      null
+    )
+
+    void loadMatches(
+      null,
+      maxComplexity,
+    )
+  }
+
+
+  function relaxComplexity() {
+    setMaxComplexity(
+      null
+    )
+
+    void loadMatches(
+      maxPlayTime,
+      null,
+    )
+  }
+
+
+  function relaxTimeAndComplexity() {
+    setMaxPlayTime(
+      null
+    )
+
+    setMaxComplexity(
+      null
+    )
+
+    void loadMatches(
+      null,
+      null,
+    )
   }
 
 
@@ -392,6 +461,10 @@ function PickerView({
 
     setError(
       ""
+    )
+
+    setNoMatchGuidance(
+      null
     )
   }
 
@@ -625,6 +698,44 @@ function PickerView({
             setStep(
               "preferences"
             )
+          }
+        />
+      )}
+
+
+      {step ===
+        "no_match"
+        && players !== null && (
+        <PickerNoMatch
+          playerCount={players}
+          guidance={
+            noMatchGuidance
+          }
+          hasTimeLimit={
+            maxPlayTime !== null
+            && maxPlayTime !== 0
+          }
+          hasComplexityLimit={
+            maxComplexity !== null
+          }
+          loading={loading}
+          error={error}
+          onRelaxTime={
+            relaxTime
+          }
+          onRelaxComplexity={
+            relaxComplexity
+          }
+          onRelaxBoth={
+            relaxTimeAndComplexity
+          }
+          onAdjustChoices={() =>
+            setStep(
+              "preferences"
+            )
+          }
+          onStartOver={
+            startOver
           }
         />
       )}

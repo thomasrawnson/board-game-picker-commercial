@@ -97,8 +97,29 @@ class CollectionService:
             not in existing_ids
         ]
 
+        poll_refresh_ids = (
+            self.repository
+            .get_bgg_ids_needing_player_count_poll_refresh(
+                bgg_ids
+            )
+        )
+
+        metadata_refresh_ids = (
+            set(missing_ids)
+            | poll_refresh_ids
+        )
+
+        metadata_ids = [
+            bgg_id
+            for bgg_id in bgg_ids
+            if (
+                bgg_id
+                in metadata_refresh_ids
+            )
+        ]
+
         self._sync_missing_games(
-            missing_ids
+            metadata_ids
         )
 
         if (

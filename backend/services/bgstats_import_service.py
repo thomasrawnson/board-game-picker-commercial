@@ -45,6 +45,24 @@ class BGStatsImportService:
                     )
                 )
             else:
+                # BG Stats does not include BGG's
+                # player-count recommendation poll.
+                # Preserve that enrichment when a
+                # later BG Stats import updates the
+                # game's basic metadata.
+                game.best_player_counts = (
+                    existing_game
+                    .best_player_counts
+                )
+                game.recommended_player_counts = (
+                    existing_game
+                    .recommended_player_counts
+                )
+                game.player_count_poll = (
+                    existing_game
+                    .player_count_poll
+                )
+
                 saved_game = (
                     self.repository.update(
                         game

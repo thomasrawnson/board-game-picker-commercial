@@ -15,6 +15,7 @@ from api.current_user import (
 )
 from database.models import User
 from models.game import Game
+from models.game import PlayerCountPoll
 from models.play import Play
 
 
@@ -256,6 +257,101 @@ def test_picker_returns_ranked_matches():
         "Supports 2 players"
         in data[0]["reasons"]
     )
+
+
+def test_picker_guidance_explains_safe_no_match_options():
+    class FakeGameService:
+        def get_games(
+            self,
+        ):
+            return [
+                Game(
+                    bgg_id=1,
+                    name="Rejected At Two",
+                    min_players=2,
+                    max_players=4,
+                    max_play_time=30,
+                    complexity=2.0,
+                    owned=True,
+                    player_count_poll=[
+                        PlayerCountPoll(
+                            2,
+                            0,
+                            2,
+                            18,
+                            20,
+                        )
+                    ],
+                ),
+                Game(
+                    bgg_id=2,
+                    name="Long but Suitable",
+                    min_players=2,
+                    max_players=4,
+                    max_play_time=90,
+                    complexity=2.0,
+                    owned=True,
+                    player_count_poll=[
+                        PlayerCountPoll(
+                            2,
+                            5,
+                            12,
+                            3,
+                            20,
+                        )
+                    ],
+                ),
+            ]
+
+    class FakePlayRepository:
+        def get_players(
+            self,
+        ):
+            return []
+
+        def get_group_game_play_stats(
+            self,
+            player_ids,
+        ):
+            return {}
+
+        def get_game_play_stats(
+            self,
+        ):
+            return {}
+
+    app.dependency_overrides[
+        get_game_service
+    ] = lambda: FakeGameService()
+
+    app.dependency_overrides[
+        get_picker_play_repository
+    ] = lambda: FakePlayRepository()
+
+    try:
+        response = client.get(
+            "/picker",
+            params={
+                "players": 2,
+                "max_play_time": 60,
+                "max_complexity": 3.0,
+                "include_guidance": True,
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["matches"] == []
+    assert data["guidance"] == {
+        "player_count_exclusions": 1,
+        "can_relax_time": True,
+        "can_relax_complexity": False,
+        "can_relax_both": True,
+    }
 
 
 def test_picker_requires_valid_player_count():

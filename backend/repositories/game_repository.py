@@ -706,6 +706,29 @@ class GameRepository:
             for row in rows
         }
 
+    def get_bgg_ids_needing_player_count_poll_refresh(
+        self,
+        bgg_ids: list[int],
+    ) -> set[int]:
+        if not bgg_ids:
+            return set()
+
+        database_games = (
+            self.db.query(DatabaseGame)
+            .filter(
+                DatabaseGame.bgg_id.in_(
+                    bgg_ids
+                )
+            )
+            .all()
+        )
+
+        return {
+            game.bgg_id
+            for game in database_games
+            if not game.player_count_poll
+        }
+
     def sync_user_collection(
         self,
         user_id: int,

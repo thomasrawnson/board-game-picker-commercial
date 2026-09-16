@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 import random
 
@@ -43,7 +43,89 @@ class PickerMatch:
     reasons: list[str]
 
 
+@dataclass
+class PickerNoMatchGuidance:
+    player_count_exclusions: int
+    can_relax_time: bool
+    can_relax_complexity: bool
+    can_relax_both: bool
+
+
 class PickerService:
+    def get_no_match_guidance(
+        self,
+        games: list[Game],
+        criteria: PickerCriteria,
+    ) -> PickerNoMatchGuidance:
+        player_count_exclusions = sum(
+            1
+            for game in games
+            if (
+                game.owned
+                and self._supports_player_count(
+                    game,
+                    criteria.players,
+                )
+                and not self
+                ._has_acceptable_player_count_fit(
+                    game,
+                    criteria.players,
+                )
+            )
+        )
+
+        can_relax_time = (
+            criteria.max_play_time is not None
+            and bool(
+                self.find_matches(
+                    games,
+                    replace(
+                        criteria,
+                        max_play_time=None,
+                    ),
+                )
+            )
+        )
+
+        can_relax_complexity = (
+            criteria.max_complexity is not None
+            and bool(
+                self.find_matches(
+                    games,
+                    replace(
+                        criteria,
+                        max_complexity=None,
+                    ),
+                )
+            )
+        )
+
+        can_relax_both = (
+            criteria.max_play_time is not None
+            and criteria.max_complexity is not None
+            and bool(
+                self.find_matches(
+                    games,
+                    replace(
+                        criteria,
+                        max_play_time=None,
+                        max_complexity=None,
+                    ),
+                )
+            )
+        )
+
+        return PickerNoMatchGuidance(
+            player_count_exclusions=(
+                player_count_exclusions
+            ),
+            can_relax_time=can_relax_time,
+            can_relax_complexity=(
+                can_relax_complexity
+            ),
+            can_relax_both=can_relax_both,
+        )
+
     def find_matches(
         self,
         games: list[Game],

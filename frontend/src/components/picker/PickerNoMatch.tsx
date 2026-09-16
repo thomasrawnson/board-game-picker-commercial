@@ -1,0 +1,174 @@
+import type {
+  PickerNoMatchGuidance,
+} from "../../api/client"
+
+
+type Props = {
+  playerCount: number
+  guidance: PickerNoMatchGuidance | null
+  hasTimeLimit: boolean
+  hasComplexityLimit: boolean
+  loading: boolean
+  error: string
+  onRelaxTime: () => void
+  onRelaxComplexity: () => void
+  onRelaxBoth: () => void
+  onAdjustChoices: () => void
+  onStartOver: () => void
+}
+
+
+function PickerNoMatch({
+  playerCount,
+  guidance,
+  hasTimeLimit,
+  hasComplexityLimit,
+  loading,
+  error,
+  onRelaxTime,
+  onRelaxComplexity,
+  onRelaxBoth,
+  onAdjustChoices,
+  onStartOver,
+}: Props) {
+  const excluded =
+    guidance
+      ?.player_count_exclusions
+    ?? 0
+
+  const showCombinedRelaxation =
+    hasTimeLimit
+    && hasComplexityLimit
+    && Boolean(
+      guidance?.can_relax_both
+    )
+    && !guidance?.can_relax_time
+    && !guidance?.can_relax_complexity
+
+
+  return (
+    <section className="screen picker-no-match-screen">
+      <div
+        className="picker-no-match-icon"
+        aria-hidden="true"
+      >
+        ?
+      </div>
+
+      <header>
+        <p className="eyebrow">
+          Honest answer
+        </p>
+
+        <h1>
+          No trustworthy match
+        </h1>
+
+        <p className="subtitle">
+          We couldn't find a game we can
+          confidently recommend for exactly{" "}
+          {playerCount} player
+          {playerCount === 1 ? "" : "s"}
+          {" "}with all these choices.
+        </p>
+      </header>
+
+      {excluded > 0 && (
+        <div className="picker-trust-note">
+          <strong>
+            {excluded} game
+            {excluded === 1 ? " was" : "s were"}
+            {" "}left out
+          </strong>
+
+          <p>
+            BoardGameGeek voters do not
+            recommend
+            {excluded === 1 ? " it" : " them"}
+            {" "}at {playerCount} player
+            {playerCount === 1 ? "" : "s"}.
+          </p>
+        </div>
+      )}
+
+      <div className="picker-no-match-actions">
+        {hasTimeLimit
+          && guidance?.can_relax_time && (
+          <button
+            type="button"
+            className="primary-button"
+            onClick={onRelaxTime}
+            disabled={loading}
+          >
+            {loading
+              ? "Checking…"
+              : "Remove time limit"}
+          </button>
+        )}
+
+        {hasComplexityLimit
+          && guidance?.can_relax_complexity && (
+          <button
+            type="button"
+            className="primary-button"
+            onClick={onRelaxComplexity}
+            disabled={loading}
+          >
+            {loading
+              ? "Checking…"
+              : "Remove weight limit"}
+          </button>
+        )}
+
+        {showCombinedRelaxation && (
+          <button
+            type="button"
+            className="primary-button"
+            onClick={onRelaxBoth}
+            disabled={loading}
+          >
+            {loading
+              ? "Checking…"
+              : "Relax time and weight"}
+          </button>
+        )}
+
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={onAdjustChoices}
+          disabled={loading}
+        >
+          Adjust choices
+        </button>
+      </div>
+
+      {error && (
+        <p
+          className="error-message"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+
+      <p className="picker-safety-copy">
+        Player-count quality stays fixed.
+        We won't suggest a game the community
+        rejects at this group size.
+      </p>
+
+      <button
+        type="button"
+        className="ghost-button"
+        onClick={onStartOver}
+        disabled={loading}
+      >
+        Start over
+      </button>
+    </section>
+  )
+}
+
+
+export default PickerNoMatch

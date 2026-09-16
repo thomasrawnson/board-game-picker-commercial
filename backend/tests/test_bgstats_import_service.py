@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from models.game import Game
+from models.game import PlayerCountPoll
 from services.bgstats_import_service import BGStatsImportService
 
 
@@ -37,13 +39,27 @@ def test_import_only_owned_games():
 
 
 def test_import_updates_existing_game():
+    poll = PlayerCountPoll(
+        player_count=2,
+        best_votes=0,
+        recommended_votes=9,
+        not_recommended_votes=40,
+        total_votes=49,
+    )
+
     class FakeRepository:
         def __init__(self):
             self.updated = []
 
         def get_by_bgg_id(self, bgg_id):
             if bgg_id == 167791:
-                return object()
+                return Game(
+                    bgg_id=bgg_id,
+                    name="Existing game",
+                    best_player_counts=[4],
+                    recommended_player_counts=[3, 4],
+                    player_count_poll=[poll],
+                )
 
             return None
 
@@ -64,3 +80,9 @@ def test_import_updates_existing_game():
     assert len(games) == 1
     assert len(repository.updated) == 1
     assert repository.updated[0].bgg_id == 167791
+    assert repository.updated[0].best_player_counts == [4]
+    assert repository.updated[0].recommended_player_counts == [
+        3,
+        4,
+    ]
+    assert repository.updated[0].player_count_poll == [poll]

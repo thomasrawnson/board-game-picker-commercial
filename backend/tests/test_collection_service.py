@@ -160,6 +160,12 @@ def test_sync_collection():
                 if bgg_id in self.games
             }
 
+        def get_bgg_ids_needing_player_count_poll_refresh(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
         def get_by_bgg_id(
             self,
             bgg_id,
@@ -276,6 +282,12 @@ def test_sync_collection_batches_uncached_games():
         ):
             return set()
 
+        def get_bgg_ids_needing_player_count_poll_refresh(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
         def get_by_bgg_id(
             self,
             bgg_id,
@@ -346,6 +358,75 @@ def test_sync_collection_batches_uncached_games():
     assert len(
         bgg_client.batches[2]
     ) == 5
+
+
+def test_sync_collection_refreshes_legacy_player_count_poll():
+    class FakeBGGClient:
+        def __init__(self):
+            self.requested_ids = []
+
+        def get_collection(
+            self,
+            username,
+        ):
+            return (
+                '<items><item objectid="174430"/></items>'
+            )
+
+        def get_games(
+            self,
+            bgg_ids,
+        ):
+            self.requested_ids.extend(
+                bgg_ids
+            )
+            return GAME_XML
+
+    class FakeRepository:
+        def __init__(self):
+            self.game = Game(
+                bgg_id=174430,
+                name="Legacy Gloomhaven",
+                best_player_counts=[2],
+            )
+
+        def get_existing_bgg_ids(
+            self,
+            bgg_ids,
+        ):
+            return {174430}
+
+        def get_bgg_ids_needing_player_count_poll_refresh(
+            self,
+            bgg_ids,
+        ):
+            return {174430}
+
+        def get_by_bgg_id(
+            self,
+            bgg_id,
+        ):
+            return self.game
+
+        def update(
+            self,
+            game,
+        ):
+            self.game = game
+            return game
+
+    client = FakeBGGClient()
+    repository = FakeRepository()
+
+    games = CollectionService(
+        client,
+        repository,
+    ).sync_collection("tom")
+
+    assert client.requested_ids == [174430]
+    assert games[0].player_count_poll == [
+        PlayerCountPoll(2, 0, 9, 40, 49)
+    ]
 
 def test_search_games_marks_owned_results():
     search_xml = """

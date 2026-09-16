@@ -239,3 +239,70 @@ def test_update_replaces_categories_and_mechanics():
 
     repository.delete(test_bgg_id)
     session.close()
+
+
+def test_identifies_legacy_player_count_poll_metadata():
+    session = SessionLocal()
+    repository = GameRepository(session)
+
+    legacy_id = 999014
+    current_id = 999015
+    sparse_import_id = 999016
+
+    repository.delete(legacy_id)
+    repository.delete(current_id)
+    repository.delete(sparse_import_id)
+
+    try:
+        repository.create(
+            DomainGame(
+                bgg_id=legacy_id,
+                name="Legacy Poll Game",
+                best_player_counts=[2],
+            )
+        )
+
+        repository.create(
+            DomainGame(
+                bgg_id=current_id,
+                name="Current Poll Game",
+                best_player_counts=[2],
+                player_count_poll=[
+                    PlayerCountPoll(
+                        2,
+                        12,
+                        6,
+                        2,
+                        20,
+                    )
+                ],
+            )
+        )
+
+        repository.create(
+            DomainGame(
+                bgg_id=sparse_import_id,
+                name="Sparse BG Stats Game",
+            )
+        )
+
+        refresh_ids = (
+            repository
+            .get_bgg_ids_needing_player_count_poll_refresh(
+                [
+                    legacy_id,
+                    current_id,
+                    sparse_import_id,
+                ]
+            )
+        )
+
+        assert refresh_ids == {
+            legacy_id,
+            sparse_import_id,
+        }
+    finally:
+        repository.delete(legacy_id)
+        repository.delete(current_id)
+        repository.delete(sparse_import_id)
+        session.close()
