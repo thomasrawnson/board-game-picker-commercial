@@ -64,7 +64,7 @@ Stack:
 
 ## Validation
 
-Run checks appropriate to the change.
+Run checks appropriate to the change. trigger deploy
 
 Frontend, from frontend/:
 
