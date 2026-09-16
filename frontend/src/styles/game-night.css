@@ -1,0 +1,168 @@
+.game-night-screen {
+  gap: 20px;
+}
+
+
+.game-night-hero {
+  padding: 8px 2px 0;
+}
+
+
+.coming-soon-badge {
+  display: inline-flex;
+
+  margin-bottom: 22px;
+  padding: 7px 11px;
+
+  color: var(--felt-dark);
+  background: var(--gold);
+
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+
+.game-night-hero h1 {
+  max-width: 320px;
+
+  margin-right: auto;
+  margin-left: auto;
+
+  font-size: 34px;
+}
+
+
+.game-night-intro {
+  max-width: 320px;
+
+  margin: 13px auto 0;
+
+  color: var(--text-secondary);
+
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+
+.game-night-preview {
+  padding: 19px 17px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(201, 162, 39, 0.11),
+      rgba(243, 234, 216, 0.035)
+    );
+
+  border: 1px solid rgba(201, 162, 39, 0.24);
+  border-radius: 18px;
+}
+
+
+.game-night-preview-label {
+  margin: 0 0 17px;
+
+  color: var(--gold);
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+
+.game-night-features {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+
+.game-night-features li {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+
+  gap: 10px;
+  align-items: start;
+}
+
+
+.game-night-check {
+  width: 22px;
+  height: 22px;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--gold);
+  background: rgba(201, 162, 39, 0.12);
+
+  border: 1px solid rgba(201, 162, 39, 0.25);
+  border-radius: 50%;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+.game-night-features strong {
+  display: block;
+
+  color: var(--text-primary);
+
+  font-family: "Fraunces", serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+
+.game-night-features p {
+  margin: 4px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+
+.game-night-footnote {
+  margin: 0;
+  padding: 0 12px 8px;
+
+  color: rgba(243, 234, 216, 0.48);
+
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+
+@media (max-width: 360px) {
+  .app-nav {
+    gap: 2px;
+  }
+
+  .nav-button {
+    padding-right: 3px;
+    padding-left: 3px;
+
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+
+  .game-night-hero h1 {
+    font-size: 30px;
+  }
+}

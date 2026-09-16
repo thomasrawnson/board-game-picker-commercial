@@ -41,6 +41,9 @@ import DiscoverView
 import InsightsView
   from "./components/InsightsView"
 
+import GameNightView
+  from "./components/GameNightView"
+
 import OnboardingView
   from "./components/OnboardingView"
 
@@ -681,6 +684,11 @@ function App() {
                 }
               />
             }
+          />
+
+          <Route
+            path={APP_PATHS.gameNight}
+            element={<GameNightView />}
           />
 
           <Route

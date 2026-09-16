@@ -48,6 +48,10 @@ test("collection detail routes keep Collection navigation active", () => {
     appViewForPath(APP_PATHS.discover),
     "discover",
   )
+  assert.equal(
+    appViewForPath(APP_PATHS.gameNight),
+    "gameNight",
+  )
 })
 
 
@@ -69,5 +73,9 @@ test("return routes accept app deep links but reject unsafe paths", () => {
   assert.equal(
     safeReturnPath("/reset-password?token=secret"),
     null,
+  )
+  assert.equal(
+    safeReturnPath("/game-night"),
+    "/game-night",
   )
 })

@@ -18,6 +18,7 @@ export const APP_PATHS = {
   collectionOwned: "/collection/owned",
   collectionWishlist:
     "/collection/want-to-play",
+  gameNight: "/game-night",
   discover: "/discover",
   insights: "/insights",
   setup: "/setup",
@@ -63,6 +64,10 @@ export function appViewForPath(
     return "discover"
   }
 
+  if (pathname === APP_PATHS.gameNight) {
+    return "gameNight"
+  }
+
   if (pathname === APP_PATHS.insights) {
     return "insights"
   }
@@ -85,6 +90,7 @@ export function isProtectedAppPath(
       `${APP_PATHS.collection}/`,
     )
     || pathname === APP_PATHS.discover
+    || pathname === APP_PATHS.gameNight
     || pathname === APP_PATHS.insights
     || pathname === APP_PATHS.setup
   )
