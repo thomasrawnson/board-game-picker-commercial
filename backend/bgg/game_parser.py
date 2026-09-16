@@ -113,6 +113,15 @@ def _parse_game_item(
             item,
             "boardgamemechanic",
         ),
+        designers=_get_links(
+            item,
+            "boardgamedesigner",
+        ),
+        publishers=_get_links(
+            item,
+            "boardgamepublisher",
+        ),
+        credits_checked=True,
         best_player_counts=(
             best_player_counts
         ),

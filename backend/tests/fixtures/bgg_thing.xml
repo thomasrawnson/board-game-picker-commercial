@@ -42,6 +42,8 @@
 
         <link type="boardgamemechanic" id="2040" value="Hand Management" />
         <link type="boardgamemechanic" id="2081" value="Network and Route Building" />
+        <link type="boardgamedesigner" id="1" value="Cephalofair Designer" />
+        <link type="boardgamepublisher" id="2" value="Cephalofair Games" />
 
                 <statistics>
             <ratings>

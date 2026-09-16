@@ -5,6 +5,8 @@ from database.models import Game
 from database.models import Play
 from database.models import PickerEvent
 from database.models import PickerSession
+from database.models import GameComparison
+from database.models import GameRanking
 
 
 def test_games_table_exists():
@@ -58,3 +60,28 @@ def test_picker_analytics_is_declared_in_model_metadata():
         "ix_picker_events_session_created_at"
         in index_names
     )
+
+
+def test_game_rankings_are_declared_in_model_metadata():
+    assert "rating" in GameRanking.__table__.columns
+    assert "excluded" in GameRanking.__table__.columns
+    assert (
+        "winner_game_id"
+        in GameComparison.__table__.columns
+    )
+
+    index_names = {
+        index.name
+        for index in GameRanking.__table__.indexes
+    }
+
+    assert (
+        "ix_game_rankings_user_rating"
+        in index_names
+    )
+
+
+def test_game_credits_are_declared_in_model_metadata():
+    assert "designers" in Game.__table__.columns
+    assert "publishers" in Game.__table__.columns
+    assert "credits_checked" in Game.__table__.columns

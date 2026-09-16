@@ -5,7 +5,9 @@ import {
 
 import {
   getCollectionInsights,
+  getRankings,
   type CollectionInsights,
+  type RankingSummary,
 } from "../api/client"
 
 import PlayerProfile
@@ -16,7 +18,21 @@ type StatsSection =
   | "collection"
   | "play"
   | "group"
+  | "rank"
   | "recaps"
+
+type RankSummaryLimit =
+  | 10
+  | 20
+  | 50
+  | 100
+
+const rankSummaryLimits: RankSummaryLimit[] = [
+  10,
+  20,
+  50,
+  100,
+]
 
 
 const statsSections: Array<{
@@ -34,6 +50,10 @@ const statsSections: Array<{
   {
     id: "group",
     label: "Group",
+  },
+  {
+    id: "rank",
+    label: "Rank",
   },
   {
     id: "recaps",
@@ -98,6 +118,26 @@ function InsightsView({
   ] = useState(true)
 
   const [
+    rankingSummary,
+    setRankingSummary,
+  ] = useState<RankingSummary | null>(null)
+
+  const [
+    rankShareStatus,
+    setRankShareStatus,
+  ] = useState("")
+
+  const [
+    rankSummaryLimit,
+    setRankSummaryLimit,
+  ] = useState<RankSummaryLimit>(20)
+
+  const [
+    rankSummaryLoading,
+    setRankSummaryLoading,
+  ] = useState(false)
+
+  const [
     error,
     setError,
   ] = useState("")
@@ -140,10 +180,16 @@ function InsightsView({
   useEffect(() => {
     async function loadInsights() {
       try {
-        const result =
-          await getCollectionInsights()
+        const [result, rankingResult] =
+          await Promise.all([
+            getCollectionInsights(),
+            getRankings(true),
+          ])
 
         setInsights(result)
+        setRankingSummary(
+          rankingResult.summary
+        )
       } catch (err) {
         console.error(err)
 
@@ -157,6 +203,87 @@ function InsightsView({
 
     loadInsights()
   }, [])
+
+
+  async function shareRankStats() {
+    if (
+      !rankingSummary
+      || rankingSummary.games_count === 0
+    ) {
+      return
+    }
+
+    const sections = [
+      ["Designers", rankingSummary.designers],
+      ["Publishers", rankingSummary.publishers],
+      ["Mechanics", rankingSummary.mechanics],
+      ["Categories", rankingSummary.categories],
+    ] as const
+
+    const title = "My BoardGamePicker Rank Stats"
+    const text = [
+      title,
+      `Based on my Top ${rankingSummary.games_count} games`,
+      "",
+      ...sections.flatMap(([label, items]) => [
+        `${label}:`,
+        ...(
+          items.length > 0
+            ? items.map(
+                (item, index) =>
+                  `${index + 1}. ${item.name} (${item.count})`,
+              )
+            : ["No data yet"]
+        ),
+        "",
+      ]),
+      "Created with BoardGamePicker",
+    ].join("\n")
+
+    try {
+      if (navigator.share) {
+        await navigator.share({title, text})
+        setRankShareStatus("Stats shared")
+      } else {
+        await navigator.clipboard.writeText(text)
+        setRankShareStatus("Stats copied")
+      }
+    } catch (err) {
+      if (
+        err instanceof DOMException
+        && err.name === "AbortError"
+      ) {
+        return
+      }
+
+      console.error(err)
+      setRankShareStatus("Couldn't share stats")
+    }
+  }
+
+
+  async function changeRankSummaryLimit(
+    nextLimit: RankSummaryLimit,
+  ) {
+    setRankSummaryLimit(nextLimit)
+    setRankSummaryLoading(true)
+    setRankShareStatus("")
+
+    try {
+      const result = await getRankings(
+        true,
+        nextLimit,
+      )
+      setRankingSummary(result.summary)
+    } catch (err) {
+      console.error(err)
+      setError(
+        "Couldn't update your rank stats.",
+      )
+    } finally {
+      setRankSummaryLoading(false)
+    }
+  }
 
 
   if (
@@ -276,10 +403,6 @@ function InsightsView({
           className="stats-section-content"
         >
           <div className="stats-section-heading">
-            <p className="insight-label">
-              Collection stats
-            </p>
-
             <h2>
               Explore your shelf
             </h2>
@@ -346,10 +469,6 @@ function InsightsView({
           className="stats-section-content"
         >
           <div className="stats-section-heading">
-            <p className="insight-label">
-              Play stats
-            </p>
-
             <h2>
               Time around the table
             </h2>
@@ -419,10 +538,6 @@ function InsightsView({
 
       {activeSection === "group" && (
         <div className="stats-section-heading">
-          <p className="insight-label">
-            Group stats
-          </p>
-
           <h2>
             Your people at the table
           </h2>
@@ -430,12 +545,113 @@ function InsightsView({
       )}
 
 
+      {activeSection === "rank" && (
+        <div className="stats-section-content">
+          <div className="stats-section-heading">
+            <h2>
+              The shape of your Top {rankSummaryLimit}
+            </h2>
+
+            {rankingSummary
+              && rankingSummary.games_count > 0
+              && (
+                <div className="rank-summary-share-card">
+                  <div className="rank-summary-share-heading">
+                    <strong>Choose a list size</strong>
+
+                    <button
+                      type="button"
+                      disabled={rankSummaryLoading}
+                      onClick={() => void shareRankStats()}
+                    >
+                      Share stats
+                    </button>
+                  </div>
+
+                  <div
+                    className="rank-summary-sizes"
+                    aria-label="Rank stats list size"
+                  >
+                    {rankSummaryLimits.map((limit) => (
+                      <button
+                        type="button"
+                        className={
+                          rankSummaryLimit === limit
+                            ? "active"
+                            : ""
+                        }
+                        aria-pressed={rankSummaryLimit === limit}
+                        disabled={rankSummaryLoading}
+                        key={limit}
+                        onClick={() =>
+                          void changeRankSummaryLimit(limit)
+                        }
+                      >
+                        Top {limit}
+                      </button>
+                    ))}
+                  </div>
+
+                  {rankShareStatus && (
+                    <span role="status">
+                      {rankShareStatus}
+                    </span>
+                  )}
+                </div>
+              )}
+          </div>
+
+          {rankingSummary
+            && rankingSummary.games_count > 0
+            ? (
+              <div className="rank-summary-grid">
+                {([
+                  ["Designers", rankingSummary.designers],
+                  ["Publishers", rankingSummary.publishers],
+                  ["Mechanics", rankingSummary.mechanics],
+                  ["Categories", rankingSummary.categories],
+                ] as const).map(([label, items]) => (
+                  <article
+                    className="rank-summary-card"
+                    key={label}
+                  >
+                    <p className="insight-label">
+                      Top {label}
+                    </p>
+
+                    {items.length > 0 ? (
+                      <ol>
+                        {items.map((item) => (
+                          <li key={item.name}>
+                            <span>{item.name}</span>
+                            <strong>{item.count}</strong>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p className="insight-empty">
+                        Sync your collection to add this metadata.
+                      </p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )
+            : (
+              <article className="stats-empty-card">
+                <span>↕</span>
+                <h2>Build your ranking</h2>
+                <p>
+                  Compare played games to reveal the designers, publishers and styles across your favourites.
+                </p>
+              </article>
+            )}
+        </div>
+      )}
+
+
       {activeSection === "recaps" && (
         <div className="stats-section-heading">
-          <p className="insight-label">
-            Recaps
-          </p>
-
           <h2>
             This month in games
           </h2>

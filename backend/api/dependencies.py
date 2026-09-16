@@ -10,6 +10,9 @@ from repositories.play_repository import PlayRepository
 from repositories.picker_analytics_repository import (
     PickerAnalyticsRepository,
 )
+from repositories.ranking_repository import (
+    RankingRepository,
+)
 from services.bgstats_play_import_service import (
     BGStatsPlayImportService,
 )
@@ -17,6 +20,7 @@ from services.collection_service import CollectionService
 from services.game_service import GameService
 from services.insights_service import InsightsService
 from services.play_service import PlayService
+from services.ranking_service import RankingService
 from services.discover_service import (
     DiscoverService,
 )
@@ -83,6 +87,20 @@ def get_picker_analytics_repository(
     return PickerAnalyticsRepository(
         db,
         user_id=current_user.id,
+    )
+
+
+def get_ranking_service(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        get_current_user
+    ),
+) -> RankingService:
+    return RankingService(
+        RankingRepository(
+            db,
+            user_id=current_user.id,
+        )
     )
 
 

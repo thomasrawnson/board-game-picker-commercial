@@ -44,6 +44,9 @@ import InsightsView
 import GameNightView
   from "./components/GameNightView"
 
+import RankGamesView
+  from "./components/RankGamesView"
+
 import OnboardingView
   from "./components/OnboardingView"
 
@@ -689,6 +692,11 @@ function App() {
           <Route
             path={APP_PATHS.gameNight}
             element={<GameNightView />}
+          />
+
+          <Route
+            path={APP_PATHS.rankings}
+            element={<RankGamesView />}
           />
 
           <Route

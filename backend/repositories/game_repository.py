@@ -433,6 +433,9 @@ class GameRepository:
             expansion_checked=(
                 game.expansion_checked
             ),
+            designers=game.designers or [],
+            publishers=game.publishers or [],
+            credits_checked=game.credits_checked,
             owned=game.owned,
             image_url=game.image_url,
             thumbnail_url=game.thumbnail_url,
@@ -513,6 +516,15 @@ class GameRepository:
         )
         database_game.expansion_checked = (
             game.expansion_checked
+        )
+        database_game.designers = (
+            game.designers or []
+        )
+        database_game.publishers = (
+            game.publishers or []
+        )
+        database_game.credits_checked = (
+            game.credits_checked
         )
         database_game.owned = game.owned
         database_game.image_url = (
@@ -681,6 +693,15 @@ class GameRepository:
                 for mechanic
                 in database_game.mechanics
             ],
+            designers=(
+                database_game.designers or []
+            ),
+            publishers=(
+                database_game.publishers or []
+            ),
+            credits_checked=(
+                database_game.credits_checked
+            ),
         )
 
     @staticmethod
@@ -848,6 +869,24 @@ class GameRepository:
             row[0]
             for row in rows
         }
+
+    def get_bgg_ids_needing_credits_refresh(
+        self,
+        bgg_ids: list[int],
+    ) -> set[int]:
+        if not bgg_ids:
+            return set()
+
+        rows = (
+            self.db.query(DatabaseGame.bgg_id)
+            .filter(
+                DatabaseGame.bgg_id.in_(bgg_ids),
+                DatabaseGame.credits_checked.is_(False),
+            )
+            .all()
+        )
+
+        return {row[0] for row in rows}
 
     def sync_user_collection(
         self,

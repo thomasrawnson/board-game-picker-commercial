@@ -30,6 +30,8 @@ GAME_XML = """
         <link type="boardgamecategory" value="Adventure"/>
         <link type="boardgamecategory" value="Fantasy"/>
         <link type="boardgamemechanic" value="Cooperative Game"/>
+        <link type="boardgamedesigner" value="Isaac Childres"/>
+        <link type="boardgamepublisher" value="Cephalofair Games"/>
 
         <poll name="suggested_numplayers">
             <results numplayers="2">
@@ -759,6 +761,74 @@ def test_sync_collection_rechecks_legacy_min_age():
     assert client.requested_ids == [174430]
     assert games[0].min_age == 14
     assert games[0].min_age_checked is True
+
+
+def test_sync_collection_refreshes_legacy_credits():
+    class FakeBGGClient:
+        def __init__(self):
+            self.requested_ids = []
+
+        def get_collection(self, username):
+            return '<items><item objectid="174430"/></items>'
+
+        def get_games(self, bgg_ids):
+            self.requested_ids.extend(bgg_ids)
+            return GAME_XML
+
+    class FakeRepository:
+        def __init__(self):
+            self.game = Game(
+                bgg_id=174430,
+                name="Legacy Gloomhaven",
+                credits_checked=False,
+            )
+
+        def get_existing_bgg_ids(self, bgg_ids):
+            return {174430}
+
+        def get_bgg_ids_needing_player_count_poll_refresh(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_expansion_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_min_age_check(
+            self,
+            bgg_ids,
+        ):
+            return set()
+
+        def get_bgg_ids_needing_credits_refresh(
+            self,
+            bgg_ids,
+        ):
+            return {174430}
+
+        def get_by_bgg_id(self, bgg_id):
+            return self.game
+
+        def update(self, game):
+            self.game = game
+            return game
+
+    client = FakeBGGClient()
+    repository = FakeRepository()
+
+    games = CollectionService(
+        client,
+        repository,
+    ).sync_collection("tom")
+
+    assert client.requested_ids == [174430]
+    assert games[0].designers == ["Isaac Childres"]
+    assert games[0].publishers == ["Cephalofair Games"]
+    assert games[0].credits_checked is True
 
 def test_search_games_marks_owned_results():
     search_xml = """

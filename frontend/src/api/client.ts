@@ -29,6 +29,42 @@ export interface PickerOptions {
   mechanics: string[]
 }
 
+export interface RankingGame {
+  bgg_id: number
+  name: string
+  year_published: number | null
+  image_url: string | null
+  thumbnail_url: string | null
+  rating: number
+  comparisons_count: number
+  wins: number
+  losses: number
+  rank?: number
+}
+
+export interface RankingMatchup {
+  games: RankingGame[]
+}
+
+export interface RankingsResponse {
+  rankings: RankingGame[]
+  unplayed: RankingGame[]
+  summary: RankingSummary
+}
+
+export interface RankingSummaryItem {
+  name: string
+  count: number
+}
+
+export interface RankingSummary {
+  games_count: number
+  designers: RankingSummaryItem[]
+  publishers: RankingSummaryItem[]
+  mechanics: RankingSummaryItem[]
+  categories: RankingSummaryItem[]
+}
+
 export interface PickerMatch {
   game: Game
   score: number
@@ -654,6 +690,125 @@ Promise<Game[]> {
   }
 
   return response.json()
+}
+
+
+export async function getRankingMatchup(
+  excludeBggIds: number[] = [],
+  playedOnly = true,
+): Promise<RankingMatchup> {
+  const params = new URLSearchParams()
+
+  params.set(
+    "played_only",
+    playedOnly.toString(),
+  )
+
+  excludeBggIds.forEach((bggId) => {
+    params.append(
+      "exclude_bgg_ids",
+      bggId.toString(),
+    )
+  })
+
+  const suffix = params.toString()
+
+  const response = await apiFetch(
+    `/rankings/matchup${
+      suffix ? `?${suffix}` : ""
+    }`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Ranking matchup failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
+}
+
+
+export async function getRankings(
+  playedOnly = true,
+  summaryLimit: 10 | 20 | 50 | 100 = 20,
+):
+Promise<RankingsResponse> {
+  const params = new URLSearchParams({
+    played_only: playedOnly.toString(),
+    summary_limit: summaryLimit.toString(),
+  })
+
+  const response = await apiFetch(
+    `/rankings?${params.toString()}`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Rankings request failed: ${response.status}`,
+    )
+  }
+
+  return response.json()
+}
+
+
+export async function chooseRankingGame(
+  winnerBggId: number,
+  loserBggId: number,
+): Promise<void> {
+  const response = await apiFetch(
+    "/rankings/comparisons",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        winner_bgg_id: winnerBggId,
+        loser_bgg_id: loserBggId,
+      }),
+    },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Ranking comparison failed: ${response.status}`,
+    )
+  }
+}
+
+
+export async function markRankingGameUnplayed(
+  bggId: number,
+): Promise<void> {
+  const response = await apiFetch(
+    `/rankings/games/${bggId}/unplayed`,
+    { method: "POST" },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Ranking exclusion failed: ${response.status}`,
+    )
+  }
+}
+
+
+export async function restoreRankingGame(
+  bggId: number,
+): Promise<void> {
+  const response = await apiFetch(
+    `/rankings/games/${bggId}/unplayed`,
+    { method: "DELETE" },
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Ranking restore failed: ${response.status}`,
+    )
+  }
 }
 
 

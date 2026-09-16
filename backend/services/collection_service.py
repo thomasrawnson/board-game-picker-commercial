@@ -130,11 +130,24 @@ class CollectionService:
             )
         )
 
+        credits_refresh_ids = (
+            self.repository
+            .get_bgg_ids_needing_credits_refresh(
+                bgg_ids
+            )
+            if hasattr(
+                self.repository,
+                "get_bgg_ids_needing_credits_refresh",
+            )
+            else set()
+        )
+
         metadata_refresh_ids = (
             set(missing_ids)
             | poll_refresh_ids
             | expansion_check_ids
             | min_age_check_ids
+            | credits_refresh_ids
         )
 
         metadata_ids = [

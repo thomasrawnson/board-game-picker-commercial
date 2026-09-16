@@ -44,6 +44,9 @@ def test_parse_game_metadata():
 
     assert "Hand Management" in game.mechanics
     assert "Network and Route Building" in game.mechanics
+    assert game.designers == ["Cephalofair Designer"]
+    assert game.publishers == ["Cephalofair Games"]
+    assert game.credits_checked is True
 
 
 def test_multiple_mechanics_are_parsed():

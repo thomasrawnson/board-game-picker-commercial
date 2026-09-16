@@ -10,7 +10,7 @@
 .stats-section-tabs {
   display: grid;
   grid-template-columns:
-    repeat(4, 1fr);
+    repeat(5, 1fr);
 
   gap: 5px;
 
@@ -73,6 +73,167 @@
 
 .stats-section-content {
   animation: stats-section-in 220ms ease both;
+}
+
+
+.rank-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+}
+
+
+.rank-summary-share-card {
+  margin-top: 12px;
+  padding: 12px;
+
+  background: rgba(243, 234, 216, 0.05);
+
+  border: 1px solid var(--line);
+  border-radius: 13px;
+}
+
+
+.rank-summary-share-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+
+.rank-summary-share-heading > strong {
+  color: var(--text-primary);
+
+  font-size: 11px;
+}
+
+
+.rank-summary-share-heading button {
+  min-height: 38px;
+  padding: 8px 14px;
+
+  color: var(--felt-dark);
+  background: var(--gold);
+
+  border: 0;
+  border-radius: 10px;
+
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.rank-summary-share-heading button:disabled,
+.rank-summary-sizes button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+
+.rank-summary-sizes {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 4px;
+
+  margin-top: 10px;
+  padding: 3px;
+
+  background: rgba(243, 234, 216, 0.05);
+
+  border-radius: 9px;
+}
+
+
+.rank-summary-sizes button {
+  min-height: 34px;
+  padding: 7px 9px;
+
+  color: var(--text-secondary);
+  background: transparent;
+
+  border: 0;
+  border-radius: 7px;
+
+  font: inherit;
+  font-size: 9px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.rank-summary-sizes button.active {
+  color: var(--card);
+  background: var(--rust);
+}
+
+
+.rank-summary-share-card > span {
+  display: block;
+
+  margin-top: 9px;
+
+  color: var(--text-secondary);
+
+  font-size: 10px;
+}
+
+
+.rank-summary-card {
+  min-width: 0;
+  padding: 15px;
+
+  color: var(--ink);
+  background: var(--card);
+
+  border-radius: 15px;
+}
+
+
+.rank-summary-card ol {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin: 10px 0 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+
+.rank-summary-card li {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  color: var(--ink-soft);
+
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+
+.rank-summary-card li span {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+.rank-summary-card li strong {
+  flex: 0 0 auto;
+
+  color: var(--rust);
 }
 
 

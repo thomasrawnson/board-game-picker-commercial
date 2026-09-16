@@ -21,6 +21,7 @@ from api.routers import (
     insights,
     picker,
     plays,
+    rankings,
     wishlist,
 )
 
@@ -90,6 +91,10 @@ app.include_router(
 
 app.include_router(
     plays.router
+)
+
+app.include_router(
+    rankings.router
 )
 
 app.include_router(

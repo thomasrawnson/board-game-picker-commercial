@@ -46,6 +46,16 @@ class Game:
         default_factory=list
     )
 
+    designers: list[str] = field(
+        default_factory=list
+    )
+
+    publishers: list[str] = field(
+        default_factory=list
+    )
+
+    credits_checked: bool = False
+
     best_player_counts: list[int] = field(
         default_factory=list
     )

@@ -2,6 +2,7 @@ export type AppView =
   | "picker"
   | "collection"
   | "gameNight"
+  | "rankings"
   | "discover"
   | "insights"
   | "setup"
@@ -98,6 +99,22 @@ function AppNavigation({
           }
         >
           Discover
+        </button>
+
+        <button
+          type="button"
+          className={
+            view === "rankings"
+              ? "nav-button active"
+              : "nav-button"
+          }
+          onClick={() =>
+            onChangeView(
+              "rankings",
+            )
+          }
+        >
+          Rank
         </button>
 
         <button

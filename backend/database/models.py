@@ -356,6 +356,24 @@ class Game(Base):
         default=False,
     )
 
+    designers: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+
+    publishers: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+
+    credits_checked: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
+
     # Temporary compatibility field.
     # Ownership will move entirely to UserGame.
     owned: Mapped[bool] = mapped_column(
@@ -675,6 +693,142 @@ class PickerEvent(Base):
     session = relationship(
         "PickerSession",
         back_populates="events",
+    )
+
+
+class GameRanking(Base):
+    __tablename__ = "game_rankings"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "game_id",
+            name="uq_game_rankings_user_game",
+        ),
+        Index(
+            "ix_game_rankings_user_rating",
+            "user_id",
+            "rating",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
+    )
+
+    game_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "games.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
+    )
+
+    rating: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+        default=1500.0,
+        server_default="1500",
+    )
+
+    comparisons_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+    )
+
+    wins: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+    )
+
+    losses: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+        server_default="0",
+    )
+
+    excluded: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default="false",
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+
+
+class GameComparison(Base):
+    __tablename__ = "game_comparisons"
+
+    __table_args__ = (
+        Index(
+            "ix_game_comparisons_user_created_at",
+            "user_id",
+            "created_at",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+        index=True,
+    )
+
+    winner_game_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "games.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
+
+    loser_game_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "games.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
     )
 
 class Category(Base):

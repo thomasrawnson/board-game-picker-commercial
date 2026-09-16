@@ -44,6 +44,9 @@ def test_update_game():
                     total_votes=49,
                 )
             ],
+            designers=["New Designer"],
+            publishers=["New Publisher"],
+            credits_checked=True,
         )
 
         result = repository.update(updated)
@@ -60,6 +63,9 @@ def test_update_game():
         assert result.player_count_poll == [
             PlayerCountPoll(2, 0, 9, 40, 49)
         ]
+        assert result.designers == ["New Designer"]
+        assert result.publishers == ["New Publisher"]
+        assert result.credits_checked is True
 
     finally:
         db.query(DatabaseGame).filter(
@@ -284,6 +290,47 @@ def test_games_needing_min_age_check():
         repository.delete(unchecked_id)
         repository.delete(checked_id)
         db.close()
+
+
+def test_games_needing_credits_refresh():
+    db = SessionLocal()
+    repository = GameRepository(db)
+    unchecked_id = 999025
+    checked_id = 999026
+
+    try:
+        repository.delete(unchecked_id)
+        repository.delete(checked_id)
+
+        repository.create(
+            DomainGame(
+                bgg_id=unchecked_id,
+                name="Unchecked Credits",
+                credits_checked=False,
+            )
+        )
+        repository.create(
+            DomainGame(
+                bgg_id=checked_id,
+                name="Checked Credits",
+                designers=["Designer"],
+                publishers=["Publisher"],
+                credits_checked=True,
+            )
+        )
+
+        assert (
+            repository
+            .get_bgg_ids_needing_credits_refresh(
+                [unchecked_id, checked_id]
+            )
+            == {unchecked_id}
+        )
+    finally:
+        repository.delete(unchecked_id)
+        repository.delete(checked_id)
+        db.close()
+
 
 def test_create_game_persists_categories_and_mechanics():
     repository = GameRepository(SessionLocal())
