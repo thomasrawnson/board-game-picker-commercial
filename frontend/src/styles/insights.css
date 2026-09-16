@@ -6,6 +6,141 @@
   overflow-y: auto;
 }
 
+
+.stats-section-tabs {
+  display: grid;
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 5px;
+
+  margin: -10px 0 20px;
+  padding: 4px;
+
+  background:
+    rgba(243, 234, 216, 0.045);
+
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+
+.stats-section-tab {
+  min-height: 40px;
+
+  padding: 8px 5px;
+
+  color: var(--text-muted);
+  background: transparent;
+
+  border: 0;
+  border-radius: 10px;
+
+  font: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+}
+
+
+.stats-section-tab:hover {
+  color: var(--text-primary);
+}
+
+
+.stats-section-tab.active {
+  color: var(--felt-dark);
+  background: var(--gold);
+}
+
+
+.stats-section-heading {
+  margin: 0 2px 14px;
+}
+
+
+.stats-section-heading h2 {
+  margin: 3px 0 0;
+
+  color: var(--text-primary);
+
+  font-size: 22px;
+}
+
+
+.stats-section-content {
+  animation: stats-section-in 220ms ease both;
+}
+
+
+@keyframes stats-section-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.stats-empty-card,
+.recaps-preview-card {
+  margin-top: 18px;
+  padding: 22px 18px;
+
+  background:
+    rgba(243, 234, 216, 0.05);
+
+  border: 1px solid var(--line);
+  border-radius: 18px;
+
+  text-align: center;
+}
+
+
+.stats-empty-card > span {
+  display: grid;
+  place-items: center;
+
+  width: 34px;
+  height: 34px;
+
+  margin: 0 auto 12px;
+
+  color: var(--gold);
+  background: rgba(201, 162, 39, 0.1);
+
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  border-radius: 50%;
+}
+
+
+.stats-empty-card h2,
+.recaps-preview-card h2 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: 20px;
+}
+
+
+.stats-empty-card p,
+.recaps-preview-card > p:last-child {
+  margin: 8px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .insights-stat-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

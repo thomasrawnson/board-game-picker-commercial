@@ -12,6 +12,36 @@ import PlayerProfile
   from "./players/PlayerProfile"
 
 
+type StatsSection =
+  | "collection"
+  | "play"
+  | "group"
+  | "recaps"
+
+
+const statsSections: Array<{
+  id: StatsSection
+  label: string
+}> = [
+  {
+    id: "collection",
+    label: "Collection",
+  },
+  {
+    id: "play",
+    label: "Play",
+  },
+  {
+    id: "group",
+    label: "Group",
+  },
+  {
+    id: "recaps",
+    label: "Recaps",
+  },
+]
+
+
 function formatPlayedAt(
   value: string,
 ): string {
@@ -98,6 +128,13 @@ function InsightsView({
     showAllGroups,
     setShowAllGroups,
   ] = useState(false)
+
+  const [
+    activeSection,
+    setActiveSection,
+  ] = useState<StatsSection>(
+    "collection"
+  )
 
 
   useEffect(() => {
@@ -188,106 +225,225 @@ function InsightsView({
     <section className="screen insights-screen">
       <header>
         <p className="eyebrow">
-          Your shelf
+          Your games
         </p>
 
         <h1>
-          Collection insights
+          Stats
         </h1>
 
         <p className="subtitle">
-          What you've played,
-          who you've played with
-          and what's still waiting
-          on the shelf.
+          Your collection, plays,
+          groups and memorable months.
         </p>
       </header>
 
 
-      <div className="insights-stat-grid">
-        <article className="stat-card">
-          <strong>
-            {insights.total_games}
-          </strong>
-
-          <span>
-            Games owned
-          </span>
-        </article>
-
-        <article className="stat-card">
-          <strong>
-            {insights.total_plays}
-          </strong>
-
-          <span>
-            Plays
-          </span>
-        </article>
-
-        <article className="stat-card">
-          <strong>
-            {
-              insights
-                .collection_played_percentage
-            }%
-          </strong>
-
-          <span>
-            Shelf explored
-          </span>
-        </article>
-
-        <article className="stat-card">
-          <strong>
-            {formatHours(
-              insights
-                .total_duration_minutes,
-            )}
-          </strong>
-
-          <span>
-            Hours played
-          </span>
-        </article>
+      <div
+        className="stats-section-tabs"
+        aria-label="Stats sections"
+      >
+        {statsSections.map(
+          (section) => (
+            <button
+              type="button"
+              aria-pressed={
+                activeSection
+                === section.id
+              }
+              className={
+                activeSection
+                === section.id
+                  ? "stats-section-tab active"
+                  : "stats-section-tab"
+              }
+              key={section.id}
+              onClick={() =>
+                setActiveSection(
+                  section.id
+                )
+              }
+            >
+              {section.label}
+            </button>
+          ),
+        )}
       </div>
 
 
-      <div className="insights-mini-grid">
-        <article className="insight-mini-card">
-          <span>
-            Games played
-          </span>
+      {activeSection === "collection" && (
+        <div
+          className="stats-section-content"
+        >
+          <div className="stats-section-heading">
+            <p className="insight-label">
+              Collection stats
+            </p>
 
-          <strong>
-            {
-              insights
-                .played_games_count
-            }
-          </strong>
-        </article>
+            <h2>
+              Explore your shelf
+            </h2>
+          </div>
 
-        <article className="insight-mini-card">
-          <span>
-            Avg. play
-          </span>
+          <div className="insights-stat-grid">
+            <article className="stat-card">
+              <strong>
+                {insights.total_games}
+              </strong>
 
-          <strong>
-            {
-              insights
-                .average_duration_minutes
-              !== null
-                ? `${
-                    insights
-                      .average_duration_minutes
-                  }m`
-                : "—"
-            }
-          </strong>
-        </article>
-      </div>
+              <span>
+                Games owned
+              </span>
+            </article>
+
+            <article className="stat-card">
+              <strong>
+                {
+                  insights
+                    .collection_played_percentage
+                }%
+              </strong>
+
+              <span>
+                Shelf explored
+              </span>
+            </article>
+          </div>
+
+          <div className="insights-mini-grid">
+            <article className="insight-mini-card">
+              <span>
+                Games played
+              </span>
+
+              <strong>
+                {
+                  insights
+                    .played_games_count
+                }
+              </strong>
+            </article>
+
+            <article className="insight-mini-card">
+              <span>
+                Still waiting
+              </span>
+
+              <strong>
+                {
+                  insights
+                    .never_played_count
+                }
+              </strong>
+            </article>
+          </div>
+        </div>
+      )}
 
 
+      {activeSection === "play" && (
+        <div
+          className="stats-section-content"
+        >
+          <div className="stats-section-heading">
+            <p className="insight-label">
+              Play stats
+            </p>
+
+            <h2>
+              Time around the table
+            </h2>
+          </div>
+
+          <div className="insights-stat-grid">
+            <article className="stat-card">
+              <strong>
+                {insights.total_plays}
+              </strong>
+
+              <span>
+                Plays
+              </span>
+            </article>
+
+            <article className="stat-card">
+              <strong>
+                {formatHours(
+                  insights
+                    .total_duration_minutes,
+                )}
+              </strong>
+
+              <span>
+                Hours played
+              </span>
+            </article>
+          </div>
+
+          <div className="insights-mini-grid">
+            <article className="insight-mini-card">
+              <span>
+                Games played
+              </span>
+
+              <strong>
+                {
+                  insights
+                    .played_games_count
+                }
+              </strong>
+            </article>
+
+            <article className="insight-mini-card">
+              <span>
+                Avg. play
+              </span>
+
+              <strong>
+                {
+                  insights
+                    .average_duration_minutes
+                  !== null
+                    ? `${
+                        insights
+                          .average_duration_minutes
+                      }m`
+                    : "—"
+                }
+              </strong>
+            </article>
+          </div>
+        </div>
+      )}
+
+
+      {activeSection === "group" && (
+        <div className="stats-section-heading">
+          <p className="insight-label">
+            Group stats
+          </p>
+
+          <h2>
+            Your people at the table
+          </h2>
+        </div>
+      )}
+
+
+      {activeSection === "recaps" && (
+        <div className="stats-section-heading">
+          <p className="insight-label">
+            Recaps
+          </p>
+
+          <h2>
+            This month in games
+          </h2>
+        </div>
+      )}
+
+
+      {activeSection === "recaps" && (
       <article className="monthly-activity-card">
         <button
           type="button"
@@ -444,8 +600,10 @@ function InsightsView({
           )
         }
       </article>
+      )}
 
 
+      {activeSection === "play" && (
       <div className="insight-feature-list">
         <article className="insight-feature">
           <p className="insight-label">
@@ -527,10 +685,12 @@ function InsightsView({
           }
         </article>
       </div>
+      )}
 
 
       {
-        insights
+        activeSection === "collection"
+        && insights
           .neglected_games
           .length > 0
         && (
@@ -638,7 +798,8 @@ function InsightsView({
 
 
       {
-        insights
+        activeSection === "group"
+        && insights
           .frequent_players
           .length > 0
         && (
@@ -734,7 +895,8 @@ function InsightsView({
 
 
       {
-        insights
+        activeSection === "group"
+        && insights
           .top_games_by_player
           .length > 0
         && (
@@ -860,7 +1022,8 @@ function InsightsView({
 
 
       {
-        insights
+        activeSection === "group"
+        && insights
           .common_groups
           .length > 0
         && (
@@ -960,25 +1123,44 @@ function InsightsView({
       }
 
 
-      <article className="shelf-callout">
-        <strong>
-          {
-            insights
-              .never_played_count
-          }
-        </strong>
+      {
+        activeSection === "group"
+        && insights.frequent_players.length === 0
+        && insights.top_games_by_player.length === 0
+        && insights.common_groups.length === 0
+        && (
+          <article className="stats-empty-card">
+            <span aria-hidden="true">
+              ◌
+            </span>
 
-        <div>
-          <span>
-            games waiting
-          </span>
+            <h2>
+              Group stories start with a play
+            </h2>
+
+            <p>
+              Add players when logging games to reveal regular groups, favourite games and player profiles.
+            </p>
+          </article>
+        )
+      }
+
+
+      {activeSection === "recaps" && (
+        <article className="recaps-preview-card">
+          <p className="insight-label">
+            More stories to come
+          </p>
+
+          <h2>
+            Your year in review
+          </h2>
 
           <p>
-            Still looking for their
-            next night on the table.
+            Yearly recaps will surface milestones, favourite groups, new discoveries and the games that defined your year.
           </p>
-        </div>
-      </article>
+        </article>
+      )}
     </section>
   )
 }
