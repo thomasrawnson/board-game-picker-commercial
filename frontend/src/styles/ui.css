@@ -234,15 +234,6 @@
   margin-bottom: 10px;
 }
 
-/* Five destinations have enough room to breathe. */
-.app-nav {
-  grid-template-columns: repeat(5, 1fr) !important;
-}
-
-.nav-button {
-  min-width: 0;
-}
-
 /* Rankings remain discoverable from Insight without owning a permanent nav slot. */
 .rank-section-title-row {
   display: flex;
@@ -435,4 +426,25 @@
       var(--sp-bg) 72%,
       rgba(21, 55, 42, 0)
     );
+}
+
+
+/* V9.1 regression guard: picker actions keep the shared button treatment. */
+.fine-tune-screen .picker-step-actions {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.fine-tune-screen .picker-step-actions .primary-button,
+.fine-tune-screen .picker-step-actions .ghost-button {
+  width: 100%;
+  margin: 0;
+}
+
+.fine-tune-screen .picker-step-actions .ghost-button {
+  min-height: 40px;
+  color: var(--sp-secondary);
+  border-color: transparent;
+  background: transparent;
 }

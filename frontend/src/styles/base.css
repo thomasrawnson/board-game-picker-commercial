@@ -119,39 +119,45 @@ h1 {
 
 /* Buttons */
 
+/*
+  Shared button geometry belongs here. Screen-specific styles should only
+  change colour, emphasis or width when they genuinely need to.
+*/
 .primary-button,
 .secondary-button,
 .ghost-button {
   width: 100%;
+  min-height: 46px;
+  padding: 12px 16px;
+  border-radius: 12px;
 
-  padding: 15px 16px;
-
-  border-radius: 14px;
-
-  font-weight: 600;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
 
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
 
   transition:
     transform 120ms ease,
-    opacity 180ms ease,
-    background 180ms ease;
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
 }
 
 .primary-button {
   margin-top: 24px;
-
-  color: var(--card);
-
-  background: linear-gradient(180deg, #be5d35, var(--rust));
-
-  border: 1px solid rgba(255, 255, 255, 0.06);
-
-  box-shadow: 0 9px 24px rgba(0, 0, 0, 0.18);
+  color: #21190a;
+  background: var(--sp-gold);
+  border: 0;
+  box-shadow: none;
 }
 
 .primary-button:hover:not(:disabled) {
-  background: linear-gradient(180deg, #c6653d, #aa4927);
+  background: var(--sp-gold-hover);
 }
 
 .primary-button:active:not(:disabled),
@@ -161,16 +167,19 @@ h1 {
 }
 
 .primary-button:disabled {
-  opacity: 0.38;
+  opacity: 1;
+  color: rgba(244, 236, 223, 0.42);
+  background: rgba(244, 236, 223, 0.08);
+  border: 0;
+  box-shadow: none;
   cursor: not-allowed;
 }
 
 .secondary-button {
-  color: var(--card);
-
-  background: rgba(243, 234, 216, 0.07);
-
-  border: 1px solid var(--line);
+  color: var(--sp-text);
+  background: transparent;
+  border: 1px solid var(--sp-line);
+  box-shadow: none;
 }
 
 .ghost-button {
@@ -399,77 +408,51 @@ textarea:focus-visible {
 ========================================= */
 
 .app-top-bar {
-  position: sticky;
-  top: 0;
+  position: relative;
+  z-index: 90;
 
-  z-index: 80;
-
-  width: 100%;
-  min-height: 62px;
-
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  min-height: 42px;
+  display: flex;
   align-items: center;
+  justify-content: flex-start;
 
-  padding: calc(8px + env(safe-area-inset-top)) 15px 8px;
+  margin: 0;
+  padding: 10px 0 2px;
 
-  background: rgba(7, 27, 18, 0.94);
-
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-
-  border-bottom: 1px solid rgba(129, 183, 145, 0.07);
+  background: transparent;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .app-wordmark {
-  text-align: center;
-
-  color: var(--shelfpick-text);
-
-  font-family: var(--font-display);
-
-  font-size: 19px;
-  font-weight: 700;
-
-  letter-spacing: -0.025em;
+  display: none;
 }
 
 .top-bar-spacer {
-  width: 44px;
+  display: none;
 }
 
 /* Dice / settings button */
 
 .dice-menu-button {
-  width: 42px;
-  height: 42px;
+  width: 28px;
+  height: 28px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+  display: grid;
+  place-items: center;
   padding: 0;
 
-  border: 1px solid rgba(130, 188, 148, 0.25);
-
-  border-radius: 13px;
-
-  background: rgba(16, 44, 29, 0.92);
-
-  color: var(--shelfpick-green-soft);
+  color: var(--sp-green);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
 
   cursor: pointer;
-
-  transition:
-    background 140ms ease,
-    border-color 140ms ease,
-    transform 140ms ease;
 }
 
 .dice-menu-button:hover {
-  background: #153725;
-
-  border-color: rgba(130, 188, 148, 0.45);
+  background: rgba(196, 217, 185, 0.07);
 }
 
 .dice-menu-button:active {
@@ -478,7 +461,6 @@ textarea:focus-visible {
 
 .dice-icon {
   display: block;
-
-  width: 23px;
-  height: 23px;
+  width: 17px;
+  height: 17px;
 }

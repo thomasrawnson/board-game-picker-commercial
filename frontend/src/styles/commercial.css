@@ -69,105 +69,18 @@ h1 {
 }
 
 /* Compact top bar: small dice only, with settings available through aria label. */
-.app-top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 90;
-  display: flex;
-  align-items: center;
-  min-height: 50px;
-  margin: 0 -20px;
-  padding: calc(8px + env(safe-area-inset-top)) 20px 8px;
-  background: rgba(7, 28, 18, 0.97);
-  border-bottom: 1px solid var(--sp-line);
-  backdrop-filter: blur(14px);
-}
 
-.app-wordmark {
-  color: var(--sp-text);
-  font-family: var(--font-display);
-  font-size: 20px;
-  text-align: center;
-}
 
-.dice-menu-button {
-  width: 29px;
-  height: 29px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  color: var(--sp-green);
-  background: transparent;
-  border: 0;
-  border-radius: 7px;
-  cursor: pointer;
-}
 
-.dice-menu-button:hover {
-  background: rgba(155, 197, 165, 0.07);
-}
 
-.dice-icon {
-  width: 17px;
-  height: 17px;
-}
 
 /* Bottom navigation: quiet wayfinding, not six competing CTAs. */
-.app-nav {
-  left: 50%;
-  bottom: 0;
-  width: min(100%, 430px);
-  grid-template-columns: repeat(6, 1fr);
-  gap: 2px;
-  padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
-  background: rgba(8, 31, 20, 0.98);
-  border: 0;
-  border-top: 1px solid var(--sp-line);
-  border-radius: 0;
-  box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.1);
-}
 
-.nav-button {
-  min-height: 42px;
-  padding: 7px 3px;
-  color: #aebbad;
-  border-radius: 8px;
-  font-size: 9px;
-  letter-spacing: 0;
-  text-transform: none;
-}
 
-.nav-button.active {
-  color: var(--sp-text);
-  background: rgba(155, 197, 165, 0.13);
-}
 
 /* Shared action hierarchy */
-.primary-button {
-  border: 0;
-  border-radius: 10px;
-  color: #21190a;
-  background: var(--sp-gold);
-  box-shadow: none;
-}
 
-.primary-button:hover:not(:disabled) {
-  background: var(--sp-gold-hover);
-}
 
-.primary-button:disabled {
-  opacity: 1;
-  color: rgba(243, 236, 218, 0.42);
-  background: rgba(224, 173, 55, 0.18);
-  border: 0;
-}
-
-.secondary-button,
-.ghost-button {
-  background: transparent;
-  border-color: var(--sp-line);
-  box-shadow: none;
-}
 
 /* Picker setup */
 .progress-dots {
@@ -829,12 +742,6 @@ h1 {
     padding-right: 18px;
   }
 
-  .app-top-bar {
-    margin-left: -18px;
-    margin-right: -18px;
-    padding-left: 18px;
-    padding-right: 18px;
-  }
 
   h1 {
     font-size: 28px;
@@ -1097,16 +1004,6 @@ h3,
 .ranking-position,
 .player-stat strong {
   font-family: var(--font-display);
-}
-
-.app-wordmark,
-.top-bar-spacer {
-  display: none !important;
-}
-
-.app-top-bar {
-  justify-content: flex-start;
-  border-bottom: 0;
 }
 
 .phone.app-phone {
@@ -1404,9 +1301,6 @@ h3,
 .collection-section-tabs button.active,
 .ranking-view-tabs button.active,
 .stats-section-tab.active,
-.nav-button.active {
-  background: rgba(184, 210, 175, 0.16);
-}
 
 .collection-search,
 .collection-section-tabs,
@@ -1451,23 +1345,7 @@ h3,
 }
 
 /* The settings control floats on the felt; there is no separate header bar. */
-.app-top-bar {
-  position: relative;
-  top: auto;
-  min-height: 42px;
-  margin: 0;
-  padding: 10px 0 2px;
-  background: transparent !important;
-  border: 0 !important;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
 
-.dice-menu-button {
-  width: 28px;
-  height: 28px;
-  color: var(--sp-green);
-}
 
 /* Sparse picker steps size to content rather than stretching the full phone. */
 .picker-step-screen {
@@ -1484,13 +1362,6 @@ h3,
 }
 
 /* Continue should look unavailable, not faded or muddy. */
-.primary-button:disabled {
-  opacity: 1 !important;
-  color: rgba(244, 236, 223, 0.42) !important;
-  background: rgba(244, 236, 223, 0.08) !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
 
 /* Make step progress legible without making it another headline. */
 .dot {
@@ -1608,49 +1479,10 @@ h3,
 }
 
 /* Navigation gets small line icons so wayfinding feels intentional. */
-.nav-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  min-height: 48px;
-  padding: 5px 2px;
-}
 
-.nav-icon {
-  width: 17px;
-  height: 17px;
-  display: grid;
-  place-items: center;
-  color: currentColor;
-}
 
-.nav-icon svg {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
 
-.nav-icon circle {
-  fill: currentColor;
-  stroke: none;
-}
 
-.nav-label {
-  display: block;
-  line-height: 1;
-}
 
 @media (max-width: 480px) {
-  .app-top-bar {
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 0;
-    padding-right: 0;
-  }
 }
