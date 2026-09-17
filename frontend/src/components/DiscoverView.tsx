@@ -16,6 +16,21 @@ type Props = {
 }
 
 
+function recommendationLabel(
+  index: number,
+) {
+  if (index === 0) {
+    return "Top match"
+  }
+
+  if (index < 3) {
+    return "Strong match"
+  }
+
+  return "Good fit"
+}
+
+
 function DiscoverView({
   onViewWishlist,
 }: Props) {
@@ -160,10 +175,11 @@ function DiscoverView({
 
         <button
           type="button"
-          className="ghost-button discover-wishlist-link"
+          className="discover-wishlist-link"
           onClick={onViewWishlist}
         >
-          View Wishlist
+          <span>View Wishlist</span>
+          <span aria-hidden="true">→</span>
         </button>
       </header>
 
@@ -207,10 +223,9 @@ function DiscoverView({
 
       <div className="discover-list">
         {recommendations.map(
-          (recommendation) => {
+          (recommendation, index) => {
             const {
               game,
-              score,
               reasons,
               wishlisted,
             } = recommendation
@@ -252,7 +267,7 @@ function DiscoverView({
 
                 <div className="discover-match-row">
                   <span className="discover-match-score">
-                    {Math.round(score)}% match
+                    {recommendationLabel(index)}
                   </span>
 
                   {reasons.length > 0 && (
@@ -275,6 +290,17 @@ function DiscoverView({
                 </div>
 
                 <div className="discover-actions">
+                  <a
+                    className="discover-bgg-link"
+                    href={
+                      `https://boardgamegeek.com/boardgame/${game.bgg_id}`
+                    }
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View on BGG
+                  </a>
+
                   <button
                     type="button"
                     className={
@@ -314,17 +340,6 @@ function DiscoverView({
                       />
                     </svg>
                   </button>
-
-                  <a
-                    className="ghost-button"
-                    href={
-                      `https://boardgamegeek.com/boardgame/${game.bgg_id}`
-                    }
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View on BGG
-                  </a>
                 </div>
               </div>
             </article>

@@ -1432,3 +1432,225 @@ h3,
     min-height: 38px;
   }
 }
+
+
+/* =========================================================
+   V6 polish: lighter felt, compact picker flow, clearer actions
+   ========================================================= */
+
+:root {
+  --sp-bg: #15372a;
+  --sp-panel: #1c4333;
+  --sp-panel-soft: #234d3b;
+  --sp-quiet: #183b2d;
+  --sp-text: #f4ecdf;
+  --sp-secondary: #d9e2d4;
+  --sp-muted: #a0b49e;
+  --sp-green: #c4d9b9;
+  --sp-line: rgba(196, 217, 185, 0.13);
+}
+
+/* The settings control floats on the felt; there is no separate header bar. */
+.app-top-bar {
+  position: relative;
+  top: auto;
+  min-height: 42px;
+  margin: 0;
+  padding: 10px 0 2px;
+  background: transparent !important;
+  border: 0 !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.dice-menu-button {
+  width: 28px;
+  height: 28px;
+  color: var(--sp-green);
+}
+
+/* Sparse picker steps size to content rather than stretching the full phone. */
+.picker-step-screen {
+  flex: 0 0 auto;
+  min-height: auto !important;
+}
+
+.picker-step-screen .player-grid {
+  margin-bottom: 0 !important;
+}
+
+.picker-step-screen .picker-step-actions {
+  margin-top: 22px !important;
+}
+
+/* Continue should look unavailable, not faded or muddy. */
+.primary-button:disabled {
+  opacity: 1 !important;
+  color: rgba(244, 236, 223, 0.42) !important;
+  background: rgba(244, 236, 223, 0.08) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Make step progress legible without making it another headline. */
+.dot {
+  background: rgba(244, 236, 223, 0.34) !important;
+  opacity: 1 !important;
+}
+
+.dot.active {
+  background: var(--sp-gold) !important;
+}
+
+/* Solo is a subtly distinct play mode. */
+.player-chip.solo {
+  border-color: rgba(217, 170, 59, 0.22);
+}
+
+.player-chip.solo span {
+  color: #cbbf96;
+}
+
+.player-chip.solo.selected {
+  border-color: rgba(217, 170, 59, 0.34);
+  background: rgba(217, 170, 59, 0.12);
+}
+
+/* Fine tune: tighter rhythm and fewer visually competing blocks. */
+.fine-tune-screen .subtitle {
+  margin-bottom: 16px;
+}
+
+.fine-tune-screen .preference-section {
+  margin-top: 13px !important;
+}
+
+.fine-tune-screen .preference-label {
+  margin-bottom: 6px !important;
+}
+
+.fine-tune-screen .picker-mode-list.compact,
+.fine-tune-screen .play-style-grid,
+.fine-tune-screen .complexity-grid {
+  gap: 5px;
+}
+
+.fine-tune-screen .picker-mode-list.compact .picker-mode-option,
+.fine-tune-screen .play-style-grid .preference-chip,
+.fine-tune-screen .complexity-grid .complexity-option {
+  min-height: 38px;
+  padding: 7px 5px;
+}
+
+.fine-tune-screen .advanced-filters {
+  margin-top: 13px !important;
+}
+
+.fine-tune-screen .picker-step-actions {
+  margin-top: 15px !important;
+}
+
+/* Discover header has an obvious Wishlist action. */
+.discover-wishlist-link {
+  width: fit-content;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: -2px 0 0;
+  padding: 8px 12px;
+  color: var(--sp-text);
+  background: rgba(196, 217, 185, 0.09);
+  border: 0;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.discover-wishlist-link:hover {
+  background: rgba(196, 217, 185, 0.14);
+}
+
+/* Discover uses relative fit labels rather than pretending the raw score is a percentage. */
+.discover-match-score {
+  color: var(--sp-text);
+  font-family: "Nunito Sans", system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.discover-bgg-link {
+  color: var(--sp-green);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.discover-bgg-link:hover {
+  color: var(--sp-text);
+  text-decoration: underline;
+}
+
+/* Insight labels and recap links follow the same palette; no rust/red accents. */
+.insights-screen .insight-label,
+.insights-screen .insights-view-all,
+.insights-screen .monthly-play-game,
+.insights-screen .favourite-player-link,
+.insights-screen .favourite-game-link {
+  color: var(--sp-green) !important;
+}
+
+.insights-screen .monthly-play-game,
+.insights-screen .favourite-player-link {
+  color: var(--sp-text) !important;
+}
+
+/* Navigation gets small line icons so wayfinding feels intentional. */
+.nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 48px;
+  padding: 5px 2px;
+}
+
+.nav-icon {
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  color: currentColor;
+}
+
+.nav-icon svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav-icon circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.nav-label {
+  display: block;
+  line-height: 1;
+}
+
+@media (max-width: 480px) {
+  .app-top-bar {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

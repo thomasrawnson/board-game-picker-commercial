@@ -97,8 +97,12 @@ function PlayerStep({
                 players === option
                 && selectedPlayerIds
                   .length === 0
-                  ? "player-chip selected"
-                  : "player-chip"
+                  ? option === 1
+                    ? "player-chip solo selected"
+                    : "player-chip selected"
+                  : option === 1
+                    ? "player-chip solo"
+                    : "player-chip"
               }
               onClick={() =>
                 chooseCount(

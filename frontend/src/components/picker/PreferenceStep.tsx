@@ -146,7 +146,7 @@ function PreferenceStep({
   onBack,
 }: Props) {
   return (
-    <section className="screen picker-step-screen">
+    <section className="screen picker-step-screen fine-tune-screen">
       <header>
         <h1>
           Fine-tune the pick
@@ -161,7 +161,7 @@ function PreferenceStep({
 
       <div className="preference-section">
         <p className="preference-label">
-          How should we pick?
+          Pick style
         </p>
 
         <div className="picker-mode-list compact">
@@ -195,7 +195,7 @@ function PreferenceStep({
 
       <div className="preference-section">
         <p className="preference-label">
-          Game type
+          Play style
         </p>
 
         <div className="play-style-grid">
