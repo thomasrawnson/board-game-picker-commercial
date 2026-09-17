@@ -94,7 +94,7 @@
 .wishlist-card-body strong {
   margin: 0 0 6px;
   color: var(--text-primary);
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 16px;
 }
 
@@ -116,7 +116,7 @@
   align-items: center;
   justify-content: center;
   color: var(--gold);
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 28px;
 }
 
@@ -289,7 +289,7 @@
 .collection-game-info strong {
   overflow: hidden;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 15px;
 
   text-overflow: ellipsis;
@@ -372,7 +372,7 @@
 
   color: var(--gold);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 48px;
 }
 
@@ -402,7 +402,7 @@
 .detail-stats strong {
   color: var(--gold);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 20px;
 }
 
@@ -527,7 +527,7 @@
 
   color: var(--gold);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 16px;
 }
 
@@ -758,7 +758,7 @@
 
 .play-form-heading strong {
   color: var(--card);
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 17px;
 }
 

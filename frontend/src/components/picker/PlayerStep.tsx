@@ -42,8 +42,8 @@ function PlayerStep({
         </h1>
 
         <p className="subtitle">
-          Choose your regular players
-          or just pick a group size.
+          Choose friends or pick a
+          group size.
         </p>
       </header>
 
@@ -57,19 +57,19 @@ function PlayerStep({
       >
         <span>
           <strong>
-            Choose players
+            Choose friends
           </strong>
 
           <small>
             {selectedPlayerIds.length
               > 0
-              ? `${selectedPlayerIds.length} regular player${
+              ? `${selectedPlayerIds.length} friend${
                   selectedPlayerIds.length
                   === 1
                     ? ""
                     : "s"
                 } selected`
-              : "Select regular players"}
+              : "Select from your regular group"}
           </small>
         </span>
 

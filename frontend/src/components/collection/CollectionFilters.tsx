@@ -49,10 +49,8 @@ function CollectionFilters({
           { value: "played", label: "Played" },
           { value: "never", label: "Never played" },
         ]}
-        onChange={(value) =>
-          onPlayFilterChange(
-            value as PlayFilter,
-          )
+        onChange={
+          onPlayFilterChange
         }
       />
 

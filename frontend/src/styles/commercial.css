@@ -85,7 +85,7 @@ h1 {
 
 .app-wordmark {
   color: var(--sp-text);
-  font-family: "Lora", serif;
+  font-family: var(--font-display);
   font-size: 20px;
   text-align: center;
 }
@@ -302,7 +302,7 @@ h1 {
   display: grid;
   place-items: center;
   color: #9cc18e;
-  font-family: "Lora", serif;
+  font-family: var(--font-display);
   font-size: 18px;
 }
 
@@ -372,7 +372,7 @@ h1 {
 
 .picker-ai-note strong {
   color: var(--sp-green);
-  font-family: "Lora", serif;
+  font-family: var(--font-display);
   font-size: 12px;
 }
 
@@ -1087,7 +1087,7 @@ button,
 input,
 select,
 textarea {
-  font-family: "Nunito Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-ui);
 }
 
 h1,
@@ -1096,7 +1096,7 @@ h3,
 .picker-result-title,
 .ranking-position,
 .player-stat strong {
-  font-family: "Lora", Georgia, serif;
+  font-family: var(--font-display);
 }
 
 .app-wordmark,
@@ -1323,7 +1323,7 @@ h3,
 
 .discover-match-score {
   color: var(--sp-gold);
-  font-family: "Lora", Georgia, serif;
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
@@ -1576,7 +1576,7 @@ h3,
 /* Discover uses relative fit labels rather than pretending the raw score is a percentage. */
 .discover-match-score {
   color: var(--sp-text);
-  font-family: "Nunito Sans", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 12px;
   font-weight: 800;
 }

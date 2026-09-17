@@ -6,6 +6,9 @@ import type {
 import Disclosure
   from "../ui/Disclosure"
 
+import ActionRow
+  from "../ui/ActionRow"
+
 
 type Props = {
   preferredCategories: string[]
@@ -164,41 +167,6 @@ function PreferenceStep({
 
       <div className="preference-section">
         <p className="preference-label">
-          Pick style
-        </p>
-
-        <div className="picker-mode-list compact">
-          {modeOptions.map(
-            (option) => (
-              <button
-                key={option.value}
-                type="button"
-                className={
-                  mode === option.value
-                    ? "picker-mode-option selected"
-                    : "picker-mode-option"
-                }
-                aria-pressed={
-                  mode === option.value
-                }
-                title={option.description}
-                onClick={() =>
-                  onModeChange(
-                    option.value
-                  )
-                }
-              >
-                {option.label}
-              </button>
-            ),
-          )}
-        </div>
-      </div>
-
-
-
-      <div className="preference-section">
-        <p className="preference-label">
           Complexity
         </p>
 
@@ -241,9 +209,42 @@ function PreferenceStep({
 
       <Disclosure
         label="More preferences"
-        hint="Play style, theme, mechanics and age"
+        hint="Pick style, play style, theme, mechanics and age"
         className="advanced-filters"
       >
+        <div className="advanced-pick-style">
+          <span className="advanced-preference-label">
+            Pick style
+          </span>
+
+          <div className="picker-mode-list compact">
+            {modeOptions.map(
+              (option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={
+                    mode === option.value
+                      ? "picker-mode-option selected"
+                      : "picker-mode-option"
+                  }
+                  aria-pressed={
+                    mode === option.value
+                  }
+                  title={option.description}
+                  onClick={() =>
+                    onModeChange(
+                      option.value
+                    )
+                  }
+                >
+                  {option.label}
+                </button>
+              ),
+            )}
+          </div>
+        </div>
+
         <div className="advanced-play-style">
           <span className="advanced-preference-label">
             Play style
@@ -274,60 +275,21 @@ function PreferenceStep({
         </div>
 
         <div className="preference-link-list">
-        <button
-          type="button"
-          className="picker-navigation-card"
-          onClick={
-            onOpenTheme
-          }
-        >
-          <span>
-            <strong>
-              Theme
-            </strong>
+          <ActionRow
+            label="Theme"
+            value={selectionSummary(
+              preferredCategories,
+            )}
+            onClick={onOpenTheme}
+          />
 
-            <small>
-              {selectionSummary(
-                preferredCategories
-              )}
-            </small>
-          </span>
-
-          <span
-            className="picker-navigation-chevron"
-            aria-hidden="true"
-          >
-            ›
-          </span>
-        </button>
-
-
-        <button
-          type="button"
-          className="picker-navigation-card"
-          onClick={
-            onOpenPlayStyle
-          }
-        >
-          <span>
-            <strong>
-              Mechanics
-            </strong>
-
-            <small>
-              {selectionSummary(
-                preferredMechanics
-              )}
-            </small>
-          </span>
-
-          <span
-            className="picker-navigation-chevron"
-            aria-hidden="true"
-          >
-            ›
-          </span>
-        </button>
+          <ActionRow
+            label="Mechanics"
+            value={selectionSummary(
+              preferredMechanics,
+            )}
+            onClick={onOpenPlayStyle}
+          />
         </div>
 
         <div className="advanced-age-filter">
@@ -388,7 +350,7 @@ function PreferenceStep({
             ? "Searching the shelf..."
             : mode === "surprise"
               ? "Surprise me"
-              : "Reveal a game"}
+              : "Find a game"}
         </button>
 
         <button

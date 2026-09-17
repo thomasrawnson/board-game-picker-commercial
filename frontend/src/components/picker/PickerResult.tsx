@@ -43,6 +43,29 @@ function modeLabel(
 }
 
 
+function complexityLabel(
+  complexity: number | null,
+) {
+  if (complexity === null) {
+    return null
+  }
+
+  if (complexity <= 2) {
+    return "Light"
+  }
+
+  if (complexity <= 3) {
+    return "Medium"
+  }
+
+  if (complexity <= 4) {
+    return "Heavy"
+  }
+
+  return "Very heavy"
+}
+
+
 function PickerResult({
   match,
   matchIndex,
@@ -78,10 +101,10 @@ function PickerResult({
         : `${game.min_play_time ?? "?"}–${game.max_play_time} min`
       : null
 
-  const weightText =
-    game.complexity !== null
-      ? `Weight ${game.complexity.toFixed(1)}`
-      : null
+  const complexityText =
+    complexityLabel(
+      game.complexity,
+    )
 
   const score = Math.round(match.score)
   const primaryReason =
@@ -194,8 +217,8 @@ function PickerResult({
             {playerText && <span>{playerText}</span>}
             {playerText && timeText && <span>·</span>}
             {timeText && <span>{timeText}</span>}
-            {(playerText || timeText) && weightText && <span>·</span>}
-            {weightText && <span>{weightText}</span>}
+            {(playerText || timeText) && complexityText && <span>·</span>}
+            {complexityText && <span>{complexityText}</span>}
           </div>
         </div>
       </button>

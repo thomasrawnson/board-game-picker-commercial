@@ -1,0 +1,75 @@
+/* ShelfPick design tokens.
+   Keep product-wide colours, typography and interaction rules here. */
+
+:root {
+  --font-display:
+    "Lora",
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  --font-ui:
+    "Nunito Sans",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --sp-bg: #15372a;
+  --sp-panel: #1c4333;
+  --sp-panel-soft: #234d3b;
+  --sp-quiet: #183b2d;
+
+  --sp-text: #f4ecdf;
+  --sp-secondary: #d9e2d4;
+  --sp-muted: #a0b49e;
+  --sp-green: #c4d9b9;
+
+  --sp-gold: #d9aa3b;
+  --sp-gold-hover: #e5b84d;
+
+  --sp-line: rgba(196, 217, 185, 0.13);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-ui);
+}
+
+h1,
+h2,
+h3,
+.display-type {
+  font-family: var(--font-display);
+}
+
+:focus-visible {
+  outline: 2px solid var(--sp-gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

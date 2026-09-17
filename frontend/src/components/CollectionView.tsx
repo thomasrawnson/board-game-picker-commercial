@@ -306,10 +306,8 @@ function CollectionView({
         { value: "owned", label: "Owned" },
         { value: "wishlist", label: "Wishlist" },
       ]}
-      onChange={(value) =>
-        changeSection(
-          value as CollectionSection,
-        )
+      onChange={
+        changeSection
       }
     />
   )

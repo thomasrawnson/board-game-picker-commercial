@@ -331,7 +331,7 @@
 .stat-card strong {
   color: var(--gold);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 36px;
   font-weight: 600;
   line-height: 1;
@@ -436,7 +436,7 @@
 
   color: var(--gold);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 36px;
   line-height: 1;
 
@@ -446,7 +446,7 @@
 .shelf-callout span {
   color: var(--card);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
 }
@@ -578,7 +578,7 @@
 .insight-mini-card strong {
   color: var(--gold);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 20px;
 }
 
@@ -688,7 +688,7 @@
 .player-stat strong {
   color: var(--ink);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 16px;
   line-height: 1;
 }
@@ -779,7 +779,7 @@
 .player-profile-section-header h2 {
   margin: 3px 0 0;
 
-  font-family: Fraunces, serif;
+  font-family: var(--font-display);
   font-size: 20px;
 }
 
@@ -905,7 +905,7 @@
 .monthly-activity-header h2 {
   margin: 3px 0 0;
 
-  font-family: Fraunces, serif;
+  font-family: var(--font-display);
   font-size: 20px;
 }
 
@@ -933,7 +933,7 @@
 .monthly-activity-stat strong {
   color: var(--gold);
 
-  font-family: Fraunces, serif;
+  font-family: var(--font-display);
   font-size: 22px;
 }
 

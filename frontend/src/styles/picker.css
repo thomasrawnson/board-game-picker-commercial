@@ -80,7 +80,7 @@
 }
 
 .player-chip strong {
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 27px;
   font-weight: 600;
@@ -152,7 +152,7 @@
 }
 
 .time-option strong {
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 17px;
   font-weight: 600;
@@ -291,7 +291,7 @@
 
   color: var(--gold);
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 54px;
 }
 
@@ -323,7 +323,7 @@
 }
 
 .match-score strong {
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 20px;
   line-height: 1;
@@ -665,7 +665,7 @@
   border: 1px solid rgba(201, 162, 39, 0.45);
   border-radius: 50%;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 34px;
   font-weight: 600;
 }
@@ -909,7 +909,7 @@
 .player-picker-header h2 {
   margin: 2px 0 3px;
 
-  font-family: Fraunces, serif;
+  font-family: var(--font-display);
   font-size: 23px;
 }
 
@@ -1465,7 +1465,7 @@
 
   color: #9ac38c;
 
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
 
   font-size: 19px;
 }
@@ -1516,7 +1516,7 @@
 
   color: var(--shelfpick-text, #f5f0df);
 
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
 
   font-size: clamp(23px, 6vw, 29px);
 

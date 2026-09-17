@@ -356,3 +356,83 @@
 .dice-icon {
   transition: transform 180ms ease;
 }
+
+
+/* Shared action row: one quiet pattern for drill-down controls. */
+.action-row {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid var(--sp-line);
+  background: transparent;
+  color: var(--sp-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.action-row:first-child {
+  border-top: 1px solid var(--sp-line);
+}
+
+.action-row-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.action-row-copy strong {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.action-row-copy small {
+  color: var(--sp-muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-row-chevron {
+  flex: 0 0 auto;
+  color: var(--sp-green);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.advanced-pick-style,
+.advanced-play-style {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 14px;
+}
+
+/* Keep the simplified fine-tune screen focused on the main decision. */
+.fine-tune-screen > .preference-section:first-of-type {
+  margin-top: 10px !important;
+}
+
+.preference-link-list {
+  display: grid;
+  gap: 0 !important;
+}
+
+/* Collection search/sort stays available while scrolling a long shelf. */
+.collection-search-sort-row {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  padding: 6px 0;
+  background:
+    linear-gradient(
+      180deg,
+      var(--sp-bg) 72%,
+      rgba(21, 55, 42, 0)
+    );
+}

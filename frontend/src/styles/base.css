@@ -96,7 +96,7 @@ header {
 
 h1,
 h2 {
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 }
 
 h1 {
@@ -426,7 +426,7 @@ textarea:focus-visible {
 
   color: var(--shelfpick-text);
 
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
 
   font-size: 19px;
   font-weight: 700;

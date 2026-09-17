@@ -1,23 +1,23 @@
-type Option = {
-  value: string
+type Option<T extends string> = {
+  value: T
   label: string
 }
 
-type Props = {
-  value: string
-  options: Option[]
-  onChange: (value: string) => void
+type Props<T extends string> = {
+  value: T
+  options: Option<T>[]
+  onChange: (value: T) => void
   ariaLabel: string
   className?: string
 }
 
-function SegmentedControl({
+function SegmentedControl<T extends string>({
   value,
   options,
   onChange,
   ariaLabel,
   className = "",
-}: Props) {
+}: Props<T>) {
   return (
     <div
       className={
