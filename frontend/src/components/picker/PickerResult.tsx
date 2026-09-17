@@ -10,6 +10,9 @@ import type {
 import PlayLogForm
   from "../collection/PlayLogForm"
 
+import Disclosure
+  from "../ui/Disclosure"
+
 
 type Props = {
   match: PickerMatch
@@ -81,6 +84,14 @@ function PickerResult({
       : null
 
   const score = Math.round(match.score)
+  const primaryReason =
+    match.reasons[0]
+    ?? (
+      match.ai_used
+      && match.ai_explanation
+        ? match.ai_explanation
+        : null
+    )
 
 
   async function sharePick() {
@@ -164,9 +175,10 @@ function PickerResult({
 
           <div
             className="picker-match-score"
-            aria-label={`${score}% match`}
+            aria-label={`Match score ${score}`}
           >
-            {score}%
+            <strong>{score}</strong>
+            <span>Match</span>
           </div>
         </div>
 
@@ -188,16 +200,22 @@ function PickerResult({
         </div>
       </button>
 
+
+      {primaryReason && (
+        <p className="picker-primary-reason">
+          {primaryReason}
+        </p>
+      )}
+
       {(match.reasons.length > 0
         || (
           match.ai_used
           && match.ai_explanation
         )) && (
-        <details className="picker-reason-details">
-          <summary>
-            Why this pick?
-          </summary>
-
+        <Disclosure
+          label="Why this pick?"
+          className="picker-reason-details"
+        >
           <div className="picker-reason-detail-body">
             {match.ai_used
               && match.ai_explanation
@@ -210,7 +228,7 @@ function PickerResult({
             {match.reasons.length > 0 && (
               <ul>
                 {match.reasons
-                  .slice(0, 4)
+                  .slice(1, 4)
                   .map((reason) => (
                     <li key={reason}>
                       {reason}
@@ -219,7 +237,7 @@ function PickerResult({
               </ul>
             )}
           </div>
-        </details>
+        </Disclosure>
       )}
 
       <div className="picker-primary-action">

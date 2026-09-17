@@ -76,11 +76,17 @@ function TimeStep({
                   )
                 }
               >
-                <strong>
-                  {option.label}
-                </strong>
+                <span className="time-option-main">
+                  <span
+                    className="time-option-dot"
+                    aria-hidden="true"
+                  />
+                  <strong>
+                    {option.label}
+                  </strong>
+                </span>
 
-                <span>
+                <span className="time-option-meta">
                   {
                     option.description
                   }

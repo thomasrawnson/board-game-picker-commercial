@@ -104,6 +104,11 @@ function PlayerStep({
                     ? "player-chip solo"
                     : "player-chip"
               }
+              aria-label={
+                option === 1
+                  ? "Solo"
+                  : `${option === 6 ? "6 or more" : option} players`
+              }
               onClick={() =>
                 chooseCount(
                   option
@@ -116,11 +121,9 @@ function PlayerStep({
                   : option}
               </strong>
 
-              <span>
-                {option === 1
-                  ? "Solo"
-                  : "Players"}
-              </span>
+              {option === 1 && (
+                <span>Solo</span>
+              )}
             </button>
           ),
         )}

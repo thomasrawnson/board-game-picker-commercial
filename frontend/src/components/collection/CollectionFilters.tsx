@@ -1,3 +1,6 @@
+import FilterTabs
+  from "../ui/FilterTabs"
+
 export type SortOption =
   | "name"
   | "recent"
@@ -38,67 +41,20 @@ function CollectionFilters({
 }: Props) {
   return (
     <div className="collection-tools">
-      <div
-        className="collection-filter-tabs"
-        aria-label="Filter collection"
-      >
-        <button
-          type="button"
-          className={
-            playFilter === "all"
-              ? "active"
-              : ""
-          }
-          aria-pressed={
-            playFilter === "all"
-          }
-          onClick={() =>
-            onPlayFilterChange(
-              "all"
-            )
-          }
-        >
-          All
-        </button>
-
-        <button
-          type="button"
-          className={
-            playFilter === "played"
-              ? "active"
-              : ""
-          }
-          aria-pressed={
-            playFilter === "played"
-          }
-          onClick={() =>
-            onPlayFilterChange(
-              "played"
-            )
-          }
-        >
-          Played
-        </button>
-
-        <button
-          type="button"
-          className={
-            playFilter === "never"
-              ? "active"
-              : ""
-          }
-          aria-pressed={
-            playFilter === "never"
-          }
-          onClick={() =>
-            onPlayFilterChange(
-              "never"
-            )
-          }
-        >
-          Never played
-        </button>
-      </div>
+      <FilterTabs
+        value={playFilter}
+        ariaLabel="Filter collection"
+        options={[
+          { value: "all", label: "All" },
+          { value: "played", label: "Played" },
+          { value: "never", label: "Never played" },
+        ]}
+        onChange={(value) =>
+          onPlayFilterChange(
+            value as PlayFilter,
+          )
+        }
+      />
 
 
       <div className="collection-search-sort-row">

@@ -517,7 +517,14 @@ function App() {
 
             <Route
               path={APP_PATHS.insights}
-              element={<InsightsView onOpenGame={openOwnedCollectionGame} />}
+              element={
+                <InsightsView
+                  onOpenGame={openOwnedCollectionGame}
+                  onOpenRankings={() => {
+                    navigate(APP_PATHS.rankings);
+                  }}
+                />
+              }
             />
 
             <Route

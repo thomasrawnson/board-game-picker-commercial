@@ -37,6 +37,9 @@ import GameDetail
 import WishlistView
   from "./WishlistView"
 
+import SegmentedControl
+  from "./ui/SegmentedControl"
+
 export type CollectionSection =
   | "owned"
   | "wishlist"
@@ -295,22 +298,20 @@ function CollectionView({
   }
 
   const sectionTabs = (
-    <div className="collection-section-tabs">
-      <button
-        type="button"
-        className={section === "owned" ? "active" : ""}
-        onClick={() => changeSection("owned")}
-      >
-        Owned
-      </button>
-      <button
-        type="button"
-        className={section === "wishlist" ? "active" : ""}
-        onClick={() => changeSection("wishlist")}
-      >
-        Wishlist
-      </button>
-    </div>
+    <SegmentedControl
+      value={section}
+      ariaLabel="Collection section"
+      className="collection-section-tabs"
+      options={[
+        { value: "owned", label: "Owned" },
+        { value: "wishlist", label: "Wishlist" },
+      ]}
+      onChange={(value) =>
+        changeSection(
+          value as CollectionSection,
+        )
+      }
+    />
   )
 
 

@@ -21,7 +21,6 @@ type NavIconName =
   | "collection"
   | "gameNight"
   | "discover"
-  | "rankings"
   | "insights"
 
 
@@ -72,14 +71,7 @@ function NavIcon({
     )
   }
 
-  if (name === "rankings") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M8 5h8v3.5c0 3-1.6 5-4 5s-4-2-4-5V5Z" />
-        <path d="M8 7H5.5v1.5c0 2 1 3 3 3M16 7h2.5v1.5c0 2-1 3-3 3M12 13.5V17M9 19h6" />
-      </svg>
-    )
-  }
+
 
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -94,11 +86,10 @@ const items: {
   label: string
   icon: NavIconName
 }[] = [
-  { view: "picker", label: "Picker", icon: "picker" },
-  { view: "collection", label: "Collection", icon: "collection" },
+  { view: "picker", label: "Pick", icon: "picker" },
+  { view: "collection", label: "Shelf", icon: "collection" },
   { view: "gameNight", label: "Game night", icon: "gameNight" },
   { view: "discover", label: "Discover", icon: "discover" },
-  { view: "rankings", label: "Rank", icon: "rankings" },
   { view: "insights", label: "Insight", icon: "insights" },
 ]
 

@@ -1,0 +1,358 @@
+/* ShelfPick shared UI primitives and V7 simplification pass */
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(7, 28, 20, 0.34);
+}
+
+.segmented-control button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--sp-muted);
+  font: inherit;
+  font-weight: 700;
+}
+
+.segmented-control button.active {
+  background: rgba(196, 217, 185, 0.13);
+  color: var(--sp-text);
+}
+
+.filter-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: end;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.filter-tabs button {
+  position: relative;
+  padding: 8px 4px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--sp-muted);
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+}
+
+.filter-tabs button.active {
+  color: var(--sp-text);
+}
+
+.filter-tabs button.active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 18px;
+  height: 2px;
+  border-radius: 99px;
+  transform: translateX(-50%);
+  background: var(--sp-gold);
+}
+
+.ui-disclosure {
+  border: 0;
+  background: transparent;
+}
+
+.ui-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  color: var(--sp-text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.ui-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ui-disclosure > summary span:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.ui-disclosure > summary small {
+  color: var(--sp-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ui-disclosure-chevron {
+  color: var(--sp-green);
+  transition: transform 140ms ease;
+}
+
+.ui-disclosure[open] .ui-disclosure-chevron {
+  transform: rotate(180deg);
+}
+
+.ui-disclosure-body {
+  padding: 2px 0 8px;
+}
+
+/* Picker: fewer labels, lighter rows, and optional complexity detail. */
+.player-chip {
+  min-height: 64px !important;
+}
+
+.player-chip > strong {
+  font-size: 24px;
+}
+
+.player-chip:not(.solo) > span {
+  display: none;
+}
+
+.time-list {
+  gap: 0 !important;
+  border-top: 1px solid var(--sp-line);
+}
+
+.time-option {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 50px !important;
+  padding: 10px 2px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--sp-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.time-option-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-option-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(244, 236, 223, 0.18);
+}
+
+.time-option.selected .time-option-dot {
+  background: var(--sp-gold);
+  box-shadow: 0 0 0 4px rgba(217, 170, 59, 0.12);
+}
+
+.time-option-meta {
+  color: var(--sp-muted) !important;
+  font-size: 12px;
+}
+
+.fine-tune-screen .complexity-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.fine-tune-screen .complexity-option {
+  min-height: 42px !important;
+  padding: 8px 6px !important;
+}
+
+.fine-tune-screen .complexity-option span {
+  display: none;
+}
+
+.advanced-play-style {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 14px;
+}
+
+.advanced-preference-label {
+  color: var(--sp-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.picker-primary-reason {
+  max-width: 280px;
+  margin: 14px auto 0;
+  color: var(--sp-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.picker-match-score {
+  flex-direction: column;
+  gap: 0;
+}
+
+.picker-match-score strong {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.picker-match-score span {
+  margin-top: 2px;
+  font-size: 7px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.picker-reason-details {
+  margin-top: 4px;
+}
+
+.picker-reason-details > summary {
+  justify-content: center;
+  padding: 10px 0 4px;
+  color: var(--sp-green);
+  font-size: 12px;
+}
+
+.picker-reason-details .ui-disclosure-chevron {
+  display: none;
+}
+
+/* Collection now uses the same primitives as the picker. */
+.collection-section-tabs {
+  margin-bottom: 10px;
+}
+
+.collection-tools .filter-tabs {
+  margin-bottom: 10px;
+}
+
+/* Five destinations have enough room to breathe. */
+.app-nav {
+  grid-template-columns: repeat(5, 1fr) !important;
+}
+
+.nav-button {
+  min-width: 0;
+}
+
+/* Rankings remain discoverable from Insight without owning a permanent nav slot. */
+.rank-section-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.rank-section-title-row h2 {
+  margin: 0;
+}
+
+.insight-inline-action {
+  flex: 0 0 auto;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--sp-gold);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 420px) {
+  .nav-label {
+    font-size: 9px !important;
+  }
+
+  .time-option {
+    min-height: 48px !important;
+  }
+}
+
+/* Insight should read like editorial summaries, not dashboard tiles. */
+.insights-screen .stat-card,
+.insights-screen .insight-mini-card,
+.insights-screen .players-card,
+.insights-screen .rank-summary-card {
+  box-shadow: none !important;
+}
+
+.insights-screen .player-stat {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.insights-screen .player-stat strong {
+  font-size: 16px !important;
+  line-height: 1;
+}
+
+.insights-screen .player-stat span {
+  color: var(--sp-muted) !important;
+  font-size: 10px !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+/* A little rank personality without turning the list into a podium graphic. */
+.ranking-list li:nth-child(1) .ranking-position {
+  color: var(--sp-gold) !important;
+  font-size: 18px;
+}
+
+.ranking-list li:nth-child(2) .ranking-position,
+.ranking-list li:nth-child(3) .ranking-position {
+  color: var(--sp-text) !important;
+}
+
+.ranking-list li:nth-child(n + 4) .ranking-position {
+  color: var(--sp-muted) !important;
+}
+
+/* Small personality touches */
+
+.player-chip {
+  transition:
+    transform 120ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease;
+}
+
+.player-chip:active {
+  transform: translateY(2px);
+}
+
+.player-chip.selected {
+  transform: none;
+}
+
+/* Subtle settings-dice interaction */
+
+.dice-menu-button {
+  transition:
+    transform 180ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease;
+}
+
+.dice-menu-button:hover .dice-icon {
+  transform: rotate(8deg);
+}
+
+.dice-menu-button:active .dice-icon {
+  transform: rotate(22deg) scale(0.96);
+}
+
+.dice-icon {
+  transition: transform 180ms ease;
+}

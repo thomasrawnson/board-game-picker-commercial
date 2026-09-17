@@ -99,11 +99,13 @@ function formatHours(
 type Props = {
   onOpenGame:
     (bggId: number) => void
+  onOpenRankings: () => void
 }
 
 
 function InsightsView({
   onOpenGame,
+  onOpenRankings,
 }: Props) {
   const [
     insights,
@@ -535,9 +537,18 @@ function InsightsView({
       {activeSection === "rank" && (
         <div className="stats-section-content">
           <div className="stats-section-heading">
-            <h2>
-              The shape of your Top {rankSummaryLimit}
-            </h2>
+            <div className="rank-section-title-row">
+              <h2>
+                The shape of your Top {rankSummaryLimit}
+              </h2>
+              <button
+                type="button"
+                className="insight-inline-action"
+                onClick={onOpenRankings}
+              >
+                Rank games →
+              </button>
+            </div>
 
             {rankingSummary
               && rankingSummary.games_count > 0

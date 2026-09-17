@@ -3,6 +3,9 @@ import type {
   PickerPlayStyle,
 } from "../../api/client"
 
+import Disclosure
+  from "../ui/Disclosure"
+
 
 type Props = {
   preferredCategories: string[]
@@ -193,38 +196,6 @@ function PreferenceStep({
       </div>
 
 
-      <div className="preference-section">
-        <p className="preference-label">
-          Play style
-        </p>
-
-        <div className="play-style-grid">
-          {playStyleOptions.map(
-            (option) => (
-              <button
-                key={option.value}
-                type="button"
-                className={
-                  playStyle === option.value
-                    ? "preference-chip selected"
-                    : "preference-chip"
-                }
-                aria-pressed={
-                  playStyle === option.value
-                }
-                onClick={() =>
-                  onPlayStyleChange(
-                    option.value
-                  )
-                }
-              >
-                {option.label}
-              </button>
-            ),
-          )}
-        </div>
-      </div>
-
 
       <div className="preference-section">
         <p className="preference-label">
@@ -260,9 +231,6 @@ function PreferenceStep({
                     {option.label}
                   </strong>
 
-                  <span>
-                    {option.description}
-                  </span>
                 </button>
               )
             },
@@ -271,15 +239,39 @@ function PreferenceStep({
       </div>
 
 
-      <details className="advanced-filters">
-        <summary>
-          <span>
-            <strong>More preferences</strong>
-            <small>
-              Theme, mechanics and age
-            </small>
+      <Disclosure
+        label="More preferences"
+        hint="Play style, theme, mechanics and age"
+        className="advanced-filters"
+      >
+        <div className="advanced-play-style">
+          <span className="advanced-preference-label">
+            Play style
           </span>
-        </summary>
+          <div className="play-style-grid">
+            {playStyleOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={
+                  playStyle === option.value
+                    ? "preference-chip selected"
+                    : "preference-chip"
+                }
+                aria-pressed={
+                  playStyle === option.value
+                }
+                onClick={() =>
+                  onPlayStyleChange(
+                    option.value
+                  )
+                }
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="preference-link-list">
         <button
@@ -371,7 +363,7 @@ function PreferenceStep({
             )}
           </div>
         </div>
-      </details>
+      </Disclosure>
 
 
       {error && (
