@@ -133,7 +133,7 @@ function DiscoverView({
       setActionError(
         err instanceof Error
           ? err.message
-          : "Couldn't update your Want to Play list.",
+          : "Couldn't update your Wishlist.",
       )
     } finally {
       setUpdatingIds((current) => {
@@ -148,10 +148,6 @@ function DiscoverView({
   return (
     <section className="screen discover-screen">
       <header>
-        <p className="eyebrow">
-          Discover
-        </p>
-
         <h1>
           Find your next game
         </h1>
@@ -167,7 +163,7 @@ function DiscoverView({
           className="ghost-button discover-wishlist-link"
           onClick={onViewWishlist}
         >
-          View Want to Play
+          View Wishlist
         </button>
       </header>
 
@@ -268,8 +264,19 @@ function DiscoverView({
                     type="button"
                     className={
                       wishlisted
-                        ? "primary-button wishlist-button saved"
-                        : "primary-button wishlist-button"
+                        ? "wishlist-heart-button saved"
+                        : "wishlist-heart-button"
+                    }
+                    aria-label={
+                      wishlisted
+                        ? `Remove ${game.name} from Wishlist`
+                        : `Save ${game.name} to Wishlist`
+                    }
+                    aria-pressed={wishlisted}
+                    title={
+                      wishlisted
+                        ? "Remove from Wishlist"
+                        : "Save to Wishlist"
                     }
                     disabled={
                       updatingIds.has(game.bgg_id)
@@ -278,9 +285,9 @@ function DiscoverView({
                       toggleWishlist(recommendation)
                     }
                   >
-                    {wishlisted
-                      ? "Saved to Want to Play"
-                      : "Want to Play"}
+                    <span aria-hidden="true">
+                      ♥
+                    </span>
                   </button>
 
                   <a

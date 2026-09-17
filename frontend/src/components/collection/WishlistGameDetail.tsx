@@ -75,7 +75,7 @@ function WishlistGameDetail({
         className="collection-back"
         onClick={onBack}
       >
-        ← Back to Want to Play
+        ← Back to Wishlist
       </button>
 
       <article className="collection-detail">
@@ -94,7 +94,7 @@ function WishlistGameDetail({
           {game.year_published ?? "Board game"}
         </p>
         <h1>{game.name}</h1>
-        <p className="wishlist-status">Want to Play</p>
+        <p className="wishlist-status">Wishlist</p>
 
         <div className="detail-stats">
           <div>
@@ -143,7 +143,7 @@ function WishlistGameDetail({
             <div className="wishlist-add-confirm">
               <p>
                 Add {game.name} to your owned collection? It will be
-                removed from Want to Play.
+                removed from Wishlist.
               </p>
               <div>
                 <button
@@ -181,7 +181,7 @@ function WishlistGameDetail({
             disabled={adding || removing}
             onClick={removeSavedGame}
           >
-            {removing ? "Removing..." : "Remove from Want to Play"}
+            {removing ? "Removing..." : "Remove from Wishlist"}
           </button>
 
           {error && (

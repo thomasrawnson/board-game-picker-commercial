@@ -1051,7 +1051,7 @@ Promise<Game[]> {
     throw new Error(
       await readError(
         response,
-        "Couldn't load your Want to Play list.",
+        "Couldn't load your Wishlist.",
       ),
     )
   }

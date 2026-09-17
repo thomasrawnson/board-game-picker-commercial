@@ -841,3 +841,242 @@ h1 {
     font-size: 28px;
   }
 }
+
+/* =========================================================
+   Commercial consistency pass: collection, discover, rank, insight
+   ========================================================= */
+
+/* Collection: align secondary filters with the main content and keep rows lean. */
+.collection-screen > header,
+.collection-heading-row {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.collection-filter-tabs {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.collection-game {
+  grid-template-columns: 43px minmax(0, 1fr) auto;
+  min-height: 62px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.collection-game-info {
+  justify-content: center;
+}
+
+.collection-game-info strong {
+  line-height: 1.25;
+}
+
+/* Wishlist uses the same naming and visual hierarchy as Collection. */
+.wishlist-card {
+  padding: 10px 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--sp-line);
+  border-radius: 0;
+}
+
+.wishlist-status {
+  color: var(--sp-green);
+  background: rgba(155, 197, 165, 0.08);
+  border: 0;
+  text-transform: none;
+}
+
+/* Discover: title is enough wayfinding. Saving is a compact heart action. */
+.discover-screen > header .subtitle {
+  margin-bottom: 14px;
+}
+
+.discover-wishlist-link {
+  width: auto;
+  min-height: 34px;
+  margin: 0;
+  padding: 5px 0;
+  justify-content: flex-start;
+  color: var(--sp-green);
+  border: 0;
+}
+
+.discover-card {
+  position: relative;
+  gap: 12px;
+  padding: 15px;
+  background: rgba(155, 197, 165, 0.045);
+  border: 0;
+  border-radius: 14px;
+}
+
+.discover-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.discover-actions .ghost-button {
+  width: auto;
+  min-height: 34px;
+  margin: 0;
+  padding: 6px 0;
+  color: var(--sp-green);
+  border: 0;
+}
+
+.wishlist-heart-button {
+  width: 38px;
+  height: 38px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 0;
+  color: var(--sp-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  font: inherit;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 140ms ease, transform 140ms ease, background 140ms ease;
+}
+
+.wishlist-heart-button:hover:not(:disabled) {
+  color: var(--sp-text);
+  background: rgba(155, 197, 165, 0.06);
+}
+
+.wishlist-heart-button.saved {
+  color: var(--sp-gold);
+}
+
+.wishlist-heart-button:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.wishlist-heart-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Rankings: list length selector now filters the list as well as sharing. */
+.rankings-screen > header {
+  margin-bottom: 0;
+}
+
+.ranking-share-card {
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.ranking-share-heading .insight-label {
+  color: var(--sp-secondary);
+}
+
+.ranking-list {
+  margin-top: 6px;
+}
+
+/* Insight: remove duplicate wayfinding and excess vertical gaps. */
+.insights-screen {
+  padding-top: 22px;
+}
+
+.insights-screen > header .subtitle {
+  margin-bottom: 14px;
+}
+
+.stats-section-tabs {
+  gap: 3px;
+  margin: 0 0 14px;
+  padding: 3px;
+  background: rgba(4, 19, 12, 0.55);
+  border: 0;
+  border-radius: 10px;
+}
+
+.stats-section-tab {
+  min-height: 36px;
+  padding: 7px 4px;
+  color: var(--sp-green);
+  border-radius: 7px;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.stats-section-tab.active {
+  color: var(--sp-text);
+  background: rgba(155, 197, 165, 0.18);
+}
+
+.stats-section-heading {
+  margin: 0 0 8px;
+}
+
+.stats-section-heading h2 {
+  margin-top: 0;
+}
+
+/* Dark, border-light insight lists match Collection and Rankings. */
+.players-card,
+.neglected-card {
+  margin-top: 8px;
+  padding: 12px 0;
+  color: var(--sp-text);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--sp-line);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.players-card-header {
+  margin-bottom: 5px;
+}
+
+.players-card-header h2,
+.players-card .player-name,
+.players-card .player-stat strong,
+.players-card .neglected-game-name strong,
+.players-card .favourite-game-copy strong {
+  color: var(--sp-text) !important;
+}
+
+.players-card-header > span,
+.players-card .player-stat span,
+.players-card .favourite-game-copy span {
+  color: var(--sp-muted) !important;
+}
+
+.players-card .player-row {
+  padding: 8px 0;
+  border-top-color: var(--sp-line);
+}
+
+.players-card .player-rank {
+  color: var(--sp-gold);
+  background: transparent;
+}
+
+.insights-view-all {
+  margin-top: 6px;
+}
+
+@media (max-width: 480px) {
+  .collection-filter-tabs {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .discover-card {
+    padding: 13px;
+  }
+}

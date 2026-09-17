@@ -115,7 +115,7 @@ function AppNavigation({
           )
         }
       >
-        Stats
+        Insight
       </button>
     </nav>
   )

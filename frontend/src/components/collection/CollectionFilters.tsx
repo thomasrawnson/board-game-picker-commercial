@@ -16,7 +16,6 @@ type Props = {
   search: string
   sort: SortOption
   playFilter: PlayFilter
-  resultCount: number
   onSearchChange: (
     value: string,
   ) => void

@@ -49,7 +49,7 @@ const statsSections: Array<{
   },
   {
     id: "group",
-    label: "Group",
+    label: "Friends",
   },
   {
     id: "rank",
@@ -351,12 +351,8 @@ function InsightsView({
   return (
     <section className="screen insights-screen">
       <header>
-        <p className="eyebrow">
-          Your games
-        </p>
-
         <h1>
-          Stats
+          Insight
         </h1>
 
         <p className="subtitle">
@@ -368,7 +364,7 @@ function InsightsView({
 
       <div
         className="stats-section-tabs"
-        aria-label="Stats sections"
+        aria-label="Insight sections"
       >
         {statsSections.map(
           (section) => (
@@ -532,15 +528,6 @@ function InsightsView({
               </strong>
             </article>
           </div>
-        </div>
-      )}
-
-
-      {activeSection === "group" && (
-        <div className="stats-section-heading">
-          <h2>
-            Your people at the table
-          </h2>
         </div>
       )}
 
@@ -913,10 +900,6 @@ function InsightsView({
           <article className="players-card neglected-card">
             <div className="players-card-header">
               <div>
-                <p className="insight-label">
-                  Needs some love
-                </p>
-
                 <h2>
                   Waiting on the shelf
                 </h2>
@@ -1022,12 +1005,8 @@ function InsightsView({
           <article className="players-card">
             <div className="players-card-header">
               <div>
-                <p className="insight-label">
-                  Table regulars
-                </p>
-
                 <h2>
-                  Your players
+                  Friends
                 </h2>
               </div>
 
@@ -1119,12 +1098,8 @@ function InsightsView({
           <article className="players-card">
             <div className="players-card-header">
               <div>
-                <p className="insight-label">
-                  Player favourites
-                </p>
-
                 <h2>
-                  Their go-to games
+                  Friends favourites
                 </h2>
               </div>
             </div>

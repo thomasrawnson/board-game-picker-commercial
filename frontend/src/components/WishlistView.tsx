@@ -61,7 +61,7 @@ function WishlistView({
           setError(
             err instanceof Error
               ? err.message
-              : "Couldn't load your Want to Play list.",
+              : "Couldn't load your Wishlist list.",
           )
         }
       } finally {
@@ -169,7 +169,7 @@ function WishlistView({
       return (
         <div className="collection-empty wishlist-load-error">
           <strong>Couldn't open that saved game</strong>
-          <p>{error || "That game is no longer in Want to Play."}</p>
+          <p>{error || "That game is no longer in Wishlist."}</p>
           <div className="wishlist-error-actions">
             <button
               type="button"
@@ -183,7 +183,7 @@ function WishlistView({
               className="ghost-button"
               onClick={onCloseGame}
             >
-              Back to Want to Play
+              Back to Wishlist
             </button>
           </div>
         </div>
@@ -201,7 +201,7 @@ function WishlistView({
   }
 
   if (loading) {
-    return <p className="subtitle">Opening your Want to Play list...</p>
+    return <p className="subtitle">Opening your Wishlist list...</p>
   }
 
   return (

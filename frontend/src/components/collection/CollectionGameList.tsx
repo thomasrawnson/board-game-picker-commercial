@@ -57,14 +57,6 @@ function CollectionGameList({
 
             <div className="collection-game-info">
               <strong>{game.name}</strong>
-              <span>
-                {game.min_players ?? "?"}
-                –
-                {game.max_players ?? "?"}
-                {" players · "}
-                {game.max_play_time ?? "?"}
-                {" min"}
-              </span>
             </div>
 
             <span

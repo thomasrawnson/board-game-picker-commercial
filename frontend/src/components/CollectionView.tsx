@@ -308,7 +308,7 @@ function CollectionView({
         className={section === "wishlist" ? "active" : ""}
         onClick={() => changeSection("wishlist")}
       >
-        Want to Play
+        Wishlist
       </button>
     </div>
   )
@@ -808,10 +808,7 @@ function CollectionView({
     return (
       <section className="screen collection-screen">
         <header>
-          <p className="eyebrow">
-            Your collection
-          </p>
-          <h1>Want to Play</h1>
+          <h1>Wishlist</h1>
           <p className="subtitle">
             Games you have saved for later.
           </p>
@@ -853,10 +850,6 @@ function CollectionView({
   if (loading) {
     return (
       <section className="screen collection-screen">
-        <p className="eyebrow">
-          Your collection
-        </p>
-
         <h1>
           Opening the cupboard...
         </h1>
@@ -868,10 +861,6 @@ function CollectionView({
   if (error) {
     return (
       <section className="screen collection-screen">
-        <p className="eyebrow">
-          Your collection
-        </p>
-
         <h1>
           Your games
         </h1>
@@ -918,10 +907,6 @@ function CollectionView({
     <section className="screen collection-screen">
       <div className="collection-heading-row">
         <header>
-          <p className="eyebrow">
-            Your collection
-          </p>
-
           <h1>
             Your games
           </h1>
@@ -992,9 +977,6 @@ function CollectionView({
         }
         playFilter={
           playFilter
-        }
-        resultCount={
-          filteredGames.length
         }
         onSearchChange={
           (value) =>

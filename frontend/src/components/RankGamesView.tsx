@@ -80,6 +80,12 @@ function RankGamesView() {
   const [shareStatus, setShareStatus] =
     useState("")
 
+  const visibleRankings =
+    rankings.rankings.slice(
+      0,
+      shareLimit,
+    )
+
   const [error, setError] =
     useState("")
 
@@ -328,10 +334,6 @@ function RankGamesView() {
   if (loading) {
     return (
       <section className="screen rankings-screen">
-        <p className="eyebrow">
-          Your favourites
-        </p>
-
         <h1>
           Shuffling the shelf...
         </h1>
@@ -343,10 +345,6 @@ function RankGamesView() {
   return (
     <section className="screen rankings-screen">
       <header>
-        <p className="eyebrow">
-          Your favourites
-        </p>
-
         <h1>
           Rank your games
         </h1>
@@ -511,7 +509,7 @@ function RankGamesView() {
             <article className="ranking-share-card">
               <div className="ranking-share-heading">
                 <p className="insight-label">
-                  Share your favourites
+                  Show ranking
                 </p>
 
                 <button
@@ -553,7 +551,7 @@ function RankGamesView() {
 
           {rankings.rankings.length > 0 ? (
             <ol className="ranking-list">
-              {rankings.rankings.map((game) => (
+              {visibleRankings.map((game) => (
                 <li key={game.bgg_id}>
                   <span className="ranking-position">
                     {game.rank}
