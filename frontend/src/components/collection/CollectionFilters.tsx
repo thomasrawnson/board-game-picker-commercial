@@ -33,7 +33,6 @@ function CollectionFilters({
   search,
   sort,
   playFilter,
-  resultCount,
   onSearchChange,
   onSortChange,
   onPlayFilterChange,
@@ -123,13 +122,6 @@ function CollectionFilters({
 
 
       <div className="collection-toolbar-row">
-        <p className="collection-count">
-          {resultCount}{" "}
-          {resultCount === 1
-            ? "game"
-            : "games"}
-        </p>
-
         <label className="collection-sort-wrap">
           <span className="sr-only">
             Sort games

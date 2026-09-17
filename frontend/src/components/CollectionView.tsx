@@ -916,35 +916,40 @@ function CollectionView({
 
   return (
     <section className="screen collection-screen">
-      <header>
-        <p className="eyebrow">
-          Your collection
-        </p>
+      <div className="collection-heading-row">
+        <header>
+          <p className="eyebrow">
+            Your collection
+          </p>
 
-        <h1>
-          Your games
-        </h1>
+          <h1>
+            Your games
+          </h1>
 
-        <p className="subtitle">
-          {games.length} games on
-          your shelf.
-        </p>
-      </header>
+          <p className="subtitle">
+            {games.length} games on your shelf
+          </p>
+        </header>
+
+        <button
+          type="button"
+          className="collection-add-icon"
+          aria-label={
+            addingGame
+              ? "Close add game"
+              : "Add game"
+          }
+          onClick={() =>
+            setAddingGame(
+              (current) => !current
+            )
+          }
+        >
+          {addingGame ? "×" : "+"}
+        </button>
+      </div>
 
       {sectionTabs}
-
-      <button
-        type="button"
-        className="ghost-button collection-add-button"
-        onClick={() =>
-          setAddingGame(
-            (current) =>
-              !current
-          )
-        }
-      >
-        + Add game
-      </button>
 
 
       {addingGame && (

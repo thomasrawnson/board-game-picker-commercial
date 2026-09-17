@@ -201,19 +201,13 @@
 
   transform-origin: center;
 
-  animation:
-    card-flip 850ms
-    cubic-bezier(0.2, 0.9, 0.25, 1)
-    both;
+  animation: card-flip 850ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
 }
 
 @keyframes card-flip {
   0% {
     opacity: 0;
-    transform:
-      perspective(1000px)
-      rotateY(90deg)
-      scale(0.92);
+    transform: perspective(1000px) rotateY(90deg) scale(0.92);
   }
 
   55% {
@@ -223,10 +217,7 @@
   100% {
     opacity: 1;
 
-    transform:
-      perspective(1000px)
-      rotateY(0deg)
-      scale(1);
+    transform: perspective(1000px) rotateY(0deg) scale(1);
   }
 }
 
@@ -250,15 +241,11 @@
 }
 
 .game-card::before {
-  transform:
-    translate(-9px, 8px)
-    rotate(-3deg);
+  transform: translate(-9px, 8px) rotate(-3deg);
 }
 
 .game-card::after {
-  transform:
-    translate(10px, 10px)
-    rotate(3deg);
+  transform: translate(10px, 10px) rotate(3deg);
 }
 
 /* Actual board game artwork */
@@ -673,12 +660,9 @@
   margin-bottom: 20px;
 
   color: var(--gold);
-  background:
-    rgba(201, 162, 39, 0.1);
+  background: rgba(201, 162, 39, 0.1);
 
-  border:
-    1px solid
-    rgba(201, 162, 39, 0.45);
+  border: 1px solid rgba(201, 162, 39, 0.45);
   border-radius: 50%;
 
   font-family: "Fraunces", serif;
@@ -698,12 +682,9 @@
   padding: 16px;
 
   color: var(--text-secondary);
-  background:
-    rgba(243, 234, 216, 0.05);
+  background: rgba(243, 234, 216, 0.05);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.12);
+  border: 1px solid rgba(243, 234, 216, 0.12);
   border-radius: 14px;
 }
 
@@ -731,8 +712,7 @@
   max-width: 520px;
 
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 10px;
 
@@ -750,8 +730,7 @@
   margin-top: 15px;
 }
 
-.picker-no-match-screen
-  > .ghost-button {
+.picker-no-match-screen > .ghost-button {
   margin-top: 12px;
 }
 
@@ -769,8 +748,7 @@
   margin-top: 18px;
 }
 
-.picker-result-actions
-  .log-play-button {
+.picker-result-actions .log-play-button {
   width: 100%;
   margin-top: 0;
 }
@@ -792,8 +770,7 @@
   text-align: center;
 }
 
-.picker-result-actions
-  .play-form {
+.picker-result-actions .play-form {
   text-align: left;
 }
 
@@ -834,12 +811,9 @@
   padding: 14px 16px;
 
   color: var(--text-primary);
-  background:
-    rgba(243, 234, 216, 0.05);
+  background: rgba(243, 234, 216, 0.05);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.12);
+  border: 1px solid rgba(243, 234, 216, 0.12);
 
   border-radius: 16px;
 
@@ -897,8 +871,7 @@
 
   padding-top: 48px;
 
-  background:
-    rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.6);
 
   backdrop-filter: blur(3px);
 }
@@ -912,21 +885,15 @@
 
   padding: 20px 18px 16px;
 
-  background:
-    var(--dark-green);
+  background: var(--dark-green);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.1);
+  border: 1px solid rgba(243, 234, 216, 0.1);
 
   border-bottom: 0;
 
-  border-radius:
-    24px 24px 0 0;
+  border-radius: 24px 24px 0 0;
 
-  box-shadow:
-    0 -14px 40px
-    rgba(0, 0, 0, 0.25);
+  box-shadow: 0 -14px 40px rgba(0, 0, 0, 0.25);
 }
 
 .player-picker-header {
@@ -946,9 +913,7 @@
   font-size: 23px;
 }
 
-.player-picker-header p:not(
-  .eyebrow
-) {
+.player-picker-header p:not(.eyebrow) {
   margin: 0;
 
   color: var(--text-muted);
@@ -966,12 +931,9 @@
 
   color: var(--text-muted);
 
-  background:
-    rgba(243, 234, 216, 0.06);
+  background: rgba(243, 234, 216, 0.06);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.09);
+  border: 1px solid rgba(243, 234, 216, 0.09);
 
   border-radius: 50%;
 
@@ -990,12 +952,9 @@
 
   color: var(--text-primary);
 
-  background:
-    rgba(243, 234, 216, 0.05);
+  background: rgba(243, 234, 216, 0.05);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.11);
+  border: 1px solid rgba(243, 234, 216, 0.11);
 
   border-radius: 13px;
 
@@ -1010,8 +969,7 @@
 }
 
 .player-picker-search:focus {
-  border-color:
-    rgba(201, 162, 39, 0.7);
+  border-color: rgba(201, 162, 39, 0.7);
 }
 
 .player-picker-list {
@@ -1022,9 +980,7 @@
 
   overflow-y: auto;
 
-  border-top:
-    1px solid
-    rgba(243, 234, 216, 0.06);
+  border-top: 1px solid rgba(243, 234, 216, 0.06);
 }
 
 .player-picker-row {
@@ -1041,9 +997,7 @@
   background: transparent;
 
   border: 0;
-  border-bottom:
-    1px solid
-    rgba(243, 234, 216, 0.06);
+  border-bottom: 1px solid rgba(243, 234, 216, 0.06);
 
   font: inherit;
   text-align: left;
@@ -1074,9 +1028,7 @@
 
   margin-left: 12px;
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.16);
+  border: 1px solid rgba(243, 234, 216, 0.16);
 
   border-radius: 50%;
 
@@ -1110,9 +1062,7 @@
 
   padding-top: 14px;
 
-  border-top:
-    1px solid
-    rgba(243, 234, 216, 0.08);
+  border-top: 1px solid rgba(243, 234, 216, 0.08);
 }
 
 .player-picker-footer > span {
@@ -1136,12 +1086,9 @@
   resize: vertical;
 
   color: var(--text-primary);
-  background:
-    rgba(243, 234, 216, 0.05);
+  background: rgba(243, 234, 216, 0.05);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.12);
+  border: 1px solid rgba(243, 234, 216, 0.12);
 
   border-radius: 13px;
 
@@ -1157,8 +1104,7 @@
 }
 
 .picker-mood-input:focus {
-  border-color:
-    rgba(201, 162, 39, 0.7);
+  border-color: rgba(201, 162, 39, 0.7);
 }
 
 .picker-mood-hint {
@@ -1174,12 +1120,9 @@
   margin-bottom: 12px;
   padding: 12px 14px;
 
-  background:
-    rgba(201, 162, 39, 0.1);
+  background: rgba(201, 162, 39, 0.1);
 
-  border:
-    1px solid
-    rgba(201, 162, 39, 0.24);
+  border: 1px solid rgba(201, 162, 39, 0.24);
 
   border-radius: 12px;
 
@@ -1222,28 +1165,15 @@
 
 @media (max-width: 480px) {
   .picker-selection-list {
-    overscroll-behavior:
-      contain;
+    overscroll-behavior: contain;
   }
 
   .picker-selection-footer {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(
-          31,
-          61,
-          46,
-          0
-        ),
-        rgba(
-          31,
-          61,
-          46,
-          0.98
-        )
-        18%
-      );
+    background: linear-gradient(
+      180deg,
+      rgba(31, 61, 46, 0),
+      rgba(31, 61, 46, 0.98) 18%
+    );
   }
 }
 
@@ -1265,12 +1195,9 @@
   padding: 13px 15px;
 
   color: var(--text-primary);
-  background:
-    rgba(243, 234, 216, 0.05);
+  background: rgba(243, 234, 216, 0.05);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.12);
+  border: 1px solid rgba(243, 234, 216, 0.12);
 
   border-radius: 14px;
 
@@ -1322,8 +1249,7 @@
   margin-bottom: 8px;
 }
 
-.picker-selection-screen
-  .subtitle {
+.picker-selection-screen .subtitle {
   margin-bottom: 18px;
 }
 
@@ -1340,9 +1266,7 @@
 
   overflow-y: auto;
 
-  border-top:
-    1px solid
-    rgba(243, 234, 216, 0.07);
+  border-top: 1px solid rgba(243, 234, 216, 0.07);
 }
 
 .picker-selection-row {
@@ -1359,9 +1283,7 @@
   background: transparent;
 
   border: 0;
-  border-bottom:
-    1px solid
-    rgba(243, 234, 216, 0.07);
+  border-bottom: 1px solid rgba(243, 234, 216, 0.07);
 
   font: inherit;
   font-size: 13px;
@@ -1383,9 +1305,7 @@
 
   margin-left: 12px;
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.18);
+  border: 1px solid rgba(243, 234, 216, 0.18);
 
   border-radius: 50%;
 
@@ -1427,8 +1347,7 @@
   text-align: center;
 }
 
-.picker-selection-footer
-  .primary-button {
+.picker-selection-footer .primary-button {
   margin-top: 8px;
 }
 
@@ -1450,4 +1369,484 @@
 
 .picker-step-actions {
   margin-top: auto;
+}
+
+/* =========================================
+   SHELFPICK RESULT
+========================================= */
+
+.picker-result-stage {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+
+  padding: 16px 14px 28px;
+}
+
+/* Main result card */
+
+.picker-result-card {
+  width: min(100%, 390px);
+
+  margin: 0 auto;
+
+  padding: 21px 18px 18px;
+
+  border: 1px solid rgba(125, 181, 141, 0.08);
+
+  border-radius: 28px;
+
+  background: linear-gradient(180deg, #12291d 0%, #0d2418 100%);
+
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.18);
+
+  overflow: visible;
+}
+
+/* Remove old screen layout constraints */
+
+.reveal-screen {
+  min-height: auto;
+}
+
+/* =========================================
+   BEST MATCH LABEL
+========================================= */
+
+.picker-result-mode {
+  margin: 0 0 15px;
+
+  text-align: center;
+
+  color: var(--shelfpick-green, #8dbe98);
+
+  font-size: 13px;
+  font-weight: 500;
+
+  letter-spacing: 0.02em;
+}
+
+/* =========================================
+   COVER ART
+========================================= */
+
+.picker-cover-wrap {
+  position: relative;
+
+  width: min(100%, 278px);
+
+  margin: 0 auto;
+}
+
+.picker-cover-image,
+.picker-cover-placeholder {
+  display: block;
+
+  width: 100%;
+
+  aspect-ratio: 0.78;
+
+  border-radius: 16px;
+
+  object-fit: cover;
+
+  background: #294f39;
+
+  box-shadow:
+    8px 9px 0 rgba(25, 65, 44, 0.72),
+    0 18px 32px rgba(0, 0, 0, 0.16);
+}
+
+.picker-cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #9ac38c;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 19px;
+}
+
+/* =========================================
+   MATCH SCORE
+========================================= */
+
+.picker-match-score {
+  position: absolute;
+
+  top: -10px;
+  right: -10px;
+
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 3px solid #10271b;
+
+  border-radius: 50%;
+
+  background: var(--shelfpick-gold, #e1ad3d);
+
+  color: #211b0d;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.25);
+}
+
+/* =========================================
+   GAME NAME + METADATA
+========================================= */
+
+.picker-result-copy {
+  margin-top: 24px;
+
+  text-align: center;
+}
+
+.picker-result-title {
+  margin: 0;
+
+  color: var(--shelfpick-text, #f5f0df);
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: clamp(23px, 6vw, 29px);
+
+  line-height: 1.08;
+
+  font-weight: 700;
+
+  letter-spacing: -0.025em;
+}
+
+.picker-result-meta {
+  margin-top: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  color: var(--shelfpick-green-soft, #a4cbaa);
+
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.picker-meta-dot {
+  opacity: 0.6;
+}
+
+/* =========================================
+   REASON CHIPS
+========================================= */
+
+.picker-reason-chips {
+  margin-top: 17px;
+
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 7px;
+}
+
+.picker-reason-chip {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 7px 10px;
+
+  border: 1px solid rgba(112, 171, 130, 0.08);
+
+  border-radius: 9px;
+
+  background: rgba(3, 17, 10, 0.78);
+
+  color: #d4e8d9;
+
+  font-size: 11.5px;
+  font-weight: 600;
+
+  line-height: 1.1;
+}
+
+/* =========================================
+   AI EXPLANATION
+========================================= */
+
+.picker-ai-note {
+  margin-top: 14px;
+
+  padding: 11px 13px;
+
+  border: 1px solid rgba(125, 181, 141, 0.12);
+
+  border-radius: 11px;
+
+  background: rgba(6, 22, 14, 0.48);
+
+  color: #cfe0d3;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+}
+
+.picker-ai-label {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--shelfpick-green, #8dbe98);
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.08em;
+}
+
+.picker-ai-note p {
+  margin: 0;
+}
+
+/* =========================================
+   LOG PLAY — PRIMARY CTA
+========================================= */
+
+.picker-primary-action {
+  margin-top: 20px;
+}
+
+/*
+ PlayLogForm already exists in the app.
+
+ These selectors deliberately target the
+ controls only while inside the result.
+*/
+
+.picker-primary-action .primary-button {
+  width: 100%;
+
+  min-height: 44px;
+
+  border: 0;
+
+  border-radius: 11px;
+
+  background: var(--shelfpick-gold, #e1ad3d);
+
+  color: #201a0c;
+
+  font-weight: 750;
+
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.12);
+}
+
+.picker-primary-action .primary-button:hover {
+  background: var(--shelfpick-gold-hover, #edbb4c);
+}
+
+/* =========================================
+   VIEW + SHARE
+========================================= */
+
+.picker-secondary-actions {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 9px;
+
+  margin-top: 11px;
+}
+
+.picker-secondary-button {
+  min-height: 42px;
+
+  padding: 9px 10px;
+
+  border: 1px solid var(--shelfpick-border, #315944);
+
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #e4efe6;
+
+  font-size: 12.5px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.picker-secondary-button:hover {
+  background: rgba(67, 112, 80, 0.13);
+
+  border-color: #48765a;
+}
+
+/* =========================================
+   SHARE RESULT
+========================================= */
+
+.share-message {
+  margin: 10px 0 0;
+
+  text-align: center;
+
+  color: var(--shelfpick-green-soft);
+
+  font-size: 12px;
+}
+
+/* =========================================
+   RESULT FOOTER
+========================================= */
+
+.picker-result-footer {
+  margin-top: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.picker-result-count {
+  color: var(--shelfpick-green, #8dbe98);
+
+  font-size: 12.5px;
+}
+
+.picker-try-another {
+  padding: 5px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: var(--shelfpick-gold, #e1ad3d);
+
+  font-size: 12.5px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.picker-try-another:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.picker-try-another:disabled {
+  color: #66766c;
+
+  cursor: default;
+}
+
+/* =========================================
+   END OF MATCHES
+========================================= */
+
+.picker-exhausted {
+  margin: 12px 0 0;
+
+  text-align: center;
+
+  color: #809487;
+
+  font-size: 11.5px;
+
+  line-height: 1.4;
+}
+
+/* =========================================
+   START OVER
+========================================= */
+
+.picker-start-over {
+  display: block;
+
+  margin: 12px auto 0;
+
+  padding: 6px 8px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #778d7e;
+
+  font-size: 11.5px;
+
+  cursor: pointer;
+}
+
+.picker-start-over:hover {
+  color: #a4b7a9;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 420px) {
+  .picker-result-stage {
+    padding: 10px 10px 24px;
+  }
+
+  .picker-result-card {
+    padding: 18px 15px 17px;
+
+    border-radius: 24px;
+  }
+
+  .picker-cover-wrap {
+    width: min(100%, 252px);
+  }
+
+  .picker-match-score {
+    width: 48px;
+    height: 48px;
+
+    right: -7px;
+
+    font-size: 13px;
+  }
+}
+
+/* =========================================
+   WIDER SCREENS
+========================================= */
+
+@media (min-width: 760px) {
+  .picker-result-stage {
+    padding-top: 27px;
+  }
+
+  .picker-result-card {
+    width: 410px;
+
+    padding: 25px 21px 20px;
+  }
+
+  .picker-cover-wrap {
+    width: 288px;
+  }
 }

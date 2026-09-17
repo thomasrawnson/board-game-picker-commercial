@@ -22,10 +22,7 @@
       transparent 1px,
       transparent 3px
     ),
-    linear-gradient(
-      var(--felt),
-      var(--felt-dark)
-    );
+    linear-gradient(var(--felt), var(--felt-dark));
 }
 
 /* Phone / app container */
@@ -40,12 +37,11 @@
 
   padding: 28px 22px 24px;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.035),
-      rgba(0, 0, 0, 0.09)
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035),
+    rgba(0, 0, 0, 0.09)
+  );
 
   border: 1px solid var(--line);
   border-radius: 28px;
@@ -147,26 +143,15 @@ h1 {
 
   color: var(--card);
 
-  background:
-    linear-gradient(
-      180deg,
-      #be5d35,
-      var(--rust)
-    );
+  background: linear-gradient(180deg, #be5d35, var(--rust));
 
   border: 1px solid rgba(255, 255, 255, 0.06);
 
-  box-shadow:
-    0 9px 24px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 9px 24px rgba(0, 0, 0, 0.18);
 }
 
 .primary-button:hover:not(:disabled) {
-  background:
-    linear-gradient(
-      180deg,
-      #c6653d,
-      #aa4927
-    );
+  background: linear-gradient(180deg, #c6653d, #aa4927);
 }
 
 .primary-button:active:not(:disabled),
@@ -238,12 +223,7 @@ button:focus-visible {
     min-height: 100dvh;
     max-height: 100dvh;
 
-    padding:
-      20px 18px
-      calc(
-        18px
-        + env(safe-area-inset-bottom)
-      );
+    padding: 20px 18px calc(18px + env(safe-area-inset-bottom));
 
     border: 0;
     border-radius: 0;
@@ -306,8 +286,7 @@ input,
 select,
 textarea,
 a {
-  -webkit-tap-highlight-color:
-    transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button,
@@ -322,8 +301,7 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline:
-    2px solid var(--gold);
+  outline: 2px solid var(--gold);
 
   outline-offset: 3px;
 }
@@ -331,8 +309,7 @@ textarea:focus-visible {
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  border-color:
-    rgba(201, 162, 39, 0.8);
+  border-color: rgba(201, 162, 39, 0.8);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -341,14 +318,11 @@ textarea:focus-visible {
   *::after {
     scroll-behavior: auto !important;
 
-    animation-duration:
-      0.01ms !important;
+    animation-duration: 0.01ms !important;
 
-    animation-iteration-count:
-      1 !important;
+    animation-iteration-count: 1 !important;
 
-    transition-duration:
-      0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -369,4 +343,142 @@ textarea:focus-visible {
   .ghost-button {
     min-height: 48px;
   }
+}
+
+/* =========================================
+   SHELFPICK COMMERCIAL APP SHELL
+========================================= */
+
+:root {
+  --shelfpick-bg: #071b12;
+  --shelfpick-surface: #0d2418;
+  --shelfpick-surface-raised: #122d20;
+
+  --shelfpick-border: #315944;
+
+  --shelfpick-green: #8dbe98;
+  --shelfpick-green-soft: #a4cbaa;
+
+  --shelfpick-text: #f5f0df;
+  --shelfpick-muted: #91a99a;
+
+  --shelfpick-gold: #e1ad3d;
+  --shelfpick-gold-hover: #edbb4c;
+
+  --shelfpick-nav-height: 72px;
+}
+
+/* Overall signed-in application */
+
+.app-phone {
+  position: relative;
+
+  min-height: 100dvh;
+
+  padding-bottom: calc(
+    var(--shelfpick-nav-height) + env(safe-area-inset-bottom)
+  );
+
+  background:
+    radial-gradient(
+      circle at 50% -5%,
+      rgba(49, 100, 67, 0.18),
+      transparent 32%
+    ),
+    var(--shelfpick-bg);
+}
+
+/* Main content below header */
+
+.app-content {
+  width: 100%;
+}
+
+/* =========================================
+   TOP HEADER
+========================================= */
+
+.app-top-bar {
+  position: sticky;
+  top: 0;
+
+  z-index: 80;
+
+  width: 100%;
+  min-height: 62px;
+
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+
+  padding: calc(8px + env(safe-area-inset-top)) 15px 8px;
+
+  background: rgba(7, 27, 18, 0.94);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border-bottom: 1px solid rgba(129, 183, 145, 0.07);
+}
+
+.app-wordmark {
+  text-align: center;
+
+  color: var(--shelfpick-text);
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 19px;
+  font-weight: 700;
+
+  letter-spacing: -0.025em;
+}
+
+.top-bar-spacer {
+  width: 44px;
+}
+
+/* Dice / settings button */
+
+.dice-menu-button {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(130, 188, 148, 0.25);
+
+  border-radius: 13px;
+
+  background: rgba(16, 44, 29, 0.92);
+
+  color: var(--shelfpick-green-soft);
+
+  cursor: pointer;
+
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
+}
+
+.dice-menu-button:hover {
+  background: #153725;
+
+  border-color: rgba(130, 188, 148, 0.45);
+}
+
+.dice-menu-button:active {
+  transform: scale(0.95);
+}
+
+.dice-icon {
+  display: block;
+
+  width: 23px;
+  height: 23px;
 }

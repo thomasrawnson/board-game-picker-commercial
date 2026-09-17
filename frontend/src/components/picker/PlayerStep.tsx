@@ -38,10 +38,6 @@ function PlayerStep({
   return (
     <section className="screen picker-step-screen">
       <header>
-        <p className="eyebrow">
-          Game night
-        </p>
-
         <h1>
           Who's playing?
         </h1>

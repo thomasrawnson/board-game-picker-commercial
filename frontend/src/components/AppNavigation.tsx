@@ -21,119 +21,103 @@ function AppNavigation({
   onChangeView,
 }: Props) {
   return (
-    <>
+    <nav className="app-nav" aria-label="Primary">
       <button
-        className="settings-button"
+        type="button"
+        className={
+          view === "picker"
+            ? "nav-button active"
+            : "nav-button"
+        }
         onClick={() =>
           onChangeView(
-            "setup",
+            "picker",
           )
         }
-        aria-label="Setup"
-        title="Setup"
       >
-        ⚙
+        Picker
       </button>
 
+      <button
+        type="button"
+        className={
+          view === "collection"
+            ? "nav-button active"
+            : "nav-button"
+        }
+        onClick={() =>
+          onChangeView(
+            "collection",
+          )
+        }
+      >
+        Collection
+      </button>
 
-      <nav className="app-nav">
-        <button
-          type="button"
-          className={
-            view === "picker"
-              ? "nav-button active"
-              : "nav-button"
-          }
-          onClick={() =>
-            onChangeView(
-              "picker",
-            )
-          }
-        >
-          Picker
-        </button>
+      <button
+        type="button"
+        className={
+          view === "gameNight"
+            ? "nav-button active"
+            : "nav-button"
+        }
+        onClick={() =>
+          onChangeView(
+            "gameNight",
+          )
+        }
+      >
+        Game night
+      </button>
 
-        <button
-          type="button"
-          className={
-            view === "collection"
-              ? "nav-button active"
-              : "nav-button"
-          }
-          onClick={() =>
-            onChangeView(
-              "collection",
-            )
-          }
-        >
-          Collection
-        </button>
+      <button
+        type="button"
+        className={
+          view === "discover"
+            ? "nav-button active"
+            : "nav-button"
+        }
+        onClick={() =>
+          onChangeView(
+            "discover",
+          )
+        }
+      >
+        Discover
+      </button>
 
-        <button
-          type="button"
-          className={
-            view === "gameNight"
-              ? "nav-button active"
-              : "nav-button"
-          }
-          onClick={() =>
-            onChangeView(
-              "gameNight",
-            )
-          }
-        >
-          Game Night
-        </button>
+      <button
+        type="button"
+        className={
+          view === "rankings"
+            ? "nav-button active"
+            : "nav-button"
+        }
+        onClick={() =>
+          onChangeView(
+            "rankings",
+          )
+        }
+      >
+        Rank
+      </button>
 
-        <button
-          type="button"
-          className={
-            view === "discover"
-              ? "nav-button active"
-              : "nav-button"
-          }
-          onClick={() =>
-            onChangeView(
-              "discover",
-            )
-          }
-        >
-          Discover
-        </button>
-
-        <button
-          type="button"
-          className={
-            view === "rankings"
-              ? "nav-button active"
-              : "nav-button"
-          }
-          onClick={() =>
-            onChangeView(
-              "rankings",
-            )
-          }
-        >
-          Rank
-        </button>
-
-        <button
-          type="button"
-          className={
-            view === "insights"
-              ? "nav-button active"
-              : "nav-button"
-          }
-          onClick={() =>
-            onChangeView(
-              "insights",
-            )
-          }
-        >
-          Stats
-        </button>
-      </nav>
-    </>
+      <button
+        type="button"
+        className={
+          view === "insights"
+            ? "nav-button active"
+            : "nav-button"
+        }
+        onClick={() =>
+          onChangeView(
+            "insights",
+          )
+        }
+      >
+        Stats
+      </button>
+    </nav>
   )
 }
 

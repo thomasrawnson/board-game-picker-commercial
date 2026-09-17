@@ -52,10 +52,35 @@ function PickerResult({
   onViewGame,
   onStartOver,
 }: Props) {
-  const [
-    shareMessage,
-    setShareMessage,
-  ] = useState("")
+  const [shareMessage, setShareMessage] =
+    useState("")
+
+  const game = match.game
+  const coverUrl =
+    game.image_url ?? game.thumbnail_url ?? null
+
+  const playerText =
+    game.min_players !== null
+    && game.max_players !== null
+      ? game.min_players === game.max_players
+        ? `${game.min_players} players`
+        : `${game.min_players}–${game.max_players} players`
+      : null
+
+  const timeText =
+    game.max_play_time !== null
+      ? game.min_play_time !== null
+        && game.min_play_time === game.max_play_time
+        ? `${game.max_play_time} min`
+        : `${game.min_play_time ?? "?"}–${game.max_play_time} min`
+      : null
+
+  const weightText =
+    game.complexity !== null
+      ? `Weight ${game.complexity.toFixed(1)}`
+      : null
+
+  const score = Math.round(match.score)
 
 
   async function sharePick() {
@@ -66,16 +91,12 @@ function PickerResult({
         : match.reasons[0]
 
     const text = [
-      `Tonight's pick: ${match.game.name}`,
+      `Tonight's pick: ${game.name}`,
       `${playerCount} player${
-        playerCount === 1
-          ? ""
-          : "s"
+        playerCount === 1 ? "" : "s"
       }`,
-      reason
-        ? `Why: ${reason}`
-        : null,
-      "Picked with Board Game Picker",
+      reason ? `Why: ${reason}` : null,
+      "Picked with ShelfPick",
     ]
       .filter(Boolean)
       .join("\n")
@@ -83,39 +104,26 @@ function PickerResult({
     setShareMessage("")
 
     try {
-      if (
-        navigator.share
-      ) {
+      if (navigator.share) {
         await navigator.share({
-          title:
-            match.game.name,
+          title: game.name,
           text,
         })
-
-        setShareMessage(
-          "Pick shared.",
-        )
-
+        setShareMessage("Pick shared.")
         return
       }
 
-      await navigator.clipboard
-        .writeText(text)
-
-      setShareMessage(
-        "Pick copied.",
-      )
+      await navigator.clipboard.writeText(text)
+      setShareMessage("Pick copied.")
     } catch (err) {
       if (
         err instanceof DOMException
-        && err.name ===
-          "AbortError"
+        && err.name === "AbortError"
       ) {
         return
       }
 
       console.error(err)
-
       setShareMessage(
         "Couldn't share this pick.",
       )
@@ -124,227 +132,140 @@ function PickerResult({
 
 
   return (
-    <section className="screen reveal-screen">
+    <section
+      className="screen reveal-screen picker-result-card"
+      aria-labelledby="picker-result-title"
+    >
       <p className="picker-result-mode">
         {modeLabel(mode)}
       </p>
 
-
-      <div
-        className="game-card"
-        key={match.game.bgg_id}
+      <button
+        type="button"
+        className="picker-hero-link"
+        onClick={onViewGame}
+        aria-label={`View ${game.name}`}
       >
-        <div className="game-image-wrap">
-          {match.game.image_url ||
-          match.game.thumbnail_url ? (
+        <div className="picker-cover-wrap">
+          {coverUrl ? (
             <img
-              className="game-image"
-              src={
-                match.game.image_url ??
-                match.game
-                  .thumbnail_url ??
-                ""
-              }
-              alt={
-                match.game.name
-              }
+              className="picker-cover-image"
+              src={coverUrl}
+              alt=""
             />
           ) : (
-            <div className="image-placeholder">
-              ?
+            <div
+              className="picker-cover-placeholder"
+              aria-hidden="true"
+            >
+              Cover art
             </div>
           )}
 
-
-          <div className="match-score">
-            <strong>
-              {match.score}
-            </strong>
-
-            <span>
-              Match
-            </span>
+          <div
+            className="picker-match-score"
+            aria-label={`${score}% match`}
+          >
+            {score}%
           </div>
         </div>
 
+        <div className="picker-result-copy">
+          <h2
+            id="picker-result-title"
+            className="picker-result-title"
+          >
+            {game.name}
+          </h2>
 
-        <h2>
-          {match.game.name}
-        </h2>
+          <div className="picker-result-meta">
+            {playerText && <span>{playerText}</span>}
+            {playerText && timeText && <span>·</span>}
+            {timeText && <span>{timeText}</span>}
+            {(playerText || timeText) && weightText && <span>·</span>}
+            {weightText && <span>{weightText}</span>}
+          </div>
+        </div>
+      </button>
 
-
-        <div className="game-meta">
-          {match.game.min_players !==
-            null &&
-            match.game.max_players !==
-              null && (
-              <span>
-                {
-                  match.game
-                    .min_players
-                }
-                –
-                {
-                  match.game
-                    .max_players
-                }{" "}
-                players
-              </span>
-            )}
-
-
-          {match.game.max_play_time !==
-            null && (
-            <span>
-              {match.game
-                .min_play_time !== null &&
-              match.game
-                .min_play_time ===
-                match.game
-                  .max_play_time
-                ? match.game
-                    .max_play_time
-                : `${
-                    match.game
-                      .min_play_time ??
-                    "?"
-                  }–${
-                    match.game
-                      .max_play_time
-                  }`}{" "}
-              min
+      <div
+        className="picker-reason-chips"
+        aria-label="Why this game matched"
+      >
+        {match.reasons
+          .slice(0, 4)
+          .map((reason) => (
+            <span
+              className="picker-reason-chip"
+              key={reason}
+            >
+              {reason}
             </span>
-          )}
+          ))}
+      </div>
 
+      {match.ai_used
+        && match.ai_explanation
+        && (
+        <div className="picker-ai-note">
+          <strong>AI refined</strong>
+          <p>{match.ai_explanation}</p>
+        </div>
+      )}
 
-          {match.game.complexity !==
-            null && (
-            <span>
-              Weight{" "}
-              {match.game.complexity.toFixed(
-                1,
-              )}
-            </span>
-          )}
+      <div className="picker-primary-action">
+        <PlayLogForm
+          key={game.bgg_id}
+          game={game}
+          initialPlayerCount={playerCount}
+          pickerSessionId={pickerSessionId}
+          onSaved={async () => {}}
+        />
+      </div>
+
+      <div className="picker-result-footer">
+        <span>
+          Pick {matchIndex + 1} of {totalMatches}
+        </span>
+
+        <div className="picker-result-links">
+          <button
+            type="button"
+            onClick={sharePick}
+          >
+            Share
+          </button>
+
+          <button
+            type="button"
+            className="try-another-link"
+            onClick={onTryAnother}
+            disabled={!hasMoreMatches}
+          >
+            {hasMoreMatches
+              ? "Try another"
+              : "No more matches"}
+          </button>
         </div>
       </div>
 
-
-      <div className="match-reasons">
-        <p className="preference-label">
-          Why this one?
-        </p>
-
-        {match.ai_used
-          && match.ai_explanation
-          && (
-            <div className="ai-picker-explanation">
-              <span>
-                AI refined
-              </span>
-
-              <p>
-                {match.ai_explanation}
-              </p>
-            </div>
-          )}
-
-        {match.reasons
-          .slice(0, 4)
-          .map(
-            (reason) => (
-              <p key={reason}>
-                ✓ {reason}
-              </p>
-            ),
-          )}
-      </div>
-
-
-      <p className="result-count">
-        Pick {matchIndex + 1} of{" "}
-        {totalMatches}
-      </p>
-
-
-      <div className="picker-result-actions">
-        <PlayLogForm
-          key={
-            match.game.bgg_id
-          }
-          game={match.game}
-          initialPlayerCount={
-            playerCount
-          }
-          pickerSessionId={
-            pickerSessionId
-          }
-          onSaved={async () => {}}
-        />
-
-        <button
-          type="button"
-          className="secondary-button share-pick-button"
-          onClick={
-            sharePick
-          }
-        >
-          Share this pick
-        </button>
-      </div>
-
-
       {shareMessage && (
-        <p className="share-message">
+        <p className="share-message" role="status">
           {shareMessage}
         </p>
       )}
 
-
-      <div className="reveal-actions">
-        <button
-          type="button"
-          className="secondary-button"
-          onClick={
-            onTryAnother
-          }
-          disabled={
-            !hasMoreMatches
-          }
-        >
-          {hasMoreMatches
-            ? "Try another"
-            : "No more matches"}
-        </button>
-
-
-        <button
-          type="button"
-          className="primary-button"
-          onClick={
-            onViewGame
-          }
-        >
-          View game
-        </button>
-      </div>
-
-
-      {!hasMoreMatches &&
-        totalMatches > 1 && (
+      {!hasMoreMatches
+        && totalMatches > 1 && (
         <p className="picker-exhausted">
-          You've seen every game that
-          matched these choices.
+          You've seen every matching game.
         </p>
       )}
 
-
       <button
         type="button"
-        className="ghost-button"
-        onClick={
-          onStartOver
-        }
+        className="picker-start-over"
+        onClick={onStartOver}
       >
         Start over
       </button>

@@ -385,7 +385,7 @@ function RankGamesView() {
         >
           My ranking
           {rankings.rankings.length > 0
-            ? ` (${rankings.rankings.length})`
+            ? ` · ${rankings.rankings.length}`
             : ""}
         </button>
       </div>
@@ -403,8 +403,7 @@ function RankGamesView() {
         />
 
         <span>
-          <strong>Only games I've played</strong>
-          <small>Requires at least 1 recorded play</small>
+          Only games I've played
         </span>
       </label>
 
@@ -511,12 +510,9 @@ function RankGamesView() {
           {rankings.rankings.length > 0 && (
             <article className="ranking-share-card">
               <div className="ranking-share-heading">
-                <div>
-                  <p className="insight-label">
-                    Share your favourites
-                  </p>
-                  <strong>Choose a list size</strong>
-                </div>
+                <p className="insight-label">
+                  Share your favourites
+                </p>
 
                 <button
                   type="button"
@@ -581,9 +577,6 @@ function RankGamesView() {
                     </span>
                   </div>
 
-                  <span className="ranking-score">
-                    {game.rating}
-                  </span>
                 </li>
               ))}
             </ol>

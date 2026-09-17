@@ -29,17 +29,15 @@ function CollectionGameList({
     <div className="collection-list">
       {games.map((game) => {
         const stats =
-          statsByGame.get(
-            game.bgg_id,
-          )
+          statsByGame.get(game.bgg_id)
+        const playCount =
+          stats?.play_count ?? 0
 
         return (
           <button
             className="collection-game"
             key={game.bgg_id}
-            onClick={() =>
-              onOpenGame(game)
-            }
+            onClick={() => onOpenGame(game)}
           >
             <div className="collection-thumb">
               {game.thumbnail_url ||
@@ -58,62 +56,31 @@ function CollectionGameList({
             </div>
 
             <div className="collection-game-info">
-              <strong>
-                {game.name}
-              </strong>
-
+              <strong>{game.name}</strong>
               <span>
-                {game.min_players ??
-                  "?"}
+                {game.min_players ?? "?"}
                 –
-                {game.max_players ??
-                  "?"}
-                P
-                {" · "}
-                {game.max_play_time ??
-                  "?"}
-                MIN
+                {game.max_players ?? "?"}
+                {" players · "}
+                {game.max_play_time ?? "?"}
+                {" min"}
               </span>
-
-              {game.categories.length >
-                0 && (
-                <small>
-                  {game.categories
-                    .slice(0, 2)
-                    .join(" · ")}
-                </small>
-              )}
-
-              {!stats ||
-              stats.play_count === 0 ? (
-                <small className="collection-play-meta">
-                  Never played
-                </small>
-              ) : (
-                <small className="collection-play-meta">
-                  {stats.play_count}{" "}
-                  {stats.play_count ===
-                  1
-                    ? "play"
-                    : "plays"}
-
-                  {stats.last_played_at &&
-                    ` · Last played ${new Date(
-                      stats.last_played_at,
-                    ).toLocaleDateString(
-                      undefined,
-                      {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      },
-                    )}`}
-                </small>
-              )}
             </div>
 
-            <span className="collection-chevron">
-              ›
+            <span
+              className={
+                playCount > 0
+                  ? "collection-play-count"
+                  : "collection-play-count muted"
+              }
+            >
+              {playCount > 0
+                ? `${playCount} ${
+                    playCount === 1
+                      ? "play"
+                      : "plays"
+                  }`
+                : "Not played"}
             </span>
           </button>
         )

@@ -1,23 +1,14 @@
 /* Application navigation */
 
-
 /* Main navigation */
 
 .app-nav {
   position: fixed;
 
   left: 50%;
-  bottom:
-    calc(
-      32px
-      + env(safe-area-inset-bottom)
-    );
+  bottom: calc(32px + env(safe-area-inset-bottom));
 
-  width:
-    min(
-      calc(100vw - 32px),
-      346px
-    );
+  width: min(calc(100vw - 32px), 346px);
 
   z-index: 100;
 
@@ -25,8 +16,7 @@
 
   display: grid;
 
-  grid-template-columns:
-    repeat(6, 1fr);
+  grid-template-columns: repeat(6, 1fr);
 
   gap: 5px;
 
@@ -34,176 +24,102 @@
 
   margin: 0;
 
-  background:
-    rgba(
-      23,
-      48,
-      35,
-      0.96
-    );
+  background: rgba(23, 48, 35, 0.96);
 
-  border:
-    1px solid
-    var(--line);
+  border: 1px solid var(--line);
 
   border-radius: 14px;
 
-  box-shadow:
-    0 12px 30px
-    rgba(
-      0,
-      0,
-      0,
-      0.3
-    );
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
 
-  backdrop-filter:
-    blur(12px);
+  backdrop-filter: blur(12px);
 }
-
 
 .nav-button {
   min-height: 44px;
 
-  padding:
-    9px 6px;
+  padding: 9px 6px;
 
-  color:
-    #c7cebd;
+  color: #c7cebd;
 
-  background:
-    transparent;
+  background: transparent;
 
   border: 0;
 
-  border-radius:
-    10px;
+  border-radius: 10px;
 
-  font-size:
-    9px;
+  font-size: 9px;
 
   line-height: 1.15;
 
-  font-weight:
-    600;
+  font-weight: 600;
 
-  letter-spacing:
-    0.07em;
+  letter-spacing: 0.07em;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 
-  cursor:
-    pointer;
+  cursor: pointer;
 
   transition:
-    background
-    180ms ease,
-    color
-    180ms ease;
+    background 180ms ease,
+    color 180ms ease;
 }
-
 
 .nav-button:hover {
-  color:
-    var(--text-primary);
+  color: var(--text-primary);
 }
-
 
 .nav-button.active {
-  color:
-    var(--ink);
+  color: var(--ink);
 
-  background:
-    var(--gold);
+  background: var(--gold);
 }
-
 
 /* Setup utility button */
 
 .settings-button {
-  align-self:
-    flex-end;
+  align-self: flex-end;
 
   width: 30px;
   height: 30px;
 
   display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  justify-content:
-    center;
+  justify-content: center;
 
-  margin:
-    -6px 0 8px;
+  margin: -6px 0 8px;
 
   padding: 0;
 
-  color:
-    var(--text-muted);
+  color: var(--text-muted);
 
-  background:
-    rgba(
-      243,
-      234,
-      216,
-      0.06
-    );
+  background: rgba(243, 234, 216, 0.06);
 
-  border:
-    1px solid
-    rgba(
-      243,
-      234,
-      216,
-      0.14
-    );
+  border: 1px solid rgba(243, 234, 216, 0.14);
 
-  border-radius:
-    50%;
+  border-radius: 50%;
 
-  font-size:
-    15px;
+  font-size: 15px;
 
-  line-height:
-    1;
+  line-height: 1;
 
-  cursor:
-    pointer;
+  cursor: pointer;
 
   transition:
-    color
-    160ms ease,
-    border-color
-    160ms ease,
-    background
-    160ms ease;
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
 }
-
 
 .settings-button:hover {
-  color:
-    var(--gold);
+  color: var(--gold);
 
-  background:
-    rgba(
-      243,
-      234,
-      216,
-      0.09
-    );
+  background: rgba(243, 234, 216, 0.09);
 
-  border-color:
-    rgba(
-      201,
-      162,
-      39,
-      0.5
-    );
+  border-color: rgba(201, 162, 39, 0.5);
 }
-
 
 /*
   Leave enough room for the
@@ -211,52 +127,58 @@
 */
 
 .app-phone {
-  min-height:
-    calc(100dvh - 48px);
+  min-height: calc(100dvh - 48px);
 
-  max-height:
-    calc(100dvh - 48px);
+  max-height: calc(100dvh - 48px);
 
   overflow-y: auto;
   overflow-x: hidden;
 
-  padding-bottom:
-    calc(
-      112px
-      + env(safe-area-inset-bottom)
-    );
+  padding-bottom: calc(112px + env(safe-area-inset-bottom));
 
-  scroll-padding-bottom:
-    calc(
-      112px
-      + env(safe-area-inset-bottom)
-    );
+  scroll-padding-bottom: calc(112px + env(safe-area-inset-bottom));
 }
 
-
-@media (
-  max-width: 480px
-) {
+@media (max-width: 480px) {
   .app-nav {
-    bottom:
-      calc(
-        10px
-        + env(
-          safe-area-inset-bottom
-        )
-      );
+    bottom: calc(10px + env(safe-area-inset-bottom));
   }
 
   .app-phone {
     min-height: 100dvh;
     max-height: 100dvh;
 
-    padding-bottom:
-      calc(
-        112px
-        + env(
-          safe-area-inset-bottom
-        )
-      );
+    padding-bottom: calc(112px + env(safe-area-inset-bottom));
   }
+}
+
+/* =========================================
+   PERSISTENT BOTTOM NAV
+========================================= */
+
+.app-navigation {
+  position: fixed;
+
+  left: 50%;
+  bottom: 0;
+
+  z-index: 100;
+
+  width: min(100%, 680px);
+
+  min-height: var(--shelfpick-nav-height, 72px);
+
+  transform: translateX(-50%);
+
+  padding: 8px 9px calc(8px + env(safe-area-inset-bottom));
+
+  border-top: 1px solid rgba(124, 177, 139, 0.12);
+
+  background: rgba(6, 23, 15, 0.96);
+
+  backdrop-filter: blur(18px);
+
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow: 0 -7px 26px rgba(0, 0, 0, 0.12);
 }
