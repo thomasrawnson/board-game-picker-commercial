@@ -101,26 +101,25 @@ function CollectionFilters({
       </div>
 
 
-      <label className="collection-search-wrap">
-        <span className="sr-only">
-          Search your games
-        </span>
+      <div className="collection-search-sort-row">
+        <label className="collection-search-wrap">
+          <span className="sr-only">
+            Search your games
+          </span>
 
-        <input
-          className="collection-search"
-          type="search"
-          value={search}
-          placeholder="Search your games..."
-          onChange={(event) =>
-            onSearchChange(
-              event.target.value
-            )
-          }
-        />
-      </label>
+          <input
+            className="collection-search"
+            type="search"
+            value={search}
+            placeholder="Search your games..."
+            onChange={(event) =>
+              onSearchChange(
+                event.target.value
+              )
+            }
+          />
+        </label>
 
-
-      <div className="collection-toolbar-row">
         <label className="collection-sort-wrap">
           <span className="sr-only">
             Sort games
@@ -142,7 +141,7 @@ function CollectionFilters({
             </option>
 
             <option value="recent">
-              Recently played
+              Recent
             </option>
 
             <option value="most-played">
@@ -150,11 +149,11 @@ function CollectionFilters({
             </option>
 
             <option value="rating">
-              Highest rated
+              Rating
             </option>
 
             <option value="complexity">
-              Heaviest
+              Complexity
             </option>
           </select>
         </label>

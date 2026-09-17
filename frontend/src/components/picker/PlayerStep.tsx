@@ -15,7 +15,6 @@ const playerOptions = [
   4,
   5,
   6,
-  7,
 ]
 
 
@@ -108,8 +107,8 @@ function PlayerStep({
               }
             >
               <strong>
-                {option === 7
-                  ? "7+"
+                {option === 6
+                  ? "6+"
                   : option}
               </strong>
 

@@ -114,11 +114,6 @@ function AppHeader({ onOpenSettings }: AppHeaderProps) {
         <DiceIcon />
       </button>
 
-      <div className="app-wordmark" aria-label="ShelfPick">
-        ShelfPick
-      </div>
-
-      <div className="top-bar-spacer" aria-hidden="true" />
     </header>
   );
 }

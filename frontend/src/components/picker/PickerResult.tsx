@@ -188,29 +188,38 @@ function PickerResult({
         </div>
       </button>
 
-      <div
-        className="picker-reason-chips"
-        aria-label="Why this game matched"
-      >
-        {match.reasons
-          .slice(0, 4)
-          .map((reason) => (
-            <span
-              className="picker-reason-chip"
-              key={reason}
-            >
-              {reason}
-            </span>
-          ))}
-      </div>
+      {(match.reasons.length > 0
+        || (
+          match.ai_used
+          && match.ai_explanation
+        )) && (
+        <details className="picker-reason-details">
+          <summary>
+            Why this pick?
+          </summary>
 
-      {match.ai_used
-        && match.ai_explanation
-        && (
-        <div className="picker-ai-note">
-          <strong>AI refined</strong>
-          <p>{match.ai_explanation}</p>
-        </div>
+          <div className="picker-reason-detail-body">
+            {match.ai_used
+              && match.ai_explanation
+              && (
+              <p>
+                {match.ai_explanation}
+              </p>
+            )}
+
+            {match.reasons.length > 0 && (
+              <ul>
+                {match.reasons
+                  .slice(0, 4)
+                  .map((reason) => (
+                    <li key={reason}>
+                      {reason}
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </div>
+        </details>
       )}
 
       <div className="picker-primary-action">

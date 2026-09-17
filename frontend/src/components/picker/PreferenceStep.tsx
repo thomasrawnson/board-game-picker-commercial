@@ -148,10 +148,6 @@ function PreferenceStep({
   return (
     <section className="screen picker-step-screen">
       <header>
-        <p className="eyebrow">
-          Game night
-        </p>
-
         <h1>
           Fine-tune the pick
         </h1>
@@ -168,7 +164,7 @@ function PreferenceStep({
           How should we pick?
         </p>
 
-        <div className="picker-mode-list">
+        <div className="picker-mode-list compact">
           {modeOptions.map(
             (option) => (
               <button
@@ -182,19 +178,14 @@ function PreferenceStep({
                 aria-pressed={
                   mode === option.value
                 }
+                title={option.description}
                 onClick={() =>
                   onModeChange(
                     option.value
                   )
                 }
               >
-                <strong>
-                  {option.label}
-                </strong>
-
-                <span>
-                  {option.description}
-                </span>
+                {option.label}
               </button>
             ),
           )}
@@ -283,7 +274,7 @@ function PreferenceStep({
       <details className="advanced-filters">
         <summary>
           <span>
-            <strong>Advanced filters</strong>
+            <strong>More preferences</strong>
             <small>
               Theme, mechanics and age
             </small>

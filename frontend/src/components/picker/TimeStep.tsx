@@ -47,10 +47,6 @@ function TimeStep({
   return (
     <section className="screen">
       <header>
-        <p className="eyebrow">
-          Game night
-        </p>
-
         <h1>How long you got?</h1>
 
         <p className="subtitle">

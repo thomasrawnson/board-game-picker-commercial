@@ -1,17 +1,17 @@
 /* ShelfPick commercial visual system. Loaded last on purpose. */
 
 :root {
-  --sp-bg: #071c12;
-  --sp-panel: #10271b;
-  --sp-panel-soft: #142e20;
-  --sp-quiet: #0b2116;
-  --sp-text: #f3ecda;
-  --sp-secondary: #cbd6cb;
-  --sp-muted: #819486;
-  --sp-green: #9bc5a5;
-  --sp-gold: #e0ad37;
-  --sp-gold-hover: #ebba49;
-  --sp-line: rgba(155, 197, 165, 0.11);
+  --sp-bg: #102b20;
+  --sp-panel: #17372a;
+  --sp-panel-soft: #1d4031;
+  --sp-quiet: #122f24;
+  --sp-text: #f3ecdf;
+  --sp-secondary: #d1decf;
+  --sp-muted: #91a68f;
+  --sp-green: #b8d2af;
+  --sp-gold: #d9aa3b;
+  --sp-gold-hover: #e5b84d;
+  --sp-line: rgba(184, 210, 175, 0.12);
 }
 
 /* App frame: fuller use of the viewport and no dead vertical bands. */
@@ -73,10 +73,9 @@ h1 {
   position: sticky;
   top: 0;
   z-index: 90;
-  display: grid;
-  grid-template-columns: 32px 1fr 32px;
+  display: flex;
   align-items: center;
-  min-height: 58px;
+  min-height: 50px;
   margin: 0 -20px;
   padding: calc(8px + env(safe-area-inset-top)) 20px 8px;
   background: rgba(7, 28, 18, 0.97);
@@ -86,7 +85,7 @@ h1 {
 
 .app-wordmark {
   color: var(--sp-text);
-  font-family: "Fraunces", serif;
+  font-family: "Lora", serif;
   font-size: 20px;
   text-align: center;
 }
@@ -303,7 +302,7 @@ h1 {
   display: grid;
   place-items: center;
   color: #9cc18e;
-  font-family: "Fraunces", serif;
+  font-family: "Lora", serif;
   font-size: 18px;
 }
 
@@ -373,7 +372,7 @@ h1 {
 
 .picker-ai-note strong {
   color: var(--sp-green);
-  font-family: "Fraunces", serif;
+  font-family: "Lora", serif;
   font-size: 12px;
 }
 
@@ -1078,5 +1077,358 @@ h1 {
 
   .discover-card {
     padding: 13px;
+  }
+}
+
+
+/* Final visual-system refinements */
+body,
+button,
+input,
+select,
+textarea {
+  font-family: "Nunito Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3,
+.picker-result-title,
+.ranking-position,
+.player-stat strong {
+  font-family: "Lora", Georgia, serif;
+}
+
+.app-wordmark,
+.top-bar-spacer {
+  display: none !important;
+}
+
+.app-top-bar {
+  justify-content: flex-start;
+  border-bottom: 0;
+}
+
+.phone.app-phone {
+  background: var(--sp-bg);
+}
+
+/* Friends/Insight text should use the same warm palette, never rust/red. */
+.players-card .favourite-player-link,
+.players-card .favourite-game-link,
+.players-card .player-name-link,
+.players-card .stats-game-link,
+.players-card a,
+.players-card button {
+  color: var(--sp-text) !important;
+}
+
+.players-card .favourite-game-link {
+  color: var(--sp-green) !important;
+}
+
+/* More compact player count picker: 1–5 plus a single 6+ option. */
+.player-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 330px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.player-chip {
+  min-height: 78px !important;
+  padding: 10px 8px !important;
+  border-radius: 12px;
+}
+
+.player-chip strong {
+  font-size: 24px !important;
+}
+
+.player-chip span {
+  margin-top: 2px;
+  font-size: 9px !important;
+}
+
+/* Fine-tune: compact choices, one visual level, advanced options tucked away. */
+.preference-section {
+  margin-top: 16px !important;
+}
+
+.preference-label {
+  margin-bottom: 8px !important;
+  color: var(--sp-secondary) !important;
+  font-size: 12px !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.picker-mode-list.compact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.picker-mode-list.compact .picker-mode-option {
+  min-height: 42px;
+  padding: 8px 6px;
+  color: var(--sp-green);
+  background: rgba(184, 210, 175, 0.055);
+  border: 0;
+  border-radius: 9px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.picker-mode-list.compact .picker-mode-option.selected {
+  color: var(--sp-text);
+  background: rgba(184, 210, 175, 0.17);
+  box-shadow: none;
+}
+
+.play-style-grid,
+.complexity-grid {
+  gap: 7px;
+}
+
+.play-style-grid .preference-chip,
+.complexity-grid .complexity-option {
+  min-height: 40px;
+  padding: 8px 6px;
+  border-color: transparent;
+  background: rgba(184, 210, 175, 0.05);
+  border-radius: 9px;
+}
+
+.play-style-grid .preference-chip.selected,
+.complexity-grid .complexity-option.selected {
+  color: var(--sp-text);
+  background: rgba(184, 210, 175, 0.17);
+  border-color: transparent;
+}
+
+.complexity-grid .complexity-option span {
+  display: none;
+}
+
+.advanced-filters {
+  margin-top: 16px !important;
+  border: 0 !important;
+  background: rgba(184, 210, 175, 0.04) !important;
+  border-radius: 10px !important;
+}
+
+.advanced-filters summary {
+  padding: 11px 12px !important;
+}
+
+.advanced-filters summary strong {
+  color: var(--sp-text);
+}
+
+.advanced-filters summary small {
+  color: var(--sp-muted);
+}
+
+.picker-step-actions {
+  margin-top: 18px;
+}
+
+/* Collection filters: centered filters and compact search/sort in one row. */
+.collection-filter-tabs {
+  justify-content: center;
+  gap: 26px;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.collection-search-sort-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.collection-search-wrap {
+  min-width: 0;
+}
+
+.collection-search {
+  width: 100%;
+}
+
+.collection-sort-wrap {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.collection-sort {
+  width: auto;
+  min-width: 70px;
+  padding-right: 20px;
+  text-align: right;
+  text-align-last: right;
+}
+
+/* Discover: bookmark save action and compact score-first reasoning. */
+.wishlist-heart-button {
+  display: none !important;
+}
+
+.wishlist-bookmark-button {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 0;
+  color: var(--sp-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.wishlist-bookmark-button:hover:not(:disabled) {
+  color: var(--sp-text);
+  background: rgba(184, 210, 175, 0.07);
+}
+
+.wishlist-bookmark-button.saved {
+  color: var(--sp-gold);
+}
+
+.wishlist-bookmark-button:active:not(:disabled) {
+  transform: scale(0.93);
+}
+
+.wishlist-bookmark-button:disabled {
+  opacity: 0.45;
+}
+
+.wishlist-bookmark-icon {
+  width: 21px;
+  height: 21px;
+}
+
+.discover-match-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 9px;
+}
+
+.discover-match-score {
+  color: var(--sp-gold);
+  font-family: "Lora", Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.discover-reason-details,
+.picker-reason-details {
+  color: var(--sp-green);
+  font-size: 11px;
+}
+
+.discover-reason-details summary,
+.picker-reason-details summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.discover-reason-details summary::-webkit-details-marker,
+.picker-reason-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.discover-reason-details summary::after,
+.picker-reason-details summary::after {
+  content: " +";
+  color: var(--sp-muted);
+}
+
+.discover-reason-details[open] summary::after,
+.picker-reason-details[open] summary::after {
+  content: " −";
+}
+
+.discover-reason-details .discover-reasons {
+  margin: 8px 0 0;
+  padding: 8px 0 0 16px;
+  color: var(--sp-secondary);
+}
+
+.discover-reason-details .discover-reasons li {
+  margin: 4px 0;
+}
+
+/* Picker result: score first, detailed reasoning only on demand. */
+.picker-reason-chips,
+.picker-ai-note {
+  display: none !important;
+}
+
+.picker-reason-details {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--sp-line);
+  text-align: center;
+}
+
+.picker-reason-detail-body {
+  margin-top: 9px;
+  color: var(--sp-secondary);
+  text-align: left;
+  line-height: 1.45;
+}
+
+.picker-reason-detail-body p {
+  margin: 0 0 8px;
+}
+
+.picker-reason-detail-body ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.picker-reason-detail-body li {
+  margin: 4px 0;
+}
+
+/* Warmer selection surfaces across the app. */
+.collection-section-tabs button.active,
+.ranking-view-tabs button.active,
+.stats-section-tab.active,
+.nav-button.active {
+  background: rgba(184, 210, 175, 0.16);
+}
+
+.collection-search,
+.collection-section-tabs,
+.ranking-view-tabs,
+.stats-section-tabs {
+  background-color: rgba(10, 31, 22, 0.46);
+}
+
+@media (max-width: 480px) {
+  .collection-filter-tabs {
+    gap: 20px;
+  }
+
+  .collection-search-sort-row {
+    grid-template-columns: minmax(0, 1fr) 78px;
+  }
+
+  .picker-mode-list.compact {
+    grid-template-columns: 1fr;
+  }
+
+  .picker-mode-list.compact .picker-mode-option {
+    min-height: 38px;
   }
 }

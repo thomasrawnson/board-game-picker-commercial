@@ -210,6 +210,7 @@ function DiscoverView({
           (recommendation) => {
             const {
               game,
+              score,
               reasons,
               wishlisted,
             } = recommendation
@@ -249,23 +250,37 @@ function DiscoverView({
                     : ""}
                 </p>
 
-                <ul className="discover-reasons">
-                    {reasons.map(
-                        (reason: string) => (
+                <div className="discover-match-row">
+                  <span className="discover-match-score">
+                    {Math.round(score)}% match
+                  </span>
+
+                  {reasons.length > 0 && (
+                    <details className="discover-reason-details">
+                      <summary>
+                        Why this match?
+                      </summary>
+
+                      <ul className="discover-reasons">
+                        {reasons.map(
+                          (reason: string) => (
                             <li key={reason}>
-                            {reason}
+                              {reason}
                             </li>
-                        ),
+                          ),
                         )}
-                </ul>
+                      </ul>
+                    </details>
+                  )}
+                </div>
 
                 <div className="discover-actions">
                   <button
                     type="button"
                     className={
                       wishlisted
-                        ? "wishlist-heart-button saved"
-                        : "wishlist-heart-button"
+                        ? "wishlist-bookmark-button saved"
+                        : "wishlist-bookmark-button"
                     }
                     aria-label={
                       wishlisted
@@ -285,9 +300,19 @@ function DiscoverView({
                       toggleWishlist(recommendation)
                     }
                   >
-                    <span aria-hidden="true">
-                      ♥
-                    </span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      className="wishlist-bookmark-icon"
+                    >
+                      <path
+                        d="M6.75 4.75A1.75 1.75 0 0 1 8.5 3h7A1.75 1.75 0 0 1 17.25 4.75v15l-5.25-3.2-5.25 3.2v-15Z"
+                        fill={wishlisted ? "currentColor" : "none"}
+                        stroke="currentColor"
+                        strokeWidth="1.7"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </button>
 
                   <a

@@ -1,16 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Nunito+Sans:wght@400;500;600;700&display=swap");
 
 :root {
-  font-family: "Work Sans", sans-serif;
+  font-family: "Nunito Sans", system-ui, sans-serif;
 
-  color: #f3ead8;
-  background: #173023;
+  color: #f3ecdf;
+  background: #102b20;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 
-  --felt: #1f3d2e;
-  --felt-dark: #173023;
+  --felt: #244936;
+  --felt-dark: #102b20;
 
   --card: #f3ead8;
   --card-shadow: #d9cbab;
