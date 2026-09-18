@@ -41,6 +41,10 @@ const statsSections: Array<{
   label: string
 }> = [
   {
+    id: "rank",
+    label: "Rank",
+  },
+  {
     id: "collection",
     label: "Collection",
   },
@@ -51,10 +55,6 @@ const statsSections: Array<{
   {
     id: "group",
     label: "Friends",
-  },
-  {
-    id: "rank",
-    label: "Rank",
   },
   {
     id: "recaps",
@@ -181,7 +181,7 @@ function InsightsView({
     activeSection,
     setActiveSection,
   ] = useState<StatsSection>(
-    "collection"
+    "rank"
   )
 
 
@@ -535,16 +535,12 @@ function InsightsView({
           <section className="rank-insight-hero">
             <div>
               <p className="insight-label">
-                Your personal ranking
+                Your ranking
               </p>
 
               <h2>
-                Build a list that feels like yours
+                Rank your shelf
               </h2>
-
-              <p>
-                Compare two games at a time and ShelfPick turns those choices into your own ranked shelf.
-              </p>
             </div>
 
             <button
@@ -607,6 +603,57 @@ function InsightsView({
                     ))}
                   </div>
 
+                  <details className="rank-more-details">
+                  <summary>
+                    <span>
+                      <strong>More rankings</strong>
+                      <small>
+                        Designers, publishers, mechanics and categories
+                      </small>
+                    </span>
+
+                    <span
+                      className="rank-more-chevron"
+                      aria-hidden="true"
+                    >
+                      +
+                    </span>
+                  </summary>
+
+                  <div className="rank-summary-grid">
+                    {([
+                      ["Designers", rankingSummary.designers],
+                      ["Publishers", rankingSummary.publishers],
+                      ["Mechanics", rankingSummary.mechanics],
+                      ["Categories", rankingSummary.categories],
+                    ] as const).map(([label, items]) => (
+                      <article
+                        className="rank-summary-card"
+                        key={label}
+                      >
+                        <p className="insight-label">
+                          Top {label}
+                        </p>
+
+                        {items.length > 0 ? (
+                          <ol>
+                            {items.map((item) => (
+                              <li key={item.name}>
+                                <span>{item.name}</span>
+                                <strong>{item.count}</strong>
+                              </li>
+                            ))}
+                          </ol>
+                        ) : (
+                          <p className="insight-empty">
+                            Sync your collection to add this metadata.
+                          </p>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                </details>
+
                   <ol className="rank-insight-game-list">
                     {rankedGames
                       .slice(0, rankSummaryLimit)
@@ -661,57 +708,6 @@ function InsightsView({
                     </p>
                   )}
                 </section>
-
-                <details className="rank-more-details">
-                  <summary>
-                    <span>
-                      <strong>More rankings</strong>
-                      <small>
-                        Designers, publishers, mechanics and categories
-                      </small>
-                    </span>
-
-                    <span
-                      className="rank-more-chevron"
-                      aria-hidden="true"
-                    >
-                      +
-                    </span>
-                  </summary>
-
-                  <div className="rank-summary-grid">
-                    {([
-                      ["Designers", rankingSummary.designers],
-                      ["Publishers", rankingSummary.publishers],
-                      ["Mechanics", rankingSummary.mechanics],
-                      ["Categories", rankingSummary.categories],
-                    ] as const).map(([label, items]) => (
-                      <article
-                        className="rank-summary-card"
-                        key={label}
-                      >
-                        <p className="insight-label">
-                          Top {label}
-                        </p>
-
-                        {items.length > 0 ? (
-                          <ol>
-                            {items.map((item) => (
-                              <li key={item.name}>
-                                <span>{item.name}</span>
-                                <strong>{item.count}</strong>
-                              </li>
-                            ))}
-                          </ol>
-                        ) : (
-                          <p className="insight-empty">
-                            Sync your collection to add this metadata.
-                          </p>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-                </details>
               </>
             )
             : (

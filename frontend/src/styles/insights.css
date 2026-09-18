@@ -1021,14 +1021,14 @@
 .rank-insight-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .rank-insight-hero {
   display: grid;
-  gap: 14px;
+  gap: 10px;
   margin: 0;
-  padding: 16px;
+  padding: 12px 14px;
   background: rgba(196, 217, 185, 0.055);
   border: 1px solid var(--sp-line);
   border-radius: 14px;
@@ -1043,11 +1043,10 @@
 }
 
 .rank-insight-hero h2 {
-  font-size: 21px;
+  font-size: 20px;
   line-height: 1.15;
 }
 
-.rank-insight-hero > div > p:last-child,
 .rank-insight-empty > p {
   margin: 7px 0 0;
   color: var(--sp-secondary);
@@ -1247,7 +1246,7 @@
 }
 
 .rank-more-details {
-  margin: 0;
+  margin: 10px 0 0;
   padding: 0;
   background: transparent;
   border: 0;
@@ -1258,8 +1257,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 54px;
-  padding: 12px 2px;
+  min-height: 48px;
+  padding: 9px 2px;
   color: var(--sp-text);
   border-top: 1px solid var(--sp-line);
   border-bottom: 1px solid var(--sp-line);
