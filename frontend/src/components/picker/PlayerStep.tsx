@@ -1,11 +1,13 @@
+import type { PickerComplexityBand } from "../../api/client"
+
 type Props = {
   players: number | null
   selectedPlayerIds: number[]
-  maxComplexity: number | null
+  complexityBand: PickerComplexityBand | null
   onSelectCount:
     (players: number | null) => void
   onComplexityChange:
-    (value: number | null) => void
+    (value: PickerComplexityBand | null) => void
   onChoosePlayers: () => void
   onContinue: () => void
 }
@@ -21,22 +23,25 @@ const playerOptions = [
 ]
 
 
-const complexityOptions = [
+const complexityOptions: Array<{
+  label: string
+  value: PickerComplexityBand | null
+}> = [
   {
     label: "Any",
     value: null,
   },
   {
     label: "Light",
-    value: 2,
+    value: "light",
   },
   {
     label: "Medium",
-    value: 3,
+    value: "medium",
   },
   {
     label: "Heavy",
-    value: 4,
+    value: "heavy",
   },
 ]
 
@@ -44,7 +49,7 @@ const complexityOptions = [
 function PlayerStep({
   players,
   selectedPlayerIds,
-  maxComplexity,
+  complexityBand,
   onSelectCount,
   onComplexityChange,
   onChoosePlayers,
@@ -161,7 +166,7 @@ function PlayerStep({
           {complexityOptions.map(
             (option) => {
               const selected =
-                maxComplexity === option.value
+                complexityBand === option.value
 
               return (
                 <button

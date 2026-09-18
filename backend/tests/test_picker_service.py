@@ -1178,3 +1178,60 @@ def test_try_another_pool_never_contains_rejected_game():
         match.game.bgg_id
         for match in matches
     ] == [1]
+
+
+
+def test_complexity_bands_match_display_labels():
+    games = [
+        Game(bgg_id=101, name="Light Game", min_players=2, max_players=4, max_play_time=60, complexity=2.0, owned=True),
+        Game(bgg_id=102, name="Medium Game", min_players=2, max_players=4, max_play_time=60, complexity=2.7, owned=True),
+        Game(bgg_id=103, name="Heavy Game", min_players=2, max_players=4, max_play_time=60, complexity=3.6, owned=True),
+    ]
+
+    service = PickerService()
+
+    light = service.find_matches(games, PickerCriteria(players=2, complexity_band="light"))
+    medium = service.find_matches(games, PickerCriteria(players=2, complexity_band="medium"))
+    heavy = service.find_matches(games, PickerCriteria(players=2, complexity_band="heavy"))
+
+    assert [game.bgg_id for game in light] == [101]
+    assert [game.bgg_id for game in medium] == [102]
+    assert [game.bgg_id for game in heavy] == [103]
+
+
+def test_explicit_complexity_band_excludes_unknown_complexity():
+    game = Game(
+        bgg_id=104,
+        name="Unknown Complexity",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=None,
+        owned=True,
+    )
+
+    matches = PickerService().find_matches(
+        [game],
+        PickerCriteria(players=2, complexity_band="heavy"),
+    )
+
+    assert matches == []
+
+
+def test_heavy_complexity_does_not_return_medium_game():
+    medium_game = Game(
+        bgg_id=105,
+        name="Boss Monster Example",
+        min_players=2,
+        max_players=4,
+        max_play_time=60,
+        complexity=2.7,
+        owned=True,
+    )
+
+    matches = PickerService().find_matches(
+        [medium_game],
+        PickerCriteria(players=3, complexity_band="heavy"),
+    )
+
+    assert matches == []

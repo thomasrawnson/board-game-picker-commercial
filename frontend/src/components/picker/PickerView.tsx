@@ -5,6 +5,7 @@ import {
   getPickerOptions,
   recordPickerEvent,
   type PickerMatch,
+  type PickerComplexityBand,
   type PickerMode,
   type PickerNoMatchGuidance,
   type PickerPlayStyle,
@@ -49,7 +50,8 @@ function PickerView({ onViewGame }: Props) {
 
   const [maxPlayTime, setMaxPlayTime] = useState<number | null>(null);
 
-  const [maxComplexity, setMaxComplexity] = useState<number | null>(null);
+  const [complexityBand, setComplexityBand] =
+    useState<PickerComplexityBand | null>(null);
 
   const [youngestPlayerAge, setYoungestPlayerAge] = useState<number | null>(
     null,
@@ -156,7 +158,7 @@ function PickerView({ onViewGame }: Props) {
 
   async function loadMatches(
     nextMaxPlayTime = maxPlayTime,
-    nextMaxComplexity = maxComplexity,
+    nextComplexityBand = complexityBand,
     nextYoungestPlayerAge = youngestPlayerAge,
     nextPlayStyle = playStyle,
   ) {
@@ -179,7 +181,7 @@ function PickerView({ onViewGame }: Props) {
         maxPlayTime:
           nextMaxPlayTime === 0 ? undefined : (nextMaxPlayTime ?? undefined),
 
-        maxComplexity: nextMaxComplexity ?? undefined,
+        complexityBand: nextComplexityBand ?? undefined,
 
         youngestPlayerAge: nextYoungestPlayerAge ?? undefined,
 
@@ -226,11 +228,11 @@ function PickerView({ onViewGame }: Props) {
   function relaxTime() {
     setMaxPlayTime(null);
 
-    void loadMatches(null, maxComplexity);
+    void loadMatches(null, complexityBand);
   }
 
   function relaxComplexity() {
-    setMaxComplexity(null);
+    setComplexityBand(null);
 
     setYoungestPlayerAge(null);
 
@@ -242,7 +244,7 @@ function PickerView({ onViewGame }: Props) {
   function relaxTimeAndComplexity() {
     setMaxPlayTime(null);
 
-    setMaxComplexity(null);
+    setComplexityBand(null);
 
     setYoungestPlayerAge(null);
 
@@ -288,7 +290,7 @@ function PickerView({ onViewGame }: Props) {
 
     setMaxPlayTime(null);
 
-    setMaxComplexity(null);
+    setComplexityBand(null);
 
     setYoungestPlayerAge(null);
 
@@ -355,9 +357,9 @@ function PickerView({ onViewGame }: Props) {
         <PlayerStep
           players={players}
           selectedPlayerIds={selectedPlayerIds}
-          maxComplexity={maxComplexity}
+          complexityBand={complexityBand}
           onSelectCount={chooseGroupSize}
-          onComplexityChange={setMaxComplexity}
+          onComplexityChange={setComplexityBand}
           onChoosePlayers={() => setStep("player_selection")}
           onContinue={() => setStep("time")}
         />
@@ -427,7 +429,7 @@ function PickerView({ onViewGame }: Props) {
           playerCount={players}
           guidance={noMatchGuidance}
           hasTimeLimit={maxPlayTime !== null && maxPlayTime !== 0}
-          hasComplexityLimit={maxComplexity !== null}
+          hasComplexityLimit={complexityBand !== null}
           loading={loading}
           error={error}
           onRelaxTime={relaxTime}

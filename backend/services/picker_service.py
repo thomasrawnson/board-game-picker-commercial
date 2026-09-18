@@ -29,6 +29,7 @@ PLAYER_COUNT_MIXED_FIT_PENALTY = -15
 class PickerCriteria:
     players: int
     max_play_time: int | None = None
+    complexity_band: str | None = None
     max_complexity: float | None = None
     youngest_player_age: int | None = None
     play_style: str = "any"
@@ -96,12 +97,16 @@ class PickerService:
         )
 
         can_relax_complexity = (
-            criteria.max_complexity is not None
+            (
+                criteria.complexity_band is not None
+                or criteria.max_complexity is not None
+            )
             and bool(
                 self.find_matches(
                     games,
                     replace(
                         criteria,
+                        complexity_band=None,
                         max_complexity=None,
                     ),
                 )
@@ -110,13 +115,17 @@ class PickerService:
 
         can_relax_both = (
             criteria.max_play_time is not None
-            and criteria.max_complexity is not None
+            and (
+                criteria.complexity_band is not None
+                or criteria.max_complexity is not None
+            )
             and bool(
                 self.find_matches(
                     games,
                     replace(
                         criteria,
                         max_play_time=None,
+                        complexity_band=None,
                         max_complexity=None,
                     ),
                 )
@@ -168,6 +177,7 @@ class PickerService:
 
             if not self._fits_complexity(
                 game,
+                criteria.complexity_band,
                 criteria.max_complexity,
             ):
                 continue
@@ -294,6 +304,7 @@ class PickerService:
             complexity_reason,
         ) = self._score_complexity(
             game,
+            criteria.complexity_band,
             criteria.max_complexity,
         )
 
@@ -514,11 +525,27 @@ class PickerService:
     @staticmethod
     def _score_complexity(
         game: Game,
+        complexity_band: str | None,
         max_complexity: float | None,
     ) -> tuple[
         int,
         str | None,
     ]:
+        if complexity_band is not None:
+            if game.complexity is None:
+                return 0, None
+
+            label = complexity_band.capitalize()
+
+            return (
+                15,
+                (
+                    f"{label} complexity "
+                    f"({game.complexity:.1f}) "
+                    "fits preference"
+                ),
+            )
+
         if max_complexity is None:
             return 15, None
 
@@ -891,8 +918,27 @@ class PickerService:
     @staticmethod
     def _fits_complexity(
         game: Game,
+        complexity_band: str | None,
         max_complexity: float | None,
     ) -> bool:
+        if complexity_band is not None:
+            if game.complexity is None:
+                return False
+
+            if complexity_band == "light":
+                return game.complexity <= 2.0
+
+            if complexity_band == "medium":
+                return (
+                    2.0 < game.complexity <= 3.0
+                )
+
+            if complexity_band == "heavy":
+                return game.complexity > 3.0
+
+            return False
+
+        # Legacy max-complexity support for older clients and tests.
         if max_complexity is None:
             return True
 

@@ -101,11 +101,17 @@ export type PickerPlayStyle =
   | "cooperative"
   | "competitive"
 
+export type PickerComplexityBand =
+  | "light"
+  | "medium"
+  | "heavy"
+
 
 export interface PickerCriteria {
   players: number
   playerIds?: number[]
   maxPlayTime?: number
+  complexityBand?: PickerComplexityBand
   maxComplexity?: number
   youngestPlayerAge?: number
   playStyle?: PickerPlayStyle
@@ -549,6 +555,13 @@ export async function getPickerMatches(
       criteria.mood.trim(),
     )
   }
+  if (criteria.complexityBand) {
+    params.set(
+      "complexity_band",
+      criteria.complexityBand,
+    )
+  }
+
   if (
     criteria.maxComplexity !==
     undefined
