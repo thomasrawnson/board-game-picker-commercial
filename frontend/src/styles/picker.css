@@ -89,7 +89,7 @@
 .player-chip span {
   color: rgba(243, 234, 216, 0.43);
 
-  font-size: 10px;
+  font-size: var(--text-support);
 
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -161,7 +161,7 @@
 .time-option span {
   color: rgba(243, 234, 216, 0.42);
 
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .time-option.selected {
@@ -334,7 +334,7 @@
 
   color: var(--gold);
 
-  font-size: 8px;
+  font-size: var(--text-meta);
   font-weight: 600;
 
   letter-spacing: 0.07em;
@@ -366,7 +366,7 @@
 
   color: var(--ink-soft);
 
-  font-size: 11px;
+  font-size: var(--text-meta);
 }
 
 /* Recommendation explanation */
@@ -384,7 +384,7 @@
 
   color: rgba(243, 234, 216, 0.66);
 
-  font-size: 12px;
+  font-size: var(--text-support);
 }
 
 .result-count {
@@ -392,7 +392,7 @@
 
   color: var(--gold);
 
-  font-size: 11px;
+  font-size: var(--text-meta);
   font-weight: 600;
 
   letter-spacing: 0.08em;
@@ -426,7 +426,7 @@
 .preference-label {
   margin: 0 0 10px;
   color: var(--gold);
-  font-size: 11px;
+  font-size: var(--text-support);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -444,7 +444,7 @@
   background: rgba(243, 234, 216, 0.05);
   border: 1px solid var(--line);
   border-radius: 999px;
-  font-size: 12px;
+  font-size: var(--text-support);
   cursor: pointer;
 }
 
@@ -504,7 +504,7 @@
 
 .advanced-filters summary small {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 400;
 }
 
@@ -570,11 +570,11 @@
 
 .picker-mode-option strong {
   color: var(--cream);
-  font-size: 13px;
+  font-size: var(--text-support);
 }
 
 .picker-mode-option span {
-  font-size: 10px;
+  font-size: var(--text-support);
   color: var(--text-muted);
 }
 
@@ -607,11 +607,11 @@
 
 .complexity-option strong {
   color: var(--cream);
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .complexity-option span {
-  font-size: 9px;
+  font-size: var(--text-support);
   color: var(--text-muted);
 }
 
@@ -628,7 +628,7 @@
 .picker-result-mode {
   margin: 0 0 10px;
   color: var(--gold);
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -637,7 +637,7 @@
 .picker-exhausted {
   margin: 10px 0 0;
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: var(--text-support);
   text-align: center;
 }
 
@@ -694,7 +694,7 @@
   margin-bottom: 5px;
 
   color: var(--cream);
-  font-size: 13px;
+  font-size: var(--text-support);
 }
 
 .picker-trust-note p,
@@ -703,7 +703,7 @@
 
   color: var(--text-muted);
 
-  font-size: 11px;
+  font-size: var(--text-support);
   line-height: 1.55;
 }
 
@@ -764,7 +764,7 @@
 
   color: var(--gold);
 
-  font-size: 11px;
+  font-size: var(--text-support);
   font-weight: 600;
 
   text-align: center;
@@ -794,7 +794,7 @@
 
   color: var(--text-muted);
 
-  font-size: 10px;
+  font-size: var(--text-overline);
 
   text-align: center;
 
@@ -836,7 +836,7 @@
 .player-picker-trigger-copy strong {
   color: var(--text-primary);
 
-  font-size: 13px;
+  font-size: var(--text-support);
   font-weight: 600;
 }
 
@@ -845,7 +845,7 @@
 
   color: var(--text-muted);
 
-  font-size: 11px;
+  font-size: var(--text-support);
 
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -918,7 +918,7 @@
 
   color: var(--text-muted);
 
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .player-picker-close {
@@ -958,10 +958,10 @@
 
   border-radius: 13px;
 
-  outline: none;
+  outline-color: var(--sp-gold);
 
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-support);
 }
 
 .player-picker-search::placeholder {
@@ -1012,7 +1012,7 @@
 .player-picker-row-name {
   overflow: hidden;
 
-  font-size: 13px;
+  font-size: var(--text-support);
   font-weight: 500;
 
   text-overflow: ellipsis;
@@ -1034,7 +1034,7 @@
 
   color: transparent;
 
-  font-size: 11px;
+  font-size: var(--text-meta);
   font-weight: 700;
 }
 
@@ -1049,7 +1049,7 @@
 
   color: var(--text-muted);
 
-  font-size: 12px;
+  font-size: var(--text-support);
   text-align: center;
 }
 
@@ -1068,7 +1068,7 @@
 .player-picker-footer > span {
   color: var(--text-muted);
 
-  font-size: 10px;
+  font-size: var(--text-support);
 }
 
 .player-picker-done {
@@ -1092,10 +1092,10 @@
 
   border-radius: 13px;
 
-  outline: none;
+  outline-color: var(--sp-gold);
 
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-support);
   line-height: 1.45;
 }
 
@@ -1112,7 +1112,7 @@
 
   color: var(--text-muted);
 
-  font-size: 10px;
+  font-size: var(--text-support);
   line-height: 1.4;
 }
 
@@ -1136,7 +1136,7 @@
 
   color: var(--gold);
 
-  font-size: 9px;
+  font-size: var(--text-support);
   font-weight: 700;
 
   letter-spacing: 0.08em;
@@ -1148,7 +1148,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 12px;
+  font-size: var(--text-support);
   line-height: 1.45;
 }
 
@@ -1219,7 +1219,7 @@
 .picker-navigation-card strong {
   color: var(--text-primary);
 
-  font-size: 13px;
+  font-size: var(--text-support);
 }
 
 .picker-navigation-card small {
@@ -1227,7 +1227,7 @@
 
   color: var(--text-muted);
 
-  font-size: 11px;
+  font-size: var(--text-support);
 
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1286,7 +1286,7 @@
   border-bottom: 1px solid rgba(243, 234, 216, 0.07);
 
   font: inherit;
-  font-size: 13px;
+  font-size: var(--text-support);
   text-align: left;
 
   cursor: pointer;
@@ -1311,7 +1311,7 @@
 
   color: transparent;
 
-  font-size: 11px;
+  font-size: var(--text-meta);
   font-weight: 700;
 }
 
@@ -1326,7 +1326,7 @@
 
   color: var(--text-muted);
 
-  font-size: 12px;
+  font-size: var(--text-support);
   text-align: center;
 }
 
@@ -1343,7 +1343,7 @@
 
   color: var(--text-muted);
 
-  font-size: 11px;
+  font-size: var(--text-support);
   text-align: center;
 }
 
@@ -1362,7 +1362,7 @@
   border: 0;
 
   font: inherit;
-  font-size: 11px;
+  font-size: var(--text-support);
 
   cursor: pointer;
 }
@@ -1421,7 +1421,7 @@
 
   color: var(--shelfpick-green, #8dbe98);
 
-  font-size: 13px;
+  font-size: var(--text-support);
   font-weight: 500;
 
   letter-spacing: 0.02em;
@@ -1539,7 +1539,7 @@
 
   color: var(--shelfpick-green-soft, #a4cbaa);
 
-  font-size: 13px;
+  font-size: var(--text-meta);
   line-height: 1.45;
 }
 
@@ -1576,7 +1576,7 @@
 
   color: #d4e8d9;
 
-  font-size: 11.5px;
+  font-size: var(--text-support);
   font-weight: 600;
 
   line-height: 1.1;
@@ -1599,7 +1599,7 @@
 
   color: #cfe0d3;
 
-  font-size: 12px;
+  font-size: var(--text-support);
 
   line-height: 1.45;
 }
@@ -1611,7 +1611,7 @@
 
   color: var(--shelfpick-green, #8dbe98);
 
-  font-size: 10px;
+  font-size: var(--text-overline);
 
   font-weight: 700;
 
@@ -1676,7 +1676,7 @@
 }
 
 .picker-secondary-button {
-  min-height: 42px;
+  min-height: var(--target-min);
 
   padding: 9px 10px;
 
@@ -1688,7 +1688,7 @@
 
   color: #e4efe6;
 
-  font-size: 12.5px;
+  font-size: var(--text-support);
 
   font-weight: 700;
 
@@ -1712,7 +1712,7 @@
 
   color: var(--shelfpick-green-soft);
 
-  font-size: 12px;
+  font-size: var(--text-support);
 }
 
 /* =========================================
@@ -1732,7 +1732,7 @@
 .picker-result-count {
   color: var(--shelfpick-green, #8dbe98);
 
-  font-size: 12.5px;
+  font-size: var(--text-meta);
 }
 
 .picker-try-another {
@@ -1744,7 +1744,7 @@
 
   color: var(--shelfpick-gold, #e1ad3d);
 
-  font-size: 12.5px;
+  font-size: var(--text-support);
   font-weight: 700;
 
   cursor: pointer;
@@ -1771,7 +1771,7 @@
 
   color: #809487;
 
-  font-size: 11.5px;
+  font-size: var(--text-support);
 
   line-height: 1.4;
 }
@@ -1793,7 +1793,7 @@
 
   color: #778d7e;
 
-  font-size: 11.5px;
+  font-size: var(--text-support);
 
   cursor: pointer;
 }
@@ -1827,7 +1827,7 @@
 
     right: -7px;
 
-    font-size: 13px;
+    font-size: var(--text-meta);
   }
 }
 
@@ -1871,7 +1871,7 @@
 .player-complexity-section .preference-label {
   margin-bottom: 8px !important;
   color: var(--sp-secondary) !important;
-  font-size: 12px !important;
+  font-size: var(--text-support) !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
 }
@@ -1882,12 +1882,12 @@
 }
 
 .player-complexity-section .complexity-option {
-  min-height: 40px;
+  min-height: var(--target-min);
   padding: 7px 4px;
 }
 
 .player-complexity-section .complexity-option strong {
-  font-size: 10px;
+  font-size: var(--text-support);
 }
 
 @media (max-width: 360px) {
@@ -2001,7 +2001,7 @@
 
 .time-tile span {
   color: var(--sp-muted);
-  font-size: 11px;
+  font-size: var(--text-meta);
 }
 
 .time-step-screen .picker-step-actions {
@@ -2018,24 +2018,24 @@
 }
 
 .fine-tune-screen .ghost-button {
-  min-height: 38px;
+  min-height: var(--target-min);
   margin-top: 6px;
   border-color: transparent;
 }
 
 /* Settings uses a meeple so it cannot be confused with Pick. */
-.meeple-icon {
+.settings-icon {
   width: 18px;
   height: 18px;
   transform-origin: center;
   transition: transform 160ms ease;
 }
 
-.dice-menu-button:hover .meeple-icon {
+.dice-menu-button:hover .settings-icon {
   transform: scale(1.08);
 }
 
-.dice-menu-button:active .meeple-icon {
+.dice-menu-button:active .settings-icon {
   transform: scale(0.94);
 }
 
@@ -2067,7 +2067,7 @@
 .picker-match-score small,
 .picker-match-score span:last-child {
   margin-top: 1px;
-  font-size: 7px;
+  font-size: var(--text-meta);
   font-weight: 800;
   letter-spacing: 0.02em;
 }
@@ -2085,7 +2085,7 @@
 .picker-roll-stage p {
   margin: 0;
   color: var(--sp-secondary);
-  font-size: 13px;
+  font-size: var(--text-support);
   font-weight: 700;
 }
 
@@ -2149,7 +2149,7 @@
 .picker-swipe-hint {
   margin: 10px 0 0;
   color: var(--sp-muted);
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 700;
   text-align: center;
 }
@@ -2242,7 +2242,7 @@
 
 .picker-match-score span {
   margin-top: -1px;
-  font-size: 7px;
+  font-size: var(--text-meta);
   font-weight: 800;
   letter-spacing: 0.01em;
   text-transform: uppercase;
@@ -2336,7 +2336,7 @@
 .picker-match-score span {
   margin: 0;
   padding: 0;
-  font-size: 6.5px;
+  font-size: var(--text-meta);
   font-weight: 900;
   line-height: 0.8;
   letter-spacing: 0.015em;
@@ -2377,7 +2377,7 @@
 
 /* One clear primary, one outlined secondary, then tertiary text. */
 .picker-result-links .try-another-link {
-  min-height: 38px;
+  min-height: var(--target-min);
   padding: 8px 13px;
   color: var(--sp-text);
   background: transparent;
@@ -2423,16 +2423,16 @@
    Reveal & top-controls refinement v5
    ========================================================= */
 
-/* Bigger, more playful settings meeple. */
+/* Settings target and icon. */
 .dice-menu-button {
-  width: 42px;
-  height: 42px;
+  width: var(--target-min);
+  height: var(--target-min);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
-.meeple-icon {
+.settings-icon {
   width: 24px;
   height: 24px;
   transform-origin: center;
@@ -2441,12 +2441,12 @@
     filter 170ms ease;
 }
 
-.dice-menu-button:hover .meeple-icon {
+.dice-menu-button:hover .settings-icon {
   transform: translateY(-1px) scale(1.06);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.16));
 }
 
-.dice-menu-button:active .meeple-icon {
+.dice-menu-button:active .settings-icon {
   transform: translateY(2px) scale(0.94);
 }
 
@@ -2496,7 +2496,7 @@
 .picker-result-counter {
   margin: 14px 0 0;
   color: rgba(241, 236, 224, 0.76) !important;
-  font-size: 12px;
+  font-size: var(--text-meta);
   font-weight: 700;
   text-align: center;
 }
@@ -2562,7 +2562,7 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
-.meeple-icon {
+.settings-icon {
   width: 22px;
   height: 22px;
 }
@@ -2572,17 +2572,17 @@
   border-color: rgba(217, 226, 212, 0.4);
 }
 
-.dice-menu-button:hover .meeple-icon {
+.dice-menu-button:hover .settings-icon {
   transform: translateY(-1px) scale(1.05);
 }
 
-.dice-menu-button:active .meeple-icon {
+.dice-menu-button:active .settings-icon {
   transform: translateY(2px) scale(0.94);
 }
 
 /* Match the vertical position of the share control to Settings. */
 .picker-share-icon-button {
-  top: -60px;
+  top: -52px;
   right: 0;
   width: 40px;
   height: 40px;
@@ -2634,7 +2634,7 @@
   box-sizing: border-box;
   border-radius: 12px;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 800;
 }
 
@@ -2667,7 +2667,7 @@
 
 @media (max-width: 420px) {
   .picker-share-icon-button {
-    top: -58px;
+    top: -50px;
     right: 0;
   }
 
@@ -2694,7 +2694,7 @@
 .picker-hero-link .picker-result-counter {
   margin: 14px 0 0;
   color: rgba(241, 236, 224, 0.82) !important;
-  font-size: 12px;
+  font-size: var(--text-meta);
   font-weight: 750;
   text-align: center;
 }
@@ -2762,7 +2762,7 @@
 .picker-hero-link .picker-result-counter {
   margin: 16px 0 0;
   color: rgba(241, 236, 224, 0.76) !important;
-  font-size: 11.5px;
+  font-size: var(--text-meta);
   font-weight: 700;
 }
 

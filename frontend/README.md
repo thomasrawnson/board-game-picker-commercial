@@ -1,6 +1,6 @@
-# Board Game Picker Frontend
+# ShelfPick Frontend
 
-React and TypeScript frontend for Board Game Picker.
+React and TypeScript frontend for ShelfPick.
 
 The interface is designed as a mobile-first game-night experience and currently includes:
 

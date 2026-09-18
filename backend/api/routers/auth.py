@@ -67,7 +67,7 @@ def verification_email_html(
     )
 
     return f"""
-    <h2>Verify your BoardGamePicker email</h2>
+    <h2>Verify your ShelfPick email</h2>
     <p>
         Thanks for creating an account.
     </p>
@@ -91,7 +91,7 @@ def password_reset_email_html(
     )
 
     return f"""
-    <h2>Reset your BoardGamePicker password</h2>
+    <h2>Reset your ShelfPick password</h2>
     <p>
         We received a request to reset
         your password.
@@ -212,7 +212,7 @@ def register(
             to_email=user.email,
             subject=(
                 "Verify your "
-                "BoardGamePicker email"
+                "ShelfPick email"
             ),
             html=(
                 verification_email_html(
@@ -411,7 +411,7 @@ def request_verification(
             to_email=current_user.email,
             subject=(
                 "Verify your "
-                "BoardGamePicker email"
+                "ShelfPick email"
             ),
             html=(
                 verification_email_html(
@@ -557,7 +557,7 @@ def request_password_reset(
                 to_email=user.email,
                 subject=(
                     "Reset your "
-                    "BoardGamePicker "
+                    "ShelfPick "
                     "password"
                 ),
                 html=(

@@ -11,7 +11,7 @@
 
 .discover-wishlist-link {
   width: auto;
-  min-height: 36px;
+  min-height: var(--target-min);
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -22,7 +22,7 @@
   background: transparent;
   border: 0;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 700;
   cursor: pointer;
 }
@@ -53,8 +53,8 @@
   top: 12px;
   right: 12px;
   z-index: 2;
-  width: 34px;
-  height: 34px;
+  width: var(--target-min);
+  height: var(--target-min);
   display: inline-grid;
   place-items: center;
   padding: 0;
@@ -129,7 +129,7 @@
   color: #21190a;
   background: var(--sp-gold);
   border-radius: 999px;
-  font-size: 9px;
+  font-size: var(--text-meta);
   font-weight: 900;
   line-height: 1;
   white-space: nowrap;
@@ -137,7 +137,7 @@
 
 .discover-copy {
   min-width: 0;
-  padding-right: 28px;
+  padding-right: 44px;
 }
 
 .discover-card h2 {
@@ -150,14 +150,14 @@
 .discover-meta {
   margin: 6px 0 0;
   color: var(--sp-muted);
-  font-size: 11px;
+  font-size: var(--text-meta);
   line-height: 1.4;
 }
 
 .discover-reason-details {
   margin-top: 9px;
   color: var(--sp-green);
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .discover-reason-details summary {
@@ -189,7 +189,7 @@
 }
 
 .discover-reasons li {
-  font-size: 11px;
+  font-size: var(--text-support);
   line-height: 1.4;
 }
 
@@ -203,7 +203,7 @@
 
 .discover-bgg-link,
 .discover-dismiss-button {
-  font-size: 11px;
+  font-size: var(--text-support);
   font-weight: 700;
   text-decoration: none;
 }
@@ -250,7 +250,7 @@
 .discover-empty p {
   margin: 7px 0 0;
   color: var(--sp-secondary);
-  font-size: 12px;
+  font-size: var(--text-support);
   line-height: 1.45;
 }
 
@@ -277,14 +277,14 @@
   color: #21190a;
   background: var(--sp-gold);
   border-radius: 999px;
-  font-size: 9px;
+  font-size: var(--text-meta);
   font-weight: 900;
   line-height: 1;
   white-space: nowrap;
 }
 
   .discover-copy {
-    padding-right: 24px;
+    padding-right: 44px;
   }
 
   .discover-card h2 {

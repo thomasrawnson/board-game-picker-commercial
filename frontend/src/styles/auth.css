@@ -56,7 +56,7 @@
   border: 0;
   border-radius: 9px;
 
-  font-size: 11px;
+  font-size: var(--text-support);
   font-weight: 700;
 
   letter-spacing: 0.06em;
@@ -86,7 +86,7 @@
   color:
     var(--text-secondary);
 
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 700;
 
   letter-spacing: 0.06em;
@@ -115,11 +115,12 @@
   border-radius: 10px;
 
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--text-body);
 }
 
 .auth-form input:focus {
-  outline: none;
+  outline: 2px solid var(--sp-gold);
+  outline-offset: 3px;
 
   border-color:
     rgba(
@@ -145,7 +146,7 @@
   color:
     var(--text-secondary);
 
-  font-size: 10px;
+  font-size: var(--text-support);
 }
 
 .auth-submit {
@@ -191,7 +192,7 @@
   color:
     var(--text-secondary);
 
-  font-size: 9px;
+  font-size: var(--text-overline);
   font-weight: 700;
 
   letter-spacing: 0.06em;
@@ -202,7 +203,7 @@
   color:
     var(--text-primary);
 
-  font-size: 13px;
+  font-size: var(--text-support);
 }
 
 .account-panel span {
@@ -213,7 +214,7 @@
   color:
     var(--text-secondary);
 
-  font-size: 10px;
+  font-size: var(--text-meta);
 
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -234,7 +235,7 @@
 
   border-radius: 9px;
 
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 700;
 
   cursor: pointer;
@@ -264,7 +265,7 @@
   border: 0;
 
   font-family: inherit;
-  font-size: 11px;
+  font-size: var(--text-support);
   font-weight: 700;
 
   cursor: pointer;

@@ -19,7 +19,7 @@
 
   border-radius: 999px;
 
-  font-size: 9px;
+  font-size: var(--text-overline);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -68,7 +68,7 @@
 
   color: var(--gold);
 
-  font-size: 10px;
+  font-size: var(--text-overline);
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -110,7 +110,7 @@
   border: 1px solid rgba(201, 162, 39, 0.25);
   border-radius: 50%;
 
-  font-size: 11px;
+  font-size: var(--text-support);
   font-weight: 700;
 }
 
@@ -132,7 +132,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 11px;
+  font-size: var(--text-support);
   line-height: 1.45;
 }
 
@@ -143,7 +143,7 @@
 
   color: rgba(243, 234, 216, 0.48);
 
-  font-size: 11px;
+  font-size: var(--text-support);
   line-height: 1.5;
   text-align: center;
 }
@@ -158,7 +158,7 @@
     padding-right: 3px;
     padding-left: 3px;
 
-    font-size: 9px;
+    font-size: var(--text-support);
     letter-spacing: 0.04em;
   }
 

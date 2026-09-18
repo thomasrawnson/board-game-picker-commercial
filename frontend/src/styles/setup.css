@@ -22,7 +22,7 @@
 
   color: var(--text-muted);
 
-  font-size: 10px;
+  font-size: var(--text-overline);
   font-weight: 700;
 
   letter-spacing: 0.1em;
@@ -60,7 +60,7 @@
 
   border-radius: 50%;
 
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 700;
 }
 
@@ -78,7 +78,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 12px;
+  font-size: var(--text-support);
   line-height: 1.4;
 }
 
@@ -88,7 +88,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 700;
 
   letter-spacing: 0.06em;
@@ -112,7 +112,7 @@
 }
 
 .setup-input:focus {
-  outline: none;
+  outline-color: var(--sp-gold);
 
   border-color: rgba(201, 162, 39, 0.7);
 
@@ -140,13 +140,13 @@
 .setup-success strong {
   color: var(--gold);
 
-  font-size: 12px;
+  font-size: var(--text-support);
 }
 
 .setup-success span {
   color: var(--text-secondary);
 
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 /* File picker: a styled label stands in for the native
@@ -181,13 +181,13 @@
 .file-picker strong {
   color: var(--text-primary);
 
-  font-size: 13px;
+  font-size: var(--text-support);
 }
 
 .file-picker span {
   color: var(--text-muted);
 
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .file-input {

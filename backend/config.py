@@ -101,7 +101,7 @@ def get_settings() -> Settings:
 
     email_from = os.getenv(
         "EMAIL_FROM",
-        "BoardGamePicker <onboarding@resend.dev>",
+        "ShelfPick <onboarding@resend.dev>",
     ).strip()
 
     if not database_url:

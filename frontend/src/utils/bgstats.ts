@@ -125,7 +125,7 @@ export function createBGStatsPlayUrl(
   const payload:
     BGStatsPlayData = {
     sourceName:
-      "Board Game Picker",
+      "ShelfPick",
 
     sourcePlayId:
       `play:${play.id}`,

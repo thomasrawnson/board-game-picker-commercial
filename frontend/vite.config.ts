@@ -20,10 +20,10 @@ export default defineConfig({
 
       manifest: {
         name:
-          "Board Game Picker",
+          "ShelfPick",
 
         short_name:
-          "Game Picker",
+          "ShelfPick",
 
         description:
           "Pick the right board game for game night.",

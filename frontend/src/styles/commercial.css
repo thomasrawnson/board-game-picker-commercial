@@ -12,7 +12,7 @@
   max-width: 430px;
   min-height: 100dvh;
   max-height: 100dvh;
-  padding: 0 20px calc(86px + env(safe-area-inset-bottom));
+  padding: 0 20px calc(122px + env(safe-area-inset-bottom));
   background: var(--sp-bg);
   border: 0;
   border-radius: 0;
@@ -37,7 +37,7 @@
 .eyebrow {
   margin-bottom: 6px;
   color: var(--sp-green);
-  font-size: 11px;
+  font-size: var(--text-overline);
   letter-spacing: 0.02em;
   text-transform: none;
 }
@@ -143,7 +143,7 @@ h1 {
 .picker-result-mode {
   margin: 0 0 14px;
   color: var(--sp-green);
-  font-size: 12px;
+  font-size: var(--text-support);
   text-align: center;
 }
 
@@ -193,7 +193,7 @@ h1 {
   background: var(--sp-gold);
   border: 3px solid var(--sp-panel);
   border-radius: 50%;
-  font-size: 13px;
+  font-size: var(--text-meta);
   font-weight: 800;
 }
 
@@ -215,7 +215,7 @@ h1 {
   gap: 5px;
   margin-top: 7px;
   color: var(--sp-green);
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .picker-primary-action {
@@ -235,7 +235,7 @@ h1 {
   gap: 12px;
   margin-top: 15px;
   color: var(--sp-muted);
-  font-size: 12px;
+  font-size: var(--text-support);
 }
 
 .picker-result-links {
@@ -250,7 +250,7 @@ h1 {
   color: var(--sp-green);
   background: transparent;
   border: 0;
-  font-size: 12px;
+  font-size: var(--text-support);
   cursor: pointer;
 }
 
@@ -268,7 +268,7 @@ h1 {
 .picker-exhausted {
   margin: 9px 0 0;
   color: var(--sp-muted);
-  font-size: 11px;
+  font-size: var(--text-support);
   text-align: center;
 }
 
@@ -329,10 +329,10 @@ h1 {
 }
 
 .collection-section-tabs button {
-  min-height: 36px;
+  min-height: var(--target-min);
   color: var(--sp-green);
   border-radius: 8px;
-  font-size: 12px;
+  font-size: var(--text-support);
   text-transform: none;
 }
 
@@ -356,7 +356,7 @@ h1 {
 }
 
 .collection-filter-tabs button {
-  min-height: 32px;
+  min-height: var(--target-min);
   padding: 0;
   color: var(--sp-muted);
   background: transparent;
@@ -393,13 +393,13 @@ h1 {
 }
 
 .collection-sort {
-  min-height: 30px;
+  min-height: var(--target-min);
   padding: 4px 28px 4px 8px;
   color: var(--sp-muted);
   background: transparent;
   border: 0;
   border-radius: 6px;
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .collection-list {
@@ -444,12 +444,12 @@ h1 {
 
 .collection-game-info span {
   color: var(--sp-green);
-  font-size: 11px;
+  font-size: var(--text-meta);
 }
 
 .collection-play-count {
   color: var(--sp-gold);
-  font-size: 10px;
+  font-size: var(--text-meta);
   white-space: nowrap;
 }
 
@@ -480,10 +480,10 @@ h1 {
 }
 
 .ranking-view-tabs button {
-  min-height: 36px;
+  min-height: var(--target-min);
   color: var(--sp-green);
   border-radius: 7px;
-  font-size: 11px;
+  font-size: var(--text-support);
   letter-spacing: 0;
   text-transform: none;
 }
@@ -501,7 +501,7 @@ h1 {
   background: transparent;
   border: 0;
   border-radius: 0;
-  font-size: 12px;
+  font-size: var(--text-support);
 }
 
 .ranking-played-filter span {
@@ -546,12 +546,12 @@ h1 {
 
 .ranking-list-copy strong {
   color: var(--sp-text);
-  font-size: 13px;
+  font-size: var(--text-support);
 }
 
 .ranking-list-copy span {
   color: var(--sp-green);
-  font-size: 10px;
+  font-size: var(--text-meta);
 }
 
 .ranking-share-card {
@@ -569,16 +569,16 @@ h1 {
 
 .ranking-share-heading .insight-label {
   margin: 0;
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .ranking-share-button {
-  min-height: 32px;
+  min-height: var(--target-min);
   padding: 6px 10px;
   color: var(--sp-text);
   background: transparent;
   border: 0;
-  font-size: 10px;
+  font-size: var(--text-support);
 }
 
 .ranking-share-controls {
@@ -595,12 +595,12 @@ h1 {
 }
 
 .ranking-share-controls button {
-  min-height: 34px;
+  min-height: var(--target-min);
   color: var(--sp-green);
   background: transparent;
   border: 0;
   border-radius: 7px;
-  font-size: 10px;
+  font-size: var(--text-support);
 }
 
 .ranking-share-controls > div button.active {
@@ -736,7 +736,7 @@ h1 {
 
 .discover-actions .ghost-button {
   width: auto;
-  min-height: 34px;
+  min-height: var(--target-min);
   margin: 0;
   padding: 6px 0;
   color: var(--sp-green);
@@ -780,11 +780,11 @@ h1 {
 }
 
 .stats-section-tab {
-  min-height: 36px;
+  min-height: var(--target-min);
   padding: 7px 4px;
   color: var(--sp-green);
   border-radius: 7px;
-  font-size: 10px;
+  font-size: var(--text-support);
   letter-spacing: 0;
   text-transform: none;
 }
@@ -898,7 +898,7 @@ h3,
 
 .player-chip span {
   margin-top: 2px;
-  font-size: 9px !important;
+  font-size: var(--text-support) !important;
 }
 
 /* Fine-tune: compact choices, one visual level, advanced options tucked away. */
@@ -909,7 +909,7 @@ h3,
 .preference-label {
   margin-bottom: 8px !important;
   color: var(--sp-secondary) !important;
-  font-size: 12px !important;
+  font-size: var(--text-support) !important;
   text-transform: none !important;
   letter-spacing: 0 !important;
 }
@@ -921,13 +921,13 @@ h3,
 }
 
 .picker-mode-list.compact .picker-mode-option {
-  min-height: 42px;
+  min-height: var(--target-min);
   padding: 8px 6px;
   color: var(--sp-green);
   background: rgba(184, 210, 175, 0.055);
   border: 0;
   border-radius: 9px;
-  font-size: 11px;
+  font-size: var(--text-support);
   text-align: center;
 }
 
@@ -944,7 +944,7 @@ h3,
 
 .play-style-grid .preference-chip,
 .complexity-grid .complexity-option {
-  min-height: 40px;
+  min-height: var(--target-min);
   padding: 8px 6px;
   border-color: transparent;
   background: rgba(184, 210, 175, 0.05);
@@ -1077,7 +1077,7 @@ h3,
 .discover-reason-details,
 .picker-reason-details {
   color: var(--sp-green);
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .discover-reason-details summary,
@@ -1170,7 +1170,7 @@ h3,
   }
 
   .picker-mode-list.compact .picker-mode-option {
-    min-height: 38px;
+    min-height: var(--target-min);
   }
 }
 
@@ -1236,7 +1236,7 @@ h3,
 .fine-tune-screen .picker-mode-list.compact .picker-mode-option,
 .fine-tune-screen .play-style-grid .preference-chip,
 .fine-tune-screen .complexity-grid .complexity-option {
-  min-height: 38px;
+  min-height: var(--target-min);
   padding: 7px 5px;
 }
 
@@ -1251,7 +1251,7 @@ h3,
 /* Discover header has an obvious Wishlist action. */
 .discover-wishlist-link {
   width: fit-content;
-  min-height: 36px;
+  min-height: var(--target-min);
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -1262,7 +1262,7 @@ h3,
   border: 0;
   border-radius: 9px;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 700;
   cursor: pointer;
 }
@@ -1275,13 +1275,13 @@ h3,
 .discover-match-score {
   color: var(--sp-text);
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: var(--text-meta);
   font-weight: 800;
 }
 
 .discover-bgg-link {
   color: var(--sp-green);
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 700;
   text-decoration: none;
 }

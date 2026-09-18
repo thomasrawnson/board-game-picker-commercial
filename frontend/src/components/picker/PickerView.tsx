@@ -215,7 +215,7 @@ function PickerView({ onViewGame }: Props) {
     } catch (err) {
       console.error(err);
 
-      setError("Couldn't reach the Board Game Picker API.");
+      setError("Couldn't reach the ShelfPick API.");
     } finally {
       setLoading(false);
     }

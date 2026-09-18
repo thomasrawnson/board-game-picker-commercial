@@ -158,7 +158,7 @@ function DiscoverView({
       setActionError(
         err instanceof Error
           ? err.message
-          : "Couldn't update your Wishlist.",
+          : "Couldn't update Want to Play.",
       )
     } finally {
       setUpdatingIds((current) => {
@@ -194,7 +194,7 @@ function DiscoverView({
           className="discover-wishlist-link"
           onClick={onViewWishlist}
         >
-          Wishlist
+          Want to Play
           <span aria-hidden="true">→</span>
         </button>
       </header>
@@ -256,14 +256,14 @@ function DiscoverView({
                   }
                   aria-label={
                     wishlisted
-                      ? `Remove ${game.name} from Wishlist`
-                      : `Save ${game.name} to Wishlist`
+                      ? `Remove ${game.name} from Want to Play`
+                      : `Save ${game.name} to Want to Play`
                   }
                   aria-pressed={wishlisted}
                   title={
                     wishlisted
-                      ? "Remove from Wishlist"
-                      : "Save to Wishlist"
+                      ? "Remove from Want to Play"
+                      : "Save to Want to Play"
                   }
                   disabled={
                     updatingIds.has(game.bgg_id)

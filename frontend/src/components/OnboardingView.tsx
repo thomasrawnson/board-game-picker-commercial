@@ -223,7 +223,7 @@ function OnboardingView({
     <section className="onboarding-screen">
       <header className="onboarding-header">
         <p className="eyebrow">
-          Board Game Picker
+          ShelfPick
         </p>
 
         <h1>

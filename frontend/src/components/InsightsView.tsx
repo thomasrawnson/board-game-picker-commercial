@@ -267,7 +267,7 @@ function InsightsView({
           `${index + 1}. ${game.name}`,
       ),
       "",
-      "Ranked with BoardGamePicker",
+      "Ranked with ShelfPick",
     ].join("\n")
 
     try {
@@ -382,7 +382,7 @@ function InsightsView({
     <section className="screen insights-screen">
       <header>
         <h1>
-          Insight
+          Insights
         </h1>
 
         <p className="subtitle">
@@ -394,7 +394,7 @@ function InsightsView({
 
       <div
         className="stats-section-tabs"
-        aria-label="Insight sections"
+        aria-label="Insights sections"
       >
         {statsSections.map(
           (section) => (

@@ -36,7 +36,7 @@
     1px solid var(--line);
   border-radius: 50%;
 
-  font-size: 11px;
+  font-size: var(--text-meta);
   font-weight: 700;
 }
 
@@ -76,7 +76,7 @@
 .onboarding-card > p {
   color: var(--text-secondary);
 
-  font-size: 13px;
+  font-size: var(--text-support);
   line-height: 1.5;
 }
 
@@ -98,7 +98,7 @@
   border: 0;
 
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-support);
 
   cursor: pointer;
 }

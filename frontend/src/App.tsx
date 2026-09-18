@@ -74,23 +74,12 @@ type CollectionRouteProps = {
   scrollPositionsRef: React.RefObject<CollectionScrollPositions>;
 };
 
-function MeepleIcon() {
+function SettingsIcon() {
   return (
-    <svg
-      className="meeple-icon"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <circle
-        cx="12"
-        cy="5.6"
-        r="2.4"
-        fill="currentColor"
-      />
-      <path
-        d="M8.6 9.1c.9-.8 2.1-1.2 3.4-1.2s2.5.4 3.4 1.2l3.1 2.6-1.9 2.3-2.1-1.5v2.2l2.7 4.6h-3.3L12 16.8l-1.9 2.5H6.8l2.7-4.6v-2.2L7.4 14l-1.9-2.3 3.1-2.6Z"
-        fill="currentColor"
-      />
+    <svg className="settings-icon" viewBox="0 0 24 24" aria-hidden="true"
+      fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
+      <path d="m9 3-.6 2.2-1.8 1L4.4 5.6l-2 3.4L4 10.6v2.8L2.4 15l2 3.4 2.2-.6 1.8 1L9 21h4l.6-2.2 1.8-1 2.2.6 2-3.4-1.6-1.6v-2.8L19.6 9l-2-3.4-2.2.6-1.8-1L13 3Z" />
+      <circle cx="11" cy="12" r="3" />
     </svg>
   );
 }
@@ -109,7 +98,7 @@ function AppHeader({ onOpenSettings }: AppHeaderProps) {
         aria-label="Open settings"
         title="Settings"
       >
-        <MeepleIcon />
+        <SettingsIcon />
       </button>
 
     </header>
@@ -406,7 +395,7 @@ function App() {
   if (checkingAuth) {
     return pageShell(
       <section className="auth-loading">
-        <p className="eyebrow">Board Game Picker</p>
+        <p className="eyebrow">ShelfPick</p>
 
         <h1>Loading...</h1>
       </section>,

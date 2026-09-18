@@ -83,7 +83,7 @@ function ResetPasswordView() {
       <div className="auth-card">
         <header className="auth-header">
           <p className="eyebrow">
-            Board Game Picker
+            ShelfPick
           </p>
 
           <h1>

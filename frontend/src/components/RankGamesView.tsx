@@ -203,7 +203,7 @@ function RankGamesView({
           onClick={onBack}
         >
           <span aria-hidden="true">←</span>
-          Insight
+          Insights
         </button>
 
         <h1>
@@ -222,7 +222,7 @@ function RankGamesView({
         onClick={onBack}
       >
         <span aria-hidden="true">←</span>
-        Insight
+        Insights
       </button>
 
       <header>

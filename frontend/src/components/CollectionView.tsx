@@ -304,7 +304,7 @@ function CollectionView({
       className="collection-section-tabs"
       options={[
         { value: "owned", label: "Owned" },
-        { value: "wishlist", label: "Wishlist" },
+        { value: "wishlist", label: "Want to Play" },
       ]}
       onChange={
         changeSection
@@ -807,7 +807,7 @@ function CollectionView({
     return (
       <section className="screen collection-screen">
         <header>
-          <h1>Wishlist</h1>
+          <h1>Want to Play</h1>
           <p className="subtitle">
             Games you have saved for later.
           </p>

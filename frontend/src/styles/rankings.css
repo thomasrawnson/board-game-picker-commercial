@@ -14,14 +14,14 @@
 }
 
 .ranking-view-tabs button {
-  min-height: 40px;
+  min-height: var(--target-min);
   padding: 8px;
   color: var(--text-muted);
   background: transparent;
   border: 0;
   border-radius: 10px;
   font: inherit;
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -60,12 +60,12 @@
 
 .ranking-played-filter strong {
   color: var(--text-primary);
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .ranking-played-filter small {
   color: var(--text-muted);
-  font-size: 9px;
+  font-size: var(--text-support);
 }
 
 .ranking-question {
@@ -122,7 +122,7 @@
 .ranking-game-card > p {
   margin: 4px 0 10px;
   color: var(--ink-soft);
-  font-size: 10px;
+  font-size: var(--text-meta);
 }
 
 .ranking-choose-button,
@@ -135,13 +135,13 @@
 }
 
 .ranking-choose-button {
-  min-height: 42px;
+  min-height: var(--target-min);
   margin-top: auto;
   padding: 9px 6px;
   color: var(--card);
   background: var(--rust);
   border: 0;
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .ranking-unplayed-button {
@@ -149,7 +149,7 @@
   color: rgba(43, 33, 24, 0.62);
   background: transparent;
   border: 0;
-  font-size: 9px;
+  font-size: var(--text-support);
 }
 
 .ranking-skip-button {
@@ -161,7 +161,7 @@
   color: var(--text-secondary);
   background: rgba(243, 234, 216, 0.04);
   border: 1px solid var(--line);
-  font-size: 11px;
+  font-size: var(--text-support);
 }
 
 .ranking-choose-button:disabled,
@@ -201,19 +201,19 @@
 }
 
 .ranking-share-heading > div > strong {
-  font-size: 13px;
+  font-size: var(--text-support);
 }
 
 .ranking-share-button {
   flex: 0 0 auto;
-  min-height: 36px;
+  min-height: var(--target-min);
   padding: 8px 14px;
   color: var(--card);
   background: var(--felt-mid);
   border: 0;
   border-radius: 9px;
   font: inherit;
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 700;
   cursor: pointer;
 }
@@ -235,12 +235,12 @@
 }
 
 .ranking-share-controls button {
-  min-height: 34px;
+  min-height: var(--target-min);
   padding: 7px 8px;
   border: 0;
   border-radius: 7px;
   font: inherit;
-  font-size: 9px;
+  font-size: var(--text-support);
   font-weight: 700;
   cursor: pointer;
 }
@@ -258,7 +258,7 @@
 .ranking-share-card > p:last-child {
   margin: 9px 0 0;
   color: var(--ink-soft);
-  font-size: 9px;
+  font-size: var(--text-support);
 }
 
 .ranking-list li {
@@ -282,7 +282,7 @@
 
 .ranking-position::before {
   content: "#";
-  font-size: 10px;
+  font-size: var(--text-support);
 }
 
 .ranking-list-image {
@@ -311,7 +311,7 @@
 .ranking-list-copy strong {
   overflow: hidden;
   color: var(--ink);
-  font-size: 12px;
+  font-size: var(--text-support);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -319,12 +319,12 @@
 .ranking-list-copy span {
   margin-top: 3px;
   color: var(--ink-soft);
-  font-size: 8px;
+  font-size: var(--text-meta);
 }
 
 .ranking-score {
   color: var(--rust);
-  font-size: 10px;
+  font-size: var(--text-meta);
   font-weight: 700;
   text-align: right;
 }
@@ -349,7 +349,7 @@
 .ranking-unplayed-row span {
   overflow: hidden;
   color: var(--text-primary);
-  font-size: 11px;
+  font-size: var(--text-support);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -363,7 +363,7 @@
   border: 1px solid rgba(201, 162, 39, 0.28);
   border-radius: 9px;
   font: inherit;
-  font-size: 9px;
+  font-size: var(--text-support);
   font-weight: 700;
   cursor: pointer;
 }
@@ -385,7 +385,7 @@
 .ranking-empty-card p {
   margin: 8px 0 14px;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: var(--text-support);
   line-height: 1.5;
 }
 
@@ -406,7 +406,7 @@
 /* Ranking flow: comparison is the task; the finished list lives in Insight. */
 .ranking-back-button {
   width: fit-content;
-  min-height: 34px;
+  min-height: var(--target-min);
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -416,7 +416,7 @@
   background: transparent;
   border: 0;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 700;
   cursor: pointer;
 }
@@ -469,12 +469,12 @@
 }
 
 .ranking-advanced-options > summary strong {
-  font-size: 12px;
+  font-size: var(--text-support);
 }
 
 .ranking-advanced-options > summary small {
   color: var(--sp-muted);
-  font-size: 10px;
+  font-size: var(--text-support);
   font-weight: 500;
 }
 

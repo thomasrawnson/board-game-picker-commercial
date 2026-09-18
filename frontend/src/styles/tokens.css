@@ -2,6 +2,11 @@
    Keep product-wide colours, typography and interaction rules here. */
 
 :root {
+  --text-body: 16px;
+  --text-support: 14px;
+  --text-meta: 12px;
+  --text-overline: 11px;
+  --target-min: 44px;
   --font-display:
     "Lora",
     Georgia,

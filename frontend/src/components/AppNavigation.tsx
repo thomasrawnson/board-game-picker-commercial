@@ -78,11 +78,11 @@ const items: {
   label: string
   icon: NavIconName
 }[] = [
-  { view: "picker", label: "Pick", icon: "picker" },
-  { view: "collection", label: "Shelf", icon: "collection" },
-  { view: "gameNight", label: "Group", icon: "gameNight" },
+  { view: "picker", label: "Picker", icon: "picker" },
+  { view: "collection", label: "Collection", icon: "collection" },
+  { view: "gameNight", label: "Game Night", icon: "gameNight" },
   { view: "discover", label: "Discover", icon: "discover" },
-  { view: "insights", label: "Insight", icon: "insights" },
+  { view: "insights", label: "Insights", icon: "insights" },
 ]
 
 function AppNavigation({

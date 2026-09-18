@@ -11,7 +11,7 @@
 }
 
 .segmented-control button {
-  min-height: 38px;
+  min-height: var(--target-min);
   border: 0;
   border-radius: 9px;
   background: transparent;
@@ -87,7 +87,7 @@
 
 .ui-disclosure > summary small {
   color: var(--sp-muted);
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 500;
 }
 
@@ -155,7 +155,7 @@
 
 .time-option-meta {
   color: var(--sp-muted) !important;
-  font-size: 12px;
+  font-size: var(--text-meta);
 }
 
 .fine-tune-screen .complexity-grid {
@@ -163,7 +163,7 @@
 }
 
 .fine-tune-screen .complexity-option {
-  min-height: 42px !important;
+  min-height: var(--target-min) !important;
   padding: 8px 6px !important;
 }
 
@@ -179,7 +179,7 @@
 
 .advanced-preference-label {
   color: var(--sp-muted);
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 700;
 }
 
@@ -187,7 +187,7 @@
   max-width: 280px;
   margin: 14px auto 0;
   color: var(--sp-secondary);
-  font-size: 13px;
+  font-size: var(--text-support);
   line-height: 1.45;
   text-align: center;
 }
@@ -204,7 +204,7 @@
 
 .picker-match-score span {
   margin-top: 2px;
-  font-size: 7px;
+  font-size: var(--text-meta);
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -218,7 +218,7 @@
   justify-content: center;
   padding: 10px 0 4px;
   color: var(--sp-green);
-  font-size: 12px;
+  font-size: var(--text-support);
 }
 
 .picker-reason-details .ui-disclosure-chevron {
@@ -253,16 +253,12 @@
   background: transparent;
   color: var(--sp-gold);
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-support);
   font-weight: 700;
   cursor: pointer;
 }
 
 @media (max-width: 420px) {
-  .nav-label {
-    font-size: 9px !important;
-  }
-
   .time-option {
     min-height: 48px !important;
   }
@@ -290,7 +286,7 @@
 
 .insights-screen .player-stat span {
   color: var(--sp-muted) !important;
-  font-size: 10px !important;
+  font-size: var(--text-meta) !important;
   text-transform: none !important;
   letter-spacing: 0 !important;
 }
@@ -383,7 +379,7 @@
 
 .action-row-copy small {
   color: var(--sp-muted);
-  font-size: 12px;
+  font-size: var(--text-support);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -436,7 +432,7 @@
 }
 
 .fine-tune-screen .picker-step-actions .ghost-button {
-  min-height: 40px;
+  min-height: var(--target-min);
   color: var(--sp-secondary);
   border-color: transparent;
   background: transparent;

@@ -1,5 +1,28 @@
 /* Shared application styles */
 
+body {
+  font-size: var(--text-body);
+}
+
+/* Shared floors for interactive elements; icons keep their own visual size. */
+button,
+summary,
+a[href] {
+  min-width: var(--target-min);
+  min-height: var(--target-min);
+}
+
+a[href] {
+  display: inline-flex;
+  align-items: center;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  min-height: var(--target-min);
+}
+
 .app-shell {
   min-height: 100vh;
 
@@ -87,7 +110,7 @@ header {
 
   color: var(--gold);
 
-  font-size: 12px;
+  font-size: var(--text-overline);
   font-weight: 600;
 
   letter-spacing: 0.14em;
@@ -199,7 +222,7 @@ h1 {
 
   color: #f0b9a6;
 
-  font-size: 12px;
+  font-size: var(--text-support);
   text-align: center;
 }
 
@@ -343,7 +366,7 @@ textarea:focus-visible {
   .subtitle {
     margin-bottom: 22px;
 
-    font-size: 13px;
+    font-size: var(--text-support);
     line-height: 1.4;
   }
 
@@ -436,8 +459,8 @@ textarea:focus-visible {
 /* Dice / settings button */
 
 .dice-menu-button {
-  width: 28px;
-  height: 28px;
+  width: var(--target-min);
+  height: var(--target-min);
 
   display: grid;
   place-items: center;

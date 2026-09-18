@@ -41,7 +41,7 @@ get_picker_play_repository = (
 configure_logging()
 
 app = FastAPI(
-    title="BoardGamePicker API",
+    title="ShelfPick API",
     version="0.1.0",
 )
 
