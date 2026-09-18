@@ -34,15 +34,21 @@ Currently implemented:
 - game metadata including player counts, play time, complexity, ratings and artwork
 - category and mechanic persistence via relational join tables
 - deterministic and explainable recommendation engine
-- player-count and play-time filtering
+- player-count suitability using BoardGameGeek community poll data
+- play-time, complexity, age, play-style, theme and mechanic filtering
+- expansion exclusion across collection views and Picker candidates
 - recommendation scoring informed by historical play recency
-- game reveal interface using real BoardGameGeek artwork
+- Picker selection, redraw and play analytics
+- polished game reveal and sharing interface using real BoardGameGeek artwork
 - play-history recording from the frontend, including participants, scores and winners
 - reusable player identities with normalised-name matching, so the same person is recognised across plays regardless of case or whitespace
 - player-name autocomplete when logging a play
 - collection resynchronisation that reconciles additions and removals against the current BoardGameGeek collection
 - collection-insights API and React dashboard
 - PostgreSQL aggregate queries for most played, last played and never played games
+- personal head-to-head game rankings with shareable top lists
+- ranking summaries for favourite games, designers, publishers, mechanics and categories in Insights
+- Game Night preview showing the planned shared-group experience
 - Discover recommendations drawn from BoardGameGeek hot and ranked sources
 - fail-open handling, caching and cooldown behaviour for unavailable discovery sources
 - per-user Want to Play lists with add, remove, detail and move-to-collection flows
@@ -60,10 +66,13 @@ The picker remains the main entry point, but the application is intended to grow
 
 ### Pick
 
-- filter the collection by player count, available time and complexity
+- filter the collection by player count, available time, complexity, age, play style, theme and mechanics
+- use BoardGameGeek community poll data to prefer games that genuinely suit the selected player count
+- exclude expansions from eligible Picker candidates
 - rank suitable games using explainable scoring
 - use play history to surface games that have been neglected
-- improve the reveal experience and make recommendation text clearer over game artwork
+- record selection, redraw and play events for future recommendation analysis
+- reveal and share the selected game with clear recommendation context over its artwork
 - show useful session context such as the last played date and last winner
 
 ### Collection
@@ -224,7 +233,9 @@ Example reasons include:
 - `Complexity 2.8 fits preference`
 - `Hasn't been played in a while`
 
-Play-history scoring will continue to be refined as the project develops.
+Picker analytics now records selection, redraw and completed-play events so
+future scoring changes can be based on observed use. Play-history scoring will
+continue to be refined as the project develops.
 
 ## Collection insights
 
@@ -237,6 +248,9 @@ Current insights include:
 - most played games
 - last played game
 - games that have never been played
+- personal game rankings built from head-to-head choices
+- shareable Top 10, 20, 50 and 100 lists
+- ranking summaries for favourite designers, publishers, mechanics and categories
 
 Historical BG Stats plays feed the same database used by the picker, so analytics and recommendations operate from a shared source of truth.
 
