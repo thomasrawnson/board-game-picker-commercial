@@ -1,6 +1,5 @@
 /* ShelfPick commercial visual system. Loaded last on purpose. */
 
-
 /* App frame: fuller use of the viewport and no dead vertical bands. */
 .app-shell {
   align-items: flex-start;
@@ -55,27 +54,9 @@ h1 {
   line-height: 1.45;
 }
 
-/* Compact top bar: small dice only, with settings available through aria label. */
-
-
-
-
-
-/* Bottom navigation: quiet wayfinding, not six competing CTAs. */
-
-
-
-/* Shared action hierarchy */
-
-
-
 /* Picker setup */
 .progress-dots {
   margin: 4px 0 18px;
-}
-
-.dot {
-  opacity: 0.45;
 }
 
 .picker-step-screen {
@@ -112,14 +93,12 @@ h1 {
 }
 
 .player-grid {
-  gap: 12px;
   margin-bottom: 0;
 }
 
 .player-chip {
   background: rgba(155, 197, 165, 0.05);
   border-color: var(--sp-line);
-  border-radius: 14px;
 }
 
 .player-chip:hover {
@@ -141,10 +120,6 @@ h1 {
 
 .player-chip.selected span {
   color: var(--sp-green);
-}
-
-.picker-step-actions {
-  margin-top: 24px;
 }
 
 /* Picker result */
@@ -241,43 +216,6 @@ h1 {
   margin-top: 7px;
   color: var(--sp-green);
   font-size: 12px;
-}
-
-.picker-reason-chips {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 16px;
-}
-
-.picker-reason-chip {
-  padding: 6px 9px;
-  color: #d2dfd4;
-  background: rgba(2, 17, 10, 0.52);
-  border: 0;
-  border-radius: 7px;
-  font-size: 11px;
-}
-
-.picker-ai-note {
-  margin-top: 13px;
-  padding: 10px 12px;
-  color: var(--sp-secondary);
-  background: rgba(5, 22, 14, 0.42);
-  border-left: 2px solid rgba(155, 197, 165, 0.3);
-  font-size: 11px;
-  line-height: 1.45;
-}
-
-.picker-ai-note strong {
-  color: var(--sp-green);
-  font-family: var(--font-display);
-  font-size: 12px;
-}
-
-.picker-ai-note p {
-  margin: 3px 0 0;
 }
 
 .picker-primary-action {
@@ -412,7 +350,6 @@ h1 {
 
 .collection-filter-tabs {
   display: flex;
-  gap: 18px;
   padding: 0;
   background: transparent;
   border: 0;
@@ -470,9 +407,7 @@ h1 {
 }
 
 .collection-game {
-  grid-template-columns: 43px minmax(0, 1fr) auto;
   gap: 11px;
-  min-height: 68px;
   padding: 10px 0;
   color: var(--sp-text);
   background: transparent;
@@ -634,7 +569,6 @@ h1 {
 
 .ranking-share-heading .insight-label {
   margin: 0;
-  color: var(--sp-green);
   font-size: 11px;
 }
 
@@ -729,26 +663,18 @@ h1 {
     padding-right: 18px;
   }
 
-
   h1 {
     font-size: 28px;
   }
 }
 
-/* =========================================================
-   Commercial consistency pass: collection, discover, rank, insight
-   ========================================================= */
+/* Collection, Discover, Rankings and Insight */
 
 /* Collection: align secondary filters with the main content and keep rows lean. */
 .collection-screen > header,
 .collection-heading-row {
   padding-left: 2px;
   padding-right: 2px;
-}
-
-.collection-filter-tabs {
-  padding-left: 8px;
-  padding-right: 8px;
 }
 
 .collection-game {
@@ -788,13 +714,7 @@ h1 {
 }
 
 .discover-wishlist-link {
-  width: auto;
-  min-height: 34px;
-  margin: 0;
-  padding: 5px 0;
   justify-content: flex-start;
-  color: var(--sp-green);
-  border: 0;
 }
 
 .discover-card {
@@ -821,42 +741,6 @@ h1 {
   padding: 6px 0;
   color: var(--sp-green);
   border: 0;
-}
-
-.wishlist-heart-button {
-  width: 38px;
-  height: 38px;
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 auto;
-  padding: 0;
-  color: var(--sp-muted);
-  background: transparent;
-  border: 0;
-  border-radius: 50%;
-  font: inherit;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-  transition: color 140ms ease, transform 140ms ease, background 140ms ease;
-}
-
-.wishlist-heart-button:hover:not(:disabled) {
-  color: var(--sp-text);
-  background: rgba(155, 197, 165, 0.06);
-}
-
-.wishlist-heart-button.saved {
-  color: var(--sp-gold);
-}
-
-.wishlist-heart-button:active:not(:disabled) {
-  transform: scale(0.92);
-}
-
-.wishlist-heart-button:disabled {
-  opacity: 0.45;
-  cursor: default;
 }
 
 /* Rankings: list length selector now filters the list as well as sharing. */
@@ -964,18 +848,12 @@ h1 {
 }
 
 @media (max-width: 480px) {
-  .collection-filter-tabs {
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-
   .discover-card {
     padding: 13px;
   }
 }
 
-
-/* Final visual-system refinements */
+/* Shared visual refinements */
 h1,
 h2,
 h3,
@@ -1126,10 +1004,6 @@ h3,
   min-width: 0;
 }
 
-.collection-search {
-  width: 100%;
-}
-
 .collection-sort-wrap {
   display: flex;
   justify-content: flex-end;
@@ -1160,7 +1034,10 @@ h3,
   border: 0;
   border-radius: 8px;
   cursor: pointer;
-  transition: color 140ms ease, background 140ms ease, transform 140ms ease;
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    transform 140ms ease;
 }
 
 .wishlist-bookmark-button:hover:not(:disabled) {
@@ -1194,10 +1071,6 @@ h3,
 }
 
 .discover-match-score {
-  color: var(--sp-gold);
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -1276,7 +1149,6 @@ h3,
 .collection-section-tabs button.active,
 .ranking-view-tabs button.active,
 .stats-section-tab.active,
-
 .collection-search,
 .collection-section-tabs,
 .ranking-view-tabs,
@@ -1302,14 +1174,7 @@ h3,
   }
 }
 
-
-/* =========================================================
-   V6 polish: lighter felt, compact picker flow, clearer actions
-   ========================================================= */
-
-
-/* The settings control floats on the felt; there is no separate header bar. */
-
+/* Picker and interaction polish */
 
 /* Sparse picker steps size to content rather than stretching the full phone. */
 .picker-step-screen {
@@ -1324,8 +1189,6 @@ h3,
 .picker-step-screen .picker-step-actions {
   margin-top: 22px !important;
 }
-
-/* Continue should look unavailable, not faded or muddy. */
 
 /* Make step progress legible without making it another headline. */
 .dot {
@@ -1440,13 +1303,4 @@ h3,
 .insights-screen .monthly-play-game,
 .insights-screen .favourite-player-link {
   color: var(--sp-text) !important;
-}
-
-/* Navigation gets small line icons so wayfinding feels intentional. */
-
-
-
-
-
-@media (max-width: 480px) {
 }
