@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   getPickerMatches,
@@ -80,6 +80,10 @@ function PickerView({ onViewGame }: Props) {
 
   const [error, setError] = useState("");
 
+  const [isRolling, setIsRolling] = useState(false);
+
+  const swipeStartX = useRef<number | null>(null);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -105,6 +109,18 @@ function PickerView({ onViewGame }: Props) {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isRolling) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setIsRolling(false);
+    }, 560);
+
+    return () => window.clearTimeout(timer);
+  }, [isRolling]);
 
   const match = matches[matchIndex];
 
@@ -192,6 +208,7 @@ function PickerView({ onViewGame }: Props) {
 
       setMatchIndex(0);
 
+      setIsRolling(true);
       setStep("reveal");
     } catch (err) {
       console.error(err);
@@ -238,6 +255,8 @@ function PickerView({ onViewGame }: Props) {
     if (!hasMoreMatches) {
       return;
     }
+
+    setIsRolling(true);
 
     const nextIndex = matchIndex + 1;
 
@@ -420,19 +439,58 @@ function PickerView({ onViewGame }: Props) {
       )}
 
       {step === "reveal" && match && (
-        <div className="picker-result-stage">
-          <PickerResult
-            match={match}
-            matchIndex={matchIndex}
-            totalMatches={matches.length}
-            mode={mode}
-            playerCount={players ?? 1}
-            pickerSessionId={pickerSessionId}
-            hasMoreMatches={hasMoreMatches}
-            onTryAnother={tryAnother}
-            onViewGame={viewGame}
-            onStartOver={startOver}
-          />
+        <div
+          className="picker-result-stage"
+          onTouchStart={(event) => {
+            swipeStartX.current = event.touches[0]?.clientX ?? null;
+          }}
+          onTouchEnd={(event) => {
+            if (swipeStartX.current === null) {
+              return;
+            }
+
+            const endX = event.changedTouches[0]?.clientX ?? swipeStartX.current;
+            const distance = endX - swipeStartX.current;
+            swipeStartX.current = null;
+
+            if (distance < -60 && hasMoreMatches && !isRolling) {
+              tryAnother();
+            }
+          }}
+        >
+          {isRolling ? (
+            <div className="picker-roll-stage" aria-label="Rolling for your pick">
+              <div className="picker-roll-die" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
+              <p>Rolling your pick…</p>
+            </div>
+          ) : (
+            <>
+              <PickerResult
+                match={match}
+                matchIndex={matchIndex}
+                totalMatches={matches.length}
+                mode={mode}
+                playerCount={players ?? 1}
+                pickerSessionId={pickerSessionId}
+                hasMoreMatches={hasMoreMatches}
+                onTryAnother={tryAnother}
+                onViewGame={viewGame}
+                onStartOver={startOver}
+              />
+
+              {hasMoreMatches && (
+                <p className="picker-swipe-hint">
+                  Swipe left to try another
+                </p>
+              )}
+            </>
+          )}
         </div>
       )}
     </>

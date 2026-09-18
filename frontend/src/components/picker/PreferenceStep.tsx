@@ -126,12 +126,11 @@ function PreferenceStep({
     <section className="screen picker-step-screen fine-tune-screen">
       <header>
         <h1>
-          Fine-tune the pick
+          Any preferences?
         </h1>
 
         <p className="subtitle">
-          Keep it broad or add a few
-          preferences.
+          Optional — skip this if you're happy to be surprised.
         </p>
       </header>
 

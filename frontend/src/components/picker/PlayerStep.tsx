@@ -67,8 +67,7 @@ function PlayerStep({
         </h1>
 
         <p className="subtitle">
-          Choose friends or pick a
-          group size.
+          Choose your group.
         </p>
       </header>
 

@@ -74,25 +74,23 @@ type CollectionRouteProps = {
   scrollPositionsRef: React.RefObject<CollectionScrollPositions>;
 };
 
-function DiceIcon() {
+function MeepleIcon() {
   return (
-    <svg className="dice-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <rect
-        x="3"
-        y="3"
-        width="18"
-        height="18"
-        rx="4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
+    <svg
+      className="meeple-icon"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <circle
+        cx="12"
+        cy="5.6"
+        r="2.4"
+        fill="currentColor"
       />
-
-      <circle cx="8" cy="8" r="1.35" fill="currentColor" />
-      <circle cx="16" cy="8" r="1.35" fill="currentColor" />
-      <circle cx="12" cy="12" r="1.35" fill="currentColor" />
-      <circle cx="8" cy="16" r="1.35" fill="currentColor" />
-      <circle cx="16" cy="16" r="1.35" fill="currentColor" />
+      <path
+        d="M8.6 9.1c.9-.8 2.1-1.2 3.4-1.2s2.5.4 3.4 1.2l3.1 2.6-1.9 2.3-2.1-1.5v2.2l2.7 4.6h-3.3L12 16.8l-1.9 2.5H6.8l2.7-4.6v-2.2L7.4 14l-1.9-2.3 3.1-2.6Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -111,7 +109,7 @@ function AppHeader({ onOpenSettings }: AppHeaderProps) {
         aria-label="Open settings"
         title="Settings"
       >
-        <DiceIcon />
+        <MeepleIcon />
       </button>
 
     </header>

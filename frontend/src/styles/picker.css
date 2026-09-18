@@ -1895,3 +1895,272 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* =========================================================
+   Guided picker polish: compact steps + clearer selections
+   ========================================================= */
+
+.player-step-screen .subtitle,
+.time-step-screen .subtitle,
+.fine-tune-screen .subtitle {
+  margin-bottom: 18px;
+}
+
+.player-step-screen .picker-navigation-card {
+  margin-bottom: 12px;
+}
+
+.player-step-screen .player-or {
+  margin: 10px 0 10px;
+}
+
+.player-step-screen .player-grid {
+  gap: 9px;
+}
+
+.player-step-screen .player-chip,
+.player-step-screen .complexity-option,
+.time-tile,
+.fine-tune-screen .picker-mode-option,
+.fine-tune-screen .preference-chip {
+  color: var(--sp-secondary);
+}
+
+.player-step-screen .player-chip.selected,
+.player-step-screen .complexity-option.selected,
+.time-tile.selected,
+.fine-tune-screen .picker-mode-option.selected,
+.fine-tune-screen .preference-chip.selected {
+  color: var(--sp-text) !important;
+  background: rgba(196, 217, 185, 0.22) !important;
+  border-color: rgba(196, 217, 185, 0.35) !important;
+  font-weight: 800;
+}
+
+.player-step-screen .player-chip.selected strong,
+.player-step-screen .complexity-option.selected strong,
+.time-tile.selected strong,
+.time-tile.selected span,
+.fine-tune-screen .picker-mode-option.selected,
+.fine-tune-screen .preference-chip.selected {
+  color: var(--sp-text) !important;
+}
+
+.player-step-screen .picker-step-actions {
+  margin-top: 18px !important;
+}
+
+/* Time step uses the phone width instead of a long vertical list. */
+.time-step-screen {
+  max-width: 390px;
+  margin: 0 auto;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.time-tile {
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+  padding: 12px 14px;
+  color: var(--sp-secondary);
+  background: rgba(196, 217, 185, 0.055);
+  border: 1px solid var(--sp-line);
+  border-radius: 12px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    color 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.time-tile:hover {
+  border-color: rgba(196, 217, 185, 0.28);
+}
+
+.time-tile:active {
+  transform: translateY(2px);
+}
+
+.time-tile strong {
+  color: inherit;
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1.1;
+}
+
+.time-tile span {
+  color: var(--sp-muted);
+  font-size: 11px;
+}
+
+.time-step-screen .picker-step-actions {
+  margin-top: 18px !important;
+}
+
+/* Fine tune is deliberately optional and compact. */
+.fine-tune-screen .advanced-filters {
+  margin-top: 6px !important;
+}
+
+.fine-tune-screen .picker-step-actions {
+  margin-top: 18px !important;
+}
+
+.fine-tune-screen .ghost-button {
+  min-height: 38px;
+  margin-top: 6px;
+  border-color: transparent;
+}
+
+/* Settings uses a meeple so it cannot be confused with Pick. */
+.meeple-icon {
+  width: 18px;
+  height: 18px;
+  transform-origin: center;
+  transition: transform 160ms ease;
+}
+
+.dice-menu-button:hover .meeple-icon {
+  transform: scale(1.08);
+}
+
+.dice-menu-button:active .meeple-icon {
+  transform: scale(0.94);
+}
+
+/* =========================================================
+   Reveal polish: match badge, headline, roll and swipe
+   ========================================================= */
+
+.picker-result-mode {
+  margin-bottom: 14px;
+  color: var(--sp-text);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.picker-match-score {
+  flex-direction: column;
+  gap: 0;
+  line-height: 0.92;
+}
+
+.picker-match-score > * {
+  margin: 0;
+  line-height: 1;
+}
+
+.picker-match-score small,
+.picker-match-score span:last-child {
+  margin-top: 1px;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.picker-roll-stage {
+  width: min(100%, 390px);
+  min-height: 560px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  margin: 0 auto;
+}
+
+.picker-roll-stage p {
+  margin: 0;
+  color: var(--sp-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.picker-roll-die {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  background: var(--sp-gold);
+  border-radius: 16px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
+  animation: picker-die-tumble 560ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.picker-roll-die span {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: #21190a;
+  border-radius: 50%;
+}
+
+.picker-roll-die span:nth-child(1) { top: 15px; left: 15px; }
+.picker-roll-die span:nth-child(2) { top: 15px; right: 15px; }
+.picker-roll-die span:nth-child(3) { top: 31px; left: 31px; }
+.picker-roll-die span:nth-child(4) { bottom: 15px; left: 15px; }
+.picker-roll-die span:nth-child(5) { right: 15px; bottom: 15px; }
+
+@keyframes picker-die-tumble {
+  0% {
+    opacity: 0;
+    transform: translateY(-28px) rotate(-40deg) scale(0.76);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(8px) rotate(235deg) scale(1.06);
+  }
+  78% {
+    transform: translateY(-4px) rotate(310deg) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(360deg) scale(1);
+  }
+}
+
+.picker-swipe-hint {
+  margin: 10px 0 0;
+  color: var(--sp-muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .picker-roll-die {
+    animation: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .time-grid {
+    gap: 8px;
+  }
+
+  .time-tile {
+    min-height: 72px;
+    padding: 10px 11px;
+  }
+
+  .time-tile strong {
+    font-size: 15px;
+  }
+}
+
+.picker-result-stage {
+  flex-direction: column;
+  align-items: center;
+}
