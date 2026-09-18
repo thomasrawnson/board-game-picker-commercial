@@ -1,18 +1,5 @@
 /* ShelfPick commercial visual system. Loaded last on purpose. */
 
-:root {
-  --sp-bg: #102b20;
-  --sp-panel: #17372a;
-  --sp-panel-soft: #1d4031;
-  --sp-quiet: #122f24;
-  --sp-text: #f3ecdf;
-  --sp-secondary: #d1decf;
-  --sp-muted: #91a68f;
-  --sp-green: #b8d2af;
-  --sp-gold: #d9aa3b;
-  --sp-gold-hover: #e5b84d;
-  --sp-line: rgba(184, 210, 175, 0.12);
-}
 
 /* App frame: fuller use of the viewport and no dead vertical bands. */
 .app-shell {
@@ -989,14 +976,6 @@ h1 {
 
 
 /* Final visual-system refinements */
-body,
-button,
-input,
-select,
-textarea {
-  font-family: var(--font-ui);
-}
-
 h1,
 h2,
 h3,
@@ -1004,10 +983,6 @@ h3,
 .ranking-position,
 .player-stat strong {
   font-family: var(--font-display);
-}
-
-.phone.app-phone {
-  background: var(--sp-bg);
 }
 
 /* Friends/Insight text should use the same warm palette, never rust/red. */
