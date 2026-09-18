@@ -38,18 +38,66 @@
 }
 
 .discover-card {
+  position: relative;
   display: grid;
   grid-template-columns: 118px minmax(0, 1fr);
   gap: 14px;
-  padding: 14px;
+  padding: 14px 14px 14px 14px;
   background: rgba(196, 217, 185, 0.045);
   border: 0;
   border-radius: 14px;
 }
 
+.discover-save-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  color: var(--sp-green);
+  background: rgba(196, 217, 185, 0.08);
+  border: 1px solid var(--sp-line);
+  border-radius: 50%;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    color 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.discover-save-button:hover:not(:disabled) {
+  color: var(--sp-text);
+  background: rgba(196, 217, 185, 0.12);
+}
+
+.discover-save-button.saved {
+  color: #21190a;
+  background: var(--sp-gold);
+  border-color: transparent;
+}
+
+.discover-save-button:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.discover-save-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .discover-media {
   position: relative;
   align-self: start;
+  padding-top: 2px;
 }
 
 .discover-image,
@@ -70,67 +118,26 @@
   font-size: 24px;
 }
 
-.wishlist-bookmark-button {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 34px;
-  height: 34px;
-  display: inline-grid;
-  place-items: center;
-  padding: 0;
-  color: var(--sp-text);
-  background: rgba(8, 31, 20, 0.82);
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition:
-    color 140ms ease,
-    background 140ms ease,
-    transform 140ms ease;
-}
-
-.wishlist-bookmark-button:hover:not(:disabled) {
-  background: rgba(8, 31, 20, 0.96);
-}
-
-.wishlist-bookmark-button.saved {
-  color: var(--sp-gold);
-}
-
-.wishlist-bookmark-button:active:not(:disabled) {
-  transform: scale(0.94);
-}
-
-.wishlist-bookmark-button:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.wishlist-bookmark-icon {
-  width: 20px;
-  height: 20px;
+.discover-match-pill {
+  width: fit-content;
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 4px 8px;
+  color: #21190a;
+  background: var(--sp-gold);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .discover-copy {
   min-width: 0;
-}
-
-.discover-title-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.discover-match-score {
-  margin: 0 0 4px;
-  color: var(--sp-gold);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  padding-right: 28px;
 }
 
 .discover-card h2 {
@@ -147,13 +154,6 @@
   line-height: 1.4;
 }
 
-.discover-primary-reason {
-  margin: 12px 0 0;
-  color: var(--sp-secondary);
-  font-size: 12px;
-  line-height: 1.45;
-}
-
 .discover-reason-details {
   margin-top: 9px;
   color: var(--sp-green);
@@ -161,6 +161,7 @@
 }
 
 .discover-reason-details summary {
+  font-weight: 700;
   cursor: pointer;
   list-style: none;
 }
@@ -195,18 +196,40 @@
 .discover-actions {
   display: flex;
   align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
   margin-top: 12px;
 }
 
-.discover-bgg-link {
-  color: var(--sp-green);
+.discover-bgg-link,
+.discover-dismiss-button {
   font-size: 11px;
   font-weight: 700;
   text-decoration: none;
 }
 
+.discover-bgg-link {
+  color: var(--sp-green);
+}
+
+.discover-dismiss-button {
+  color: var(--sp-muted);
+}
+
 .discover-bgg-link:hover {
   color: var(--sp-text);
+  text-decoration: underline;
+}
+
+.discover-dismiss-button {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.discover-dismiss-button:hover {
+  color: var(--sp-secondary);
   text-decoration: underline;
 }
 
@@ -238,11 +261,34 @@
     padding: 12px;
   }
 
+  .discover-save-button {
+    top: 10px;
+    right: 10px;
+  }
+
+  .discover-match-pill {
+  width: fit-content;
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 4px 8px;
+  color: #21190a;
+  background: var(--sp-gold);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+  .discover-copy {
+    padding-right: 24px;
+  }
+
   .discover-card h2 {
     font-size: 16px;
   }
 
-  .discover-primary-reason {
-    margin-top: 9px;
-  }
 }
