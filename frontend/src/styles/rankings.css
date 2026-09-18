@@ -285,33 +285,6 @@
   font-size: 10px;
 }
 
-.ranking-position--top {
-  width: 26px;
-  height: 26px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: var(--felt-dark);
-  font-size: 13px;
-}
-
-.ranking-position--top::before {
-  content: "";
-}
-
-.ranking-position--top.rank-1 {
-  background: linear-gradient(160deg, #f3d78a, #d9aa3b);
-}
-
-.ranking-position--top.rank-2 {
-  background: linear-gradient(160deg, #e7ebee, #b9c1c9);
-}
-
-.ranking-position--top.rank-3 {
-  background: linear-gradient(160deg, #e3b58a, #b97a4a);
-}
-
 .ranking-list-image {
   width: 46px;
   height: 46px;
@@ -428,4 +401,87 @@
   .ranking-game-card h2 {
     font-size: 14px;
   }
+}
+
+/* Ranking flow: comparison is the task; the finished list lives in Insight. */
+.ranking-back-button {
+  width: fit-content;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 10px;
+  padding: 4px 0;
+  color: var(--sp-green);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ranking-back-button span {
+  color: var(--sp-gold);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.ranking-back-button:hover {
+  color: var(--sp-text);
+}
+
+.ranking-advanced-options {
+  margin-top: 18px;
+  padding: 0;
+  border-top: 1px solid var(--sp-line);
+}
+
+.ranking-advanced-options > summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 2px;
+  color: var(--sp-text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.ranking-advanced-options > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ranking-advanced-options > summary::after {
+  content: "+";
+  color: var(--sp-gold);
+  font-size: 20px;
+}
+
+.ranking-advanced-options[open] > summary::after {
+  content: "−";
+}
+
+.ranking-advanced-options > summary span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ranking-advanced-options > summary strong {
+  font-size: 12px;
+}
+
+.ranking-advanced-options > summary small {
+  color: var(--sp-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.ranking-advanced-options .ranking-played-filter {
+  margin: 2px 0 0;
+  padding: 12px;
+  background: rgba(196, 217, 185, 0.045);
+  border: 0;
+  border-radius: 10px;
 }

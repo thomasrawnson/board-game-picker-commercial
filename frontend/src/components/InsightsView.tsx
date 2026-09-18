@@ -545,10 +545,11 @@ function InsightsView({
 
             <button
               type="button"
-              className="rank-games-primary"
+              className="rank-games-arrow"
+              aria-label="Open game ranking"
+              title="Rank your games"
               onClick={onOpenRankings}
             >
-              Rank games
               <span aria-hidden="true">→</span>
             </button>
           </section>
@@ -890,7 +891,7 @@ function InsightsView({
                   .length === 0
                 && (
                   <p className="insight-empty">
-                    Nobody's played anything this month — time to fix that.
+                    No plays this month.
                   </p>
                 )
               }
@@ -939,7 +940,7 @@ function InsightsView({
               )
               : (
                 <p className="insight-empty">
-                  Nothing logged yet — your first play is one tap away.
+                  No plays recorded yet.
                 </p>
               )
           }

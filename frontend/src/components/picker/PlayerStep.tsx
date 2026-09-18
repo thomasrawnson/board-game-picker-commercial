@@ -1,8 +1,11 @@
 type Props = {
   players: number | null
   selectedPlayerIds: number[]
+  maxComplexity: number | null
   onSelectCount:
     (players: number | null) => void
+  onComplexityChange:
+    (value: number | null) => void
   onChoosePlayers: () => void
   onContinue: () => void
 }
@@ -18,10 +21,32 @@ const playerOptions = [
 ]
 
 
+const complexityOptions = [
+  {
+    label: "Any",
+    value: null,
+  },
+  {
+    label: "Light",
+    value: 2,
+  },
+  {
+    label: "Medium",
+    value: 3,
+  },
+  {
+    label: "Heavy",
+    value: 4,
+  },
+]
+
+
 function PlayerStep({
   players,
   selectedPlayerIds,
+  maxComplexity,
   onSelectCount,
+  onComplexityChange,
   onChoosePlayers,
   onContinue,
 }: Props) {
@@ -35,7 +60,7 @@ function PlayerStep({
 
 
   return (
-    <section className="screen picker-step-screen">
+    <section className="screen picker-step-screen player-step-screen">
       <header>
         <h1>
           Who's playing?
@@ -116,17 +141,53 @@ function PlayerStep({
               }
             >
               <strong>
-                {option === 6
-                  ? "6+"
-                  : option}
+                {option === 1
+                  ? "Solo"
+                  : option === 6
+                    ? "6+"
+                    : option}
               </strong>
-
-              {option === 1 && (
-                <span>Solo</span>
-              )}
             </button>
           ),
         )}
+      </div>
+
+
+      <div className="preference-section player-complexity-section">
+        <p className="preference-label">
+          Complexity
+        </p>
+
+        <div className="complexity-grid">
+          {complexityOptions.map(
+            (option) => {
+              const selected =
+                maxComplexity === option.value
+
+              return (
+                <button
+                  key={option.label}
+                  type="button"
+                  className={
+                    selected
+                      ? "complexity-option selected"
+                      : "complexity-option"
+                  }
+                  aria-pressed={selected}
+                  onClick={() =>
+                    onComplexityChange(
+                      option.value
+                    )
+                  }
+                >
+                  <strong>
+                    {option.label}
+                  </strong>
+                </button>
+              )
+            },
+          )}
+        </div>
       </div>
 
 

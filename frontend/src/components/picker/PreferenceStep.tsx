@@ -13,15 +13,11 @@ import ActionRow
 type Props = {
   preferredCategories: string[]
   preferredMechanics: string[]
-  maxComplexity: number | null
   youngestPlayerAge: number | null
   playStyle: PickerPlayStyle
   mode: PickerMode
   error: string
   loading: boolean
-  onComplexityChange: (
-    value: number | null,
-  ) => void
   onYoungestPlayerAgeChange: (
     value: number | null,
   ) => void
@@ -37,29 +33,6 @@ type Props = {
   onBack: () => void
 }
 
-
-const complexityOptions = [
-  {
-    label: "Any",
-    description: "Anything goes",
-    value: null,
-  },
-  {
-    label: "Light",
-    description: "Up to 2.0",
-    value: 2,
-  },
-  {
-    label: "Medium",
-    description: "Up to 3.0",
-    value: 3,
-  },
-  {
-    label: "Heavy",
-    description: "Up to 4.0",
-    value: 4,
-  },
-]
 
 
 const modeOptions: {
@@ -136,13 +109,11 @@ function selectionSummary(
 function PreferenceStep({
   preferredCategories,
   preferredMechanics,
-  maxComplexity,
   youngestPlayerAge,
   playStyle,
   mode,
   error,
   loading,
-  onComplexityChange,
   onYoungestPlayerAgeChange,
   onPlayStyleChange,
   onModeChange,
@@ -165,46 +136,6 @@ function PreferenceStep({
       </header>
 
 
-      <div className="preference-section">
-        <p className="preference-label">
-          Complexity
-        </p>
-
-        <div className="complexity-grid">
-          {complexityOptions.map(
-            (option) => {
-              const selected =
-                maxComplexity ===
-                option.value
-
-              return (
-                <button
-                  key={option.label}
-                  type="button"
-                  className={
-                    selected
-                      ? "complexity-option selected"
-                      : "complexity-option"
-                  }
-                  aria-pressed={
-                    selected
-                  }
-                  onClick={() =>
-                    onComplexityChange(
-                      option.value
-                    )
-                  }
-                >
-                  <strong>
-                    {option.label}
-                  </strong>
-
-                </button>
-              )
-            },
-          )}
-        </div>
-      </div>
 
 
       <Disclosure

@@ -502,7 +502,16 @@ function App() {
 
             <Route path={APP_PATHS.gameNight} element={<GameNightView />} />
 
-            <Route path={APP_PATHS.rankings} element={<RankGamesView />} />
+            <Route
+              path={APP_PATHS.rankings}
+              element={
+                <RankGamesView
+                  onBack={() => {
+                    navigate(APP_PATHS.insights);
+                  }}
+                />
+              }
+            />
 
             <Route
               path={APP_PATHS.discover}

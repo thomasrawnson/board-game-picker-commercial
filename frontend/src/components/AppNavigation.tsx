@@ -60,7 +60,7 @@ function NavIcon({
   if (name === "discover") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="7" />
+        <path d="M12 5.5a6.5 6.5 0 1 1 0 13a6.5 6.5 0 0 1 0-13Z" />
         <path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z" />
       </svg>
     )

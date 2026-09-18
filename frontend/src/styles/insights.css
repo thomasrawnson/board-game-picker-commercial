@@ -1356,3 +1356,33 @@
   }
 }
 
+
+/* Rank entry: one concise arrow action beside the title. */
+.rank-games-arrow {
+  width: 42px;
+  height: 42px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 0;
+  color: #21190a;
+  background: var(--sp-gold);
+  border: 0;
+  border-radius: 50%;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    transform 120ms ease;
+}
+
+.rank-games-arrow:hover {
+  background: var(--sp-gold-hover);
+}
+
+.rank-games-arrow:active {
+  transform: translateX(1px);
+}

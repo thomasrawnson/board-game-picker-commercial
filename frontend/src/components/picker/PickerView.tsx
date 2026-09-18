@@ -336,7 +336,9 @@ function PickerView({ onViewGame }: Props) {
         <PlayerStep
           players={players}
           selectedPlayerIds={selectedPlayerIds}
+          maxComplexity={maxComplexity}
           onSelectCount={chooseGroupSize}
+          onComplexityChange={setMaxComplexity}
           onChoosePlayers={() => setStep("player_selection")}
           onContinue={() => setStep("time")}
         />
@@ -364,13 +366,11 @@ function PickerView({ onViewGame }: Props) {
         <PreferenceStep
           preferredCategories={preferredCategories}
           preferredMechanics={preferredMechanics}
-          maxComplexity={maxComplexity}
           youngestPlayerAge={youngestPlayerAge}
           playStyle={playStyle}
           mode={mode}
           error={error}
           loading={loading}
-          onComplexityChange={setMaxComplexity}
           onYoungestPlayerAgeChange={setYoungestPlayerAge}
           onPlayStyleChange={setPlayStyle}
           onModeChange={setMode}
