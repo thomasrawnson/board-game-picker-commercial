@@ -6,12 +6,36 @@ type Props = {
 }
 
 const timeOptions = [
-  { label: "Filler", description: "≤15 min", value: 15 },
-  { label: "Quick", description: "≤30 min", value: 30 },
-  { label: "Standard", description: "≤60 min", value: 60 },
-  { label: "Main event", description: "≤90 min", value: 90 },
-  { label: "Deep dive", description: "≤120 min", value: 120 },
-  { label: "All night", description: "No limit", value: 0 },
+  {
+    label: "Filler",
+    description: "15 min or less",
+    value: 15,
+  },
+  {
+    label: "Quick",
+    description: "30 min or less",
+    value: 30,
+  },
+  {
+    label: "Standard",
+    description: "60 min or less",
+    value: 60,
+  },
+  {
+    label: "Main event",
+    description: "90 min or less",
+    value: 90,
+  },
+  {
+    label: "Deep dive",
+    description: "120 min or less",
+    value: 120,
+  },
+  {
+    label: "All night",
+    description: "No limit",
+    value: 0,
+  },
 ]
 
 function TimeStep({
@@ -23,8 +47,10 @@ function TimeStep({
   return (
     <section className="screen picker-step-screen time-step-screen">
       <header>
-        <h1>How long have you got?</h1>
-        <p className="subtitle">Choose the time you have.</p>
+        <h1>How long you got?</h1>
+        <p className="subtitle">
+          We'll only show games that fit.
+        </p>
       </header>
 
       <div className="time-grid">

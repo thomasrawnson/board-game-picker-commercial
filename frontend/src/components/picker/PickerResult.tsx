@@ -1,55 +1,81 @@
-import { useState } from "react";
+import {
+  useRef,
+  useState,
+  type TouchEvent,
+} from "react"
 
-import type { PickerMatch, PickerMode } from "../../api/client";
+import type {
+  PickerMatch,
+  PickerMode,
+} from "../../api/client"
 
-import PlayLogForm from "../collection/PlayLogForm";
+import PlayLogForm
+  from "../collection/PlayLogForm"
 
-import Disclosure from "../ui/Disclosure";
+import Disclosure
+  from "../ui/Disclosure"
+
 
 type Props = {
-  match: PickerMatch;
-  matchIndex: number;
-  totalMatches: number;
-  mode: PickerMode;
-  playerCount: number;
-  pickerSessionId: string | null;
-  hasMoreMatches: boolean;
-  onTryAnother: () => void;
-  onViewGame: () => void;
-  onStartOver: () => void;
-};
+  match: PickerMatch
+  matchIndex: number
+  totalMatches: number
+  mode: PickerMode
+  playerCount: number
+  pickerSessionId: string | null
+  hasMoreMatches: boolean
+  onTryAnother: () => void
+  onViewGame: () => void
+  onStartOver: () => void
+}
 
-function modeLabel(mode: PickerMode) {
+
+function modeLabel(
+  mode: PickerMode,
+) {
   if (mode === "different") {
-    return "Something different";
+    return "Something different"
   }
 
   if (mode === "surprise") {
-    return "Surprise pick";
+    return "Surprise pick"
   }
 
-  return "Best match";
+  return "Best match"
 }
 
-function complexityLabel(complexity: number | null) {
-  if (complexity === null) {
-    return null;
-  }
 
-  if (complexity <= 2) {
-    return "Light";
-  }
-
-  if (complexity <= 3) {
-    return "Medium";
-  }
-
-  if (complexity <= 4) {
-    return "Heavy";
-  }
-
-  return "Very heavy";
+function ShareIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M14 5h5v5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10 14 19 5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M19 13v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
 }
+
 
 function PickerResult({
   match,
@@ -63,77 +89,151 @@ function PickerResult({
   onViewGame,
   onStartOver,
 }: Props) {
-  const [shareMessage, setShareMessage] = useState("");
+  const [shareMessage, setShareMessage] =
+    useState("")
 
-  const game = match.game;
-  const coverUrl = game.image_url ?? game.thumbnail_url ?? null;
+  const touchStartX =
+    useRef<number | null>(null)
+
+  const game = match.game
+  const coverUrl =
+    game.image_url ?? game.thumbnail_url ?? null
 
   const playerText =
-    game.min_players !== null && game.max_players !== null
+    game.min_players !== null
+    && game.max_players !== null
       ? game.min_players === game.max_players
         ? `${game.min_players} players`
         : `${game.min_players}–${game.max_players} players`
-      : null;
+      : null
 
   const timeText =
     game.max_play_time !== null
-      ? game.min_play_time !== null && game.min_play_time === game.max_play_time
+      ? game.min_play_time !== null
+        && game.min_play_time === game.max_play_time
         ? `${game.max_play_time} min`
         : `${game.min_play_time ?? "?"}–${game.max_play_time} min`
-      : null;
+      : null
 
-  const complexityText = complexityLabel(game.complexity);
+  const weightText =
+    game.complexity !== null
+      ? game.complexity <= 2
+        ? "Light"
+        : game.complexity <= 3
+          ? "Medium"
+          : "Heavy"
+      : null
 
-  const score = Math.round(match.score);
+  const score = Math.round(match.score)
   const primaryReason =
-    match.reasons[0] ??
-    (match.ai_used && match.ai_explanation ? match.ai_explanation : null);
+    match.reasons[0]
+    ?? (
+      match.ai_used
+      && match.ai_explanation
+        ? match.ai_explanation
+        : null
+    )
+
 
   async function sharePick() {
     const reason =
-      match.ai_used && match.ai_explanation
+      match.ai_used
+      && match.ai_explanation
         ? match.ai_explanation
-        : match.reasons[0];
+        : match.reasons[0]
 
     const text = [
       `Tonight's pick: ${game.name}`,
-      `${playerCount} player${playerCount === 1 ? "" : "s"}`,
+      `${playerCount} player${
+        playerCount === 1 ? "" : "s"
+      }`,
       reason ? `Why: ${reason}` : null,
       "Picked with ShelfPick",
     ]
       .filter(Boolean)
-      .join("\n");
+      .join("\n")
 
-    setShareMessage("");
+    setShareMessage("")
 
     try {
       if (navigator.share) {
         await navigator.share({
           title: game.name,
           text,
-        });
-        setShareMessage("Pick shared.");
-        return;
+        })
+        setShareMessage("Pick shared.")
+        return
       }
 
-      await navigator.clipboard.writeText(text);
-      setShareMessage("Pick copied.");
+      await navigator.clipboard.writeText(text)
+      setShareMessage("Pick copied.")
     } catch (err) {
-      if (err instanceof DOMException && err.name === "AbortError") {
-        return;
+      if (
+        err instanceof DOMException
+        && err.name === "AbortError"
+      ) {
+        return
       }
 
-      console.error(err);
-      setShareMessage("Couldn't share this pick.");
+      console.error(err)
+      setShareMessage(
+        "Couldn't share this pick.",
+      )
     }
   }
+
+  function handleTouchStart(
+    event: TouchEvent<HTMLElement>,
+  ) {
+    touchStartX.current =
+      event.changedTouches[0]?.clientX ?? null
+  }
+
+  function handleTouchEnd(
+    event: TouchEvent<HTMLElement>,
+  ) {
+    const startX = touchStartX.current
+    const endX =
+      event.changedTouches[0]?.clientX ?? null
+
+    touchStartX.current = null
+
+    if (
+      startX === null
+      || endX === null
+      || !hasMoreMatches
+    ) {
+      return
+    }
+
+    if (startX - endX > 70) {
+      onTryAnother()
+    }
+  }
+
 
   return (
     <section
       className="screen reveal-screen picker-result-card"
       aria-labelledby="picker-result-title"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
-      <p className="picker-result-mode">{modeLabel(mode)}</p>
+      <div className="picker-result-topbar">
+        <p className="picker-result-mode">
+          {modeLabel(mode)}
+        </p>
+
+        <button
+          type="button"
+          className="picker-share-icon-button"
+          onClick={sharePick}
+          aria-label={`Share ${game.name}`}
+          title="Share"
+        >
+          <ShareIcon />
+        </button>
+      </div>
 
       <button
         type="button"
@@ -143,9 +243,16 @@ function PickerResult({
       >
         <div className="picker-cover-wrap">
           {coverUrl ? (
-            <img className="picker-cover-image" src={coverUrl} alt="" />
+            <img
+              className="picker-cover-image"
+              src={coverUrl}
+              alt=""
+            />
           ) : (
-            <div className="picker-cover-placeholder" aria-hidden="true">
+            <div
+              className="picker-cover-placeholder"
+              aria-hidden="true"
+            >
               Cover art
             </div>
           )}
@@ -160,7 +267,10 @@ function PickerResult({
         </div>
 
         <div className="picker-result-copy">
-          <h2 id="picker-result-title" className="picker-result-title">
+          <h2
+            id="picker-result-title"
+            className="picker-result-title"
+          >
             {game.name}
           </h2>
 
@@ -168,29 +278,46 @@ function PickerResult({
             {playerText && <span>{playerText}</span>}
             {playerText && timeText && <span>·</span>}
             {timeText && <span>{timeText}</span>}
-            {(playerText || timeText) && complexityText && <span>·</span>}
-            {complexityText && <span>{complexityText}</span>}
+            {(playerText || timeText) && weightText && <span>·</span>}
+            {weightText && <span>{weightText}</span>}
           </div>
         </div>
       </button>
 
+
       {primaryReason && (
-        <p className="picker-primary-reason">{primaryReason}</p>
+        <p className="picker-primary-reason">
+          {primaryReason}
+        </p>
       )}
 
-      {(match.reasons.length > 0 ||
-        (match.ai_used && match.ai_explanation)) && (
-        <Disclosure label="Why this pick?" className="picker-reason-details">
+      {(match.reasons.length > 0
+        || (
+          match.ai_used
+          && match.ai_explanation
+        )) && (
+        <Disclosure
+          label="Why this pick?"
+          className="picker-reason-details"
+        >
           <div className="picker-reason-detail-body">
-            {match.ai_used && match.ai_explanation && (
-              <p>{match.ai_explanation}</p>
+            {match.ai_used
+              && match.ai_explanation
+              && (
+              <p>
+                {match.ai_explanation}
+              </p>
             )}
 
             {match.reasons.length > 0 && (
               <ul>
-                {match.reasons.slice(1, 4).map((reason) => (
-                  <li key={reason}>{reason}</li>
-                ))}
+                {match.reasons
+                  .slice(1, 4)
+                  .map((reason) => (
+                    <li key={reason}>
+                      {reason}
+                    </li>
+                  ))}
               </ul>
             )}
           </div>
@@ -213,17 +340,15 @@ function PickerResult({
         </span>
 
         <div className="picker-result-links">
-          <button type="button" onClick={sharePick}>
-            Share
-          </button>
-
           <button
             type="button"
             className="try-another-link"
             onClick={onTryAnother}
             disabled={!hasMoreMatches}
           >
-            {hasMoreMatches ? "Try another" : "No more matches"}
+            {hasMoreMatches
+              ? "Try another"
+              : "No more matches"}
           </button>
         </div>
       </div>
@@ -234,15 +359,29 @@ function PickerResult({
         </p>
       )}
 
-      {!hasMoreMatches && totalMatches > 1 && (
-        <p className="picker-exhausted">You've seen every matching game.</p>
+      {hasMoreMatches && (
+        <p className="picker-swipe-hint">
+          Swipe left to try another
+        </p>
       )}
 
-      <button type="button" className="picker-start-over" onClick={onStartOver}>
+      {!hasMoreMatches
+        && totalMatches > 1 && (
+        <p className="picker-exhausted">
+          You've seen every matching game.
+        </p>
+      )}
+
+      <button
+        type="button"
+        className="picker-start-over"
+        onClick={onStartOver}
+      >
         Start over
       </button>
     </section>
-  );
+  )
 }
 
-export default PickerResult;
+
+export default PickerResult
