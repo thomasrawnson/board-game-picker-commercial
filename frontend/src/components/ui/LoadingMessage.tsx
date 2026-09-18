@@ -4,7 +4,7 @@ import {
 } from "react"
 
 
-export const DEFAULT_LOADING_MESSAGES = [
+const DEFAULT_LOADING_MESSAGES = [
   "Shuffling the shelf...",
   "Rolling for initiative...",
   "Counting meeples...",
