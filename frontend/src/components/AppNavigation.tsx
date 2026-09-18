@@ -7,14 +7,10 @@ export type AppView =
   | "insights"
   | "setup"
 
-
 type Props = {
   view: AppView
-  onChangeView: (
-    view: AppView,
-  ) => void
+  onChangeView: (view: AppView) => void
 }
-
 
 type NavIconName =
   | "picker"
@@ -22,7 +18,6 @@ type NavIconName =
   | "gameNight"
   | "discover"
   | "insights"
-
 
 function NavIcon({
   name,
@@ -71,15 +66,12 @@ function NavIcon({
     )
   }
 
-
-
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M5 19V11M10 19V7M15 19v-5M20 19V4" />
     </svg>
   )
 }
-
 
 const items: {
   view: Exclude<AppView, "setup">
@@ -88,11 +80,10 @@ const items: {
 }[] = [
   { view: "picker", label: "Pick", icon: "picker" },
   { view: "collection", label: "Shelf", icon: "collection" },
-  { view: "gameNight", label: "Game night", icon: "gameNight" },
+  { view: "gameNight", label: "Group", icon: "gameNight" },
   { view: "discover", label: "Discover", icon: "discover" },
   { view: "insights", label: "Insight", icon: "insights" },
 ]
-
 
 function AppNavigation({
   view,
@@ -114,9 +105,7 @@ function AppNavigation({
               ? "page"
               : undefined
           }
-          onClick={() =>
-            onChangeView(item.view)
-          }
+          onClick={() => onChangeView(item.view)}
         >
           <span className="nav-icon">
             <NavIcon name={item.icon} />
@@ -129,6 +118,5 @@ function AppNavigation({
     </nav>
   )
 }
-
 
 export default AppNavigation
