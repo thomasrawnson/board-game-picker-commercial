@@ -2249,3 +2249,414 @@
     font-size: 20px;
   }
 }
+
+/* =========================================================
+   Reveal hierarchy + accessibility pass
+   ========================================================= */
+
+.picker-result-card {
+  position: relative;
+  padding-top: 24px;
+}
+
+.picker-result-mode {
+  margin: 0 0 18px;
+  color: var(--sp-text);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.05;
+  text-align: center;
+}
+
+/* Share belongs to the screen edge, not beside the result heading. */
+.picker-share-icon-button {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--sp-text);
+  background: rgba(28, 67, 51, 0.96);
+  border: 1px solid rgba(217, 226, 212, 0.28);
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
+.picker-share-icon-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.picker-cover-wrap {
+  overflow: visible;
+}
+
+/* Anchor the score beside the cover rather than on top of the art. */
+.picker-match-score {
+  top: 10px;
+  right: -30px;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  justify-items: center;
+  gap: 0 !important;
+  border-width: 3px;
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.25);
+}
+
+.picker-match-score strong {
+  margin: 0;
+  font-size: 17px;
+  line-height: 0.82;
+}
+
+.picker-match-score span {
+  margin: 0;
+  padding: 0;
+  font-size: 6.5px;
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+}
+
+/* Secondary copy must remain readable on the dark result surface. */
+.picker-primary-reason,
+.picker-result-footer,
+.picker-result-count,
+.picker-start-over,
+.share-message,
+.picker-exhausted {
+  color: var(--sp-secondary) !important;
+}
+
+.picker-primary-reason {
+  margin-top: 17px;
+}
+
+.picker-reason-details {
+  margin-top: 10px !important;
+  padding-top: 8px !important;
+}
+
+.picker-reason-details > summary {
+  color: var(--sp-green) !important;
+  font-weight: 700;
+}
+
+.picker-primary-action {
+  margin-top: 24px;
+}
+
+.picker-result-footer {
+  margin-top: 21px;
+}
+
+/* One clear primary, one outlined secondary, then tertiary text. */
+.picker-result-links .try-another-link {
+  min-height: 38px;
+  padding: 8px 13px;
+  color: var(--sp-text);
+  background: transparent;
+  border: 1px solid rgba(217, 226, 212, 0.28);
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.picker-result-links .try-another-link:hover:not(:disabled) {
+  background: rgba(196, 217, 185, 0.08);
+  border-color: rgba(217, 226, 212, 0.42);
+  text-decoration: none;
+}
+
+.picker-start-over {
+  margin-top: 15px;
+  font-weight: 650;
+}
+
+/* Swipe remains supported as a gesture but is no longer advertised. */
+.picker-swipe-hint {
+  display: none;
+}
+
+@media (max-width: 420px) {
+  .picker-result-mode {
+    font-size: 22px;
+  }
+
+  .picker-share-icon-button {
+    top: -46px;
+    right: 2px;
+  }
+
+  .picker-match-score {
+    right: -24px;
+    width: 50px;
+    height: 50px;
+  }
+}
+
+
+/* =========================================================
+   Reveal & top-controls refinement v5
+   ========================================================= */
+
+/* Bigger, more playful settings meeple. */
+.dice-menu-button {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meeple-icon {
+  width: 24px;
+  height: 24px;
+  transform-origin: center;
+  transition: transform 170ms ease, filter 170ms ease;
+}
+
+.dice-menu-button:hover .meeple-icon {
+  transform: translateY(-1px) scale(1.06);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.16));
+}
+
+.dice-menu-button:active .meeple-icon {
+  transform: translateY(2px) scale(0.94);
+}
+
+.picker-result-card {
+  padding-bottom: 26px;
+}
+
+.picker-result-mode {
+  margin: 0 0 20px;
+  font-size: 28px;
+  line-height: 1.02;
+}
+
+/* Align reveal top actions with the screen edges. */
+.picker-share-icon-button {
+  top: -52px;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  background: rgba(28, 67, 51, 0.9);
+}
+
+.picker-share-icon-button:hover {
+  background: rgba(34, 78, 59, 0.96);
+}
+
+.picker-share-icon-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.picker-result-meta,
+.picker-result-counter,
+.picker-primary-reason,
+.picker-start-over,
+.share-message,
+.picker-exhausted,
+.picker-reason-details > summary {
+  color: rgba(241, 236, 224, 0.82) !important;
+}
+
+.picker-result-meta {
+  margin-top: 9px;
+}
+
+.picker-result-counter {
+  margin: 14px 0 0;
+  color: rgba(241, 236, 224, 0.76) !important;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.picker-primary-reason {
+  margin-top: 18px;
+}
+
+.picker-reason-details {
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+}
+
+.picker-reason-details > summary {
+  font-weight: 750;
+}
+
+.picker-primary-action {
+  margin-top: 18px;
+}
+
+.picker-result-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.picker-result-footer .try-another-link {
+  min-width: 136px;
+}
+
+.picker-start-over {
+  display: block;
+  margin: 14px auto 0;
+  color: rgba(241, 236, 224, 0.72) !important;
+}
+
+@media (max-width: 420px) {
+  .picker-result-mode {
+    font-size: 25px;
+  }
+
+  .picker-share-icon-button {
+    top: -50px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+
+/* =========================================================
+   Reveal polish v6: balanced actions and aligned top controls
+   ========================================================= */
+
+/* Settings and Share use the same circular control language. */
+.dice-menu-button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: var(--sp-text);
+  background: rgba(28, 67, 51, 0.9);
+  border: 1px solid rgba(217, 226, 212, 0.28);
+  border-radius: 50%;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.meeple-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.dice-menu-button:hover {
+  background: rgba(34, 78, 59, 0.96);
+  border-color: rgba(217, 226, 212, 0.4);
+}
+
+.dice-menu-button:hover .meeple-icon {
+  transform: translateY(-1px) scale(1.05);
+}
+
+.dice-menu-button:active .meeple-icon {
+  transform: translateY(2px) scale(0.94);
+}
+
+/* Match the vertical position of the share control to Settings. */
+.picker-share-icon-button {
+  top: -60px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: rgba(28, 67, 51, 0.9);
+  border-color: rgba(217, 226, 212, 0.28);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Pull the score badge in from the right edge while keeping it proud of the art. */
+.picker-match-score {
+  right: -14px;
+}
+
+/* Give the page indicator its own rhythm between metadata and explanation. */
+.picker-result-counter {
+  margin: 17px 0 14px;
+  color: rgba(241, 236, 224, 0.84) !important;
+}
+
+.picker-primary-reason {
+  margin-top: 14px;
+}
+
+.picker-reason-details {
+  margin-top: 9px !important;
+  padding-top: 7px !important;
+}
+
+/* Primary and secondary actions now form a consistent vertical pair. */
+.picker-primary-action,
+.picker-result-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.picker-primary-action {
+  margin-top: 17px;
+}
+
+.picker-result-footer {
+  margin-top: 11px;
+}
+
+.picker-primary-action .primary-button,
+.picker-result-footer .try-another-link {
+  width: 142px;
+  min-width: 142px;
+  min-height: 44px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.picker-primary-action .primary-button {
+  border: 1px solid transparent;
+}
+
+.picker-result-footer .try-another-link {
+  padding: 9px 13px;
+  color: var(--sp-text);
+  background: rgba(196, 217, 185, 0.035);
+  border: 1px solid rgba(217, 226, 212, 0.34);
+  cursor: pointer;
+}
+
+.picker-result-footer .try-another-link:hover:not(:disabled) {
+  color: var(--sp-text);
+  background: rgba(196, 217, 185, 0.09);
+  border-color: rgba(217, 226, 212, 0.5);
+}
+
+.picker-result-footer .try-another-link:disabled {
+  opacity: 0.48;
+  cursor: default;
+}
+
+.picker-start-over {
+  margin-top: 15px;
+}
+
+@media (max-width: 420px) {
+  .picker-share-icon-button {
+    top: -58px;
+    right: 0;
+  }
+
+  .picker-match-score {
+    right: -10px;
+  }
+}
