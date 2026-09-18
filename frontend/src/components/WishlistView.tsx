@@ -225,9 +225,9 @@ function WishlistView({
 
       {games.length === 0 && !error && (
         <div className="collection-empty">
-          <strong>No saved games yet</strong>
+          <strong>Nothing on the wishlist yet</strong>
           <p>
-            Save recommendations from Discover and they will appear here.
+            Browse Discover and stash anything that catches your eye — it'll show up here.
           </p>
         </div>
       )}

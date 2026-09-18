@@ -1,331 +1,227 @@
-import { useState } from "react"
+import { useState } from "react";
 
 import {
   deletePlay,
   type Game,
   type GameHistory as GameHistoryData,
-} from "../../api/client"
+} from "../../api/client";
 
-import {
-  createBGStatsHistoryUrl,
-} from "../../utils/bgstats"
+import { createBGStatsHistoryUrl } from "../../utils/bgstats";
 
+import LoadingMessage from "../ui/LoadingMessage";
 
 type Props = {
-  game: Game
-  history: GameHistoryData | null
-  loading: boolean
-  onPlayDeleted: () => Promise<void>
-}
+  game: Game;
+  history: GameHistoryData | null;
+  loading: boolean;
+  onPlayDeleted: () => Promise<void>;
+};
 
+function GameHistory({ game, history, loading, onPlayDeleted }: Props) {
+  const [confirmingPlayId, setConfirmingPlayId] = useState<number | null>(null);
 
-function GameHistory({
-  game,
-  history,
-  loading,
-  onPlayDeleted,
-}: Props) {
-  const [
-    confirmingPlayId,
-    setConfirmingPlayId,
-  ] = useState<number | null>(
+  const [deletingPlayId, setDeletingPlayId] = useState<number | null>(null);
+
+  const [deleteErrorPlayId, setDeleteErrorPlayId] = useState<number | null>(
     null,
-  )
+  );
 
-  const [
-    deletingPlayId,
-    setDeletingPlayId,
-  ] = useState<number | null>(
-    null,
-  )
+  const [deleteError, setDeleteError] = useState("");
 
-  const [
-    deleteErrorPlayId,
-    setDeleteErrorPlayId,
-  ] = useState<number | null>(
-    null,
-  )
-
-  const [
-    deleteError,
-    setDeleteError,
-  ] = useState("")
-
-  function requestDeletePlay(
-    playId: number,
-  ) {
-    setDeleteErrorPlayId(null)
-    setDeleteError("")
-    setConfirmingPlayId(playId)
+  function requestDeletePlay(playId: number) {
+    setDeleteErrorPlayId(null);
+    setDeleteError("");
+    setConfirmingPlayId(playId);
   }
 
   function cancelDeletePlay() {
-    setConfirmingPlayId(null)
+    setConfirmingPlayId(null);
   }
 
-  async function confirmDeletePlay(
-    playId: number,
-  ) {
-    setDeletingPlayId(playId)
-    setDeleteErrorPlayId(null)
-    setDeleteError("")
+  async function confirmDeletePlay(playId: number) {
+    setDeletingPlayId(playId);
+    setDeleteErrorPlayId(null);
+    setDeleteError("");
 
     try {
-      await deletePlay(
-        playId
-      )
+      await deletePlay(playId);
 
-      await onPlayDeleted()
+      await onPlayDeleted();
     } catch (err) {
-      console.error(err)
+      console.error(err);
 
-      setDeleteErrorPlayId(playId)
-      setDeleteError(
-        "Couldn't delete this play.",
-      )
+      setDeleteErrorPlayId(playId);
+      setDeleteError("Couldn't delete this play.");
     } finally {
-      setDeletingPlayId(null)
-      setConfirmingPlayId(null)
+      setDeletingPlayId(null);
+      setConfirmingPlayId(null);
     }
   }
   return (
     <div className="detail-section game-history">
-      <p className="preference-label">
-        Your history
-      </p>
+      <p className="preference-label">Your history</p>
 
       {loading ? (
         <p className="history-empty">
-          Loading your play history...
+          <LoadingMessage
+            messages={[
+              "Pulling out the scorepad...",
+              "Digging through the play log...",
+              "Counting up past games...",
+            ]}
+          />
         </p>
       ) : history ? (
         <>
           <div className="history-stats">
             <div>
-              <strong>
-                {history.play_count}
-              </strong>
+              <strong>{history.play_count}</strong>
 
               <span>Plays</span>
             </div>
 
             <div>
-              <strong>
-                {history.average_players
-                  ?.toFixed(1) ?? "—"}
-              </strong>
+              <strong>{history.average_players?.toFixed(1) ?? "—"}</strong>
 
-              <span>
-                Avg players
-              </span>
+              <span>Avg players</span>
             </div>
 
             <div>
-              <strong>
-                {history
-                  .average_duration_minutes ??
-                  "—"}
-              </strong>
+              <strong>{history.average_duration_minutes ?? "—"}</strong>
 
-              <span>
-                Avg mins
-              </span>
+              <span>Avg mins</span>
             </div>
           </div>
 
           {history.last_played_at && (
             <p className="history-last-played">
               Last played{" "}
-              {new Date(
-                history.last_played_at,
-              ).toLocaleDateString(
-                undefined,
-                {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                },
-              )}
+              {new Date(history.last_played_at).toLocaleDateString(undefined, {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </p>
           )}
 
           {history.recent_plays.length > 0 ? (
             <div className="recent-plays">
-              <p className="preference-label">
-                Recent plays
-              </p>
+              <p className="preference-label">Recent plays</p>
 
-              {history.recent_plays.map(
-                (play) => (
-                  <div
-                    className="recent-play-detail"
-                    key={play.id}
-                  >
-                    <div className="recent-play-header">
-                      <div>
-                        <strong>
-                          {new Date(
-                            play.played_at,
-                          ).toLocaleDateString(
-                            undefined,
-                            {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            },
-                          )}
-                        </strong>
-
-                        <span>
-                          {play.player_count}{" "}
-                          {play.player_count === 1
-                            ? "player"
-                            : "players"}
-                        </span>
-                      </div>
+              {history.recent_plays.map((play) => (
+                <div className="recent-play-detail" key={play.id}>
+                  <div className="recent-play-header">
+                    <div>
+                      <strong>
+                        {new Date(play.played_at).toLocaleDateString(
+                          undefined,
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )}
+                      </strong>
 
                       <span>
-                        {play.duration_minutes
-                          ? `${play.duration_minutes} min`
-                          : "—"}
+                        {play.player_count}{" "}
+                        {play.player_count === 1 ? "player" : "players"}
                       </span>
                     </div>
 
-                    {play.participants.length >
-                      0 && (
-                      <div className="play-participants">
-                        {play.participants.map(
-                          (participant) => (
-                            <div
-                              className={
-                                participant
-                                  .is_winner
-                                  ? "history-player winner"
-                                  : "history-player"
-                              }
-                              key={
-                                participant.id
-                              }
-                            >
-                              <span>
-                                {
-                                  participant.name
-                                }
-
-                                {participant
-                                  .is_winner &&
-                                  " · Winner"}
-                              </span>
-
-                              <strong>
-                                {participant
-                                  .score ?? "—"}
-                              </strong>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    )}
-
-                    {play.source !==
-                      "bgstats" && (
-                      <a
-                        className="bgstats-history-link"
-                        href={
-                          createBGStatsHistoryUrl(
-                            game,
-                            play,
-                          )
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Send to BG Stats
-                      </a>
-                    )}
-                    {confirmingPlayId ===
-                    play.id ? (
-                      <div className="delete-play-confirm">
-                        <span>
-                          Delete this
-                          play?
-                        </span>
-
-                        <div className="delete-play-confirm-actions">
-                          <button
-                            type="button"
-                            className="ghost-button"
-                            disabled={
-                              deletingPlayId ===
-                              play.id
-                            }
-                            onClick={
-                              cancelDeletePlay
-                            }
-                          >
-                            Cancel
-                          </button>
-
-                          <button
-                            type="button"
-                            className="delete-play-confirm-button"
-                            disabled={
-                              deletingPlayId ===
-                              play.id
-                            }
-                            onClick={() =>
-                              confirmDeletePlay(
-                                play.id,
-                              )
-                            }
-                          >
-                            {deletingPlayId ===
-                            play.id
-                              ? "Deleting..."
-                              : "Delete play"}
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        className="delete-play-button"
-                        onClick={() =>
-                          requestDeletePlay(
-                            play.id,
-                          )
-                        }
-                      >
-                        Delete play
-                      </button>
-                    )}
-
-                    {deleteError &&
-                      deleteErrorPlayId ===
-                        play.id && (
-                        <p className="error-message">
-                          {deleteError}
-                        </p>
-                      )}
+                    <span>
+                      {play.duration_minutes
+                        ? `${play.duration_minutes} min`
+                        : "—"}
+                    </span>
                   </div>
-                ),
-              )}
+
+                  {play.participants.length > 0 && (
+                    <div className="play-participants">
+                      {play.participants.map((participant) => (
+                        <div
+                          className={
+                            participant.is_winner
+                              ? "history-player winner"
+                              : "history-player"
+                          }
+                          key={participant.id}
+                        >
+                          <span>
+                            {participant.name}
+
+                            {participant.is_winner && " · Winner"}
+                          </span>
+
+                          <strong>{participant.score ?? "—"}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {play.source !== "bgstats" && (
+                    <a
+                      className="bgstats-history-link"
+                      href={createBGStatsHistoryUrl(game, play)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Send to BG Stats
+                    </a>
+                  )}
+                  {confirmingPlayId === play.id ? (
+                    <div className="delete-play-confirm">
+                      <span>Delete this play?</span>
+
+                      <div className="delete-play-confirm-actions">
+                        <button
+                          type="button"
+                          className="ghost-button"
+                          disabled={deletingPlayId === play.id}
+                          onClick={cancelDeletePlay}
+                        >
+                          Cancel
+                        </button>
+
+                        <button
+                          type="button"
+                          className="delete-play-confirm-button"
+                          disabled={deletingPlayId === play.id}
+                          onClick={() => confirmDeletePlay(play.id)}
+                        >
+                          {deletingPlayId === play.id
+                            ? "Deleting..."
+                            : "Delete play"}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="delete-play-button"
+                      onClick={() => requestDeletePlay(play.id)}
+                    >
+                      Delete play
+                    </button>
+                  )}
+
+                  {deleteError && deleteErrorPlayId === play.id && (
+                    <p className="error-message">{deleteError}</p>
+                  )}
+                </div>
+              ))}
             </div>
           ) : (
             <p className="history-empty">
-              You haven't logged a play of
-              this game yet.
+              No plays logged yet — break the seal.
             </p>
           )}
         </>
       ) : (
-        <p className="history-empty">
-          Play history unavailable.
-        </p>
+        <p className="history-empty">Play history unavailable.</p>
       )}
     </div>
-  )
+  );
 }
 
-
-export default GameHistory
+export default GameHistory;

@@ -8,6 +8,9 @@ import {
   type PlayerStats,
 } from "../../api/client"
 
+import LoadingMessage
+  from "../ui/LoadingMessage"
+
 
 type Props = {
   playerId: number
@@ -99,7 +102,12 @@ function PlayerProfile({
         </p>
 
         <h1>
-          Loading player...
+          <LoadingMessage
+            messages={[
+              "Pulling up their stats...",
+              "Tallying their wins...",
+            ]}
+          />
         </h1>
       </section>
     )

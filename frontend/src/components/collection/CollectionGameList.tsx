@@ -20,7 +20,7 @@ function CollectionGameList({
   if (games.length === 0) {
     return (
       <p className="collection-empty">
-        No games match these filters.
+        Nothing on the shelf matches that — try loosening a filter.
       </p>
     )
   }

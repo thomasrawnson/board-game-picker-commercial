@@ -13,6 +13,10 @@ import PlayLogForm
 import Disclosure
   from "../ui/Disclosure"
 
+import {
+  getTableTalk,
+} from "../../utils/tableTalk"
+
 
 type Props = {
   match: PickerMatch
@@ -107,6 +111,7 @@ function PickerResult({
     )
 
   const score = Math.round(match.score)
+  const tableTalk = getTableTalk(game)
   const primaryReason =
     match.reasons[0]
     ?? (
@@ -223,6 +228,9 @@ function PickerResult({
         </div>
       </button>
 
+      <p className="picker-table-talk">
+        {tableTalk}
+      </p>
 
       {primaryReason && (
         <p className="picker-primary-reason">

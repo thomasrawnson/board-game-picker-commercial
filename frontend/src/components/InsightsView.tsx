@@ -890,7 +890,7 @@ function InsightsView({
                   .length === 0
                 && (
                   <p className="insight-empty">
-                    No plays this month.
+                    Nobody's played anything this month — time to fix that.
                   </p>
                 )
               }
@@ -939,7 +939,7 @@ function InsightsView({
               )
               : (
                 <p className="insight-empty">
-                  No plays recorded yet.
+                  Nothing logged yet — your first play is one tap away.
                 </p>
               )
           }

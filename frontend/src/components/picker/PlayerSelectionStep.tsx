@@ -9,6 +9,9 @@ import {
   type Player,
 } from "../../api/client"
 
+import LoadingMessage
+  from "../ui/LoadingMessage"
+
 
 type Props = {
   selectedPlayerIds: number[]
@@ -154,7 +157,12 @@ function PlayerSelectionStep({
       <div className="picker-selection-list">
         {loading ? (
           <p className="picker-selection-empty">
-            Loading players...
+            <LoadingMessage
+              messages={[
+                "Gathering the usual suspects...",
+                "Checking who's free tonight...",
+              ]}
+            />
           </p>
         ) : filteredPlayers.length
           > 0 ? (
@@ -206,7 +214,7 @@ function PlayerSelectionStep({
           )
         ) : (
           <p className="picker-selection-empty">
-            No players found.
+            No players match that search — check the spelling, or add someone new.
           </p>
         )}
       </div>

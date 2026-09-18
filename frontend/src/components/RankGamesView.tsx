@@ -13,6 +13,9 @@ import {
   type RankingsResponse,
 } from "../api/client"
 
+import LoadingMessage
+  from "./ui/LoadingMessage"
+
 
 type RankingView =
   | "compare"
@@ -335,7 +338,7 @@ function RankGamesView() {
     return (
       <section className="screen rankings-screen">
         <h1>
-          Shuffling the shelf...
+          <LoadingMessage />
         </h1>
       </section>
     )
@@ -553,7 +556,14 @@ function RankGamesView() {
             <ol className="ranking-list">
               {visibleRankings.map((game) => (
                 <li key={game.bgg_id}>
-                  <span className="ranking-position">
+                  <span
+                    className={
+                      game.rank
+                      && game.rank <= 3
+                        ? `ranking-position ranking-position--top rank-${game.rank}`
+                        : "ranking-position"
+                    }
+                  >
                     {game.rank}
                   </span>
 
