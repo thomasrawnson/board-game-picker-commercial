@@ -8,6 +8,7 @@ import {
   getRankings,
   type CollectionInsights,
   type RankingSummary,
+  type RankingsResponse,
 } from "../api/client"
 
 import PlayerProfile
@@ -125,6 +126,11 @@ function InsightsView({
   ] = useState<RankingSummary | null>(null)
 
   const [
+    rankedGames,
+    setRankedGames,
+  ] = useState<RankingsResponse["rankings"]>([])
+
+  const [
     rankShareStatus,
     setRankShareStatus,
   ] = useState("")
@@ -192,6 +198,9 @@ function InsightsView({
         setRankingSummary(
           rankingResult.summary
         )
+        setRankedGames(
+          rankingResult.rankings
+        )
       } catch (err) {
         console.error(err)
 
@@ -208,47 +217,34 @@ function InsightsView({
 
 
   async function shareRankStats() {
-    if (
-      !rankingSummary
-      || rankingSummary.games_count === 0
-    ) {
+    const games = rankedGames.slice(
+      0,
+      rankSummaryLimit,
+    )
+
+    if (games.length === 0) {
       return
     }
 
-    const sections = [
-      ["Designers", rankingSummary.designers],
-      ["Publishers", rankingSummary.publishers],
-      ["Mechanics", rankingSummary.mechanics],
-      ["Categories", rankingSummary.categories],
-    ] as const
-
-    const title = "My BoardGamePicker Rank Stats"
+    const title = `My Top ${games.length} Board Games`
     const text = [
       title,
-      `Based on my Top ${rankingSummary.games_count} games`,
       "",
-      ...sections.flatMap(([label, items]) => [
-        `${label}:`,
-        ...(
-          items.length > 0
-            ? items.map(
-                (item, index) =>
-                  `${index + 1}. ${item.name} (${item.count})`,
-              )
-            : ["No data yet"]
-        ),
-        "",
-      ]),
-      "Created with BoardGamePicker",
+      ...games.map(
+        (game, index) =>
+          `${index + 1}. ${game.name}`,
+      ),
+      "",
+      "Ranked with BoardGamePicker",
     ].join("\n")
 
     try {
       if (navigator.share) {
         await navigator.share({title, text})
-        setRankShareStatus("Stats shared")
+        setRankShareStatus("Ranking shared")
       } else {
         await navigator.clipboard.writeText(text)
-        setRankShareStatus("Stats copied")
+        setRankShareStatus("Ranking copied")
       }
     } catch (err) {
       if (
@@ -259,10 +255,9 @@ function InsightsView({
       }
 
       console.error(err)
-      setRankShareStatus("Couldn't share stats")
+      setRankShareStatus("Couldn't share ranking")
     }
   }
-
 
   async function changeRankSummaryLimit(
     nextLimit: RankSummaryLimit,
@@ -277,6 +272,7 @@ function InsightsView({
         nextLimit,
       )
       setRankingSummary(result.summary)
+      setRankedGames(result.rankings)
     } catch (err) {
       console.error(err)
       setError(
@@ -535,40 +531,61 @@ function InsightsView({
 
 
       {activeSection === "rank" && (
-        <div className="stats-section-content">
-          <div className="stats-section-heading">
-            <div className="rank-section-title-row">
+        <div className="stats-section-content rank-insight-section">
+          <section className="rank-insight-hero">
+            <div>
+              <p className="insight-label">
+                Your personal ranking
+              </p>
+
               <h2>
-                The shape of your Top {rankSummaryLimit}
+                Build a list that feels like yours
               </h2>
-              <button
-                type="button"
-                className="insight-inline-action"
-                onClick={onOpenRankings}
-              >
-                Rank games →
-              </button>
+
+              <p>
+                Compare two games at a time and ShelfPick turns those choices into your own ranked shelf.
+              </p>
             </div>
 
-            {rankingSummary
-              && rankingSummary.games_count > 0
-              && (
-                <div className="rank-summary-share-card">
-                  <div className="rank-summary-share-heading">
-                    <strong>Choose a list size</strong>
+            <button
+              type="button"
+              className="rank-games-primary"
+              onClick={onOpenRankings}
+            >
+              Rank games
+              <span aria-hidden="true">→</span>
+            </button>
+          </section>
+
+          {rankingSummary
+            && rankingSummary.games_count > 0
+            ? (
+              <>
+                <section className="rank-insight-list-card">
+                  <div className="rank-insight-list-heading">
+                    <div>
+                      <p className="insight-label">
+                        Your favourites
+                      </p>
+
+                      <h2>
+                        Top {rankSummaryLimit} games
+                      </h2>
+                    </div>
 
                     <button
                       type="button"
+                      className="rank-insight-share"
                       disabled={rankSummaryLoading}
                       onClick={() => void shareRankStats()}
                     >
-                      Share stats
+                      Share
                     </button>
                   </div>
 
                   <div
-                    className="rank-summary-sizes"
-                    aria-label="Rank stats list size"
+                    className="rank-insight-size-tabs"
+                    aria-label="Ranking list size"
                   >
                     {rankSummaryLimits.map((limit) => (
                       <button
@@ -590,58 +607,129 @@ function InsightsView({
                     ))}
                   </div>
 
+                  <ol className="rank-insight-game-list">
+                    {rankedGames
+                      .slice(0, rankSummaryLimit)
+                      .map((game, index) => (
+                        <li key={game.bgg_id}>
+                          <span className="rank-insight-position">
+                            {index + 1}
+                          </span>
+
+                          <button
+                            type="button"
+                            className="rank-insight-game"
+                            onClick={() =>
+                              onOpenGame(game.bgg_id)
+                            }
+                          >
+                            <span className="rank-insight-thumb">
+                              {game.image_url
+                                || game.thumbnail_url
+                                ? (
+                                  <img
+                                    src={
+                                      game.image_url
+                                      ?? game.thumbnail_url
+                                      ?? ""
+                                    }
+                                    alt=""
+                                  />
+                                )
+                                : (
+                                  <span aria-hidden="true">?</span>
+                                )}
+                            </span>
+
+                            <span className="rank-insight-game-copy">
+                              <strong>{game.name}</strong>
+                              <small>
+                                {game.comparisons_count} comparisons · {game.wins} wins
+                              </small>
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                  </ol>
+
                   {rankShareStatus && (
-                    <span role="status">
+                    <p
+                      className="rank-insight-share-status"
+                      role="status"
+                    >
                       {rankShareStatus}
-                    </span>
-                  )}
-                </div>
-              )}
-          </div>
-
-          {rankingSummary
-            && rankingSummary.games_count > 0
-            ? (
-              <div className="rank-summary-grid">
-                {([
-                  ["Designers", rankingSummary.designers],
-                  ["Publishers", rankingSummary.publishers],
-                  ["Mechanics", rankingSummary.mechanics],
-                  ["Categories", rankingSummary.categories],
-                ] as const).map(([label, items]) => (
-                  <article
-                    className="rank-summary-card"
-                    key={label}
-                  >
-                    <p className="insight-label">
-                      Top {label}
                     </p>
+                  )}
+                </section>
 
-                    {items.length > 0 ? (
-                      <ol>
-                        {items.map((item) => (
-                          <li key={item.name}>
-                            <span>{item.name}</span>
-                            <strong>{item.count}</strong>
-                          </li>
-                        ))}
-                      </ol>
-                    ) : (
-                      <p className="insight-empty">
-                        Sync your collection to add this metadata.
-                      </p>
-                    )}
-                  </article>
-                ))}
-              </div>
+                <details className="rank-more-details">
+                  <summary>
+                    <span>
+                      <strong>More rankings</strong>
+                      <small>
+                        Designers, publishers, mechanics and categories
+                      </small>
+                    </span>
+
+                    <span
+                      className="rank-more-chevron"
+                      aria-hidden="true"
+                    >
+                      +
+                    </span>
+                  </summary>
+
+                  <div className="rank-summary-grid">
+                    {([
+                      ["Designers", rankingSummary.designers],
+                      ["Publishers", rankingSummary.publishers],
+                      ["Mechanics", rankingSummary.mechanics],
+                      ["Categories", rankingSummary.categories],
+                    ] as const).map(([label, items]) => (
+                      <article
+                        className="rank-summary-card"
+                        key={label}
+                      >
+                        <p className="insight-label">
+                          Top {label}
+                        </p>
+
+                        {items.length > 0 ? (
+                          <ol>
+                            {items.map((item) => (
+                              <li key={item.name}>
+                                <span>{item.name}</span>
+                                <strong>{item.count}</strong>
+                              </li>
+                            ))}
+                          </ol>
+                        ) : (
+                          <p className="insight-empty">
+                            Sync your collection to add this metadata.
+                          </p>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                </details>
+              </>
             )
             : (
-              <article className="stats-empty-card">
-                <span>↕</span>
-                <h2>Build your ranking</h2>
+              <article className="rank-insight-empty">
+                <h2>Start your ranking</h2>
+
                 <p>
-                  Compare played games to reveal the designers, publishers and styles across your favourites.
+                  Make a few head-to-head choices and your Top 10, 20, 50 and 100 will start taking shape.
                 </p>
+
+                <button
+                  type="button"
+                  className="rank-games-primary"
+                  onClick={onOpenRankings}
+                >
+                  Rank your first games
+                  <span aria-hidden="true">→</span>
+                </button>
               </article>
             )}
         </div>
