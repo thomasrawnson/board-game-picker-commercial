@@ -41,7 +41,7 @@ function modeLabel(
     return "Surprise pick"
   }
 
-  return "Best match"
+  return "Tonight's pick"
 }
 
 
@@ -134,6 +134,25 @@ function PickerResult({
         : null
     )
 
+  const bestAtText =
+    `Best at ${playerCount} player${
+      playerCount === 1 ? "" : "s"
+    }`
+
+  const contextualPlayerText =
+    game.min_players === playerCount
+    && game.max_players === playerCount
+      ? bestAtText
+      : playerText
+        ? `${playerText} · ${bestAtText}`
+        : bestAtText
+
+  const showPrimaryReason =
+    primaryReason !== null
+    && !/^Supports?\s+\d+\s+player/i.test(
+      primaryReason
+    )
+
 
   async function sharePick() {
     const reason =
@@ -219,21 +238,19 @@ function PickerResult({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="picker-result-topbar">
-        <p className="picker-result-mode">
-          {modeLabel(mode)}
-        </p>
+      <button
+        type="button"
+        className="picker-share-icon-button"
+        onClick={sharePick}
+        aria-label={`Share ${game.name}`}
+        title="Share"
+      >
+        <ShareIcon />
+      </button>
 
-        <button
-          type="button"
-          className="picker-share-icon-button"
-          onClick={sharePick}
-          aria-label={`Share ${game.name}`}
-          title="Share"
-        >
-          <ShareIcon />
-        </button>
-      </div>
+      <p className="picker-result-mode">
+        {modeLabel(mode)}
+      </p>
 
       <button
         type="button"
@@ -266,6 +283,10 @@ function PickerResult({
           </div>
         </div>
 
+        <p className="picker-result-counter">
+          Pick {matchIndex + 1} of {totalMatches}
+        </p>
+
         <div className="picker-result-copy">
           <h2
             id="picker-result-title"
@@ -275,21 +296,19 @@ function PickerResult({
           </h2>
 
           <div className="picker-result-meta">
-            {playerText && <span>{playerText}</span>}
-            {playerText && timeText && <span>·</span>}
+            {contextualPlayerText && (
+              <span>{contextualPlayerText}</span>
+            )}
+            {contextualPlayerText && timeText && <span>·</span>}
             {timeText && <span>{timeText}</span>}
-            {(playerText || timeText) && weightText && <span>·</span>}
+            {(contextualPlayerText || timeText) && weightText && (
+              <span>·</span>
+            )}
             {weightText && <span>{weightText}</span>}
           </div>
         </div>
       </button>
 
-
-      {primaryReason && (
-        <p className="picker-primary-reason">
-          {primaryReason}
-        </p>
-      )}
 
       {(match.reasons.length > 0
         || (
@@ -301,15 +320,22 @@ function PickerResult({
           className="picker-reason-details"
         >
           <div className="picker-reason-detail-body">
+            {showPrimaryReason && primaryReason && (
+              <p>
+                {primaryReason}
+              </p>
+            )}
+
             {match.ai_used
               && match.ai_explanation
+              && match.ai_explanation !== primaryReason
               && (
               <p>
                 {match.ai_explanation}
               </p>
             )}
 
-            {match.reasons.length > 0 && (
+            {match.reasons.length > 1 && (
               <ul>
                 {match.reasons
                   .slice(1, 4)
@@ -335,33 +361,21 @@ function PickerResult({
       </div>
 
       <div className="picker-result-footer">
-        <span>
-          Pick {matchIndex + 1} of {totalMatches}
-        </span>
-
-        <div className="picker-result-links">
-          <button
-            type="button"
-            className="try-another-link"
-            onClick={onTryAnother}
-            disabled={!hasMoreMatches}
-          >
-            {hasMoreMatches
-              ? "Try another"
-              : "No more matches"}
-          </button>
-        </div>
+        <button
+          type="button"
+          className="try-another-link"
+          onClick={onTryAnother}
+          disabled={!hasMoreMatches}
+        >
+          {hasMoreMatches
+            ? "Try another"
+            : "No more matches"}
+        </button>
       </div>
 
       {shareMessage && (
         <p className="share-message" role="status">
           {shareMessage}
-        </p>
-      )}
-
-      {hasMoreMatches && (
-        <p className="picker-swipe-hint">
-          Swipe left to try another
         </p>
       )}
 

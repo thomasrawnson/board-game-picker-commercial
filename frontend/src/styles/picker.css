@@ -2096,7 +2096,7 @@
   background: var(--sp-gold);
   border-radius: 16px;
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
-  animation: picker-die-tumble 560ms cubic-bezier(.2,.8,.2,1) both;
+  animation: picker-die-tumble 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .picker-roll-die span {
@@ -2107,11 +2107,26 @@
   border-radius: 50%;
 }
 
-.picker-roll-die span:nth-child(1) { top: 15px; left: 15px; }
-.picker-roll-die span:nth-child(2) { top: 15px; right: 15px; }
-.picker-roll-die span:nth-child(3) { top: 31px; left: 31px; }
-.picker-roll-die span:nth-child(4) { bottom: 15px; left: 15px; }
-.picker-roll-die span:nth-child(5) { right: 15px; bottom: 15px; }
+.picker-roll-die span:nth-child(1) {
+  top: 15px;
+  left: 15px;
+}
+.picker-roll-die span:nth-child(2) {
+  top: 15px;
+  right: 15px;
+}
+.picker-roll-die span:nth-child(3) {
+  top: 31px;
+  left: 31px;
+}
+.picker-roll-die span:nth-child(4) {
+  bottom: 15px;
+  left: 15px;
+}
+.picker-roll-die span:nth-child(5) {
+  right: 15px;
+  bottom: 15px;
+}
 
 @keyframes picker-die-tumble {
   0% {
@@ -2164,7 +2179,6 @@
   flex-direction: column;
   align-items: center;
 }
-
 
 /* =========================================================
    Reveal pass v3: share icon + stronger header + tighter badge
@@ -2405,7 +2419,6 @@
   }
 }
 
-
 /* =========================================================
    Reveal & top-controls refinement v5
    ========================================================= */
@@ -2423,7 +2436,9 @@
   width: 24px;
   height: 24px;
   transform-origin: center;
-  transition: transform 170ms ease, filter 170ms ease;
+  transition:
+    transform 170ms ease,
+    filter 170ms ease;
 }
 
 .dice-menu-button:hover .meeple-icon {
@@ -2440,9 +2455,10 @@
 }
 
 .picker-result-mode {
-  margin: 0 0 20px;
+  margin: 0 0 22px;
   font-size: 28px;
-  line-height: 1.02;
+  font-weight: 800;
+  line-height: 1;
 }
 
 /* Align reveal top actions with the screen edges. */
@@ -2520,7 +2536,7 @@
 
 @media (max-width: 420px) {
   .picker-result-mode {
-    font-size: 25px;
+    font-size: 26px;
   }
 
   .picker-share-icon-button {
@@ -2529,7 +2545,6 @@
     height: 40px;
   }
 }
-
 
 /* =========================================================
    Reveal polish v6: balanced actions and aligned top controls
@@ -2658,5 +2673,149 @@
 
   .picker-match-score {
     right: -10px;
+  }
+}
+
+/* =========================================================
+   Reveal polish v7: stronger reveal title and cleaner flow
+   ========================================================= */
+
+.picker-result-mode {
+  margin: 0 0 18px;
+  color: var(--sp-text);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+/* The progress counter belongs to the artwork, not the action area. */
+.picker-hero-link .picker-result-counter {
+  margin: 14px 0 0;
+  color: rgba(241, 236, 224, 0.82) !important;
+  font-size: 12px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.picker-result-copy {
+  margin-top: 11px;
+}
+
+.picker-result-meta {
+  color: rgba(241, 236, 224, 0.86) !important;
+}
+
+/* Explanation sits with the metadata it explains. */
+.picker-reason-details {
+  margin-top: 13px !important;
+  padding-top: 0 !important;
+}
+
+.picker-reason-details > summary {
+  color: rgba(241, 236, 224, 0.88) !important;
+  font-weight: 800;
+}
+
+.picker-primary-action {
+  margin-top: 17px;
+}
+
+/* Keep the badge safely inside the card while still proud of the artwork. */
+.picker-match-score {
+  right: -8px;
+}
+
+/* Slightly quieter tertiary reset action. */
+.picker-start-over {
+  color: rgba(241, 236, 224, 0.68) !important;
+}
+
+@media (max-width: 420px) {
+  .picker-result-mode {
+    font-size: 23px;
+  }
+
+  .picker-match-score {
+    right: -6px;
+  }
+}
+
+/* =========================================================
+   Reveal polish v8: final spacing and action hierarchy
+   ========================================================= */
+
+.picker-result-card {
+  padding-bottom: 14px;
+}
+
+.picker-result-mode {
+  margin: 0 0 20px;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+/* Keep the progress indicator visually attached to the artwork. */
+.picker-hero-link .picker-result-counter {
+  margin: 16px 0 0;
+  color: rgba(241, 236, 224, 0.76) !important;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.picker-result-copy {
+  margin-top: 13px;
+}
+
+.picker-result-meta {
+  color: rgba(241, 236, 224, 0.9) !important;
+}
+
+/* Explanation belongs directly with the game metadata. */
+.picker-reason-details {
+  margin-top: 10px !important;
+  padding-top: 0 !important;
+}
+
+.picker-reason-details > summary {
+  color: rgba(241, 236, 224, 0.92) !important;
+  font-weight: 850;
+}
+
+.picker-primary-action {
+  margin-top: 15px;
+}
+
+.picker-result-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 11px;
+}
+
+.picker-result-footer .try-another-link {
+  width: 142px;
+  min-width: 142px;
+}
+
+.picker-start-over {
+  margin-top: 12px;
+  color: rgba(241, 236, 224, 0.62) !important;
+}
+
+/* Pull the score badge a little further inside the artwork edge. */
+.picker-match-score {
+  right: -2px;
+}
+
+@media (max-width: 420px) {
+  .picker-result-mode {
+    font-size: 24px;
+  }
+
+  .picker-match-score {
+    right: 0;
   }
 }

@@ -97,6 +97,38 @@ function formatHours(
 }
 
 
+function ShareIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M14 5h5v5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10 14 19 5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M19 13v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+
 type Props = {
   onOpenGame:
     (bggId: number) => void
@@ -573,10 +605,12 @@ function InsightsView({
                     <button
                       type="button"
                       className="rank-insight-share"
+                      aria-label="Share ranking"
+                      title="Share ranking"
                       disabled={rankSummaryLoading}
                       onClick={() => void shareRankStats()}
                     >
-                      Share
+                      <ShareIcon />
                     </button>
                   </div>
 

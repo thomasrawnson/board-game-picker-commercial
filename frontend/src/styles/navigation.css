@@ -3,10 +3,10 @@
 .app-nav {
   position: fixed;
   left: 50%;
-  bottom: 0;
+  bottom: 8px;
   z-index: 100;
 
-  width: min(100%, 430px);
+  width: min(calc(100% - 14px), 420px);
   transform: translateX(-50%);
 
   display: grid;
@@ -19,7 +19,7 @@
 
   border: 0;
   border-top: 1px solid var(--sp-line);
-  border-radius: 0;
+  border-radius: 18px;
 
   box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.1);
 
@@ -28,6 +28,8 @@
 }
 
 .nav-button {
+  position: relative;
+
   min-width: 0;
   min-height: 60px;
 
@@ -39,11 +41,11 @@
 
   padding: 6px 2px;
 
-  color: #aebbad;
+  color: #b8c5b7;
   background: transparent;
 
   border: 0;
-  border-radius: 9px;
+  border-radius: 18px;
 
   font: inherit;
   font-size: 13px;
@@ -55,7 +57,6 @@
   cursor: pointer;
 
   transition:
-    background 160ms ease,
     color 160ms ease,
     transform 120ms ease;
 }
@@ -70,7 +71,25 @@
 
 .nav-button.active {
   color: var(--sp-text);
-  background: rgba(184, 210, 175, 0.16);
+  background: transparent;
+}
+
+.nav-button.active::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 26px;
+  height: 3px;
+  transform: translateX(-50%);
+  background: var(--sp-gold);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(217, 170, 59, 0.28);
+}
+
+.nav-button.active .nav-icon {
+  color: var(--sp-gold);
+  filter: drop-shadow(0 0 5px rgba(217, 170, 59, 0.16));
 }
 
 .nav-icon {
@@ -115,8 +134,8 @@
   overflow-y: auto;
   overflow-x: hidden;
 
-  padding-bottom: calc(110px + env(safe-area-inset-bottom));
-  scroll-padding-bottom: calc(110px + env(safe-area-inset-bottom));
+  padding-bottom: calc(122px + env(safe-area-inset-bottom));
+  scroll-padding-bottom: calc(122px + env(safe-area-inset-bottom));
 }
 
 @media (max-width: 480px) {
@@ -124,4 +143,10 @@
     min-height: 100dvh;
     max-height: 100dvh;
   }
+}
+
+
+/* Slight lift so the nav floats above the screen edge more cleanly. */
+.app-nav {
+  box-shadow: 0 -8px 22px rgba(0, 0, 0, 0.14);
 }
