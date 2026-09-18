@@ -1307,17 +1307,6 @@ h3,
    V6 polish: lighter felt, compact picker flow, clearer actions
    ========================================================= */
 
-:root {
-  --sp-bg: #15372a;
-  --sp-panel: #1c4333;
-  --sp-panel-soft: #234d3b;
-  --sp-quiet: #183b2d;
-  --sp-text: #f4ecdf;
-  --sp-secondary: #d9e2d4;
-  --sp-muted: #a0b49e;
-  --sp-green: #c4d9b9;
-  --sp-line: rgba(196, 217, 185, 0.13);
-}
 
 /* The settings control floats on the felt; there is no separate header bar. */
 
