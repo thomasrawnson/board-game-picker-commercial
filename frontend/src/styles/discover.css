@@ -1,3 +1,36 @@
+.discover-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.discover-header .subtitle {
+  margin-bottom: 0;
+}
+
+.discover-wishlist-link {
+  width: auto;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 7px 0;
+  color: var(--sp-green);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.discover-wishlist-link:hover {
+  color: var(--sp-text);
+}
+
 .discover-list {
   display: grid;
   gap: 14px;
@@ -5,118 +38,211 @@
 }
 
 .discover-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  background: rgba(243, 234, 216, 0.06);
-  border: 1px solid rgba(243, 234, 216, 0.14);
-  border-radius: 18px;
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px;
+  background: rgba(196, 217, 185, 0.045);
+  border: 0;
+  border-radius: 14px;
 }
 
-.discover-image {
+.discover-media {
+  position: relative;
+  align-self: start;
+}
+
+.discover-image,
+.discover-image-placeholder {
   width: 100%;
-  max-width: 170px;
-  max-height: 170px;
+  aspect-ratio: 0.78;
   display: block;
-  margin: 0 auto;
-  object-fit: contain;
-  background: rgba(0, 0, 0, 0.08);
+  object-fit: cover;
+  background: rgba(196, 217, 185, 0.08);
   border-radius: 10px;
+}
+
+.discover-image-placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--sp-green);
+  font-family: var(--font-display);
+  font-size: 24px;
+}
+
+.wishlist-bookmark-button {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  color: var(--sp-text);
+  background: rgba(8, 31, 20, 0.82);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    transform 140ms ease;
+}
+
+.wishlist-bookmark-button:hover:not(:disabled) {
+  background: rgba(8, 31, 20, 0.96);
+}
+
+.wishlist-bookmark-button.saved {
+  color: var(--sp-gold);
+}
+
+.wishlist-bookmark-button:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.wishlist-bookmark-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.wishlist-bookmark-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.discover-copy {
+  min-width: 0;
+}
+
+.discover-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.discover-match-score {
+  margin: 0 0 4px;
+  color: var(--sp-gold);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .discover-card h2 {
   margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.2;
-}
-
-.discover-card p {
-  margin: 0;
+  color: var(--sp-text);
+  font-size: 18px;
+  line-height: 1.18;
 }
 
 .discover-meta {
-  color: var(--text-muted);
-  font-size: 13px;
+  margin: 6px 0 0;
+  color: var(--sp-muted);
+  font-size: 11px;
   line-height: 1.4;
+}
+
+.discover-primary-reason {
+  margin: 12px 0 0;
+  color: var(--sp-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.discover-reason-details {
+  margin-top: 9px;
+  color: var(--sp-green);
+  font-size: 11px;
+}
+
+.discover-reason-details summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.discover-reason-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.discover-reason-details summary::after {
+  content: " +";
+  color: var(--sp-muted);
+}
+
+.discover-reason-details[open] summary::after {
+  content: " −";
 }
 
 .discover-reasons {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  margin: 2px 0 0;
-  padding-left: 20px;
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--sp-secondary);
 }
 
 .discover-reasons li {
-  padding-left: 2px;
-  font-size: 0.92rem;
-  line-height: 1.35;
-}
-
-.discover-card .ghost-button {
-  display: inline-flex;
-  align-items: center;
-  margin-top: 2px;
-  padding: 11px 14px;
-  text-decoration: none;
-}
-
-.discover-wishlist-link {
-  width: 100%;
-  min-height: 44px;
-  justify-content: center;
-  margin-top: -18px;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .discover-actions {
-  display: grid;
-  gap: 8px;
-  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
 }
 
-.discover-actions .ghost-button,
-.wishlist-button {
-  width: 100%;
-  box-sizing: border-box;
-  justify-content: center;
+.discover-bgg-link {
+  color: var(--sp-green);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
 }
 
-.wishlist-button.saved {
-  color: var(--ink);
-  background: var(--gold);
+.discover-bgg-link:hover {
+  color: var(--sp-text);
+  text-decoration: underline;
 }
 
-.wishlist-button:disabled {
-  opacity: 0.65;
-  cursor: default;
+.discover-empty {
+  margin-top: 18px;
+  padding: 18px;
+  background: rgba(196, 217, 185, 0.045);
+  border-radius: 14px;
+  text-align: center;
 }
 
-@media (max-width: 480px) {
-  .discover-list {
-    gap: 12px;
-  }
+.discover-empty h2 {
+  margin: 0;
+  color: var(--sp-text);
+  font-size: 19px;
+}
 
+.discover-empty p {
+  margin: 7px 0 0;
+  color: var(--sp-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+@media (max-width: 380px) {
   .discover-card {
-    gap: 10px;
-    padding: 14px;
-  }
-
-  .discover-image {
-    max-width: 155px;
-    max-height: 155px;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
   }
 
   .discover-card h2 {
-    font-size: 1rem;
+    font-size: 16px;
   }
 
-  .discover-meta {
-    font-size: 12px;
-  }
-
-  .discover-reasons li {
-    font-size: 0.88rem;
+  .discover-primary-reason {
+    margin-top: 9px;
   }
 }

@@ -10,11 +10,9 @@ import {
   type DiscoverRecommendation,
 } from "../api/client"
 
-
 type Props = {
   onViewWishlist: () => void
 }
-
 
 function recommendationLabel(
   index: number,
@@ -30,6 +28,27 @@ function recommendationLabel(
   return "Good fit"
 }
 
+function complexityLabel(
+  value: number | null | undefined,
+) {
+  if (value == null) {
+    return null
+  }
+
+  if (value <= 2) {
+    return "Light"
+  }
+
+  if (value <= 3) {
+    return "Medium"
+  }
+
+  if (value <= 4) {
+    return "Heavy"
+  }
+
+  return "Very heavy"
+}
 
 function DiscoverView({
   onViewWishlist,
@@ -37,22 +56,17 @@ function DiscoverView({
   const [
     recommendations,
     setRecommendations,
-  ] =
-    useState<
-      DiscoverRecommendation[]
-    >([])
+  ] = useState<DiscoverRecommendation[]>([])
 
   const [
     loading,
     setLoading,
-  ] =
-    useState(true)
+  ] = useState(true)
 
   const [
     error,
     setError,
-  ] =
-    useState("")
+  ] = useState("")
 
   const [
     updatingIds,
@@ -66,7 +80,6 @@ function DiscoverView({
     setActionError,
   ] = useState("")
 
-
   useEffect(() => {
     let cancelled = false
 
@@ -76,9 +89,7 @@ function DiscoverView({
           await getDiscoverRecommendations()
 
         if (!cancelled) {
-          setRecommendations(
-            results
-          )
+          setRecommendations(results)
         }
       } catch (err) {
         console.error(err)
@@ -87,14 +98,12 @@ function DiscoverView({
           setError(
             err instanceof Error
               ? err.message
-              : "Couldn't load recommendations."
+              : "Couldn't load recommendations.",
           )
         }
       } finally {
         if (!cancelled) {
-          setLoading(
-            false
-          )
+          setLoading(false)
         }
       }
     }
@@ -106,7 +115,6 @@ function DiscoverView({
     }
   }, [])
 
-
   async function toggleWishlist(
     recommendation: DiscoverRecommendation,
   ) {
@@ -117,6 +125,7 @@ function DiscoverView({
     setUpdatingIds(
       (current) => new Set(current).add(bggId),
     )
+
     setRecommendations(
       (current) => current.map(
         (item) => item.game.bgg_id === bggId
@@ -145,6 +154,7 @@ function DiscoverView({
             : item,
         ),
       )
+
       setActionError(
         err instanceof Error
           ? err.message
@@ -159,37 +169,31 @@ function DiscoverView({
     }
   }
 
-
   return (
     <section className="screen discover-screen">
-      <header>
-        <h1>
-          Find your next game
-        </h1>
-
-        <p className="subtitle">
-          Games you don't already own,
-          matched against your collection
-          and what's popular right now.
-        </p>
+      <header className="discover-header">
+        <div>
+          <h1>Find your next game</h1>
+          <p className="subtitle">
+            Recommendations beyond your shelf.
+          </p>
+        </div>
 
         <button
           type="button"
           className="discover-wishlist-link"
           onClick={onViewWishlist}
         >
-          <span>View Wishlist</span>
+          Wishlist
           <span aria-hidden="true">→</span>
         </button>
       </header>
-
 
       {loading && (
         <p className="subtitle">
           Finding games for you...
         </p>
       )}
-
 
       {error && (
         <p className="error-message">
@@ -203,23 +207,18 @@ function DiscoverView({
         </p>
       )}
 
-
-      {!loading &&
-        !error &&
-        recommendations.length === 0 && (
-        <div className="discover-card">
-          <h2>
-            Nothing new just yet
-          </h2>
-
-          <p>
-            We couldn't find a suitable
-            recommendation right now.
-            Check back later.
-          </p>
-        </div>
-      )}
-
+      {!loading
+        && !error
+        && recommendations.length === 0
+        && (
+          <div className="discover-empty">
+            <h2>Nothing new just yet</h2>
+            <p>
+              No suitable recommendations right now.
+              Check back later.
+            </p>
+          </div>
+        )}
 
       <div className="discover-list">
         {recommendations.map(
@@ -230,76 +229,35 @@ function DiscoverView({
               wishlisted,
             } = recommendation
 
+            const complexity =
+              complexityLabel(game.complexity)
+
+            const primaryReason =
+              reasons[0] ?? null
+
+            const extraReasons =
+              reasons.slice(1)
+
             return (
-            <article
-              key={game.bgg_id}
-              className="discover-card"
-            >
-              {game.image_url && (
-                <img
-                  className="discover-image"
-                  src={
-                    game.image_url
-                  }
-                  alt=""
-                />
-              )}
-
-              <div>
-                <h2>
-                  {game.name}
-                </h2>
-
-                <p className="discover-meta">
-                  {game.min_players}
-                  {"–"}
-                  {game.max_players}
-                  {" players"}
-
-                  {game.max_play_time
-                    ? ` · ${game.max_play_time} min`
-                    : ""}
-
-                  {game.complexity
-                    ? ` · ${game.complexity.toFixed(1)} complexity`
-                    : ""}
-                </p>
-
-                <div className="discover-match-row">
-                  <span className="discover-match-score">
-                    {recommendationLabel(index)}
-                  </span>
-
-                  {reasons.length > 0 && (
-                    <details className="discover-reason-details">
-                      <summary>
-                        Why this match?
-                      </summary>
-
-                      <ul className="discover-reasons">
-                        {reasons.map(
-                          (reason: string) => (
-                            <li key={reason}>
-                              {reason}
-                            </li>
-                          ),
-                        )}
-                      </ul>
-                    </details>
+              <article
+                key={game.bgg_id}
+                className="discover-card"
+              >
+                <div className="discover-media">
+                  {game.image_url ? (
+                    <img
+                      className="discover-image"
+                      src={game.image_url}
+                      alt=""
+                    />
+                  ) : (
+                    <div
+                      className="discover-image-placeholder"
+                      aria-hidden="true"
+                    >
+                      ?
+                    </div>
                   )}
-                </div>
-
-                <div className="discover-actions">
-                  <a
-                    className="discover-bgg-link"
-                    href={
-                      `https://boardgamegeek.com/boardgame/${game.bgg_id}`
-                    }
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View on BGG
-                  </a>
 
                   <button
                     type="button"
@@ -323,7 +281,7 @@ function DiscoverView({
                       updatingIds.has(game.bgg_id)
                     }
                     onClick={() =>
-                      toggleWishlist(recommendation)
+                      void toggleWishlist(recommendation)
                     }
                   >
                     <svg
@@ -333,7 +291,11 @@ function DiscoverView({
                     >
                       <path
                         d="M6.75 4.75A1.75 1.75 0 0 1 8.5 3h7A1.75 1.75 0 0 1 17.25 4.75v15l-5.25-3.2-5.25 3.2v-15Z"
-                        fill={wishlisted ? "currentColor" : "none"}
+                        fill={
+                          wishlisted
+                            ? "currentColor"
+                            : "none"
+                        }
                         stroke="currentColor"
                         strokeWidth="1.7"
                         strokeLinejoin="round"
@@ -341,8 +303,67 @@ function DiscoverView({
                     </svg>
                   </button>
                 </div>
-              </div>
-            </article>
+
+                <div className="discover-copy">
+                  <div className="discover-title-row">
+                    <div>
+                      <p className="discover-match-score">
+                        {recommendationLabel(index)}
+                      </p>
+
+                      <h2>{game.name}</h2>
+                    </div>
+                  </div>
+
+                  <p className="discover-meta">
+                    {game.min_players}
+                    {"–"}
+                    {game.max_players}
+                    {" players"}
+                    {game.max_play_time
+                      ? ` · ${game.max_play_time} min`
+                      : ""}
+                    {complexity
+                      ? ` · ${complexity}`
+                      : ""}
+                  </p>
+
+                  {primaryReason && (
+                    <p className="discover-primary-reason">
+                      {primaryReason}
+                    </p>
+                  )}
+
+                  {extraReasons.length > 0 && (
+                    <details className="discover-reason-details">
+                      <summary>
+                        Why this match?
+                      </summary>
+
+                      <ul className="discover-reasons">
+                        {extraReasons.map(
+                          (reason: string) => (
+                            <li key={reason}>
+                              {reason}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </details>
+                  )}
+
+                  <div className="discover-actions">
+                    <a
+                      className="discover-bgg-link"
+                      href={`https://boardgamegeek.com/boardgame/${game.bgg_id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View on BGG
+                    </a>
+                  </div>
+                </div>
+              </article>
             )
           },
         )}
@@ -350,6 +371,5 @@ function DiscoverView({
     </section>
   )
 }
-
 
 export default DiscoverView
