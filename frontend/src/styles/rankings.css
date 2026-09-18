@@ -2,235 +2,167 @@
   padding-bottom: 12px;
 }
 
-
 .ranking-view-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-
   gap: 5px;
-
   margin: -10px 0 20px;
   padding: 4px;
-
   background: rgba(243, 234, 216, 0.045);
-
   border: 1px solid var(--line);
   border-radius: 14px;
 }
 
-
 .ranking-view-tabs button {
   min-height: 40px;
   padding: 8px;
-
   color: var(--text-muted);
   background: transparent;
-
   border: 0;
   border-radius: 10px;
-
   font: inherit;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-
   cursor: pointer;
 }
-
 
 .ranking-view-tabs button.active {
   color: var(--felt-dark);
   background: var(--gold);
 }
 
-
 .ranking-played-filter {
   display: flex;
   align-items: center;
-
   gap: 10px;
-
   margin: -8px 0 18px;
   padding: 11px 13px;
-
   color: var(--text-secondary);
   background: rgba(243, 234, 216, 0.04);
-
   border: 1px solid var(--line);
   border-radius: 13px;
-
   cursor: pointer;
 }
-
 
 .ranking-played-filter input {
   width: 17px;
   height: 17px;
-
   accent-color: var(--gold);
 }
-
 
 .ranking-played-filter span {
   display: flex;
   flex-direction: column;
-
   gap: 2px;
 }
 
-
 .ranking-played-filter strong {
   color: var(--text-primary);
-
   font-size: 11px;
 }
 
-
 .ranking-played-filter small {
   color: var(--text-muted);
-
   font-size: 9px;
 }
 
-
 .ranking-question {
   margin: 0 0 13px;
-
   color: var(--text-primary);
-
   font-family: var(--font-display);
   font-size: 18px;
   font-weight: 600;
   text-align: center;
 }
 
-
 .ranking-matchup {
   display: grid;
   grid-template-columns: 1fr 1fr;
-
   gap: 10px;
 }
-
 
 .ranking-game-card {
   display: flex;
   flex-direction: column;
-
   min-width: 0;
   padding: 10px;
-
   color: var(--ink);
   background: var(--card);
-
   border-radius: 16px;
-
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.16);
 }
 
-
 .ranking-game-image {
   aspect-ratio: 1 / 1.05;
-
   display: grid;
   place-items: center;
-
   overflow: hidden;
-
   color: var(--rust);
   background: rgba(43, 33, 24, 0.08);
-
   border-radius: 11px;
-
   font-family: var(--font-display);
   font-size: 28px;
 }
 
-
 .ranking-game-image img {
   width: 100%;
   height: 100%;
-
   object-fit: contain;
 }
 
-
 .ranking-game-card h2 {
   margin: 11px 0 0;
-
   color: var(--ink);
-
   font-size: 16px;
   line-height: 1.15;
 }
 
-
 .ranking-game-card > p {
   margin: 4px 0 10px;
-
   color: var(--ink-soft);
-
   font-size: 10px;
 }
-
 
 .ranking-choose-button,
 .ranking-unplayed-button,
 .ranking-skip-button {
   border-radius: 10px;
-
   font: inherit;
   font-weight: 700;
-
   cursor: pointer;
 }
 
-
 .ranking-choose-button {
   min-height: 42px;
-
   margin-top: auto;
   padding: 9px 6px;
-
   color: var(--card);
   background: var(--rust);
-
   border: 0;
-
   font-size: 11px;
 }
-
 
 .ranking-unplayed-button {
   padding: 8px 3px 2px;
-
   color: rgba(43, 33, 24, 0.62);
   background: transparent;
-
   border: 0;
-
   font-size: 9px;
 }
 
-
 .ranking-skip-button {
   display: block;
-
   width: 100%;
   min-height: 44px;
-
   margin-top: 13px;
   padding: 10px;
-
   color: var(--text-secondary);
   background: rgba(243, 234, 216, 0.04);
-
   border: 1px solid var(--line);
-
   font-size: 11px;
 }
-
 
 .ranking-choose-button:disabled,
 .ranking-unplayed-button:disabled,
@@ -240,313 +172,222 @@
   cursor: wait;
 }
 
-
 .ranking-list,
 .ranking-unplayed-list {
   margin: 0;
   padding: 0;
-
   list-style: none;
 }
-
 
 .ranking-list {
   display: flex;
   flex-direction: column;
-
   gap: 8px;
 }
-
 
 .ranking-share-card {
   margin-bottom: 13px;
   padding: 14px;
-
   color: var(--ink);
   background: var(--card);
-
   border-radius: 15px;
 }
-
 
 .ranking-share-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 12px;
 }
-
 
 .ranking-share-heading > div > strong {
   font-size: 13px;
 }
 
-
 .ranking-share-button {
   flex: 0 0 auto;
-
   min-height: 36px;
   padding: 8px 14px;
-
   color: var(--card);
   background: var(--felt-mid);
-
   border: 0;
   border-radius: 9px;
-
   font: inherit;
   font-size: 10px;
   font-weight: 700;
-
   cursor: pointer;
 }
-
 
 .ranking-share-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 9px;
-
   margin-top: 12px;
 }
-
 
 .ranking-share-controls > div {
   display: flex;
   flex-wrap: wrap;
-
   padding: 3px;
-
   background: rgba(43, 33, 24, 0.07);
-
   border-radius: 9px;
 }
-
 
 .ranking-share-controls button {
   min-height: 34px;
   padding: 7px 8px;
-
   border: 0;
   border-radius: 7px;
-
   font: inherit;
   font-size: 9px;
   font-weight: 700;
-
   cursor: pointer;
 }
-
 
 .ranking-share-controls > div button {
   color: var(--ink-soft);
   background: transparent;
 }
 
-
 .ranking-share-controls > div button.active {
   color: var(--card);
   background: var(--rust);
 }
 
-
 .ranking-share-card > p:last-child {
   margin: 9px 0 0;
-
   color: var(--ink-soft);
-
   font-size: 9px;
 }
 
-
 .ranking-list li {
   display: grid;
-  grid-template-columns:
-    30px
-    46px
-    minmax(0, 1fr)
-    42px;
-
+  grid-template-columns: 30px 46px minmax(0, 1fr) 42px;
   gap: 9px;
   align-items: center;
-
   padding: 9px 10px;
-
   color: var(--ink);
   background: var(--card);
-
   border-radius: 13px;
 }
 
-
 .ranking-position {
   color: var(--rust);
-
   font-family: var(--font-display);
   font-size: 19px;
   font-weight: 700;
   text-align: center;
 }
 
-
 .ranking-position::before {
   content: "#";
-
   font-size: 10px;
 }
-
 
 .ranking-list-image {
   width: 46px;
   height: 46px;
-
   display: grid;
   place-items: center;
-
   overflow: hidden;
-
   color: var(--rust);
   background: rgba(43, 33, 24, 0.08);
-
   border-radius: 9px;
 }
-
 
 .ranking-list-image img {
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
-
 
 .ranking-list-copy {
   display: flex;
   flex-direction: column;
-
   min-width: 0;
 }
 
-
 .ranking-list-copy strong {
   overflow: hidden;
-
   color: var(--ink);
-
   font-size: 12px;
-
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-
 .ranking-list-copy span {
   margin-top: 3px;
-
   color: var(--ink-soft);
-
   font-size: 8px;
 }
 
-
 .ranking-score {
   color: var(--rust);
-
   font-size: 10px;
   font-weight: 700;
   text-align: right;
 }
 
-
 .ranking-unplayed-list {
   margin-top: 22px;
   padding: 16px;
-
   background: rgba(243, 234, 216, 0.05);
-
   border: 1px solid var(--line);
   border-radius: 16px;
 }
-
 
 .ranking-unplayed-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 10px;
-
   padding: 10px 0;
-
   border-top: 1px solid rgba(243, 234, 216, 0.08);
 }
 
-
 .ranking-unplayed-row span {
   overflow: hidden;
-
   color: var(--text-primary);
-
   font-size: 11px;
-
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-
 .ranking-unplayed-row button,
 .ranking-empty-card button {
   flex-shrink: 0;
-
   padding: 7px 9px;
-
   color: var(--gold);
   background: transparent;
-
   border: 1px solid rgba(201, 162, 39, 0.28);
   border-radius: 9px;
-
   font: inherit;
   font-size: 9px;
   font-weight: 700;
-
   cursor: pointer;
 }
 
-
 .ranking-empty-card {
   padding: 28px 20px;
-
   background: rgba(243, 234, 216, 0.05);
-
   border: 1px solid var(--line);
   border-radius: 18px;
-
   text-align: center;
 }
 
-
 .ranking-empty-card h2 {
   margin: 0;
-
   color: var(--text-primary);
-
   font-size: 21px;
 }
 
-
 .ranking-empty-card p {
   margin: 8px 0 14px;
-
   color: var(--text-secondary);
-
   font-size: 12px;
   line-height: 1.5;
 }
-
 
 @media (max-width: 360px) {
   .ranking-matchup {
