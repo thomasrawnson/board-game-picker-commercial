@@ -4,8 +4,8 @@ import path from "node:path"
 
 
 const expectedIcons = new Map([
-  ["pwa-192x192.png", 192],
-  ["pwa-512x512.png", 512],
+  ["branding/pwa-192.png", 192],
+  ["branding/pwa-512.png", 512],
 ])
 
 
@@ -33,6 +33,18 @@ const manifest = JSON.parse(
   await readFile(manifestPath, "utf8"),
 )
 
+assert.equal(manifest.theme_color, "#315C48")
+assert.equal(manifest.background_color, "#F6F3EB")
+const html = await readFile(path.resolve("dist/index.html"), "utf8")
+assert.match(html, /name="theme-color" content="#315C48" media="\(prefers-color-scheme: light\)"/)
+assert.match(html, /name="theme-color" content="#151816" media="\(prefers-color-scheme: dark\)"/)
+assert.match(html, /href="\/branding\/favicon.svg"/)
+assert.match(await readFile(path.resolve("dist/branding/favicon.svg"), "utf8"), /<svg\b/)
+const serviceWorker = await readFile(path.resolve("dist/sw.js"), "utf8")
+for (const asset of ["theme.js", "branding/favicon.svg", ...expectedIcons.keys()]) {
+  assert.ok(serviceWorker.includes(asset), `${asset} is missing from the precache`)
+}
+
 for (const [filename, expectedSize] of expectedIcons) {
   const icon = manifest.icons?.find(
     (item) => item.src === `/${filename}`,
@@ -58,4 +70,4 @@ for (const [filename, expectedSize] of expectedIcons) {
   )
 }
 
-console.log("PWA manifest icons are valid.")
+console.log("PWA branding, theme metadata, icon dimensions and precache are valid.")

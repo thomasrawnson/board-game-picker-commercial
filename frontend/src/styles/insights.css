@@ -10,7 +10,7 @@
   gap: 5px;
   margin: -10px 0 20px;
   padding: 4px;
-  background: rgba(243, 234, 216, 0.045);
+  background: var(--color-surface-raised);
   border: 1px solid var(--line);
   border-radius: 14px;
 }
@@ -35,8 +35,8 @@
 }
 
 .stats-section-tab.active {
-  color: var(--felt-dark);
-  background: var(--gold);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .stats-section-heading {
@@ -62,7 +62,7 @@
 .rank-summary-share-card {
   margin-top: 12px;
   padding: 12px;
-  background: rgba(243, 234, 216, 0.05);
+  background: var(--color-surface-raised);
   border: 1px solid var(--line);
   border-radius: 13px;
 }
@@ -82,7 +82,7 @@
 .rank-summary-share-heading button {
   min-height: var(--target-min);
   padding: 8px 14px;
-  color: var(--felt-dark);
+  color: var(--color-on-accent);
   background: var(--gold);
   border: 0;
   border-radius: 10px;
@@ -103,7 +103,7 @@
   gap: 4px;
   margin-top: 10px;
   padding: 3px;
-  background: rgba(243, 234, 216, 0.05);
+  background: var(--color-surface-raised);
   border-radius: 9px;
 }
 
@@ -121,8 +121,8 @@
 }
 
 .rank-summary-sizes button.active {
-  color: var(--card);
-  background: var(--rust);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .rank-summary-share-card > span {
@@ -136,7 +136,7 @@
   min-width: 0;
   padding: 15px;
   color: var(--ink);
-  background: var(--card);
+  background: var(--color-surface);
   border-radius: 15px;
 }
 
@@ -183,7 +183,7 @@
 .stats-empty-card, .recaps-preview-card {
   margin-top: 18px;
   padding: 22px 18px;
-  background: rgba(243, 234, 216, 0.05);
+  background: var(--color-surface-raised);
   border: 1px solid var(--line);
   border-radius: 18px;
   text-align: center;
@@ -195,9 +195,9 @@
   width: 34px;
   height: 34px;
   margin: 0 auto 12px;
-  color: var(--gold);
-  background: rgba(201, 162, 39, 0.1);
-  border: 1px solid rgba(201, 162, 39, 0.22);
+  color: var(--color-accent-text);
+  background: var(--color-brand-accent-soft);
+  border: 1px solid var(--color-brand-accent);
   border-radius: 50%;
 }
 
@@ -228,13 +228,13 @@
   align-items: center;
   min-height: 120px;
   padding: 18px 12px;
-  background: rgba(243, 234, 216, 0.055);
+  background: var(--color-surface-raised);
   border: 1px solid var(--line);
   border-radius: 16px;
 }
 
 .stat-card strong {
-  color: var(--gold);
+  color: var(--color-accent-text);
   font-family: var(--font-display);
   font-size: 36px;
   font-weight: 600;
@@ -243,7 +243,7 @@
 
 .stat-card span {
   margin-top: 8px;
-  color: rgba(243, 234, 216, 0.5);
+  color: var(--color-text-support);
   font-size: var(--text-meta);
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -261,9 +261,9 @@
 .insight-feature {
   padding: 17px 18px;
   color: var(--ink);
-  background: var(--card);
+  background: var(--color-surface);
   border-radius: 15px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 8px 24px var(--color-shadow);
 }
 
 .insight-label {
@@ -302,14 +302,14 @@
   gap: 16px;
   margin-top: 14px;
   padding: 17px 18px;
-  background: linear-gradient( 135deg, rgba(201, 162, 39, 0.13), rgba(243, 234, 216, 0.035) );
-  border: 1px solid rgba(201, 162, 39, 0.25);
+  background: linear-gradient( 135deg, var(--color-brand-accent-soft), var(--color-surface-raised) );
+  border: 1px solid var(--color-brand-accent);
   border-radius: 16px;
 }
 
 .shelf-callout > strong {
   min-width: 58px;
-  color: var(--gold);
+  color: var(--color-accent-text);
   font-family: var(--font-display);
   font-size: 36px;
   line-height: 1;
@@ -317,7 +317,7 @@
 }
 
 .shelf-callout span {
-  color: var(--card);
+  color: var(--color-text-primary);
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
@@ -325,7 +325,7 @@
 
 .shelf-callout p {
   margin: 3px 0 0;
-  color: rgba(243, 234, 216, 0.43);
+  color: var(--color-text-support);
   font-size: var(--text-support);
   line-height: 1.4;
 }
@@ -342,7 +342,7 @@
 
 .insight-feature {
   padding: 17px 18px;
-  background: rgba(243, 234, 216, 0.055);
+  background: var(--color-surface-raised);
   border: 1px solid var(--line);
   border-radius: 15px;
   box-shadow: none;
@@ -357,12 +357,12 @@
 }
 
 .insight-feature .insight-label {
-  color: var(--gold);
+  color: var(--color-accent-text);
 }
 
 .players-card {
   color: var(--ink);
-  background: var(--card);
+  background: var(--color-surface);
 }
 
 .players-card h2, .player-name, .player-stat strong {
@@ -378,11 +378,11 @@
 }
 
 .shelf-callout span {
-  color: var(--card);
+  color: var(--color-text-primary);
 }
 
 .shelf-callout p {
-  color: rgba(243, 234, 216, 0.6);
+  color: var(--color-text-support);
 }
 
 .insights-mini-grid {
@@ -398,7 +398,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 13px 15px;
-  background: rgba(243, 234, 216, 0.055);
+  background: var(--color-surface-raised);
   border: 1px solid var(--line);
   border-radius: 13px;
 }
@@ -411,7 +411,7 @@
 }
 
 .insight-mini-card strong {
-  color: var(--gold);
+  color: var(--color-accent-text);
   font-family: var(--font-display);
   font-size: 20px;
 }
@@ -420,9 +420,9 @@
   margin-top: 14px;
   padding: 17px 18px;
   color: var(--ink);
-  background: var(--card);
+  background: var(--color-surface);
   border-radius: 15px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 8px 24px var(--color-shadow);
 }
 
 .players-card-header {
@@ -458,7 +458,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 0;
-  border-top: 1px solid rgba(43, 33, 24, 0.1);
+  border-top: 1px solid var(--color-border);
 }
 
 .player-rank {
@@ -467,8 +467,8 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  color: var(--rust);
-  background: rgba(181, 84, 43, 0.1);
+  color: var(--color-accent-text);
+  background: var(--color-brand-accent-soft);
   border-radius: 50%;
   font-size: var(--text-meta);
   font-weight: 700;
@@ -520,7 +520,7 @@
 
 .player-row-chevron {
   margin-left: auto;
-  color: var(--gold);
+  color: var(--color-accent-text);
   font-size: 22px;
   line-height: 1;
 }
@@ -532,7 +532,7 @@
 .player-profile-back {
   margin: 0 0 18px;
   padding: 0;
-  color: var(--gold);
+  color: var(--color-accent-text);
   background: transparent;
   border: 0;
   font: inherit;
@@ -551,8 +551,8 @@
 .player-profile-section {
   margin-top: 22px;
   padding: 18px;
-  background: rgba(243, 234, 216, 0.05);
-  border: 1px solid rgba(243, 234, 216, 0.1);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
   border-radius: 18px;
 }
 
@@ -580,7 +580,7 @@
   color: inherit;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid rgba(243, 234, 216, 0.08);
+  border-bottom: 1px solid var(--color-border);
   text-align: left;
 }
 
@@ -625,13 +625,13 @@
 }
 
 .player-win-badge {
-  color: var(--ink);
+  color: var(--color-on-accent);
   background: var(--gold);
 }
 
 .player-played-badge {
   color: var(--text-muted);
-  background: rgba(243, 234, 216, 0.08);
+  background: var(--color-surface-raised);
 }
 
 .player-score {
@@ -650,8 +650,8 @@
 .monthly-activity-card {
   margin-top: 18px;
   padding: 18px;
-  background: rgba(243, 234, 216, 0.05);
-  border: 1px solid rgba(243, 234, 216, 0.1);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
   border-radius: 18px;
 }
 
@@ -676,12 +676,12 @@
   flex-direction: column;
   align-items: center;
   padding: 12px 6px;
-  background: rgba(243, 234, 216, 0.04);
+  background: var(--color-surface-raised);
   border-radius: 12px;
 }
 
 .monthly-activity-stat strong {
-  color: var(--gold);
+  color: var(--color-accent-text);
   font-family: var(--font-display);
   font-size: 22px;
 }
@@ -734,7 +734,7 @@
 }
 
 .neglected-game-row .neglected-game-name span {
-  color: rgba(43, 33, 24, 0.58) !important;
+  color: var(--color-text-support) !important;
 }
 
 .favourite-game-copy span {
@@ -785,7 +785,7 @@
 }
 
 .favourite-game-row .favourite-game-copy span {
-  color: rgba(43, 33, 24, 0.65) !important;
+  color: var(--color-text-support) !important;
 }
 
 .favourite-game-row .player-stat {
@@ -815,7 +815,7 @@
 }
 
 .stats-game-link span {
-  color: rgba(43, 33, 24, 0.58) !important;
+  color: var(--color-text-support) !important;
 }
 
 .stats-game-link:hover strong {
@@ -864,7 +864,7 @@
 .favourite-game-link {
   display: block;
   padding: 0;
-  color: rgba(43, 33, 24, 0.64) !important;
+  color: var(--color-text-support) !important;
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
@@ -913,19 +913,19 @@
 }
 
 .monthly-activity-chevron {
-  color: var(--gold);
+  color: var(--color-accent-text);
   font-size: 20px;
 }
 
 .monthly-play-list {
   margin-top: 14px;
   padding-top: 6px;
-  border-top: 1px solid rgba(243, 234, 216, 0.08);
+  border-top: 1px solid var(--color-border);
 }
 
 .monthly-play-row {
   padding: 10px 0;
-  border-bottom: 1px solid rgba(243, 234, 216, 0.07);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .monthly-play-game {
@@ -952,7 +952,7 @@
   display: block;
   width: 100%;
   padding: 10px 0 2px;
-  color: #b5542b;
+  color: var(--color-brand-primary);
   background: transparent;
   border: 0;
   font: inherit;
@@ -986,7 +986,7 @@
 }
 
 .file-picker:focus-within {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--color-brand-primary);
   outline-offset: 3px;
 }
 
@@ -1029,7 +1029,7 @@
   gap: 10px;
   margin: 0;
   padding: 12px 14px;
-  background: rgba(196, 217, 185, 0.055);
+  background: var(--color-surface-raised);
   border: 1px solid var(--sp-line);
   border-radius: 14px;
 }
@@ -1062,8 +1062,8 @@
   justify-content: center;
   gap: 9px;
   padding: 11px 16px;
-  color: #21190a;
-  background: var(--sp-gold);
+  color: var(--color-text-inverse);
+  background: var(--color-brand-primary);
   border: 0;
   border-radius: 11px;
   font: inherit;
@@ -1076,7 +1076,7 @@
 }
 
 .rank-games-primary:hover {
-  background: var(--sp-gold-hover);
+  background: var(--color-brand-primary-hover);
 }
 
 .rank-games-primary:active {
@@ -1085,7 +1085,7 @@
 
 .rank-insight-list-card {
   padding: 14px;
-  background: rgba(196, 217, 185, 0.035);
+  background: var(--color-surface-raised);
   border: 1px solid var(--sp-line);
   border-radius: 14px;
 }
@@ -1126,7 +1126,7 @@
   gap: 5px;
   margin-top: 12px;
   padding: 3px;
-  background: rgba(10, 31, 22, 0.46);
+  background: var(--color-surface);
   border-radius: 10px;
 }
 
@@ -1145,8 +1145,8 @@
 }
 
 .rank-insight-size-tabs button.active {
-  color: #21190a;
-  background: var(--sp-gold);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .rank-insight-size-tabs button:disabled {
@@ -1175,7 +1175,7 @@
 }
 
 .rank-insight-position {
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
   font-family: var(--font-display);
   font-size: 16px;
   font-weight: 700;
@@ -1203,7 +1203,7 @@
   place-items: center;
   overflow: hidden;
   color: var(--sp-green);
-  background: rgba(196, 217, 185, 0.08);
+  background: var(--color-surface-raised);
   border-radius: 7px;
   font-family: var(--font-display);
 }
@@ -1287,7 +1287,7 @@
 }
 
 .rank-more-chevron {
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
   font-size: 20px;
   line-height: 1;
   transition: transform 140ms ease;
@@ -1305,7 +1305,7 @@
 .rank-more-details .rank-summary-card {
   padding: 12px;
   color: var(--sp-text);
-  background: rgba(196, 217, 185, 0.045);
+  background: var(--color-surface-raised);
   border: 1px solid var(--sp-line);
   border-radius: 11px;
 }
@@ -1315,12 +1315,12 @@
 }
 
 .rank-more-details .rank-summary-card li strong {
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
 }
 
 .rank-insight-empty {
   padding: 18px;
-  background: rgba(196, 217, 185, 0.045);
+  background: var(--color-surface-raised);
   border: 1px solid var(--sp-line);
   border-radius: 14px;
   text-align: left;
@@ -1365,8 +1365,8 @@
   place-items: center;
   flex: 0 0 auto;
   padding: 0;
-  color: #21190a;
-  background: var(--sp-gold);
+  color: var(--color-text-inverse);
+  background: var(--color-brand-primary);
   border: 0;
   border-radius: 50%;
   font: inherit;
@@ -1380,7 +1380,7 @@
 }
 
 .rank-games-arrow:hover {
-  background: var(--sp-gold-hover);
+  background: var(--color-brand-primary-hover);
 }
 
 .rank-games-arrow:active {
@@ -1408,8 +1408,8 @@
 }
 
 .rank-insight-share:hover:not(:disabled) {
-  background: rgba(196, 217, 185, 0.08);
-  border-color: rgba(196, 217, 185, 0.3);
+  background: var(--color-surface-raised);
+  border-color: var(--color-border);
 }
 
 /* Insight tabs without rank v2 */

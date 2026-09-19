@@ -1,0 +1,5 @@
+interface:
+  display_name: "ShelfPick Release Check"
+  short_description: "Run ShelfPick release validation checks"
+  default_prompt: "Use $shelfpick-release-check to validate this checkout for release readiness."
+

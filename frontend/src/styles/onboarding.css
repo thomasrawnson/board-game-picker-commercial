@@ -32,8 +32,7 @@
 
   color: var(--text-secondary);
 
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: 50%;
 
   font-size: var(--text-meta);
@@ -41,13 +40,13 @@
 }
 
 .onboarding-progress span.active {
-  color: var(--felt-dark);
-  background: var(--gold);
-  border-color: var(--gold);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
+  border-color: var(--color-brand-primary);
 }
 
 .onboarding-progress span.complete {
-  color: var(--gold);
+  color: var(--color-accent-text);
   border-color: var(--gold);
 }
 
@@ -59,11 +58,9 @@
 .onboarding-card {
   padding: 20px;
 
-  background:
-    rgba(243, 234, 216, 0.055);
+  background: var(--color-surface-raised);
 
-  border:
-    1px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: 17px;
 }
 
@@ -123,8 +120,8 @@
     2px auto
     18px;
 
-  color: var(--felt-dark);
-  background: var(--gold);
+  color: var(--color-text-inverse);
+  background: var(--color-success);
 
   border-radius: 50%;
 

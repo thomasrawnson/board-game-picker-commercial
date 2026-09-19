@@ -6,8 +6,8 @@
   gap: 4px;
   padding: 4px;
   border: 0;
-  border-radius: 12px;
-  background: rgba(7, 28, 20, 0.34);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
 }
 
 .segmented-control button {
@@ -21,15 +21,15 @@
 }
 
 .segmented-control button.active {
-  background: rgba(196, 217, 185, 0.13);
-  color: var(--sp-text);
+  background: var(--color-brand-primary-soft);
+  color: var(--color-brand-primary);
 }
 
 .filter-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-items: end;
-  gap: 8px;
+  gap: var(--space-2);
   padding: 0 4px;
 }
 
@@ -45,7 +45,7 @@
 }
 
 .filter-tabs button.active {
-  color: var(--sp-text);
+  color: var(--color-brand-primary);
 }
 
 .filter-tabs button.active::after {
@@ -57,7 +57,7 @@
   height: 2px;
   border-radius: 99px;
   transform: translateX(-50%);
-  background: var(--sp-gold);
+  background: var(--color-brand-primary);
 }
 
 .ui-disclosure {
@@ -69,7 +69,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
   padding: 12px 0;
   color: var(--sp-text);
   cursor: pointer;
@@ -126,7 +126,7 @@
   display: flex !important;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
   min-height: 50px !important;
   padding: 10px 2px !important;
   border: 0 !important;
@@ -145,12 +145,12 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(244, 236, 223, 0.18);
+  background: var(--color-surface-raised);
 }
 
 .time-option.selected .time-option-dot {
-  background: var(--sp-gold);
-  box-shadow: 0 0 0 4px rgba(217, 170, 59, 0.12);
+  background: var(--color-brand-primary);
+  box-shadow: 0 0 0 4px var(--color-shadow);
 }
 
 .time-option-meta {
@@ -173,7 +173,7 @@
 
 .advanced-play-style {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
   padding-bottom: 14px;
 }
 
@@ -251,7 +251,7 @@
   padding: 4px 0;
   border: 0;
   background: transparent;
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
   font: inherit;
   font-size: var(--text-support);
   font-weight: 700;
@@ -293,7 +293,7 @@
 
 /* A little rank personality without turning the list into a podium graphic. */
 .ranking-list li:nth-child(1) .ranking-position {
-  color: var(--sp-gold) !important;
+  color: var(--color-accent-text) !important;
   font-size: 18px;
 }
 
@@ -395,7 +395,7 @@
 .advanced-pick-style,
 .advanced-play-style {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
   padding-bottom: 14px;
 }
 
@@ -415,13 +415,13 @@
   top: 0;
   z-index: 6;
   padding: 6px 0;
-  background: linear-gradient(180deg, var(--sp-bg) 72%, rgba(21, 55, 42, 0));
+  background: linear-gradient(180deg, var(--sp-bg) 72%, transparent);
 }
 
 /* V9.1 regression guard: picker actions keep the shared button treatment. */
 .fine-tune-screen .picker-step-actions {
   display: grid;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
 }
 
@@ -454,6 +454,18 @@
   }
 }
 
-.retry-notice { padding: 12px; margin: 12px 0; border: 1px solid var(--sp-gold); border-radius: 10px; }
-.retry-notice p { margin: 0 0 8px; font-size: var(--text-support); line-height: 1.5; }
+.retry-notice {
+  padding: 12px;
+  margin: 12px 0;
+  background: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  border-radius: 10px;
+}
+
+.retry-notice p {
+  margin: 0 0 8px;
+  color: var(--color-danger);
+  font-size: var(--text-support);
+  line-height: 1.5;
+}
 .picker-request-fields { border: 0; padding: 0; margin: 0; min-width: 0; }

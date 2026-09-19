@@ -43,7 +43,8 @@
   grid-template-columns: 118px minmax(0, 1fr);
   gap: 14px;
   padding: 14px 14px 14px 14px;
-  background: rgba(196, 217, 185, 0.045);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
   border: 0;
   border-radius: 14px;
 }
@@ -59,7 +60,7 @@
   place-items: center;
   padding: 0;
   color: var(--sp-green);
-  background: rgba(196, 217, 185, 0.08);
+  background: var(--color-surface-raised);
   border: 1px solid var(--sp-line);
   border-radius: 50%;
   font: inherit;
@@ -76,12 +77,12 @@
 
 .discover-save-button:hover:not(:disabled) {
   color: var(--sp-text);
-  background: rgba(196, 217, 185, 0.12);
+  background: var(--color-surface-raised);
 }
 
 .discover-save-button.saved {
-  color: #21190a;
-  background: var(--sp-gold);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
   border-color: transparent;
 }
 
@@ -106,7 +107,7 @@
   aspect-ratio: 0.78;
   display: block;
   object-fit: cover;
-  background: rgba(196, 217, 185, 0.08);
+  background: var(--color-surface-raised);
   border-radius: 10px;
 }
 
@@ -126,7 +127,7 @@
   justify-content: center;
   margin-top: 10px;
   padding: 4px 8px;
-  color: #21190a;
+  color: var(--color-on-accent);
   background: var(--sp-gold);
   border-radius: 999px;
   font-size: var(--text-meta);
@@ -236,7 +237,7 @@
 .discover-empty {
   margin-top: 18px;
   padding: 18px;
-  background: rgba(196, 217, 185, 0.045);
+  background: var(--color-surface-raised);
   border-radius: 14px;
   text-align: center;
 }
@@ -257,7 +258,7 @@
 @media (max-width: 380px) {
   .discover-card {
     grid-template-columns: 96px minmax(0, 1fr);
-    gap: 12px;
+    gap: var(--space-3);
     padding: 12px;
   }
 
@@ -274,7 +275,7 @@
   justify-content: center;
   margin-top: 10px;
   padding: 4px 8px;
-  color: #21190a;
+  color: var(--color-on-accent);
   background: var(--sp-gold);
   border-radius: 999px;
   font-size: var(--text-meta);

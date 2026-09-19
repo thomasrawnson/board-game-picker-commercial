@@ -77,13 +77,13 @@ h1 {
 .picker-navigation-card {
   min-height: 62px;
   padding: 14px 15px;
-  background: rgba(155, 197, 165, 0.06);
+  background: var(--color-surface-raised);
   border: 0;
   border-radius: 12px;
 }
 
 .picker-navigation-chevron {
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
 }
 
 .player-or {
@@ -97,12 +97,12 @@ h1 {
 }
 
 .player-chip {
-  background: rgba(155, 197, 165, 0.05);
+  background: var(--color-surface-raised);
   border-color: var(--sp-line);
 }
 
 .player-chip:hover {
-  border-color: rgba(155, 197, 165, 0.25);
+  border-color: var(--color-border);
 }
 
 .player-chip span {
@@ -112,14 +112,14 @@ h1 {
 }
 
 .player-chip.selected {
-  color: var(--sp-text);
-  background: rgba(155, 197, 165, 0.18);
-  border-color: rgba(155, 197, 165, 0.26);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
+  border-color: var(--color-border);
   box-shadow: none;
 }
 
 .player-chip.selected span {
-  color: var(--sp-green);
+  color: var(--color-brand-primary);
 }
 
 /* Picker result */
@@ -137,7 +137,7 @@ h1 {
   background: var(--sp-panel);
   border: 0;
   border-radius: 24px;
-  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--shadow-card);
 }
 
 .picker-result-mode {
@@ -169,14 +169,14 @@ h1 {
   display: block;
   object-fit: cover;
   border-radius: 14px;
-  background: #294f39;
-  box-shadow: 7px 8px 0 rgba(25, 65, 44, 0.58);
+  background: var(--color-surface-raised);
+  box-shadow: 7px 8px 0 var(--color-shadow);
 }
 
 .picker-cover-placeholder {
   display: grid;
   place-items: center;
-  color: #9cc18e;
+  color: var(--color-brand-primary);
   font-family: var(--font-display);
   font-size: 18px;
 }
@@ -189,7 +189,7 @@ h1 {
   height: 48px;
   display: grid;
   place-items: center;
-  color: #21190a;
+  color: var(--color-on-accent);
   background: var(--sp-gold);
   border: 3px solid var(--sp-panel);
   border-radius: 50%;
@@ -255,7 +255,7 @@ h1 {
 }
 
 .picker-result-links .try-another-link {
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
   font-weight: 700;
 }
 
@@ -306,7 +306,7 @@ h1 {
   flex: 0 0 auto;
   margin-top: 8px;
   padding: 0;
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
   background: transparent;
   border: 0;
   border-radius: 8px;
@@ -316,14 +316,14 @@ h1 {
 }
 
 .collection-add-icon:hover {
-  background: rgba(224, 173, 55, 0.07);
+  background: var(--color-brand-primary-soft);
 }
 
 .collection-section-tabs {
   gap: 4px;
   margin: 16px 0 12px;
   padding: 3px;
-  background: rgba(4, 19, 12, 0.55);
+  background: var(--color-surface);
   border: 0;
   border-radius: 10px;
 }
@@ -337,8 +337,8 @@ h1 {
 }
 
 .collection-section-tabs button.active {
-  color: var(--sp-text);
-  background: rgba(155, 197, 165, 0.18);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .collection-tools {
@@ -367,9 +367,9 @@ h1 {
 }
 
 .collection-filter-tabs button.active {
-  color: var(--sp-text);
+  color: var(--color-brand-primary);
   background: transparent;
-  border-bottom-color: var(--sp-gold);
+  border-bottom-color: var(--color-brand-primary);
 }
 
 .collection-search {
@@ -377,7 +377,7 @@ h1 {
   min-height: 40px;
   padding: 10px 12px;
   color: var(--sp-text);
-  background: rgba(4, 19, 12, 0.54);
+  background: var(--color-surface);
   border: 0;
   border-radius: 8px;
 }
@@ -417,20 +417,20 @@ h1 {
 }
 
 .collection-game:hover {
-  background: rgba(155, 197, 165, 0.035);
+  background: var(--color-surface-raised);
   border-color: var(--sp-line);
 }
 
 .collection-thumb {
   width: 43px;
   height: 43px;
-  background: #294f39;
+  background: var(--color-surface-raised);
   border-radius: 8px;
 }
 
 .collection-thumb img {
   object-fit: cover;
-  background: #294f39;
+  background: var(--color-surface-raised);
 }
 
 .collection-game-info {
@@ -448,7 +448,7 @@ h1 {
 }
 
 .collection-play-count {
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
   font-size: var(--text-meta);
   white-space: nowrap;
 }
@@ -474,7 +474,7 @@ h1 {
   gap: 3px;
   margin: 0 0 14px;
   padding: 3px;
-  background: rgba(4, 19, 12, 0.55);
+  background: var(--color-surface);
   border: 0;
   border-radius: 9px;
 }
@@ -489,8 +489,8 @@ h1 {
 }
 
 .ranking-view-tabs button.active {
-  color: var(--sp-text);
-  background: rgba(155, 197, 165, 0.18);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .ranking-played-filter {
@@ -509,7 +509,7 @@ h1 {
 }
 
 .ranking-played-filter input {
-  accent-color: var(--sp-gold);
+  accent-color: var(--color-brand-primary);
 }
 
 .ranking-list {
@@ -528,7 +528,7 @@ h1 {
 }
 
 .ranking-position {
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
   font-size: 17px;
   text-align: left;
 }
@@ -540,7 +540,7 @@ h1 {
 .ranking-list-image {
   width: 42px;
   height: 42px;
-  background: #294f39;
+  background: var(--color-surface-raised);
   border-radius: 7px;
 }
 
@@ -604,8 +604,8 @@ h1 {
 }
 
 .ranking-share-controls > div button.active {
-  color: #21190a;
-  background: var(--sp-gold);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .ranking-game-card {
@@ -625,12 +625,12 @@ h1 {
 }
 
 .ranking-game-image {
-  background: #294f39;
+  background: var(--color-surface-raised);
 }
 
 .ranking-choose-button {
-  color: #21190a;
-  background: var(--sp-gold);
+  color: var(--color-text-inverse);
+  background: var(--color-brand-primary);
 }
 
 .ranking-unplayed-button {
@@ -645,7 +645,7 @@ h1 {
 
 .ranking-unplayed-list,
 .ranking-empty-card {
-  background: rgba(155, 197, 165, 0.045);
+  background: var(--color-surface-raised);
   border: 0;
 }
 
@@ -712,7 +712,7 @@ h1 {
 
 .wishlist-status {
   color: var(--sp-green);
-  background: rgba(155, 197, 165, 0.08);
+  background: var(--color-surface-raised);
   border: 0;
   text-transform: none;
 }
@@ -730,7 +730,8 @@ h1 {
   position: relative;
   gap: 12px;
   padding: 15px;
-  background: rgba(155, 197, 165, 0.045);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
   border: 0;
   border-radius: 14px;
 }
@@ -783,7 +784,7 @@ h1 {
   gap: 3px;
   margin: 0 0 14px;
   padding: 3px;
-  background: rgba(4, 19, 12, 0.55);
+  background: var(--color-surface);
   border: 0;
   border-radius: 10px;
 }
@@ -799,8 +800,8 @@ h1 {
 }
 
 .stats-section-tab.active {
-  color: var(--sp-text);
-  background: rgba(155, 197, 165, 0.18);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .stats-section-heading {
@@ -848,7 +849,7 @@ h1 {
 }
 
 .players-card .player-rank {
-  color: var(--sp-gold);
+  color: var(--color-accent-text);
   background: transparent;
 }
 
@@ -933,7 +934,7 @@ h3,
   min-height: var(--target-min);
   padding: 8px 6px;
   color: var(--sp-green);
-  background: rgba(184, 210, 175, 0.055);
+  background: var(--color-surface-raised);
   border: 0;
   border-radius: 9px;
   font-size: var(--text-support);
@@ -941,8 +942,8 @@ h3,
 }
 
 .picker-mode-list.compact .picker-mode-option.selected {
-  color: var(--sp-text);
-  background: rgba(184, 210, 175, 0.17);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
   box-shadow: none;
 }
 
@@ -956,14 +957,14 @@ h3,
   min-height: var(--target-min);
   padding: 8px 6px;
   border-color: transparent;
-  background: rgba(184, 210, 175, 0.05);
+  background: var(--color-surface-raised);
   border-radius: 9px;
 }
 
 .play-style-grid .preference-chip.selected,
 .complexity-grid .complexity-option.selected {
-  color: var(--sp-text);
-  background: rgba(184, 210, 175, 0.17);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
   border-color: transparent;
 }
 
@@ -974,7 +975,7 @@ h3,
 .advanced-filters {
   margin-top: 16px !important;
   border: 0 !important;
-  background: rgba(184, 210, 175, 0.04) !important;
+  background: var(--color-surface-raised) !important;
   border-radius: 10px !important;
 }
 
@@ -1051,11 +1052,11 @@ h3,
 
 .wishlist-bookmark-button:hover:not(:disabled) {
   color: var(--sp-text);
-  background: rgba(184, 210, 175, 0.07);
+  background: var(--color-surface-raised);
 }
 
 .wishlist-bookmark-button.saved {
-  color: var(--sp-gold);
+  color: var(--color-brand-primary);
 }
 
 .wishlist-bookmark-button:active:not(:disabled) {
@@ -1162,7 +1163,7 @@ h3,
 .collection-section-tabs,
 .ranking-view-tabs,
 .stats-section-tabs {
-  background-color: rgba(10, 31, 22, 0.46);
+  background-color: var(--color-brand-primary-soft);
 }
 
 @media (max-width: 480px) {
@@ -1201,26 +1202,26 @@ h3,
 
 /* Make step progress legible without making it another headline. */
 .dot {
-  background: rgba(244, 236, 223, 0.34) !important;
+  background: var(--color-surface-raised) !important;
   opacity: 1 !important;
 }
 
 .dot.active {
-  background: var(--sp-gold) !important;
+  background: var(--color-brand-primary) !important;
 }
 
 /* Solo is a subtly distinct play mode. */
 .player-chip.solo {
-  border-color: rgba(217, 170, 59, 0.22);
+  border-color: var(--color-brand-primary);
 }
 
 .player-chip.solo span {
-  color: #cbbf96;
+  color: var(--color-text-support);
 }
 
 .player-chip.solo.selected {
-  border-color: rgba(217, 170, 59, 0.34);
-  background: rgba(217, 170, 59, 0.12);
+  border-color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 /* Fine tune: tighter rhythm and fewer visually competing blocks. */
@@ -1267,7 +1268,7 @@ h3,
   margin: -2px 0 0;
   padding: 8px 12px;
   color: var(--sp-text);
-  background: rgba(196, 217, 185, 0.09);
+  background: var(--color-surface-raised);
   border: 0;
   border-radius: 9px;
   font: inherit;
@@ -1277,7 +1278,7 @@ h3,
 }
 
 .discover-wishlist-link:hover {
-  background: rgba(196, 217, 185, 0.14);
+  background: var(--color-surface-raised);
 }
 
 /* Discover uses relative fit labels rather than pretending the raw score is a percentage. */

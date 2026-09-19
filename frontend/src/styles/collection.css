@@ -3,7 +3,7 @@
 .play-confirmation {
   margin: 12px 0 0;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
 
   font-size: var(--text-support);
   font-weight: 600;
@@ -19,7 +19,7 @@
   gap: 6px;
   margin: 14px 0;
   padding: 4px;
-  background: rgba(243, 234, 216, 0.05);
+  background: var(--color-surface-raised);
   border: 1px solid var(--line);
   border-radius: 12px;
 }
@@ -38,8 +38,8 @@
 }
 
 .collection-section-tabs button.active {
-  color: var(--ink);
-  background: var(--gold);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .wishlist-list {
@@ -49,8 +49,8 @@
 
 .wishlist-card {
   padding: 13px;
-  background: rgba(243, 234, 216, 0.06);
-  border: 1px solid rgba(243, 234, 216, 0.14);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
   border-radius: 15px;
 }
 
@@ -69,7 +69,7 @@
 }
 
 .wishlist-card-main:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--color-brand-primary);
   outline-offset: 5px;
   border-radius: 8px;
 }
@@ -78,7 +78,7 @@
   width: 82px;
   height: 82px;
   object-fit: contain;
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--color-surface-raised);
   border-radius: 9px;
 }
 
@@ -115,7 +115,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--gold);
+  color: var(--color-accent-text);
   font-family: var(--font-display);
   font-size: 28px;
 }
@@ -124,9 +124,9 @@
   display: inline-flex;
   margin: 8px 0 0;
   padding: 6px 10px;
-  color: var(--gold);
-  background: rgba(201, 162, 39, 0.12);
-  border: 1px solid rgba(201, 162, 39, 0.35);
+  color: var(--color-accent-text);
+  background: var(--color-brand-accent-soft);
+  border: 1px solid var(--color-brand-accent);
   border-radius: 999px;
   font-size: var(--text-support);
   font-weight: 700;
@@ -150,7 +150,7 @@
 .wishlist-add-confirm {
   padding: 14px;
   color: var(--text-primary);
-  background: rgba(243, 234, 216, 0.06);
+  background: var(--color-surface-raised);
   border: 1px solid var(--line);
   border-radius: 12px;
   text-align: left;
@@ -191,8 +191,8 @@
   min-width: 0;
   padding: 11px 12px;
 
-  color: var(--card);
-  background: rgba(243, 234, 216, 0.06);
+  color: var(--color-text-primary);
+  background: var(--color-surface-raised);
 
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -202,7 +202,7 @@
 }
 
 .collection-search::placeholder {
-  color: rgba(243, 234, 216, 0.35);
+  color: var(--color-text-support);
 }
 
 .collection-sort {
@@ -216,7 +216,7 @@
 .collection-count {
   margin: 0 0 10px;
 
-  color: rgba(243, 234, 216, 0.42);
+  color: var(--color-text-support);
 
   font-size: var(--text-meta);
 }
@@ -237,10 +237,10 @@
 
   padding: 9px;
 
-  color: var(--card);
+  color: var(--color-text-primary);
   text-align: left;
 
-  background: rgba(243, 234, 216, 0.05);
+  background: var(--color-surface-raised);
 
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -249,7 +249,7 @@
 }
 
 .collection-game:hover {
-  border-color: rgba(201, 162, 39, 0.48);
+  border-color: var(--color-brand-accent);
 }
 
 .collection-thumb {
@@ -262,7 +262,7 @@
 
   overflow: hidden;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
 
   background: var(--felt-dark);
 
@@ -274,7 +274,7 @@
   height: 100%;
   object-fit: contain;
 
-  background: #eee5d3;
+  background: var(--color-surface-raised);
 }
 
 .collection-game-info {
@@ -298,13 +298,13 @@
 
 .collection-game-info span,
 .collection-game-info small {
-  color: rgba(243, 234, 216, 0.46);
+  color: var(--color-text-support);
 
   font-size: var(--text-meta);
 }
 
 .collection-chevron {
-  color: var(--gold);
+  color: var(--color-accent-text);
 
   font-size: 24px;
 }
@@ -312,7 +312,7 @@
 .collection-empty {
   margin-top: 30px;
 
-  color: rgba(243, 234, 216, 0.5);
+  color: var(--color-text-support);
 
   text-align: center;
 }
@@ -323,7 +323,7 @@
   margin-bottom: 18px;
   padding: 0;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
   background: transparent;
 
   border: 0;
@@ -349,8 +349,7 @@
 
   border-radius: 18px;
 
-  box-shadow:
-    0 18px 38px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 18px 38px var(--color-shadow);
 }
 
 .collection-detail-image img {
@@ -359,7 +358,7 @@
 
   object-fit: contain;
 
-  background: #eee5d3;
+  background: var(--color-surface-raised);
 }
 
 .collection-placeholder {
@@ -370,7 +369,7 @@
   align-items: center;
   justify-content: center;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
 
   font-family: var(--font-display);
   font-size: 48px;
@@ -388,7 +387,7 @@
 .detail-stats div {
   padding: 12px 6px;
 
-  background: rgba(243, 234, 216, 0.05);
+  background: var(--color-surface-raised);
 
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -400,7 +399,7 @@
 }
 
 .detail-stats strong {
-  color: var(--gold);
+  color: var(--color-accent-text);
 
   font-family: var(--font-display);
   font-size: 20px;
@@ -409,7 +408,7 @@
 .detail-stats span {
   margin-top: 3px;
 
-  color: rgba(243, 234, 216, 0.45);
+  color: var(--color-text-support);
 
   font-size: var(--text-meta);
   text-transform: uppercase;
@@ -418,7 +417,7 @@
 .detail-section {
   margin-top: 20px;
 
-  color: var(--card);
+  color: var(--color-text-primary);
 
   text-align: left;
 }
@@ -433,9 +432,9 @@
 .detail-tags span {
   padding: 7px 10px;
 
-  color: rgba(243, 234, 216, 0.75);
+  color: var(--color-text-support);
 
-  background: rgba(243, 234, 216, 0.06);
+  background: var(--color-surface-raised);
 
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -467,13 +466,11 @@
 
   padding: 7px 12px;
 
-  color: var(--gold);
-  background:
-    rgba(201, 162, 39, 0.12);
+  color: var(--color-accent-text);
+  background: var(--color-brand-accent-soft);
 
-  border:
-    1px solid
-    rgba(201, 162, 39, 0.35);
+  border: 1px solid
+    var(--color-brand-accent);
   border-radius: 999px;
 
   font-size: var(--text-support);
@@ -486,10 +483,8 @@
 }
 
 .bgstats-button:hover {
-  background:
-    rgba(201, 162, 39, 0.2);
-  border-color:
-    rgba(201, 162, 39, 0.55);
+  background: var(--color-brand-accent-soft);
+  border-color: var(--color-brand-accent);
 }
 
 /* Play history (game detail) */
@@ -497,9 +492,8 @@
 .game-history {
   padding-top: 18px;
 
-  border-top:
-    1px solid
-    rgba(243, 234, 216, 0.1);
+  border-top: 1px solid
+    var(--color-border);
 }
 
 .history-stats {
@@ -514,7 +508,7 @@
 .history-stats div {
   padding: 10px 6px;
 
-  background: rgba(243, 234, 216, 0.04);
+  background: var(--color-surface-raised);
 
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -525,7 +519,7 @@
 .history-stats strong {
   display: block;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
 
   font-family: var(--font-display);
   font-size: 16px;
@@ -562,9 +556,8 @@
   margin-top: 16px;
   padding-top: 14px;
 
-  border-top:
-    1px solid
-    rgba(243, 234, 216, 0.1);
+  border-top: 1px solid
+    var(--color-border);
 }
 
 .score-field input {
@@ -589,12 +582,11 @@
 
   padding: 4px 0 10px;
 
-  background:
-    linear-gradient(
+  background: linear-gradient(
       180deg,
-      rgba(31, 61, 46, 0.98) 0%,
-      rgba(31, 61, 46, 0.95) 80%,
-      rgba(31, 61, 46, 0) 100%
+      var(--color-surface) 0%,
+      var(--color-surface) 80%,
+      transparent 100%
     );
 }
 
@@ -604,11 +596,9 @@
 .collection-sort {
   color: var(--text-primary);
 
-  background:
-    rgba(243, 234, 216, 0.08);
+  background: var(--color-surface-raised);
 
-  border-color:
-    rgba(243, 234, 216, 0.2);
+  border-color: var(--color-border);
 }
 
 .collection-search::placeholder {
@@ -617,12 +607,12 @@
 
 .collection-search:focus,
 .collection-sort:focus {
-  border-color: rgba(201, 162, 39, 0.75);
+  border-color: var(--color-brand-accent);
 }
 
 .collection-sort option {
   color: var(--ink);
-  background: var(--card);
+  background: var(--color-surface);
 }
 
 /* Collection count */
@@ -643,9 +633,8 @@
   padding-bottom: 16px;
 
   scrollbar-width: thin;
-  scrollbar-color:
-    rgba(201, 162, 39, 0.45)
-    rgba(0, 0, 0, 0.08);
+  scrollbar-color: var(--color-brand-accent-soft)
+    var(--color-surface-raised);
 }
 
 /* Chrome / Edge scrollbar */
@@ -655,17 +644,17 @@
 }
 
 .collection-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--color-surface-raised);
   border-radius: 999px;
 }
 
 .collection-list::-webkit-scrollbar-thumb {
-  background: rgba(201, 162, 39, 0.45);
+  background: var(--color-brand-accent-soft);
   border-radius: 999px;
 }
 
 .collection-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(201, 162, 39, 0.65);
+  background: var(--color-brand-accent-soft);
 }
 
 /* Collection rows */
@@ -738,12 +727,10 @@
   margin-top: 14px;
   padding: 16px;
 
-  background:
-    rgba(243, 234, 216, 0.055);
+  background: var(--color-surface-raised);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.13);
+  border: 1px solid
+    var(--color-border);
 
   border-radius: 16px;
 }
@@ -757,7 +744,7 @@
 }
 
 .play-form-heading strong {
-  color: var(--card);
+  color: var(--color-text-primary);
   font-family: var(--font-display);
   font-size: 17px;
 }
@@ -795,13 +782,11 @@
 
   padding: 10px 11px;
 
-  color: var(--card);
-  background:
-    rgba(0, 0, 0, 0.17);
+  color: var(--color-text-primary);
+  background: var(--color-surface-raised);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.15);
+  border: 1px solid
+    var(--color-border);
 
   border-radius: 10px;
 
@@ -810,9 +795,8 @@
 }
 
 .play-form input:focus {
-  outline-color: var(--sp-gold);
-  border-color:
-    rgba(201, 162, 39, 0.7);
+  outline-color: var(--color-brand-primary);
+  border-color: var(--color-brand-accent);
 }
 
 .duration-input {
@@ -849,7 +833,7 @@
 
   padding: 3px 7px;
 
-  color: var(--ink);
+  color: var(--color-on-accent);
   background: var(--gold);
 
   border-radius: 999px;
@@ -870,12 +854,10 @@
 .player-form-card {
   padding: 12px;
 
-  background:
-    rgba(0, 0, 0, 0.12);
+  background: var(--color-surface-raised);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.1);
+  border: 1px solid
+    var(--color-border);
 
   border-radius: 12px;
 }
@@ -889,7 +871,7 @@
 }
 
 .player-form-number strong {
-  color: var(--card);
+  color: var(--color-text-primary);
 
   font-size: var(--text-meta);
 }
@@ -908,7 +890,7 @@
 }
 
 .player-form-number button:hover {
-  color: var(--gold);
+  color: var(--color-accent-text);
 }
 
 .player-input-row {
@@ -933,7 +915,7 @@
   width: 16px;
   height: 16px;
 
-  accent-color: var(--gold);
+  accent-color: var(--color-brand-primary);
 }
 
 .winner-toggle span {
@@ -946,12 +928,11 @@
   margin-top: 10px;
   padding: 10px;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
   background: transparent;
 
-  border:
-    1px dashed
-    rgba(201, 162, 39, 0.45);
+  border: 1px dashed
+    var(--color-brand-accent);
 
   border-radius: 10px;
 
@@ -961,8 +942,7 @@
 }
 
 .add-player-button:hover {
-  background:
-    rgba(201, 162, 39, 0.06);
+  background: var(--color-brand-accent-soft);
 }
 
 .save-play-button {
@@ -972,9 +952,8 @@
 .recent-play-detail {
   padding: 11px 0;
 
-  border-bottom:
-    1px solid
-    rgba(243, 234, 216, 0.1);
+  border-bottom: 1px solid
+    var(--color-border);
 }
 
 .recent-play-detail:last-child {
@@ -995,7 +974,7 @@
 }
 
 .recent-play-header strong {
-  color: var(--card);
+  color: var(--color-text-primary);
 
   font-size: var(--text-support);
 }
@@ -1022,8 +1001,7 @@
 
   padding: 6px 8px;
 
-  background:
-    rgba(243, 234, 216, 0.04);
+  background: var(--color-surface-raised);
 
   border-radius: 7px;
 }
@@ -1035,34 +1013,31 @@
 }
 
 .history-player strong {
-  color: var(--card);
+  color: var(--color-text-primary);
 
   font-size: var(--text-meta);
 }
 
 .history-player.winner {
-  background:
-    rgba(201, 162, 39, 0.11);
+  background: var(--color-brand-accent-soft);
 
-  border:
-    1px solid
-    rgba(201, 162, 39, 0.2);
+  border: 1px solid
+    var(--color-brand-accent);
 }
 
 .history-player.winner span,
 .history-player.winner strong {
-  color: var(--gold);
+  color: var(--color-accent-text);
 }
 
 .bgstats-history-link {
   display: inline-block;
   margin-top: 8px;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
 
-  border-bottom:
-    1px solid
-    rgba(201, 162, 39, 0.4);
+  border-bottom: 1px solid
+    var(--color-brand-accent);
 
   font-size: var(--text-support);
   font-weight: 700;
@@ -1082,9 +1057,8 @@
   margin-top: 22px;
   padding-top: 18px;
 
-  border-top:
-    1px solid
-    rgba(243, 234, 216, 0.1);
+  border-top: 1px solid
+    var(--color-danger);
 }
 
 .remove-collection-button {
@@ -1092,12 +1066,11 @@
 
   padding: 11px 14px;
 
-  color: #e5a58e;
+  color: var(--color-danger);
   background: transparent;
 
-  border:
-    1px solid
-    rgba(229, 165, 142, 0.28);
+  border: 1px solid
+    var(--color-danger);
 
   border-radius: 10px;
 
@@ -1108,11 +1081,9 @@
 }
 
 .remove-collection-button:hover {
-  background:
-    rgba(181, 84, 43, 0.08);
+  background: var(--color-danger-soft);
 
-  border-color:
-    rgba(229, 165, 142, 0.5);
+  border-color: var(--color-danger);
 }
 
 .remove-collection-confirm {
@@ -1122,11 +1093,10 @@
 
   padding: 12px 14px;
 
-  background: rgba(229, 165, 142, 0.08);
+  background: var(--color-danger-soft);
 
-  border:
-    1px solid
-    rgba(229, 165, 142, 0.28);
+  border: 1px solid
+    var(--color-danger);
   border-radius: 10px;
 
   color: var(--text-secondary);
@@ -1171,12 +1141,10 @@
   padding: 8px 6px;
 
   color: var(--text-secondary);
-  background:
-    rgba(243, 234, 216, 0.05);
+  background: var(--color-surface-raised);
 
-  border:
-    1px solid
-    rgba(243, 234, 216, 0.12);
+  border: 1px solid
+    var(--color-border);
 
   border-radius: 999px;
 
@@ -1187,9 +1155,9 @@
 }
 
 .collection-filter-tabs button.active {
-  color: var(--ink);
-  background: var(--gold);
-  border-color: var(--gold);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
+  border-color: var(--color-brand-primary);
 }
 
 .collection-play-meta {
@@ -1197,7 +1165,7 @@
 
   margin-top: 4px;
 
-  color: var(--gold) !important;
+  color: var(--color-accent-text) !important;
 }
 
 .delete-play-button {
@@ -1209,13 +1177,11 @@
   margin-top: 6px;
   padding: 8px 10px;
 
-  color: #e79a80;
-  background:
-    rgba(181, 84, 43, 0.08);
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
 
-  border:
-    1px solid
-    rgba(181, 84, 43, 0.25);
+  border: 1px solid
+    var(--color-danger);
 
   border-radius: 8px;
 
@@ -1239,9 +1205,9 @@
   margin-top: 10px;
   padding: 8px 10px;
 
-  background: rgba(217, 133, 106, 0.1);
+  background: var(--color-danger-soft);
 
-  border: 1px solid rgba(217, 133, 106, 0.3);
+  border: 1px solid var(--color-danger);
   border-radius: 8px;
 
   color: var(--text-secondary);
@@ -1265,8 +1231,8 @@
 .delete-play-confirm-button {
   padding: 6px 12px;
 
-  color: #f3ead8;
-  background: #d9856a;
+  color: var(--color-on-danger);
+  background: var(--color-danger);
 
   border: 0;
   border-radius: 6px;
@@ -1281,7 +1247,7 @@
 }
 
 .delete-play-confirm-button:hover {
-  background: #c96f52;
+  background: var(--color-danger-hover);
 }
 
 .delete-play-confirm-button:disabled,

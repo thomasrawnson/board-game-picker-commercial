@@ -7,8 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "check:pwa": "node scripts/check-pwa-assets.mjs",
+    "check:colors": "node scripts/check-colors.mjs",
     "lint": "eslint .",
-    "test": "node --test src/routes.test.ts src/auth-validation.test.ts src/api/request.test.ts",
+    "test": "node --test src/routes.test.ts src/auth-validation.test.ts src/api/request.test.ts scripts/theme.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

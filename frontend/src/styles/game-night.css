@@ -14,7 +14,7 @@
   margin-bottom: 22px;
   padding: 7px 11px;
 
-  color: var(--felt-dark);
+  color: var(--color-on-accent);
   background: var(--gold);
 
   border-radius: 999px;
@@ -51,14 +51,13 @@
 .game-night-preview {
   padding: 19px 17px;
 
-  background:
-    linear-gradient(
+  background: linear-gradient(
       145deg,
-      rgba(201, 162, 39, 0.11),
-      rgba(243, 234, 216, 0.035)
+      var(--color-brand-accent-soft),
+      var(--color-surface-raised)
     );
 
-  border: 1px solid rgba(201, 162, 39, 0.24);
+  border: 1px solid var(--color-brand-accent);
   border-radius: 18px;
 }
 
@@ -66,7 +65,7 @@
 .game-night-preview-label {
   margin: 0 0 17px;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
 
   font-size: var(--text-overline);
   font-weight: 700;
@@ -104,10 +103,10 @@
   display: grid;
   place-items: center;
 
-  color: var(--gold);
-  background: rgba(201, 162, 39, 0.12);
+  color: var(--color-accent-text);
+  background: var(--color-brand-accent-soft);
 
-  border: 1px solid rgba(201, 162, 39, 0.25);
+  border: 1px solid var(--color-brand-accent);
   border-radius: 50%;
 
   font-size: var(--text-support);
@@ -141,7 +140,7 @@
   margin: 0;
   padding: 0 12px 8px;
 
-  color: rgba(243, 234, 216, 0.48);
+  color: var(--color-text-support);
 
   font-size: var(--text-support);
   line-height: 1.5;

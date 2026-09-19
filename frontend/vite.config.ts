@@ -29,10 +29,10 @@ export default defineConfig({
           "Pick the right board game for game night.",
 
         theme_color:
-          "#173023",
+          "#315C48",
 
         background_color:
-          "#173023",
+          "#F6F3EB",
 
         display:
           "standalone",
@@ -49,7 +49,7 @@ export default defineConfig({
         icons: [
           {
             src:
-              "/pwa-192x192.png",
+              "/branding/pwa-192.png",
 
             sizes:
               "192x192",
@@ -59,7 +59,7 @@ export default defineConfig({
           },
           {
             src:
-              "/pwa-512x512.png",
+              "/branding/pwa-512.png",
 
             sizes:
               "512x512",

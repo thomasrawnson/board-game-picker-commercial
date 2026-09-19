@@ -2,6 +2,75 @@
    Keep product-wide colours, typography and interaction rules here. */
 
 :root {
+  color-scheme: light;
+  --color-brand-primary: #315C48;
+  --color-brand-primary-hover: #284D3C;
+  --color-brand-primary-soft: #E3EBE6;
+  --color-brand-accent: #C28B37;
+  --color-brand-accent-hover: #A9752D;
+  --color-brand-accent-soft: #F4EAD7;
+  --color-bg: #F6F3EB;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #EEEAE0;
+  --color-text-primary: #1E2A24;
+  --color-text-secondary: #667068;
+  --color-text-inverse: #FFFFFF;
+  --color-border: #D9D5CB;
+  --color-success: #3F7655;
+  --color-warning: #A66D16;
+  --color-danger: #B7463C;
+  --color-info: #356A7A;
+  --color-accent-text: #81591F;
+  --color-on-accent: #151816;
+  --color-on-danger: #FFFFFF;
+  --color-overlay: rgb(0 0 0 / 60%);
+  --color-shadow: rgb(0 0 0 / 10%);
+  --shadow-card: 0 4px 16px var(--color-shadow);
+  --color-danger-hover: color-mix(in srgb, var(--color-danger) 85%, var(--color-text-primary));
+  --color-success-soft: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
+  --color-warning-soft: color-mix(in srgb, var(--color-warning) 12%, var(--color-surface));
+  --color-danger-soft: color-mix(in srgb, var(--color-danger) 12%, var(--color-surface));
+  --color-info-soft: color-mix(in srgb, var(--color-info) 12%, var(--color-surface));
+
+  /* Supporting text remains readable on raised surfaces in both themes. */
+  --color-text-support: color-mix(in srgb, var(--color-text-secondary) 90%, var(--color-text-primary));
+
+  /* Compatibility aliases: existing selectors share the same palette. */
+  --sp-bg: var(--color-bg);
+  --sp-panel: var(--color-surface);
+  --sp-panel-soft: var(--color-surface-raised);
+  --sp-quiet: var(--color-surface-raised);
+  --sp-text: var(--color-text-primary);
+  --sp-secondary: var(--color-text-support);
+  --sp-muted: var(--color-text-support);
+  --sp-green: var(--color-brand-primary);
+  --sp-gold: var(--color-brand-accent);
+  --sp-gold-hover: var(--color-brand-accent-hover);
+  --sp-line: var(--color-border);
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-support);
+  --text-muted: var(--color-text-support);
+  --text-accent: var(--color-accent-text);
+  --shelfpick-bg: var(--color-bg);
+  --shelfpick-surface: var(--color-surface);
+  --shelfpick-surface-raised: var(--color-surface-raised);
+  --shelfpick-border: var(--color-border);
+  --shelfpick-green: var(--color-brand-primary);
+  --shelfpick-green-soft: var(--color-brand-primary);
+  --shelfpick-text: var(--color-text-primary);
+  --shelfpick-muted: var(--color-text-support);
+  --shelfpick-gold: var(--color-brand-accent);
+  --shelfpick-gold-hover: var(--color-brand-accent-hover);
+  --felt: var(--color-bg);
+  --felt-dark: var(--color-bg);
+  --card: var(--color-surface);
+  --card-shadow: var(--color-border);
+  --ink: var(--color-text-primary);
+  --ink-soft: var(--color-text-support);
+  --gold: var(--color-brand-accent);
+  --rust: var(--color-accent-text);
+  --line: var(--color-border);
+
   --text-body: 16px;
   --text-support: 14px;
   --text-meta: 12px;
@@ -21,24 +90,9 @@
     "Segoe UI",
     sans-serif;
 
-  --sp-bg: #15372a;
-  --sp-panel: #1c4333;
-  --sp-panel-soft: #234d3b;
-  --sp-quiet: #183b2d;
-
-  --sp-text: #f4ecdf;
-  --sp-secondary: #d9e2d4;
-  --sp-muted: #a0b49e;
-  --sp-green: #c4d9b9;
-
-  --sp-gold: #d9aa3b;
-  --sp-gold-hover: #e5b84d;
-
-  --sp-line: rgba(196, 217, 185, 0.13);
-
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-lg: 16px;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -46,6 +100,31 @@
   --space-4: 16px;
   --space-5: 24px;
   --space-6: 32px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-brand-primary: #70A889;
+  --color-brand-primary-hover: #86B99C;
+  --color-brand-primary-soft: #26382E;
+  --color-brand-accent: #E3AD55;
+  --color-brand-accent-hover: #EDBC6E;
+  --color-brand-accent-soft: #403522;
+  --color-bg: #151816;
+  --color-surface: #202521;
+  --color-surface-raised: #29302B;
+  --color-text-primary: #F4F1E8;
+  --color-text-secondary: #AAB4AD;
+  --color-text-inverse: #151816;
+  --color-border: #39413B;
+  --color-success: #68A77C;
+  --color-warning: #DDB15B;
+  --color-danger: #DF746A;
+  --color-info: #6FA1AF;
+  --color-accent-text: #E3AD55;
+  --color-on-accent: #151816;
+  --color-on-danger: #151816;
+  --color-shadow: rgb(0 0 0 / 24%);
 }
 
 body,
@@ -64,7 +143,7 @@ h3,
 }
 
 :focus-visible {
-  outline: 2px solid var(--sp-gold);
+  outline: 2px solid var(--color-brand-primary);
   outline-offset: 3px;
 }
 

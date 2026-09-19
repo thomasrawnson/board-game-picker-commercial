@@ -3,25 +3,11 @@
 :root {
   font-family: var(--font-ui);
 
-  color: #f3ecdf;
-  background: #102b20;
+  color: var(--color-text-primary);
+  background: var(--color-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-
-  --felt: #244936;
-  --felt-dark: #102b20;
-
-  --card: #f3ead8;
-  --card-shadow: #d9cbab;
-
-  --ink: #2b2118;
-  --ink-soft: #5c5142;
-
-  --gold: #c9a227;
-  --rust: #b5542b;
-
-  --line: rgba(243, 234, 216, 0.14);
 }
 
 * {

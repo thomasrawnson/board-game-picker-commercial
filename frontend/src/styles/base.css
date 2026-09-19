@@ -32,16 +32,15 @@ textarea {
 
   padding: 24px 16px;
 
-  background:
-    radial-gradient(
+  background: radial-gradient(
       ellipse at 50% -10%,
-      rgba(201, 162, 39, 0.12),
+      var(--color-brand-accent-soft),
       transparent 55%
     ),
     repeating-linear-gradient(
       45deg,
-      rgba(255, 255, 255, 0.015) 0,
-      rgba(255, 255, 255, 0.015) 1px,
+      var(--color-surface-raised) 0,
+      var(--color-surface-raised) 1px,
       transparent 1px,
       transparent 3px
     ),
@@ -60,18 +59,12 @@ textarea {
 
   padding: 28px 22px 24px;
 
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.035),
-    rgba(0, 0, 0, 0.09)
-  );
+  background: var(--color-surface);
 
   border: 1px solid var(--line);
   border-radius: 28px;
 
-  box-shadow:
-    0 28px 70px rgba(0, 0, 0, 0.26),
-    inset 0 1px rgba(255, 255, 255, 0.03);
+  box-shadow: var(--shadow-card);
 
   overflow: hidden;
 }
@@ -108,7 +101,7 @@ header {
 .eyebrow {
   margin: 0 0 8px;
 
-  color: var(--gold);
+  color: var(--color-accent-text);
 
   font-size: var(--text-overline);
   font-weight: 600;
@@ -125,7 +118,7 @@ h2 {
 h1 {
   margin: 0 0 8px;
 
-  color: var(--card);
+  color: var(--color-text-primary);
 
   font-size: 31px;
   font-weight: 600;
@@ -135,7 +128,7 @@ h1 {
 .subtitle {
   margin: 0 0 32px;
 
-  color: rgba(243, 234, 216, 0.52);
+  color: var(--color-text-support);
 
   font-size: 14px;
 }
@@ -152,7 +145,7 @@ h1 {
   width: 100%;
   min-height: 46px;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 
   font-family: var(--font-ui);
   font-size: 14px;
@@ -173,14 +166,14 @@ h1 {
 
 .primary-button {
   margin-top: 24px;
-  color: #21190a;
-  background: var(--sp-gold);
+  color: var(--color-text-inverse);
+  background: var(--color-brand-primary);
   border: 0;
   box-shadow: none;
 }
 
 .primary-button:hover:not(:disabled) {
-  background: var(--sp-gold-hover);
+  background: var(--color-brand-primary-hover);
 }
 
 .primary-button:active:not(:disabled),
@@ -191,24 +184,24 @@ h1 {
 
 .primary-button:disabled {
   opacity: 1;
-  color: rgba(244, 236, 223, 0.42);
-  background: rgba(244, 236, 223, 0.08);
+  color: var(--color-text-support);
+  background: var(--color-surface-raised);
   border: 0;
   box-shadow: none;
   cursor: not-allowed;
 }
 
 .secondary-button {
-  color: var(--sp-text);
+  color: var(--color-brand-primary);
   background: transparent;
-  border: 1px solid var(--sp-line);
+  border: 1px solid var(--color-brand-primary);
   box-shadow: none;
 }
 
 .ghost-button {
   margin-top: 10px;
 
-  color: rgba(243, 234, 216, 0.62);
+  color: var(--color-text-support);
 
   background: transparent;
 
@@ -220,7 +213,7 @@ h1 {
 .error-message {
   margin: 15px 0 0;
 
-  color: #f0b9a6;
+  color: var(--color-danger);
 
   font-size: var(--text-support);
   text-align: center;
@@ -229,7 +222,7 @@ h1 {
 /* Accessibility */
 
 button:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--color-brand-primary);
   outline-offset: 3px;
 }
 
@@ -260,7 +253,7 @@ button:focus-visible {
     border: 0;
     border-radius: 0;
 
-    box-shadow: none;
+    box-shadow: var(--shadow-card);
 
     overflow-y: auto;
     overflow-x: hidden;
@@ -278,12 +271,7 @@ button:focus-visible {
    - sticky collection controls
    ========================================================= */
 
-:root {
-  --text-primary: #f6eedc;
-  --text-secondary: #ddd3bd;
-  --text-muted: #b5bdaa;
-  --text-accent: #d6ad32;
-}
+
 
 /* General readability */
 
@@ -294,7 +282,7 @@ button:focus-visible {
 /* Buttons */
 
 .secondary-button {
-  color: var(--text-primary);
+  color: var(--color-brand-primary);
 }
 
 .ghost-button {
@@ -333,7 +321,7 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--color-brand-primary);
 
   outline-offset: 3px;
 }
@@ -341,7 +329,7 @@ textarea:focus-visible {
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  border-color: rgba(201, 162, 39, 0.8);
+  border-color: var(--color-brand-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -382,20 +370,6 @@ textarea:focus-visible {
 ========================================= */
 
 :root {
-  --shelfpick-bg: #071b12;
-  --shelfpick-surface: #0d2418;
-  --shelfpick-surface-raised: #122d20;
-
-  --shelfpick-border: #315944;
-
-  --shelfpick-green: #8dbe98;
-  --shelfpick-green-soft: #a4cbaa;
-
-  --shelfpick-text: #f5f0df;
-  --shelfpick-muted: #91a99a;
-
-  --shelfpick-gold: #e1ad3d;
-  --shelfpick-gold-hover: #edbb4c;
 
   --shelfpick-nav-height: 72px;
 }
@@ -411,10 +385,9 @@ textarea:focus-visible {
     var(--shelfpick-nav-height) + env(safe-area-inset-bottom)
   );
 
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at 50% -5%,
-      rgba(49, 100, 67, 0.18),
+      var(--color-surface-raised),
       transparent 32%
     ),
     var(--shelfpick-bg);
@@ -475,7 +448,7 @@ textarea:focus-visible {
 }
 
 .dice-menu-button:hover {
-  background: rgba(196, 217, 185, 0.07);
+  background: var(--color-surface-raised);
 }
 
 .dice-menu-button:active {
