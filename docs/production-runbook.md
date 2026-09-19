@@ -1,6 +1,6 @@
 # Production deployment runbook
 
-BoardGamePicker's closed-alpha environment uses one Render Blueprint:
+ShelfPick's closed-alpha environment uses one Render Blueprint:
 
 - a static React PWA;
 - a FastAPI web service;
@@ -9,7 +9,101 @@ BoardGamePicker's closed-alpha environment uses one Render Blueprint:
 
 The frontend and backend use Render's managed HTTPS. The database uses a
 paid plan because free Render PostgreSQL databases do not provide recovery.
-Keep the frontend, API and database in Frankfurt.
+Keep the API and database in Frankfurt. Render serves the static frontend from
+its global CDN, so the static site does not have a regional compute setting.
+
+## Foundation B verification status — 2026-09-19
+
+This review used the public Git repository and the checked-in Blueprint. The
+Render dashboard required authentication, and no authenticated Render CLI,
+API token or Render connector was available. Production-only facts are marked
+**Untested** rather than inferred from `render.yaml`. No production resources
+or settings were changed.
+
+| Item | Status | Evidence or required follow-up |
+| --- | --- | --- |
+| UX-1B on `origin/main` | **Verified** | `aa686635580ecf3bdab3704388528fa67a79289c` (`Improve request recovery, registration and responsive layouts`) is both local `HEAD` and `origin/main`. |
+| GitHub Actions for UX-1B | **Verified** | Public CI run [#44](https://github.com/thomasrawnson/board-game-picker-commercial/actions/runs/35441421844) completed successfully on `main` for `aa68663` on 2026-09-19. The workflow covers backend migrations/tests and frontend tests, lint, build and PWA validation. The full local release suite was not repeated. |
+| Blueprint resources | **Verified in repository** | `board-game-picker-web` is a static site; `board-game-picker-api` is a Frankfurt `0.5c-512mb` web service; `board-game-picker-db` is a Frankfurt PostgreSQL 16 database on `0.1c-256mb` with 1 GB storage and no public IP allow list. |
+| Existing Render resources, plans and regions | **Untested** | Sign in to Render and compare the service list with the exact names and settings below. |
+| Current Render deploy | **Untested** | Confirm both services show `Live`, their latest successful deploy is `aa686635580ecf3bdab3704388528fa67a79289c`, and the API pre-deploy log shows `alembic upgrade head` succeeded. |
+| Domains, DNS, HTTPS and URL alignment | **Untested** | No production hostnames are recorded in the repository and the dashboard was unavailable. Confirm both custom domains are verified, certificates are active and the three URL variables align as described below. |
+| Environment-variable presence | **Untested** | Confirm presence in Render without copying values. Required keys are listed below. |
+| Public health and SPA routing | **Failed for unverified candidates; production untested** | Read-only requests to the unsuffixed candidates `board-game-picker-api.onrender.com/health` and `board-game-picker-web.onrender.com/` both returned HTTP 404. These hostnames are not recorded in the repository and might be unassigned, suffixed or disabled, so this does not establish a production outage. Repeat against the dashboard URLs. |
+| Production migration | **Untested** | CI proved a clean PostgreSQL 16 migration and `alembic check`; the production pre-deploy result still requires Render log evidence. |
+| Verification and reset email | **Untested** | Requires a verified Resend domain, production sender and two end-to-end delivery tests. |
+| Backup and recovery | **Untested** | Confirm Recovery is available, then schedule the logical export and isolated point-in-time recovery rehearsal in section 4. |
+
+The only failed checks were probes of unverified candidate hostnames. All
+production-specific items require authenticated dashboard access or confirmed
+production URLs before they can pass or fail.
+
+### Exact Render dashboard comparison
+
+1. On the workspace service list, confirm these exact resources exist only
+   once: `board-game-picker-web`, `board-game-picker-api` and
+   `board-game-picker-db`.
+2. For `board-game-picker-web`, confirm type **Static Site**, branch `main`,
+   root directory `frontend`, build command
+   `npm ci && npm run build && npm run check:pwa`, publish directory `./dist`,
+   and auto-deploy **After CI Checks Pass**. Confirm its latest deploy is
+   `aa686635580ecf3bdab3704388528fa67a79289c` and `Live`.
+3. For `board-game-picker-api`, confirm region **Frankfurt**, plan
+   `0.5c-512mb`, branch `main`, root directory `backend`, build command
+   `pip install -r requirements.txt`, pre-deploy command
+   `alembic upgrade head`, start command `bash start.sh`, health path
+   `/health`, and auto-deploy **After CI Checks Pass**. Confirm the latest
+   deploy is the same commit and `Live`.
+4. For `board-game-picker-db`, confirm region **Frankfurt**, PostgreSQL 16,
+   plan `0.1c-256mb`, 1 GB storage, database `boardgamepicker`, user
+   `boardgamepicker`, and an empty public IP allow list.
+5. On the web service, confirm `VITE_API_BASE_URL` is present and equals the
+   API's HTTPS origin. On the API, confirm these keys are present without
+   revealing their values: `APP_ENV`, `DATABASE_URL`, `JWT_SECRET`,
+   `ACCESS_TOKEN_MINUTES`, `AI_PICKER_ENABLED`, `CORS_ORIGINS`,
+   `FRONTEND_URL`, `RESEND_API_KEY`, `EMAIL_FROM` and `BGG_API_TOKEN`.
+   `APP_ENV` must be `production`; `DATABASE_URL` must link to
+   `board-game-picker-db`; `CORS_ORIGINS` and `FRONTEND_URL` must equal the
+   frontend HTTPS origin. Confirm `EMAIL_FROM` uses the verified ShelfPick
+   sender domain. A present key with a blank value does not pass this check.
+6. In each service's **Settings > Custom Domains**, record the hostname and
+   confirm **Verified** with an active TLS certificate. Check that HTTP
+   redirects to HTTPS. Do not place secrets or database URLs in this file.
+7. In `board-game-picker-api`'s deploy logs, record the deployment timestamp,
+   commit, successful pre-deploy migration and health-check result. In
+   `board-game-picker-db`'s **Recovery** page, record whether logical exports
+   and point-in-time recovery are available and the displayed recovery window.
+
+### Read-only production checks once URLs are known
+
+- `GET https://api.<your-domain>/health` must return HTTP 200 and report the
+  database as `ok`.
+- `GET https://app.<your-domain>/` must return the ShelfPick application over
+  HTTPS.
+- Directly request and refresh `/collection/owned`,
+  `/collection/want-to-play`, `/picker`, `/discover`, `/game-night`,
+  `/rankings` and `/insights`; each must return the SPA rather than 404.
+- Confirm the frontend's browser requests use the same API HTTPS origin stored
+  in `VITE_API_BASE_URL`, with no CORS or mixed-content errors.
+
+### Proposed next deployment step
+
+After this proposal is reviewed, sign in to Render and perform the dashboard
+comparison above before creating anything. If the three exact resources do not
+exist, create one Blueprint from `main` using `render.yaml`, retaining the
+exact resource names. Supply the six prompted values shown in section 2, use
+`ShelfPick <accounts@mail.<your-domain>>` for `EMAIL_FROM`, and attach
+`app.<your-domain>` to `board-game-picker-web` and `api.<your-domain>` to
+`board-game-picker-api`. If resources already exist, reconcile them in place
+with the Blueprint instead of creating duplicates.
+
+At Render's 2026-09-19 list prices, the Blueprint adds approximately
+**$13.30/month** on a Hobby workspace: $7 for `board-game-picker-api`, $6 for
+`board-game-picker-db` compute and $0.30 for 1 GB database storage.
+`board-game-picker-web` is free. The two proposed custom domains are within the
+Hobby allowance; usage overages, a paid workspace or a temporary recovery
+database can add cost. Confirm the checkout estimate in Render before the
+later provisioning step.
 
 ## 1. Domain and email preparation
 
@@ -23,7 +117,7 @@ In Resend, verify a transactional-email subdomain such as
 domain status is verified. Use a sender such as:
 
 ```text
-BoardGamePicker <accounts@mail.<your-domain>>
+ShelfPick <accounts@mail.<your-domain>>
 ```
 
 Do not use `onboarding@resend.dev` for the alpha. It is a testing sender, not

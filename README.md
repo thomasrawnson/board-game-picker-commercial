@@ -435,7 +435,7 @@ backup/restore rehearsal and rollback.
 
 Development is currently organised around reaching a small closed alpha before expanding the recommendation engine.
 
-**UX-1B implemented locally:** recoverable requests, accessible registration/password reset, and bounded tablet/desktop layouts. See [UX-1B release notes](docs/ux-1b-release-notes.md) for validation and limitations. **Foundation B production verification remains next.**
+**UX-1B is on `origin/main`:** recoverable requests, accessible registration/password reset, and bounded tablet/desktop layouts shipped in `aa68663`, with GitHub Actions run #44 passing. See [UX-1B release notes](docs/ux-1b-release-notes.md) for validation and limitations. **Foundation B production verification is in progress; authenticated Render checks remain next.**
 
 1. ~~**Release Foundation A**~~ — done: GitHub Actions, clean frontend linting, production builds and valid PWA assets provide an automated quality gate.
 2. ~~**Release Foundation B configuration**~~ — done: the Render Blueprint, production configuration validation, Resend integration and deployment/recovery runbook are in the repository.
