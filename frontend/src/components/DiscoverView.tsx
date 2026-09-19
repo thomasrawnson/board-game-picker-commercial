@@ -1,5 +1,7 @@
+import RetryNotice from "./ui/RetryNotice"
 import {
   useEffect,
+  useRef,
   useState,
 } from "react"
 
@@ -80,6 +82,9 @@ function DiscoverView({
     setActionError,
   ] = useState("")
 
+  const [reloadKey, setReloadKey] = useState(0)
+  const pendingIds = useRef(new Set<number>())
+  function retry() { setLoading(true); setReloadKey(current => current + 1) }
   useEffect(() => {
     let cancelled = false
 
@@ -90,6 +95,7 @@ function DiscoverView({
 
         if (!cancelled) {
           setRecommendations(results)
+          setError("")
         }
       } catch (err) {
         console.error(err)
@@ -113,12 +119,14 @@ function DiscoverView({
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [reloadKey])
 
   async function toggleWishlist(
     recommendation: DiscoverRecommendation,
   ) {
     const bggId = recommendation.game.bgg_id
+    if (pendingIds.current.has(bggId)) return
+    pendingIds.current.add(bggId)
     const wasWishlisted = recommendation.wishlisted
 
     setActionError("")
@@ -161,6 +169,7 @@ function DiscoverView({
           : "Couldn't update Want to Play.",
       )
     } finally {
+      pendingIds.current.delete(bggId)
       setUpdatingIds((current) => {
         const next = new Set(current)
         next.delete(bggId)
@@ -206,13 +215,11 @@ function DiscoverView({
       )}
 
       {error && (
-        <p className="error-message">
-          {error}
-        </p>
+        <RetryNotice message={error} busy={loading} onRetry={retry} />
       )}
 
       {actionError && (
-        <p className="error-message">
+        <p className="error-message" role="alert">
           {actionError}
         </p>
       )}

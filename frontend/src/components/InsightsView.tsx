@@ -5,10 +5,7 @@ import {
 
 import {
   getCollectionInsights,
-  getRankings,
   type CollectionInsights,
-  type RankingSummary,
-  type RankingsResponse,
 } from "../api/client"
 
 import PlayerProfile
@@ -19,31 +16,12 @@ type StatsSection =
   | "collection"
   | "play"
   | "group"
-  | "rank"
   | "recaps"
-
-type RankSummaryLimit =
-  | 10
-  | 20
-  | 50
-  | 100
-
-const rankSummaryLimits: RankSummaryLimit[] = [
-  10,
-  20,
-  50,
-  100,
-]
-
 
 const statsSections: Array<{
   id: StatsSection
   label: string
 }> = [
-  {
-    id: "rank",
-    label: "Rank",
-  },
   {
     id: "collection",
     label: "Collection",
@@ -97,48 +75,14 @@ function formatHours(
 }
 
 
-function ShareIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M14 5h5v5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10 14 19 5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M19 13v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-
 type Props = {
   onOpenGame:
     (bggId: number) => void
-  onOpenRankings: () => void
 }
 
 
 function InsightsView({
   onOpenGame,
-  onOpenRankings,
 }: Props) {
   const [
     insights,
@@ -151,31 +95,6 @@ function InsightsView({
     loading,
     setLoading,
   ] = useState(true)
-
-  const [
-    rankingSummary,
-    setRankingSummary,
-  ] = useState<RankingSummary | null>(null)
-
-  const [
-    rankedGames,
-    setRankedGames,
-  ] = useState<RankingsResponse["rankings"]>([])
-
-  const [
-    rankShareStatus,
-    setRankShareStatus,
-  ] = useState("")
-
-  const [
-    rankSummaryLimit,
-    setRankSummaryLimit,
-  ] = useState<RankSummaryLimit>(20)
-
-  const [
-    rankSummaryLoading,
-    setRankSummaryLoading,
-  ] = useState(false)
 
   const [
     error,
@@ -213,26 +132,17 @@ function InsightsView({
     activeSection,
     setActiveSection,
   ] = useState<StatsSection>(
-    "rank"
+    "collection"
   )
 
 
   useEffect(() => {
     async function loadInsights() {
       try {
-        const [result, rankingResult] =
-          await Promise.all([
-            getCollectionInsights(),
-            getRankings(true),
-          ])
+        const result =
+          await getCollectionInsights()
 
         setInsights(result)
-        setRankingSummary(
-          rankingResult.summary
-        )
-        setRankedGames(
-          rankingResult.rankings
-        )
       } catch (err) {
         console.error(err)
 
@@ -246,74 +156,6 @@ function InsightsView({
 
     loadInsights()
   }, [])
-
-
-  async function shareRankStats() {
-    const games = rankedGames.slice(
-      0,
-      rankSummaryLimit,
-    )
-
-    if (games.length === 0) {
-      return
-    }
-
-    const title = `My Top ${games.length} Board Games`
-    const text = [
-      title,
-      "",
-      ...games.map(
-        (game, index) =>
-          `${index + 1}. ${game.name}`,
-      ),
-      "",
-      "Ranked with ShelfPick",
-    ].join("\n")
-
-    try {
-      if (navigator.share) {
-        await navigator.share({title, text})
-        setRankShareStatus("Ranking shared")
-      } else {
-        await navigator.clipboard.writeText(text)
-        setRankShareStatus("Ranking copied")
-      }
-    } catch (err) {
-      if (
-        err instanceof DOMException
-        && err.name === "AbortError"
-      ) {
-        return
-      }
-
-      console.error(err)
-      setRankShareStatus("Couldn't share ranking")
-    }
-  }
-
-  async function changeRankSummaryLimit(
-    nextLimit: RankSummaryLimit,
-  ) {
-    setRankSummaryLimit(nextLimit)
-    setRankSummaryLoading(true)
-    setRankShareStatus("")
-
-    try {
-      const result = await getRankings(
-        true,
-        nextLimit,
-      )
-      setRankingSummary(result.summary)
-      setRankedGames(result.rankings)
-    } catch (err) {
-      console.error(err)
-      setError(
-        "Couldn't update your rank stats.",
-      )
-    } finally {
-      setRankSummaryLoading(false)
-    }
-  }
 
 
   if (
@@ -558,211 +400,6 @@ function InsightsView({
               </strong>
             </article>
           </div>
-        </div>
-      )}
-
-
-      {activeSection === "rank" && (
-        <div className="stats-section-content rank-insight-section">
-          <section className="rank-insight-hero">
-            <div>
-              <p className="insight-label">
-                Your ranking
-              </p>
-
-              <h2>
-                Rank your shelf
-              </h2>
-            </div>
-
-            <button
-              type="button"
-              className="rank-games-arrow"
-              aria-label="Open game ranking"
-              title="Rank your games"
-              onClick={onOpenRankings}
-            >
-              <span aria-hidden="true">→</span>
-            </button>
-          </section>
-
-          {rankingSummary
-            && rankingSummary.games_count > 0
-            ? (
-              <>
-                <section className="rank-insight-list-card">
-                  <div className="rank-insight-list-heading">
-                    <div>
-                      <p className="insight-label">
-                        Your favourites
-                      </p>
-
-                      <h2>
-                        Top {rankSummaryLimit} games
-                      </h2>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="rank-insight-share"
-                      aria-label="Share ranking"
-                      title="Share ranking"
-                      disabled={rankSummaryLoading}
-                      onClick={() => void shareRankStats()}
-                    >
-                      <ShareIcon />
-                    </button>
-                  </div>
-
-                  <div
-                    className="rank-insight-size-tabs"
-                    aria-label="Ranking list size"
-                  >
-                    {rankSummaryLimits.map((limit) => (
-                      <button
-                        type="button"
-                        className={
-                          rankSummaryLimit === limit
-                            ? "active"
-                            : ""
-                        }
-                        aria-pressed={rankSummaryLimit === limit}
-                        disabled={rankSummaryLoading}
-                        key={limit}
-                        onClick={() =>
-                          void changeRankSummaryLimit(limit)
-                        }
-                      >
-                        Top {limit}
-                      </button>
-                    ))}
-                  </div>
-
-                  <details className="rank-more-details">
-                  <summary>
-                    <span>
-                      <strong>More rankings</strong>
-                      <small>
-                        Designers, publishers, mechanics and categories
-                      </small>
-                    </span>
-
-                    <span
-                      className="rank-more-chevron"
-                      aria-hidden="true"
-                    >
-                      +
-                    </span>
-                  </summary>
-
-                  <div className="rank-summary-grid">
-                    {([
-                      ["Designers", rankingSummary.designers],
-                      ["Publishers", rankingSummary.publishers],
-                      ["Mechanics", rankingSummary.mechanics],
-                      ["Categories", rankingSummary.categories],
-                    ] as const).map(([label, items]) => (
-                      <article
-                        className="rank-summary-card"
-                        key={label}
-                      >
-                        <p className="insight-label">
-                          Top {label}
-                        </p>
-
-                        {items.length > 0 ? (
-                          <ol>
-                            {items.map((item) => (
-                              <li key={item.name}>
-                                <span>{item.name}</span>
-                                <strong>{item.count}</strong>
-                              </li>
-                            ))}
-                          </ol>
-                        ) : (
-                          <p className="insight-empty">
-                            Sync your collection to add this metadata.
-                          </p>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-                </details>
-
-                  <ol className="rank-insight-game-list">
-                    {rankedGames
-                      .slice(0, rankSummaryLimit)
-                      .map((game, index) => (
-                        <li key={game.bgg_id}>
-                          <span className="rank-insight-position">
-                            {index + 1}
-                          </span>
-
-                          <button
-                            type="button"
-                            className="rank-insight-game"
-                            onClick={() =>
-                              onOpenGame(game.bgg_id)
-                            }
-                          >
-                            <span className="rank-insight-thumb">
-                              {game.image_url
-                                || game.thumbnail_url
-                                ? (
-                                  <img
-                                    src={
-                                      game.image_url
-                                      ?? game.thumbnail_url
-                                      ?? ""
-                                    }
-                                    alt=""
-                                  />
-                                )
-                                : (
-                                  <span aria-hidden="true">?</span>
-                                )}
-                            </span>
-
-                            <span className="rank-insight-game-copy">
-                              <strong>{game.name}</strong>
-                              <small>
-                                {game.comparisons_count} comparisons · {game.wins} wins
-                              </small>
-                            </span>
-                          </button>
-                        </li>
-                      ))}
-                  </ol>
-
-                  {rankShareStatus && (
-                    <p
-                      className="rank-insight-share-status"
-                      role="status"
-                    >
-                      {rankShareStatus}
-                    </p>
-                  )}
-                </section>
-              </>
-            )
-            : (
-              <article className="rank-insight-empty">
-                <h2>Start your ranking</h2>
-
-                <p>
-                  Make a few head-to-head choices and your Top 10, 20, 50 and 100 will start taking shape.
-                </p>
-
-                <button
-                  type="button"
-                  className="rank-games-primary"
-                  onClick={onOpenRankings}
-                >
-                  Rank your first games
-                  <span aria-hidden="true">→</span>
-                </button>
-              </article>
-            )}
         </div>
       )}
 

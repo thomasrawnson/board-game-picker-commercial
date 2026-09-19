@@ -1,131 +1,151 @@
-import type { PickerComplexityBand } from "../../api/client"
+import type {
+  PickerComplexityBand,
+  PickerMode,
+  PickerPlayStyle,
+} from "../../api/client"
+
+import ActionRow
+  from "../ui/ActionRow"
+
+import Disclosure
+  from "../ui/Disclosure"
+
 
 type Props = {
   players: number | null
   selectedPlayerIds: number[]
   complexityBand: PickerComplexityBand | null
+  preferredCategories: string[]
+  preferredMechanics: string[]
+  youngestPlayerAge: number | null
+  playStyle: PickerPlayStyle
+  mode: PickerMode
   onSelectCount:
     (players: number | null) => void
   onComplexityChange:
     (value: PickerComplexityBand | null) => void
+  onYoungestPlayerAgeChange:
+    (value: number | null) => void
+  onPlayStyleChange:
+    (value: PickerPlayStyle) => void
+  onModeChange:
+    (value: PickerMode) => void
   onChoosePlayers: () => void
+  onOpenTheme: () => void
+  onOpenMechanics: () => void
   onContinue: () => void
 }
 
 
-const playerOptions = [
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-]
-
+const playerOptions = [1, 2, 3, 4, 5, 6]
 
 const complexityOptions: Array<{
   label: string
   value: PickerComplexityBand | null
 }> = [
+  { label: "Any", value: null },
+  { label: "Light", value: "light" },
+  { label: "Medium", value: "medium" },
+  { label: "Heavy", value: "heavy" },
+]
+
+const modeOptions: Array<{
+  value: PickerMode
+  label: string
+  description: string
+}> = [
   {
-    label: "Any",
-    value: null,
+    value: "best_match",
+    label: "Best match",
+    description: "Give me the strongest fit",
   },
   {
-    label: "Light",
-    value: "light",
+    value: "different",
+    label: "Something different",
+    description: "Bring neglected games forward",
   },
   {
-    label: "Medium",
-    value: "medium",
-  },
-  {
-    label: "Heavy",
-    value: "heavy",
+    value: "surprise",
+    label: "Surprise me",
+    description: "Pick a wildcard that still fits",
   },
 ]
 
+const playStyleOptions: Array<{
+  value: PickerPlayStyle
+  label: string
+}> = [
+  { value: "any", label: "Either" },
+  { value: "cooperative", label: "Cooperative" },
+  { value: "competitive", label: "Competitive" },
+]
+
+const ageOptions = [null, 6, 8, 10, 12, 14, 16]
+
+function selectionSummary(values: string[]) {
+  if (values.length === 0) {
+    return "Any"
+  }
+
+  if (values.length === 1) {
+    return values[0]
+  }
+
+  return `${values.length} selected`
+}
 
 function PlayerStep({
   players,
   selectedPlayerIds,
   complexityBand,
+  preferredCategories,
+  preferredMechanics,
+  youngestPlayerAge,
+  playStyle,
+  mode,
   onSelectCount,
   onComplexityChange,
+  onYoungestPlayerAgeChange,
+  onPlayStyleChange,
+  onModeChange,
   onChoosePlayers,
+  onOpenTheme,
+  onOpenMechanics,
   onContinue,
 }: Props) {
-  function chooseCount(
-    count: number,
-  ) {
-    onSelectCount(
-      count
-    )
-  }
-
-
   return (
     <section className="screen picker-step-screen player-step-screen">
       <header>
-        <h1>
-          Who's playing?
-        </h1>
-
-        <p className="subtitle">
-          Choose your group.
-        </p>
+        <h1>Who's playing?</h1>
+        <p className="subtitle">Choose your group.</p>
       </header>
 
-
-      <button
-        type="button"
-        className="picker-navigation-card"
-        onClick={
-          onChoosePlayers
-        }
-      >
-        <span>
-          <strong>
-            Choose friends
-          </strong>
-
-          <small>
-            {selectedPlayerIds.length
-              > 0
-              ? `${selectedPlayerIds.length} friend${
-                  selectedPlayerIds.length
-                  === 1
-                    ? ""
-                    : "s"
-                } selected`
-              : "Select from your regular group"}
-          </small>
-        </span>
-
-        <span
-          className="picker-navigation-chevron"
-          aria-hidden="true"
+      <div className="picker-step-centered">
+        <button
+          type="button"
+          className="picker-navigation-card"
+          onClick={onChoosePlayers}
         >
-          ›
-        </span>
-      </button>
+          <span>
+            <strong>Choose friends</strong>
+            <small>
+              {selectedPlayerIds.length > 0
+                ? `${selectedPlayerIds.length} friend${selectedPlayerIds.length === 1 ? "" : "s"} selected`
+                : "Select from your regular group"}
+            </small>
+          </span>
+          <span className="picker-navigation-chevron" aria-hidden="true">›</span>
+        </button>
 
+        <p className="player-or">or choose a group size</p>
 
-      <p className="player-or">
-        or choose a group size
-      </p>
-
-
-      <div className="player-grid">
-        {playerOptions.map(
-          (option) => (
+        <div className="player-grid">
+          {playerOptions.map((option) => (
             <button
               key={option}
               type="button"
               className={
-                players === option
-                && selectedPlayerIds
-                  .length === 0
+                players === option && selectedPlayerIds.length === 0
                   ? option === 1
                     ? "player-chip solo selected"
                     : "player-chip selected"
@@ -138,36 +158,20 @@ function PlayerStep({
                   ? "Solo"
                   : `${option === 6 ? "6 or more" : option} players`
               }
-              onClick={() =>
-                chooseCount(
-                  option
-                )
-              }
+              onClick={() => onSelectCount(option)}
             >
               <strong>
-                {option === 1
-                  ? "Solo"
-                  : option === 6
-                    ? "6+"
-                    : option}
+                {option === 1 ? "Solo" : option === 6 ? "6+" : option}
               </strong>
             </button>
-          ),
-        )}
-      </div>
+          ))}
+        </div>
 
-
-      <div className="preference-section player-complexity-section">
-        <p className="preference-label">
-          Complexity
-        </p>
-
-        <div className="complexity-grid">
-          {complexityOptions.map(
-            (option) => {
-              const selected =
-                complexityBand === option.value
-
+        <div className="preference-section player-complexity-section">
+          <p className="preference-label">Complexity</p>
+          <div className="complexity-grid">
+            {complexityOptions.map((option) => {
+              const selected = complexityBand === option.value
               return (
                 <button
                   key={option.label}
@@ -178,42 +182,111 @@ function PlayerStep({
                       : "complexity-option"
                   }
                   aria-pressed={selected}
-                  onClick={() =>
-                    onComplexityChange(
-                      option.value
-                    )
-                  }
+                  onClick={() => onComplexityChange(option.value)}
                 >
-                  <strong>
-                    {option.label}
-                  </strong>
+                  <strong>{option.label}</strong>
                 </button>
               )
-            },
-          )}
+            })}
+          </div>
         </div>
-      </div>
 
-
-      <div className="picker-step-actions">
-        <button
-          type="button"
-          className="primary-button"
-          disabled={
-            players === null
-          }
-          onClick={
-            onContinue
-          }
+        <Disclosure
+          label="Advanced options"
+          hint="Pick style, play style, theme, mechanics and age"
+          className="advanced-filters picker-first-step-advanced"
         >
-          Continue
-        </button>
+          <div className="advanced-pick-style">
+            <span className="advanced-preference-label">Pick style</span>
+            <div className="picker-mode-list compact">
+              {modeOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={
+                    mode === option.value
+                      ? "picker-mode-option selected"
+                      : "picker-mode-option"
+                  }
+                  aria-pressed={mode === option.value}
+                  title={option.description}
+                  onClick={() => onModeChange(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="advanced-play-style">
+            <span className="advanced-preference-label">Play style</span>
+            <div className="play-style-grid">
+              {playStyleOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={
+                    playStyle === option.value
+                      ? "preference-chip selected"
+                      : "preference-chip"
+                  }
+                  aria-pressed={playStyle === option.value}
+                  onClick={() => onPlayStyleChange(option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="preference-link-list">
+            <ActionRow
+              label="Theme"
+              value={selectionSummary(preferredCategories)}
+              onClick={onOpenTheme}
+            />
+            <ActionRow
+              label="Mechanics"
+              value={selectionSummary(preferredMechanics)}
+              onClick={onOpenMechanics}
+            />
+          </div>
+
+          <div className="advanced-age-filter">
+            <p className="preference-label">Youngest player age</p>
+            <div className="age-filter-grid">
+              {ageOptions.map((age) => (
+                <button
+                  key={age ?? "any"}
+                  type="button"
+                  className={
+                    youngestPlayerAge === age
+                      ? "preference-chip selected"
+                      : "preference-chip"
+                  }
+                  aria-pressed={youngestPlayerAge === age}
+                  onClick={() => onYoungestPlayerAgeChange(age)}
+                >
+                  {age === null ? "Any" : `${age}+`}
+                </button>
+              ))}
+            </div>
+          </div>
+        </Disclosure>
+
+        <div className="picker-step-actions">
+          <button
+            type="button"
+            className="primary-button"
+            disabled={players === null}
+            onClick={onContinue}
+          >
+            Continue
+          </button>
+        </div>
       </div>
     </section>
   )
 }
 
-
-export {
-  PlayerStep,
-}
+export { PlayerStep }

@@ -1709,3 +1709,8 @@
 
   padding-bottom: 0;
 }
+
+/* Collection ranking tab v2 */
+.collection-section-tabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}

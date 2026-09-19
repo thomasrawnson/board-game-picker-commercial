@@ -16,6 +16,8 @@ import {
   useParams,
 } from "react-router-dom";
 
+import { SessionExpiredError } from "./api/request";
+import RetryNotice from "./components/ui/RetryNotice";
 import { getMe } from "./api/client";
 
 import { clearToken, getToken, type AuthUser } from "./auth";
@@ -33,8 +35,6 @@ import DiscoverView from "./components/DiscoverView";
 import InsightsView from "./components/InsightsView";
 
 import GameNightView from "./components/GameNightView";
-
-import RankGamesView from "./components/RankGamesView";
 
 import OnboardingView from "./components/OnboardingView";
 
@@ -132,6 +132,8 @@ function CollectionRoute({
     section = "owned";
   } else if (wildcard === "want-to-play") {
     section = "wishlist";
+  } else if (wildcard === "ranking") {
+    section = "ranking";
   } else if (wildcard.startsWith("owned/")) {
     const gameIdText = wildcard.slice("owned/".length);
     const parsedGameId = Number(gameIdText);
@@ -260,6 +262,9 @@ function App() {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [restoreError, setRestoreError] = useState("");
+  const [restoreAttempt, setRestoreAttempt] = useState(0);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const [collectionUiState, setCollectionUiState] = useState<CollectionUiState>(
     {
@@ -273,6 +278,7 @@ function App() {
   const collectionScrollPositions = useRef<CollectionScrollPositions>({
     owned: 0,
     wishlist: 0,
+    ranking: 0,
   });
 
   const appScrollRef = useRef<HTMLElement | null>(null);
@@ -288,10 +294,12 @@ function App() {
     collectionScrollPositions.current = {
       owned: 0,
       wishlist: 0,
+      ranking: 0,
     };
   }, []);
 
   useEffect(() => {
+    let active = true;
     async function restoreSession() {
       if (!getToken()) {
         setCheckingAuth(false);
@@ -301,19 +309,22 @@ function App() {
       try {
         const currentUser = await getMe();
 
-        setUser(currentUser);
-      } catch {
-        clearToken();
+        if (active) setUser(currentUser);
+      } catch (err) {
+        if (active && !(err instanceof SessionExpiredError)) setRestoreError(err instanceof Error ? err.message : "Couldn't restore your session.");
       } finally {
-        setCheckingAuth(false);
+        if (active) setCheckingAuth(false);
       }
     }
 
     void restoreSession();
-  }, []);
+    return () => { active = false; };
+  }, [restoreAttempt]);
 
   useEffect(() => {
     function handleAuthExpired() {
+      setSessionExpired(true);
+      setRestoreError("");
       const from = isProtectedAppPath(location.pathname)
         ? `${location.pathname}${location.search}`
         : null;
@@ -342,6 +353,7 @@ function App() {
   const intendedRoute = safeReturnPath(navigationState?.from);
 
   function handleAuthenticated(nextUser: AuthUser) {
+    setSessionExpired(false);
     resetCollectionUiState();
     setUser(nextUser);
 
@@ -357,6 +369,7 @@ function App() {
   }
 
   function handleLogout() {
+    setSessionExpired(false);
     clearToken();
     resetCollectionUiState();
     setUser(null);
@@ -402,6 +415,16 @@ function App() {
     );
   }
 
+  if (restoreError) {
+    return pageShell(<section className="auth-loading">
+      <p className="eyebrow">ShelfPick</p><h1>Let’s reconnect</h1>
+      <p>Your saved session is still available.</p>
+      <RetryNotice message={restoreError} onRetry={() => {
+        setCheckingAuth(true); setRestoreError(""); setRestoreAttempt(current => current + 1);
+      }} />
+      <button className="ghost-button" onClick={() => { setRestoreError(""); handleLogout(); }}>Log in instead</button>
+    </section>);
+  }
   if (!user) {
     if (location.pathname !== APP_PATHS.login) {
       const from = isProtectedAppPath(location.pathname)
@@ -413,7 +436,7 @@ function App() {
       );
     }
 
-    return pageShell(<AuthView onAuthenticated={handleAuthenticated} />);
+    return pageShell(<AuthView onAuthenticated={handleAuthenticated} sessionExpired={sessionExpired} />);
   }
 
   if (user.bgg_username === null) {
@@ -461,7 +484,7 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className="phone app-phone" ref={appScrollRef}>
+      <section className={`phone app-phone${["collection", "discover", "rankings", "insights"].includes(view) ? " app-phone-wide" : ""}`} ref={appScrollRef}>
         <AppHeader
           onOpenSettings={() => {
             navigate(APP_PATHS.setup);
@@ -492,10 +515,9 @@ function App() {
             <Route
               path={APP_PATHS.rankings}
               element={
-                <RankGamesView
-                  onBack={() => {
-                    navigate(APP_PATHS.insights);
-                  }}
+                <Navigate
+                  to={APP_PATHS.collectionRanking}
+                  replace
                 />
               }
             />
@@ -516,9 +538,6 @@ function App() {
               element={
                 <InsightsView
                   onOpenGame={openOwnedCollectionGame}
-                  onOpenRankings={() => {
-                    navigate(APP_PATHS.rankings);
-                  }}
                 />
               }
             />

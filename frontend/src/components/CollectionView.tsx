@@ -1,3 +1,4 @@
+import RetryNotice from "./ui/RetryNotice"
 import {
   useCallback,
   useEffect,
@@ -37,12 +38,16 @@ import GameDetail
 import WishlistView
   from "./WishlistView"
 
+import RankGamesView
+  from "./RankGamesView"
+
 import SegmentedControl
   from "./ui/SegmentedControl"
 
 export type CollectionSection =
   | "owned"
   | "wishlist"
+  | "ranking"
 
 export type CollectionScrollPositions =
   Record<CollectionSection, number>
@@ -305,6 +310,7 @@ function CollectionView({
       options={[
         { value: "owned", label: "Owned" },
         { value: "wishlist", label: "Want to Play" },
+        { value: "ranking", label: "Ranking" },
       ]}
       onChange={
         changeSection
@@ -313,7 +319,10 @@ function CollectionView({
   )
 
 
+  const [reloadKey, setReloadKey] = useState(0)
+  function retryCollection() { setLoading(true); setReloadKey(current => current + 1) }
   useEffect(() => {
+    let active = true
     async function loadGames() {
       try {
         const [
@@ -324,6 +333,8 @@ function CollectionView({
           getCollectionStats(),
         ])
 
+        if (!active) return
+        setError("")
         setGames(
           gamesResult.filter(
             (game) =>
@@ -337,16 +348,15 @@ function CollectionView({
       } catch (err) {
         console.error(err)
 
-        setError(
-          "Couldn't load your collection.",
-        )
+        if (active) setError(err instanceof Error ? err.message : "Couldn't load your collection.")
       } finally {
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
 
-    loadGames()
-  }, [])
+    void loadGames()
+    return () => { active = false }
+  }, [reloadKey])
 
 
   useLayoutEffect(() => {
@@ -407,6 +417,7 @@ function CollectionView({
     if (
       gameBggId === null
       || loading
+      || error
       || selectedGame
     ) {
       return
@@ -416,6 +427,7 @@ function CollectionView({
   }, [
     gameBggId,
     loading,
+    error,
     onGameUnavailable,
     selectedGame,
   ])
@@ -803,6 +815,29 @@ function CollectionView({
   }
 
 
+  if (section === "ranking") {
+    return (
+      <section className="screen collection-screen">
+        <header>
+          <h1>Ranking</h1>
+          <p className="subtitle">
+            Build your personal shelf ranking.
+          </p>
+        </header>
+
+        {sectionTabs}
+
+        <RankGamesView
+          onBack={() =>
+            changeSection("owned")
+          }
+          showBack={false}
+        />
+      </section>
+    )
+  }
+
+
   if (section === "wishlist") {
     return (
       <section className="screen collection-screen">
@@ -846,7 +881,7 @@ function CollectionView({
   }
 
 
-  if (loading) {
+  if (loading && games.length === 0 && !error) {
     return (
       <section className="screen collection-screen">
         <h1>
@@ -857,16 +892,15 @@ function CollectionView({
   }
 
 
-  if (error) {
+  if (error && games.length === 0) {
     return (
       <section className="screen collection-screen">
         <h1>
           Your games
         </h1>
 
-        <p className="error-message">
-          {error}
-        </p>
+        {sectionTabs}
+        <RetryNotice message={error} busy={loading} onRetry={retryCollection} />
       </section>
     )
   }
@@ -934,7 +968,7 @@ function CollectionView({
       </div>
 
       {sectionTabs}
-
+      {error && <RetryNotice message={error} busy={loading} onRetry={retryCollection} />}
 
       {addingGame && (
         <AddGameSearch

@@ -274,3 +274,11 @@
 .auth-link-button:hover {
   text-decoration: underline;
 }
+.password-input-row { display: flex; align-items: stretch; gap: 8px; margin-top: 7px; }
+.password-input-row input { min-width: 0; flex: 1; }
+.password-toggle { flex: 0 0 auto; padding: 8px 12px; color: var(--sp-text); background: transparent; border: 1px solid var(--sp-line); border-radius: 10px; font: inherit; font-size: var(--text-support); }
+.auth-form > div > label { margin-bottom: 7px; }
+.field-hint, .field-error { margin: 7px 0 0; font-size: var(--text-support); line-height: 1.5; }
+.field-hint { color: var(--sp-muted); }
+.field-error { color: var(--sp-text); }
+.auth-form input[aria-invalid="true"] { border-color: var(--sp-gold); }

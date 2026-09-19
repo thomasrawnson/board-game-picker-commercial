@@ -1,160 +1,47 @@
-import {
-  useState,
-  type FormEvent,
-} from "react"
+import { useRef, useState, type FormEvent } from "react"
+import { confirmPasswordReset } from "../api/client"
+import { FieldValidationError } from "../api/request"
+import { passwordError } from "../auth-validation"
+import PasswordField from "./ui/PasswordField"
 
-import {
-  confirmPasswordReset,
-} from "../api/client"
-
-
-function ResetPasswordView() {
-  const token =
-    new URLSearchParams(
-      window.location.search,
-    ).get("token") ?? ""
-
-  const [password, setPassword] =
-    useState("")
-
-  const [message, setMessage] =
-    useState("")
-
-  const [error, setError] =
-    useState("")
-
-  const [submitting, setSubmitting] =
-    useState(false)
-
-
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+export default function ResetPasswordView() {
+  const token = new URLSearchParams(window.location.search).get("token") ?? ""
+  const [password, setPassword] = useState("")
+  const [message, setMessage] = useState("")
+  const [error, setError] = useState("")
+  const [fieldError, setFieldError] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const pending = useRef(false)
+  const form = useRef<HTMLFormElement>(null)
+  function showPasswordError(value: string) {
+    setFieldError(value)
+    if (value) requestAnimationFrame(() => form.current?.querySelector<HTMLInputElement>("#password")?.focus())
+  }
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-
+    if (pending.current || message) return
+    const invalid = passwordError(password)
+    showPasswordError(invalid)
     setError("")
-    setMessage("")
-    setSubmitting(true)
-
+    if (invalid) return
+    pending.current = true; setSubmitting(true)
     try {
-      const result =
-        await confirmPasswordReset(
-          token,
-          password,
-        )
-
-      setMessage(result)
+      setMessage(await confirmPasswordReset(token, password))
+      setPassword("")
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong",
-      )
-    } finally {
-      setSubmitting(false)
-    }
+      if (err instanceof FieldValidationError && err.fields.password) showPasswordError(err.fields.password)
+      else setError(err instanceof Error ? err.message : "Couldn't reset your password. Try again.")
+    } finally { pending.current = false; setSubmitting(false) }
   }
-
-
-  if (!token) {
-    return (
-      <section className="auth-screen">
-        <div className="auth-card">
-          <h1>
-            Invalid reset link
-          </h1>
-
-          <button
-            className="primary-button"
-            onClick={() => {
-              window.location.href = "/"
-            }}
-          >
-            Back to login
-          </button>
-        </div>
-      </section>
-    )
-  }
-
-
-  return (
-    <section className="auth-screen">
-      <div className="auth-card">
-        <header className="auth-header">
-          <p className="eyebrow">
-            ShelfPick
-          </p>
-
-          <h1>
-            Choose a new password
-          </h1>
-        </header>
-
-        <form
-          className="auth-form"
-          onSubmit={handleSubmit}
-        >
-          <label>
-            New password
-
-            <input
-              type="password"
-              value={password}
-              onChange={(event) =>
-                setPassword(
-                  event.target.value,
-                )
-              }
-              minLength={8}
-              required
-            />
-          </label>
-
-          <p className="auth-hint">
-            Use at least 8 characters.
-          </p>
-
-          {message && (
-            <>
-              <p className="auth-hint">
-                {message}
-              </p>
-
-              <button
-                type="button"
-                className="primary-button"
-                onClick={() => {
-                  window.location.href = "/"
-                }}
-              >
-                Log in
-              </button>
-            </>
-          )}
-
-          {error && (
-            <p className="error-message">
-              {error}
-            </p>
-          )}
-
-          {!message && (
-            <button
-              type="submit"
-              className="primary-button auth-submit"
-              disabled={submitting}
-            >
-              {submitting
-                ? "Updating..."
-                : "Update password"}
-            </button>
-          )}
-        </form>
-      </div>
-    </section>
-  )
+  return <section className="auth-screen"><div className="auth-card">
+    <header className="auth-header"><p className="eyebrow">ShelfPick</p><h1>{token ? "Choose a new password" : "Invalid reset link"}</h1></header>
+    {!token ? <a className="secondary-button" href="/forgot-password">Request a new reset link</a> : message ? <>
+      <p role="status">{message}</p><a className="primary-button" href="/login">Log in</a>
+    </> : <form ref={form} className="auth-form" onSubmit={submit} noValidate aria-busy={submitting}>
+      <PasswordField value={password} onChange={setPassword} error={fieldError} disabled={submitting} newPassword />
+      {fieldError && <p role="alert" className="field-error">Check your new password.</p>}
+      {error && <div><p className="error-message" role="alert">{error}</p><a href="/forgot-password">Request a new reset link</a></div>}
+      <button type="submit" className="primary-button auth-submit" disabled={submitting}>{submitting ? "Updating…" : "Update password"}</button>
+    </form>}
+  </div></section>
 }
-
-
-export default ResetPasswordView

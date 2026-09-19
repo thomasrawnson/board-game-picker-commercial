@@ -1,3 +1,4 @@
+import { request, responseError, SessionExpiredError } from "./request"
 import {
   clearToken,
   getToken,
@@ -358,18 +359,20 @@ async function apiFetch(
     )
   }
 
-  const response = await fetch(
+  const response = await request(
     `${API_BASE_URL}${path}`,
     {
       ...options,
       headers,
     },
+    path === "/collection/sync" || path.includes("/import") ? 120_000 : 30_000,
   )
 
   if (
     response.status === 401
     && token
   ) {
+    if (getToken() !== token) throw new SessionExpiredError()
     clearToken()
 
     window.dispatchEvent(
@@ -379,6 +382,7 @@ async function apiFetch(
     )
   }
 
+  if (response.status === 401 && token) throw new SessionExpiredError()
   return response
 }
 
@@ -410,7 +414,7 @@ export async function register(
   displayName: string,
   password: string,
 ): Promise<AuthResult> {
-  const response = await fetch(
+  const response = await request(
     `${API_BASE_URL}/auth/register`,
     {
       method: "POST",
@@ -428,12 +432,10 @@ export async function register(
   )
 
   if (!response.ok) {
-    throw new Error(
-      await readError(
+    throw await responseError(
         response,
         "Registration failed",
-      ),
-    )
+      )
   }
 
   return response.json()
@@ -444,7 +446,7 @@ export async function login(
   email: string,
   password: string,
 ): Promise<AuthResult> {
-  const response = await fetch(
+  const response = await request(
     `${API_BASE_URL}/auth/login`,
     {
       method: "POST",
@@ -483,7 +485,7 @@ Promise<AuthUser> {
     throw new Error(
       await readError(
         response,
-        "Not authenticated",
+        "Couldn't restore your session. Please try again.",
       ),
     )
   }
@@ -1237,7 +1239,7 @@ Promise<AuthUser> {
 export async function requestPasswordReset(
   email: string,
 ): Promise<string> {
-  const response = await fetch(
+  const response = await request(
     `${API_BASE_URL}/auth/password-reset/request`,
     {
       method: "POST",
@@ -1270,7 +1272,7 @@ export async function confirmPasswordReset(
   token: string,
   password: string,
 ): Promise<string> {
-  const response = await fetch(
+  const response = await request(
     `${API_BASE_URL}/auth/password-reset/confirm`,
     {
       method: "POST",
@@ -1286,12 +1288,10 @@ export async function confirmPasswordReset(
   )
 
   if (!response.ok) {
-    throw new Error(
-      await readError(
+    throw await responseError(
         response,
         "Couldn't reset password",
-      ),
-    )
+      )
   }
 
   const data = await response.json()
@@ -1303,7 +1303,7 @@ export async function confirmPasswordReset(
 export async function confirmEmailVerification(
   token: string,
 ): Promise<string> {
-  const response = await fetch(
+  const response = await request(
     `${API_BASE_URL}/auth/verification/confirm`,
     {
       method: "POST",

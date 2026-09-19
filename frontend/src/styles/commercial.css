@@ -650,9 +650,18 @@ h1 {
 }
 
 @media (min-width: 700px) {
-  .phone.app-phone {
-    margin: 0 auto;
-  }
+  .phone.app-phone { margin: 0 auto; }
+  .phone.app-phone.app-phone-wide { width: calc(100% - 48px); max-width: 1040px; padding-left: 28px; padding-right: 28px; }
+  .app-phone-wide .collection-list,
+  .app-phone-wide .wishlist-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+  .app-phone-wide .discover-list { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .app-phone-wide .discover-card { grid-template-columns: 90px minmax(0, 1fr); gap: 12px; }
+  .app-phone-wide .insight-feature-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .app-phone-wide .rankings-screen { max-width: 880px; margin-inline: auto; }
+  .app-phone-wide .ranking-game-image { aspect-ratio: auto; height: 260px; }
+}
+@media (min-width: 1024px) {
+  .app-phone-wide .discover-card { grid-template-columns: 118px minmax(0, 1fr); }
 }
 
 @media (max-width: 480px) {

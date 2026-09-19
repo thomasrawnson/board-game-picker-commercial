@@ -1,3 +1,4 @@
+import RetryNotice from "../ui/RetryNotice"
 import {
   useEffect,
   useMemo,
@@ -45,24 +46,26 @@ function PlayerSelectionStep({
   ] = useState(true)
 
 
+  const [error, setError] = useState("")
+  const [attempt, setAttempt] = useState(0)
   useEffect(() => {
+    let active = true
     async function loadPlayers() {
       try {
         const result =
           await getPlayers()
 
-        setPlayers(
-          result
-        )
+        if (active) { setPlayers(result); setError("") }
       } catch (err) {
-        console.error(err)
+        if (active) setError(err instanceof Error ? err.message : "Couldn't load players.")
       } finally {
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
 
-    loadPlayers()
-  }, [])
+    void loadPlayers()
+    return () => { active = false }
+  }, [attempt])
 
 
   const filteredPlayers =
@@ -154,8 +157,9 @@ function PlayerSelectionStep({
       </label>
 
 
+      {error && <RetryNotice message={error} busy={loading} onRetry={() => { setLoading(true); setAttempt(current => current + 1) }} />}
       <div className="picker-selection-list">
-        {loading ? (
+        {loading && players.length === 0 ? (
           <p className="picker-selection-empty">
             <LoadingMessage
               messages={[
@@ -212,7 +216,7 @@ function PlayerSelectionStep({
               )
             },
           )
-        ) : (
+        ) : !error && (
           <p className="picker-selection-empty">
             No players match that search — check the spelling, or add someone new.
           </p>

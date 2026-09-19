@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useRef,
   useLayoutEffect,
   useState,
 } from "react"
@@ -33,6 +34,7 @@ function WishlistView({
   onGameConverted,
   onContentReady,
 }: Props) {
+  const pending = useRef(false)
   const [games, setGames] = useState<Game[]>([])
   const [detailGame, setDetailGame] = useState<Game | null>(null)
   const [loading, setLoading] = useState(true)
@@ -132,6 +134,8 @@ function WishlistView({
   }, [gameBggId, loading, onContentReady])
 
   async function removeGame(game: Game) {
+    if (pending.current) return
+    pending.current = true
     setRemovingId(game.bgg_id)
     setError("")
 
@@ -150,6 +154,7 @@ function WishlistView({
       }
       throw err
     } finally {
+      pending.current = false
       setRemovingId(null)
     }
   }
@@ -200,7 +205,7 @@ function WishlistView({
     )
   }
 
-  if (loading) {
+  if (loading && games.length === 0 && !error) {
     return <p className="subtitle">Opening your Want to Play list...</p>
   }
 
@@ -212,18 +217,18 @@ function WishlistView({
           <button
             type="button"
             className="ghost-button"
+            disabled={loading}
             onClick={() => {
               setLoading(true)
-              setError("")
               setReloadKey((current) => current + 1)
             }}
           >
-            Try again
+            {loading ? "Retrying…" : "Try again"}
           </button>
         </div>
       )}
 
-      {games.length === 0 && !error && (
+      {games.length === 0 && !error && !loading && (
         <div className="collection-empty">
           <strong>Nothing on the wishlist yet</strong>
           <p>
@@ -267,7 +272,7 @@ function WishlistView({
             <button
               type="button"
               className="ghost-button wishlist-remove"
-              disabled={removingId === game.bgg_id}
+              disabled={removingId !== null}
               onClick={() => {
                 void removeGame(game).catch(() => undefined)
               }}

@@ -12,6 +12,8 @@ import {
 
 
 test("collection routes represent section and game selection", () => {
+  assert.equal(collectionPath("ranking"), "/collection/ranking")
+  assert.equal(appViewForPath("/collection/ranking"), "collection")
   assert.equal(
     collectionPath("owned"),
     "/collection/owned",
@@ -54,7 +56,7 @@ test("collection detail routes keep Collection navigation active", () => {
   )
   assert.equal(
     appViewForPath(APP_PATHS.rankings),
-    "rankings",
+    "collection",
   )
 })
 

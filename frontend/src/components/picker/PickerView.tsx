@@ -1,4 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import RetryNotice from "../ui/RetryNotice";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   getPickerMatches,
@@ -12,26 +17,17 @@ import {
 } from "../../api/client";
 
 import { PlayerStep } from "./PlayerStep";
-
 import PlayerSelectionStep from "./PlayerSelectionStep";
-
 import TimeStep from "./TimeStep";
-
-import PreferenceStep from "./PreferenceStep";
-
 import ThemeStep from "./ThemeStep";
-
 import PlayStyleStep from "./PlayStyleStep";
-
 import PickerResult from "./PickerResult";
-
 import PickerNoMatch from "./PickerNoMatch";
 
 type Step =
   | "players"
   | "player_selection"
   | "time"
-  | "preferences"
   | "theme"
   | "play_style"
   | "no_match"
@@ -43,47 +39,30 @@ type Props = {
 
 function PickerView({ onViewGame }: Props) {
   const [step, setStep] = useState<Step>("players");
-
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
-
   const [players, setPlayers] = useState<number | null>(null);
-
   const [maxPlayTime, setMaxPlayTime] = useState<number | null>(null);
-
   const [complexityBand, setComplexityBand] =
     useState<PickerComplexityBand | null>(null);
-
-  const [youngestPlayerAge, setYoungestPlayerAge] = useState<number | null>(
-    null,
-  );
-
+  const [youngestPlayerAge, setYoungestPlayerAge] =
+    useState<number | null>(null);
   const [playStyle, setPlayStyle] = useState<PickerPlayStyle>("any");
-
   const [preferredCategories, setPreferredCategories] = useState<string[]>([]);
-
   const [preferredMechanics, setPreferredMechanics] = useState<string[]>([]);
-
   const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
-
   const [mechanicOptions, setMechanicOptions] = useState<string[]>([]);
-
   const [mode, setMode] = useState<PickerMode>("best_match");
-
   const [matches, setMatches] = useState<PickerMatch[]>([]);
-
   const [matchIndex, setMatchIndex] = useState(0);
-
   const [noMatchGuidance, setNoMatchGuidance] =
     useState<PickerNoMatchGuidance | null>(null);
-
   const [pickerSessionId, setPickerSessionId] = useState<string | null>(null);
-
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState("");
-
-  const [isRolling, setIsRolling] = useState(false);
-
+  const pending = useRef(false);
+  const [optionsError, setOptionsError] = useState("");
+  const [optionsLoading, setOptionsLoading] = useState(true);
+  const [optionsAttempt, setOptionsAttempt] = useState(0);
   const swipeStartX = useRef<number | null>(null);
 
   useEffect(() => {
@@ -92,40 +71,24 @@ function PickerView({ onViewGame }: Props) {
     async function loadOptions() {
       try {
         const options = await getPickerOptions();
-
-        if (cancelled) {
-          return;
-        }
-
+        if (cancelled) return;
+        setOptionsError("");
         setCategoryOptions(options.categories);
-
         setMechanicOptions(options.mechanics);
       } catch (err) {
-        console.error("Couldn't load picker options", err);
+        if (!cancelled) setOptionsError(err instanceof Error ? err.message : "Couldn't load themes and play styles.");
+      } finally {
+        if (!cancelled) setOptionsLoading(false);
       }
     }
 
     void loadOptions();
-
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  useEffect(() => {
-    if (!isRolling) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setIsRolling(false);
-    }, 560);
-
-    return () => window.clearTimeout(timer);
-  }, [isRolling]);
+  }, [optionsAttempt]);
 
   const match = matches[matchIndex];
-
   const hasMoreMatches = matchIndex < matches.length - 1;
 
   function toggleCategory(category: string) {
@@ -146,13 +109,11 @@ function PickerView({ onViewGame }: Props) {
 
   function handlePlayerSelection(playerIds: number[]) {
     setSelectedPlayerIds(playerIds);
-
     setPlayers(playerIds.length > 0 ? playerIds.length : null);
   }
 
   function chooseGroupSize(count: number | null) {
     setSelectedPlayerIds([]);
-
     setPlayers(count);
   }
 
@@ -162,35 +123,25 @@ function PickerView({ onViewGame }: Props) {
     nextYoungestPlayerAge = youngestPlayerAge,
     nextPlayStyle = playStyle,
   ) {
-    if (players === null) {
-      return;
-    }
+    if (players === null || pending.current) return;
 
+    pending.current = true;
     setLoading(true);
-
-    setPickerSessionId(null);
-
     setError("");
 
     try {
       const response = await getPickerMatches({
         players,
-
         playerIds: selectedPlayerIds,
-
         maxPlayTime:
-          nextMaxPlayTime === 0 ? undefined : (nextMaxPlayTime ?? undefined),
-
+          nextMaxPlayTime === 0
+            ? undefined
+            : (nextMaxPlayTime ?? undefined),
         complexityBand: nextComplexityBand ?? undefined,
-
         youngestPlayerAge: nextYoungestPlayerAge ?? undefined,
-
         playStyle: nextPlayStyle,
-
         preferredCategories,
-
         preferredMechanics,
-
         mode,
       });
 
@@ -198,25 +149,19 @@ function PickerView({ onViewGame }: Props) {
 
       if (response.matches.length === 0) {
         setNoMatchGuidance(response.guidance);
-
         setStep("no_match");
-
         return;
       }
 
       setMatches(response.matches);
-
       setNoMatchGuidance(null);
-
       setMatchIndex(0);
-
-      setIsRolling(true);
       setStep("reveal");
     } catch (err) {
       console.error(err);
-
-      setError("Couldn't reach the ShelfPick API.");
+      setError(err instanceof Error ? err.message : "Couldn't find a game. Please try again.");
     } finally {
+      pending.current = false;
       setLoading(false);
     }
   }
@@ -227,41 +172,28 @@ function PickerView({ onViewGame }: Props) {
 
   function relaxTime() {
     setMaxPlayTime(null);
-
     void loadMatches(null, complexityBand);
   }
 
   function relaxComplexity() {
     setComplexityBand(null);
-
     setYoungestPlayerAge(null);
-
     setPlayStyle("any");
-
     void loadMatches(maxPlayTime, null, null, "any");
   }
 
   function relaxTimeAndComplexity() {
     setMaxPlayTime(null);
-
     setComplexityBand(null);
-
     setYoungestPlayerAge(null);
-
     setPlayStyle("any");
-
     void loadMatches(null, null, null, "any");
   }
 
   function tryAnother() {
-    if (!hasMoreMatches) {
-      return;
-    }
-
-    setIsRolling(true);
+    if (!hasMoreMatches) return;
 
     const nextIndex = matchIndex + 1;
-
     const nextMatch = matches[nextIndex];
 
     void recordPickerEvent(
@@ -283,40 +215,24 @@ function PickerView({ onViewGame }: Props) {
     );
 
     setStep("players");
-
     setPlayers(null);
-
     setSelectedPlayerIds([]);
-
     setMaxPlayTime(null);
-
     setComplexityBand(null);
-
     setYoungestPlayerAge(null);
-
     setPlayStyle("any");
-
     setPreferredCategories([]);
-
     setPreferredMechanics([]);
-
     setMode("best_match");
-
     setMatches([]);
-
     setMatchIndex(0);
-
     setError("");
-
     setNoMatchGuidance(null);
-
     setPickerSessionId(null);
   }
 
   function viewGame() {
-    if (!match) {
-      return;
-    }
+    if (!match) return;
 
     void recordPickerEvent(
       pickerSessionId,
@@ -328,23 +244,19 @@ function PickerView({ onViewGame }: Props) {
     onViewGame(match.game.bgg_id);
   }
 
-  const progressStep =
-    step === "players" || step === "player_selection"
-      ? 0
-      : step === "time"
-        ? 1
-        : step === "preferences" || step === "theme" || step === "play_style"
-          ? 2
-          : 3;
+  const progressStep = step === "time" ? 1 : 0;
 
   return (
     <>
-      {step !== "reveal" && (
+      {optionsError && <RetryNotice message={optionsError} busy={optionsLoading} onRetry={() => { setOptionsLoading(true); setOptionsAttempt(current => current + 1); }} />}
+      {error && <RetryNotice message={error} busy={loading} onRetry={revealGame} />}
+      <fieldset className="picker-request-fields" disabled={loading} aria-busy={loading}>
+      {step !== "reveal" && step !== "no_match" && (
         <div
           className="progress-dots"
-          aria-label={`Picker step ${progressStep + 1} of 4`}
+          aria-label={`Picker step ${progressStep + 1} of 2`}
         >
-          {[0, 1, 2, 3].map((index) => (
+          {[0, 1].map((index) => (
             <span
               key={index}
               className={progressStep === index ? "dot active" : "dot"}
@@ -358,9 +270,19 @@ function PickerView({ onViewGame }: Props) {
           players={players}
           selectedPlayerIds={selectedPlayerIds}
           complexityBand={complexityBand}
+          preferredCategories={preferredCategories}
+          preferredMechanics={preferredMechanics}
+          youngestPlayerAge={youngestPlayerAge}
+          playStyle={playStyle}
+          mode={mode}
           onSelectCount={chooseGroupSize}
           onComplexityChange={setComplexityBand}
+          onYoungestPlayerAgeChange={setYoungestPlayerAge}
+          onPlayStyleChange={setPlayStyle}
+          onModeChange={setMode}
           onChoosePlayers={() => setStep("player_selection")}
+          onOpenTheme={() => setStep("theme")}
+          onOpenMechanics={() => setStep("play_style")}
           onContinue={() => setStep("time")}
         />
       )}
@@ -377,28 +299,11 @@ function PickerView({ onViewGame }: Props) {
       {step === "time" && (
         <TimeStep
           maxPlayTime={maxPlayTime}
-          onSelect={setMaxPlayTime}
-          onContinue={() => setStep("preferences")}
-          onBack={() => setStep("players")}
-        />
-      )}
-
-      {step === "preferences" && (
-        <PreferenceStep
-          preferredCategories={preferredCategories}
-          preferredMechanics={preferredMechanics}
-          youngestPlayerAge={youngestPlayerAge}
-          playStyle={playStyle}
-          mode={mode}
-          error={error}
           loading={loading}
-          onYoungestPlayerAgeChange={setYoungestPlayerAge}
-          onPlayStyleChange={setPlayStyle}
-          onModeChange={setMode}
-          onOpenTheme={() => setStep("theme")}
-          onOpenPlayStyle={() => setStep("play_style")}
-          onReveal={revealGame}
-          onBack={() => setStep("time")}
+          error=""
+          onSelect={setMaxPlayTime}
+          onFindGame={revealGame}
+          onBack={() => setStep("players")}
         />
       )}
 
@@ -408,8 +313,8 @@ function PickerView({ onViewGame }: Props) {
           selected={preferredCategories}
           onToggle={toggleCategory}
           onClear={() => setPreferredCategories([])}
-          onDone={() => setStep("preferences")}
-          onBack={() => setStep("preferences")}
+          onDone={() => setStep("players")}
+          onBack={() => setStep("players")}
         />
       )}
 
@@ -419,8 +324,8 @@ function PickerView({ onViewGame }: Props) {
           selected={preferredMechanics}
           onToggle={toggleMechanic}
           onClear={() => setPreferredMechanics([])}
-          onDone={() => setStep("preferences")}
-          onBack={() => setStep("preferences")}
+          onDone={() => setStep("players")}
+          onBack={() => setStep("players")}
         />
       )}
 
@@ -431,11 +336,11 @@ function PickerView({ onViewGame }: Props) {
           hasTimeLimit={maxPlayTime !== null && maxPlayTime !== 0}
           hasComplexityLimit={complexityBand !== null}
           loading={loading}
-          error={error}
+          error=""
           onRelaxTime={relaxTime}
           onRelaxComplexity={relaxComplexity}
           onRelaxBoth={relaxTimeAndComplexity}
-          onAdjustChoices={() => setStep("preferences")}
+          onAdjustChoices={() => setStep("players")}
           onStartOver={startOver}
         />
       )}
@@ -447,54 +352,33 @@ function PickerView({ onViewGame }: Props) {
             swipeStartX.current = event.touches[0]?.clientX ?? null;
           }}
           onTouchEnd={(event) => {
-            if (swipeStartX.current === null) {
-              return;
-            }
+            if (swipeStartX.current === null) return;
 
-            const endX = event.changedTouches[0]?.clientX ?? swipeStartX.current;
+            const endX =
+              event.changedTouches[0]?.clientX ?? swipeStartX.current;
             const distance = endX - swipeStartX.current;
             swipeStartX.current = null;
 
-            if (distance < -60 && hasMoreMatches && !isRolling) {
+            if (distance < -60 && hasMoreMatches) {
               tryAnother();
             }
           }}
         >
-          {isRolling ? (
-            <div className="picker-roll-stage" aria-label="Rolling for your pick">
-              <div className="picker-roll-die" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-                <span />
-                <span />
-              </div>
-              <p>Rolling your pick…</p>
-            </div>
-          ) : (
-            <>
-              <PickerResult
-                match={match}
-                matchIndex={matchIndex}
-                totalMatches={matches.length}
-                mode={mode}
-                playerCount={players ?? 1}
-                pickerSessionId={pickerSessionId}
-                hasMoreMatches={hasMoreMatches}
-                onTryAnother={tryAnother}
-                onViewGame={viewGame}
-                onStartOver={startOver}
-              />
-
-              {hasMoreMatches && (
-                <p className="picker-swipe-hint">
-                  Swipe left to try another
-                </p>
-              )}
-            </>
-          )}
+          <PickerResult
+            match={match}
+            matchIndex={matchIndex}
+            totalMatches={matches.length}
+            mode={mode}
+            playerCount={players ?? 1}
+            pickerSessionId={pickerSessionId}
+            hasMoreMatches={hasMoreMatches}
+            onTryAnother={tryAnother}
+            onViewGame={viewGame}
+            onStartOver={startOver}
+          />
         </div>
       )}
+      </fieldset>
     </>
   );
 }

@@ -16,6 +16,7 @@ import LoadingMessage
 
 type Props = {
   onBack: () => void
+  showBack?: boolean
 }
 
 
@@ -29,6 +30,7 @@ function gameImage(game: RankingGame) {
 
 function RankGamesView({
   onBack,
+  showBack = true,
 }: Props) {
   const [matchup, setMatchup] =
     useState<RankingGame[]>([])
@@ -197,14 +199,16 @@ function RankGamesView({
   if (loading) {
     return (
       <section className="screen rankings-screen">
-        <button
-          type="button"
-          className="ranking-back-button"
-          onClick={onBack}
-        >
-          <span aria-hidden="true">←</span>
-          Insights
-        </button>
+        {showBack && (
+          <button
+            type="button"
+            className="ranking-back-button"
+            onClick={onBack}
+          >
+            <span aria-hidden="true">←</span>
+            Collection
+          </button>
+        )}
 
         <h1>
           <LoadingMessage />
@@ -216,14 +220,16 @@ function RankGamesView({
 
   return (
     <section className="screen rankings-screen">
-      <button
-        type="button"
-        className="ranking-back-button"
-        onClick={onBack}
-      >
-        <span aria-hidden="true">←</span>
-        Insights
-      </button>
+      {showBack && (
+        <button
+          type="button"
+          className="ranking-back-button"
+          onClick={onBack}
+        >
+          <span aria-hidden="true">←</span>
+          Collection
+        </button>
+      )}
 
       <header>
         <h1>

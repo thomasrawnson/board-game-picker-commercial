@@ -1411,3 +1411,8 @@
   background: rgba(196, 217, 185, 0.08);
   border-color: rgba(196, 217, 185, 0.3);
 }
+
+/* Insight tabs without rank v2 */
+.stats-section-tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}

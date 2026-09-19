@@ -1,5 +1,6 @@
 import {
   useState,
+  useRef,
 } from "react"
 
 import {
@@ -53,17 +54,20 @@ function SetupView({
     useState("")
 
 
+  const syncPending = useRef(false)
+  const importPending = useRef(false)
   async function handleSync() {
     const cleanedUsername =
       username.trim()
 
-    if (!cleanedUsername) {
+    if (!cleanedUsername || syncPending.current) {
       return
     }
 
+    syncPending.current = true
     setSyncing(true)
     setSyncError("")
-    setSyncResult(null)
+
 
     try {
       const result =
@@ -85,19 +89,21 @@ function SetupView({
           : "Couldn't sync that BGG collection.",
       )
     } finally {
+      syncPending.current = false
       setSyncing(false)
     }
   }
 
 
   async function handleImport() {
-    if (!file) {
+    if (!file || importPending.current) {
       return
     }
 
+    importPending.current = true
     setImporting(true)
     setImportError("")
-    setImportResult(null)
+
 
     try {
       const result =
@@ -113,6 +119,7 @@ function SetupView({
           : "Couldn't import that BG Stats export.",
       )
     }finally {
+      importPending.current = false
       setImporting(false)
     }
   }
@@ -159,6 +166,7 @@ function SetupView({
         </label>
 
         <input
+          disabled={syncing}
           id="bgg-username"
           className="setup-input"
           type="text"
@@ -184,14 +192,14 @@ function SetupView({
         >
           {syncing
             ? "Syncing collection..."
-            : "Sync collection"}
+            : syncError ? "Retry sync" : "Sync collection"}
         </button>
 
 
         {syncResult && (
           <div className="setup-success">
             <strong>
-              Collection synced
+              {syncing || syncError || username.trim() !== syncResult.username ? "Previous successful sync" : "Collection synced"}
             </strong>
 
             <span>
@@ -203,7 +211,7 @@ function SetupView({
 
 
         {syncError && (
-          <p className="error-message">
+          <p className="error-message" role="alert">
             {syncError}
           </p>
         )}
@@ -251,16 +259,15 @@ function SetupView({
         </label>
 
         <input
+          disabled={importing}
           id="bgstats-file"
           className="file-input"
           type="file"
           accept=".json,application/json"
-          onChange={(event) =>
-            setFile(
-              event.target.files?.[0] ??
-                null,
-            )
-          }
+          onChange={(event) => {
+            setFile(event.target.files?.[0] ?? null)
+            setImportResult(null)
+          }}
         />
 
 
@@ -274,14 +281,14 @@ function SetupView({
         >
           {importing
             ? "Importing history..."
-            : "Import play history"}
+            : importError ? "Retry import" : "Import play history"}
         </button>
 
 
         {importResult && (
           <div className="setup-success">
             <strong>
-              Play history imported
+              {importing || importError ? "Previous successful import" : "Play history imported"}
             </strong>
 
             <span>
@@ -317,7 +324,7 @@ function SetupView({
 
 
         {importError && (
-          <p className="error-message">
+          <p className="error-message" role="alert">
             {importError}
           </p>
         )}

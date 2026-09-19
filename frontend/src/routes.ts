@@ -18,6 +18,8 @@ export const APP_PATHS = {
   collectionOwned: "/collection/owned",
   collectionWishlist:
     "/collection/want-to-play",
+  collectionRanking:
+    "/collection/ranking",
   gameNight: "/game-night",
   rankings: "/rankings",
   discover: "/discover",
@@ -29,9 +31,15 @@ export const APP_PATHS = {
 export function collectionPath(
   section: CollectionSection,
 ): string {
-  return section === "wishlist"
-    ? APP_PATHS.collectionWishlist
-    : APP_PATHS.collectionOwned
+  if (section === "wishlist") {
+    return APP_PATHS.collectionWishlist
+  }
+
+  if (section === "ranking") {
+    return APP_PATHS.collectionRanking
+  }
+
+  return APP_PATHS.collectionOwned
 }
 
 
@@ -74,7 +82,7 @@ export function appViewForPath(
   }
 
   if (pathname === APP_PATHS.rankings) {
-    return "rankings"
+    return "collection"
   }
 
   if (pathname === APP_PATHS.setup) {
