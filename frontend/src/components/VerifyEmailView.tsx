@@ -6,6 +6,7 @@ import {
 import {
   confirmEmailVerification,
 } from "../api/client"
+import BrandLogo from "./ui/BrandLogo"
 
 
 function VerifyEmailView() {
@@ -55,9 +56,7 @@ function VerifyEmailView() {
     <section className="auth-screen">
       <div className="auth-card">
         <header className="auth-header">
-          <p className="eyebrow">
-            ShelfPick
-          </p>
+          <BrandLogo />
 
           <h1>
             Email verification

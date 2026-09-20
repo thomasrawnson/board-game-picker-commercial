@@ -3,6 +3,7 @@ import { confirmPasswordReset } from "../api/client"
 import { FieldValidationError } from "../api/request"
 import { passwordError } from "../auth-validation"
 import PasswordField from "./ui/PasswordField"
+import BrandLogo from "./ui/BrandLogo"
 
 export default function ResetPasswordView() {
   const token = new URLSearchParams(window.location.search).get("token") ?? ""
@@ -34,7 +35,7 @@ export default function ResetPasswordView() {
     } finally { pending.current = false; setSubmitting(false) }
   }
   return <section className="auth-screen"><div className="auth-card">
-    <header className="auth-header"><p className="eyebrow">ShelfPick</p><h1>{token ? "Choose a new password" : "Invalid reset link"}</h1></header>
+    <header className="auth-header"><BrandLogo /><h1>{token ? "Choose a new password" : "Invalid reset link"}</h1></header>
     {!token ? <a className="secondary-button" href="/forgot-password">Request a new reset link</a> : message ? <>
       <p role="status">{message}</p><a className="primary-button" href="/login">Log in</a>
     </> : <form ref={form} className="auth-form" onSubmit={submit} noValidate aria-busy={submitting}>

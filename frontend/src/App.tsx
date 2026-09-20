@@ -18,6 +18,7 @@ import {
 
 import { SessionExpiredError } from "./api/request";
 import RetryNotice from "./components/ui/RetryNotice";
+import BrandLogo from "./components/ui/BrandLogo";
 import { getMe } from "./api/client";
 
 import { clearToken, getToken, type AuthUser } from "./auth";
@@ -408,7 +409,7 @@ function App() {
   if (checkingAuth) {
     return pageShell(
       <section className="auth-loading">
-        <p className="eyebrow">ShelfPick</p>
+        <BrandLogo />
 
         <h1>Loading...</h1>
       </section>,
@@ -417,7 +418,7 @@ function App() {
 
   if (restoreError) {
     return pageShell(<section className="auth-loading">
-      <p className="eyebrow">ShelfPick</p><h1>Let’s reconnect</h1>
+      <BrandLogo /><h1>Let’s reconnect</h1>
       <p>Your saved session is still available.</p>
       <RetryNotice message={restoreError} onRetry={() => {
         setCheckingAuth(true); setRestoreError(""); setRestoreAttempt(current => current + 1);

@@ -4,6 +4,7 @@ import { FieldValidationError } from "../api/request"
 import { saveToken, type AuthUser } from "../auth"
 import { registrationErrors } from "../auth-validation"
 import PasswordField from "./ui/PasswordField"
+import BrandLogo from "./ui/BrandLogo"
 
 type Props = { onAuthenticated: (user: AuthUser) => void; sessionExpired?: boolean }
 export default function AuthView({ onAuthenticated, sessionExpired }: Props) {
@@ -53,7 +54,7 @@ export default function AuthView({ onAuthenticated, sessionExpired }: Props) {
   }
   return <section className="auth-screen"><div className="auth-card">
     <header className="auth-header">
-      <p className="eyebrow">ShelfPick</p>
+      <BrandLogo />
       <h1>{mode === "login" ? "Welcome back" : "Create your account"}</h1>
       <p className="subtitle">Your collection, plays and recommendations in one place.</p>
     </header>

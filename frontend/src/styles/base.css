@@ -110,6 +110,31 @@ header {
   text-transform: uppercase;
 }
 
+.brand-logo {
+  display: block;
+  width: min(190px, 60vw);
+  margin: 0 auto var(--space-3);
+  line-height: 0;
+}
+
+.brand-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brand-logo-dark {
+  display: none !important;
+}
+
+:root[data-theme="dark"] .brand-logo-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .brand-logo-dark {
+  display: block !important;
+}
+
 h1,
 h2 {
   font-family: var(--font-display);

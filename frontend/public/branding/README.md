@@ -1,21 +1,24 @@
 # ShelfPick branding assets
 
-The approved direction is **Shelf + Meeple**: vertical game boxes on a shelf,
-a small incorporated meeple, Forest Green and Warm Gold, legible at small sizes.
-Final artwork has not been supplied. The favicon and PWA files here are unchanged
-copies of the current dice/card artwork, not a proposed new logo.
+The approved **Shelf + Meeple** mark combines three upright board-game boxes,
+a meeple bookend and a shared shelf. Its solid geometry is designed to survive
+favicon and app-icon reduction without adding dice, cards, gradients or detail.
 
-Active replacement slots:
+## Exports
 
-- `favicon.svg`: referenced by `index.html`.
-- `pwa-192.png` and `pwa-512.png`: referenced by the Vite PWA manifest.
+- `shelfpick-logo-light.svg`: full Forest Green and Warm Gold wordmark for light surfaces.
+- `shelfpick-logo-dark.svg`: full light-green and gold wordmark for dark surfaces.
+- `shelfpick-mark.svg`: transparent standalone mark; follows the operating-system colour scheme.
+- `favicon.svg`: small-size standalone mark used by browser tabs.
+- `apple-touch-icon.png`: 180px standalone app icon for Apple home screens.
+- `pwa-192.png`: 192px install icon and maskable PWA source.
+- `pwa-512.png`: 512px install icon and maskable PWA source.
 
-Replace these files in place when approved exports arrive. Keep the specified
-PNG dimensions and run the build and `npm run check:pwa`. Root-level legacy icons
-remain available for existing installed clients/bookmarks.
+Use the full logo for authentication, onboarding and other deliberate brand
+moments. Use the mark for icons, avatars and compact brand contexts. Do not put
+the full wordmark into task navigation or repeat it beside visible `ShelfPick`
+text. Keep the mark's clear space and do not display it below 16px.
 
-Future exports: `shelfpick-logo-light.svg`, `shelfpick-logo-dark.svg`,
-`shelfpick-mark.svg`, and a 180px `apple-touch-icon.png`. These are deliberately
-not fabricated or linked before they exist. The current textual wordmark and
-in-app dice/settings control remain unchanged. Add the Apple touch link and
-light/dark wordmark presentation only when approved source artwork is available.
+Do not recolour, stretch, rotate, outline or add effects to the artwork. The
+approved light colours are `#315C48` and `#C28B37`; dark exports use the matching
+brand-token values `#70A889` and `#E3AD55`.

@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
   <title id="title">ShelfPick</title>
+  <desc id="description">Three board games and a meeple standing together on a shelf.</desc>
   <style>
     .forest { fill: #315C48; }
     .gold { fill: #C28B37; }

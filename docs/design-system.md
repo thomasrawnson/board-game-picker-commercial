@@ -4,9 +4,23 @@
 
 Primary: Forest Green. Accent: Warm Gold.
 
-The logo direction is Shelf + Meeple: vertical board-game boxes on a shelf with a
-small meeple. Final artwork is pending; preserve the existing mark until approved
-assets arrive. Game covers should remain visually dominant.
+The approved logo is Shelf + Meeple: three vertical board-game boxes, a meeple
+bookend and a shared shelf. Game covers should remain visually dominant.
+
+### Brand assets
+
+- Use `shelfpick-logo-light.svg` on light authentication, onboarding and larger
+  brand surfaces. Use `shelfpick-logo-dark.svg` on the matching dark surfaces.
+- Use `shelfpick-mark.svg` for compact brand contexts; the favicon and install
+  icons use the same mark without wordmark text.
+- Light artwork uses Forest Green `#315C48` and Warm Gold `#C28B37`. Dark artwork
+  uses the existing dark brand-token values `#70A889` and `#E3AD55`.
+- Keep the standalone mark at least 16px high. Use the 180px, 192px and 512px
+  raster exports for platform metadata rather than scaling the wordmark.
+- Preserve aspect ratio, clear space and supplied colours. Do not recolour,
+  stretch, rotate, outline or decorate the logo.
+- The full logo names the product and should not sit beside duplicate visible
+  `ShelfPick` text. Decorative duplicates must be hidden from assistive technology.
 
 ## Core rules
 

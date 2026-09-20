@@ -9,6 +9,7 @@ import {
   type BGStatsImportResult,
   type CollectionSyncResult,
 } from "../api/client"
+import BrandLogo from "./ui/BrandLogo"
 
 
 type OnboardingStep =
@@ -222,9 +223,7 @@ function OnboardingView({
   return (
     <section className="onboarding-screen">
       <header className="onboarding-header">
-        <p className="eyebrow">
-          ShelfPick
-        </p>
+        <BrandLogo />
 
         <h1>
           {displayName

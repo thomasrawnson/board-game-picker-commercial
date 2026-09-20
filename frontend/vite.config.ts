@@ -56,6 +56,9 @@ export default defineConfig({
 
             type:
               "image/png",
+
+            purpose:
+              "any maskable",
           },
           {
             src:
@@ -66,6 +69,9 @@ export default defineConfig({
 
             type:
               "image/png",
+
+            purpose:
+              "any maskable",
           },
         ],
       },

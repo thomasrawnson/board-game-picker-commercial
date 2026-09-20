@@ -6,6 +6,7 @@ import {
 import {
   requestPasswordReset,
 } from "../api/client"
+import BrandLogo from "./ui/BrandLogo"
 
 
 function ForgotPasswordView() {
@@ -54,9 +55,7 @@ function ForgotPasswordView() {
     <section className="auth-screen">
       <div className="auth-card">
         <header className="auth-header">
-          <p className="eyebrow">
-            ShelfPick
-          </p>
+          <BrandLogo />
 
           <h1>
             Reset your password
