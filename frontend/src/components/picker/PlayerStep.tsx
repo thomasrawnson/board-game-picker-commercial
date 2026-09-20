@@ -176,6 +176,9 @@ function PlayerStep({
                   ? "Solo"
                   : `${option === 6 ? "6 or more" : option} players`
               }
+              aria-pressed={
+                players === option && selectedPlayerIds.length === 0
+              }
               onClick={() => onSelectCount(option)}
             >
               <strong>

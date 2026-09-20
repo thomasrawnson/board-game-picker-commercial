@@ -530,3 +530,86 @@
   color: var(--color-text-support) !important;
   font-weight: 700;
 }
+
+/* Pick header: keep Settings clear of centred step copy. */
+.app-top-bar {
+  justify-content: flex-end;
+  min-height: calc(42px + env(safe-area-inset-top));
+  padding-top: calc(10px + env(safe-area-inset-top));
+}
+
+/* The Forest outline follows the state-derived selected class only. */
+.player-step-screen .player-chip.solo:not(.selected) {
+  border-color: var(--sp-line);
+}
+
+.player-step-screen .player-chip.selected {
+  border-color: var(--color-brand-primary) !important;
+}
+
+@media (max-width: 480px) {
+  .progress-dots {
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+
+  .player-step-screen {
+    padding-top: 6px;
+    padding-bottom: 12px;
+  }
+
+  .player-step-screen h1 {
+    margin-bottom: 4px;
+  }
+
+  .player-step-screen .subtitle {
+    margin-bottom: 10px;
+  }
+
+  .player-step-screen .picker-essential-label {
+    margin-bottom: 6px;
+  }
+
+  .player-step-screen .picker-navigation-card {
+    min-height: 56px;
+    margin-bottom: 6px;
+    padding: 8px 12px;
+  }
+
+  .player-step-screen .player-or {
+    margin: 5px 0;
+  }
+
+  .player-step-screen .player-grid {
+    gap: 6px;
+  }
+
+  .player-step-screen .player-chip {
+    min-height: 52px !important;
+    aspect-ratio: auto;
+    padding: 6px 8px !important;
+  }
+
+  .player-complexity-section {
+    margin-top: 12px !important;
+  }
+
+  .player-complexity-section .preference-label {
+    margin-bottom: 4px !important;
+  }
+
+  .picker-first-step-advanced {
+    margin-top: 10px !important;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .picker-first-step-advanced > summary {
+    min-height: var(--target-min);
+    padding: 6px 10px !important;
+  }
+
+  .player-step-screen .picker-step-actions {
+    margin-top: 10px !important;
+  }
+}
