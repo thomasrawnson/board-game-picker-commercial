@@ -2816,3 +2816,30 @@
     right: 0;
   }
 }
+
+/* Reveal share-in-card fix:
+   keep Share inside the result card so it cannot overlap Settings. */
+.picker-result-heading-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.picker-result-heading-row .picker-result-mode {
+  grid-column: 2;
+  margin: 0;
+}
+
+.picker-result-heading-row .picker-share-icon-button {
+  position: static;
+  grid-column: 3;
+  justify-self: end;
+  transform: none;
+}
+
+.picker-result-heading-row .picker-share-icon-button:active {
+  transform: translateY(1px);
+}

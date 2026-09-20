@@ -245,19 +245,21 @@ function PickerResult({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <button
-        type="button"
-        className="picker-share-icon-button"
-        onClick={sharePick}
-        aria-label={`Share ${game.name}`}
-        title="Share"
-      >
-        <ShareIcon />
-      </button>
+      <div className="picker-result-heading-row">
+        <p className="picker-result-mode">
+          {modeLabel(mode)}
+        </p>
 
-      <p className="picker-result-mode">
-        {modeLabel(mode)}
-      </p>
+        <button
+          type="button"
+          className="picker-share-icon-button"
+          onClick={sharePick}
+          aria-label={`Share ${game.name}`}
+          title="Share"
+        >
+          <ShareIcon />
+        </button>
+      </div>
 
       <button
         type="button"

@@ -13,10 +13,16 @@ import {
 import LoadingMessage
   from "./ui/LoadingMessage"
 
+import RankingTopList
+  from "./rankings/RankingTopList"
+
 
 type Props = {
   onBack: () => void
   showBack?: boolean
+  onOpenGame?: (
+    bggId: number,
+  ) => void
 }
 
 
@@ -31,6 +37,7 @@ function gameImage(game: RankingGame) {
 function RankGamesView({
   onBack,
   showBack = true,
+  onOpenGame,
 }: Props) {
   const [matchup, setMatchup] =
     useState<RankingGame[]>([])
@@ -46,6 +53,11 @@ function RankGamesView({
 
   const [error, setError] =
     useState("")
+
+  const [
+    rankingRevision,
+    setRankingRevision,
+  ] = useState(0)
 
 
   async function loadMatchup(
@@ -137,6 +149,10 @@ function RankGamesView({
         winner.bgg_id,
         loser.bgg_id,
       ])
+
+      setRankingRevision(
+        (current) => current + 1,
+      )
     } catch (err) {
       console.error(err)
       setError(
@@ -184,6 +200,10 @@ function RankGamesView({
         matchup.map(
           (item) => item.bgg_id
         )
+      )
+
+      setRankingRevision(
+        (current) => current + 1,
       )
     } catch (err) {
       console.error(err)
@@ -327,6 +347,12 @@ function RankGamesView({
           </article>
         )}
       </div>
+
+      <RankingTopList
+        key={rankingRevision}
+        playedOnly={playedOnly}
+        onOpenGame={onOpenGame}
+      />
 
       <details className="ranking-advanced-options">
         <summary>

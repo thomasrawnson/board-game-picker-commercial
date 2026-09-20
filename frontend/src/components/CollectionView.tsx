@@ -832,6 +832,7 @@ function CollectionView({
             changeSection("owned")
           }
           showBack={false}
+          onOpenGame={onOpenGame}
         />
       </section>
     )

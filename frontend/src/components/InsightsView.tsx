@@ -11,6 +11,9 @@ import {
 import PlayerProfile
   from "./players/PlayerProfile"
 
+import RankingCategorySummary
+  from "./rankings/RankingCategorySummary"
+
 
 type StatsSection =
   | "collection"
@@ -328,6 +331,8 @@ function InsightsView({
               </strong>
             </article>
           </div>
+
+          <RankingCategorySummary />
         </div>
       )}
 

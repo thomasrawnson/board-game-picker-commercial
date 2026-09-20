@@ -613,3 +613,9 @@
     margin-top: 10px !important;
   }
 }
+
+/* Fine-tune chevron fix:
+   the Picker already supplies a gold +/- via .advanced-filters summary::after. */
+.picker-first-step-advanced .ui-disclosure-chevron {
+  display: none;
+}
