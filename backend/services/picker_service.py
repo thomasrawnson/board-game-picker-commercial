@@ -20,9 +20,9 @@ PLAY_STYLES = {
 }
 
 MIN_PLAYER_COUNT_POLL_VOTES = 10
-PLAYER_COUNT_PENALTY_PERCENT = 30
-PLAYER_COUNT_EXCLUSION_PERCENT = 50
-PLAYER_COUNT_MIXED_FIT_PENALTY = -15
+# A reliable exact-count poll at or above this percentage is ineligible.
+# Keep the policy centralized so it can be tuned without changing storage.
+PLAYER_COUNT_EXCLUSION_PERCENT = 30
 
 
 @dataclass
@@ -978,25 +978,6 @@ class PickerService:
                 ),
             )
 
-        not_recommended_percent = (
-            PickerService
-            ._not_recommended_percent(poll)
-        )
-
-        if (
-            poll.not_recommended_votes * 100
-            >= poll.total_votes
-            * PLAYER_COUNT_PENALTY_PERCENT
-        ):
-            return (
-                PLAYER_COUNT_MIXED_FIT_PENALTY,
-                (
-                    f"Mixed at {players} players: "
-                    f"{PickerService._format_percent(not_recommended_percent)}% "
-                    "of voters do not recommend it"
-                ),
-            )
-
         if (
             poll.best_votes
             > poll.recommended_votes
@@ -1010,6 +991,8 @@ class PickerService:
             )
 
             return (
+                # Player fit is intentionally capped at ten points so time,
+                # complexity, preferences, and history retain their weight.
                 10,
                 (
                     f"Best at {players} players "
@@ -1031,6 +1014,7 @@ class PickerService:
             )
 
             return (
+                # Positive exact-count support is a smaller five-point signal.
                 5,
                 (
                     f"Recommended at "
@@ -1077,16 +1061,6 @@ class PickerService:
                 if result.player_count == players
             ),
             None,
-        )
-
-    @staticmethod
-    def _not_recommended_percent(
-        poll: PlayerCountPoll,
-    ) -> float:
-        return (
-            poll.not_recommended_votes
-            / poll.total_votes
-            * 100
         )
 
     @staticmethod

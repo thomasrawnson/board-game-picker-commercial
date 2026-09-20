@@ -817,6 +817,23 @@ def _game_with_two_player_poll(
     )
 
 
+def test_exact_player_count_ranking_is_deterministic():
+    games = [
+        _game_with_two_player_poll(10, 100, bgg_id=2),
+        _game_with_two_player_poll(10, 100, bgg_id=1),
+    ]
+    games[0].name = "Beta"
+    games[1].name = "Alpha"
+    criteria = PickerCriteria(players=2)
+    service = PickerService()
+
+    first = service.rank_matches(games, criteria)
+    second = service.rank_matches(games, criteria)
+
+    assert [match.game.bgg_id for match in first] == [1, 2]
+    assert [match.game.bgg_id for match in second] == [1, 2]
+
+
 def test_study_in_emerald_is_excluded_at_two_players():
     game = Game(
         bgg_id=178054,
@@ -838,7 +855,7 @@ def test_study_in_emerald_is_excluded_at_two_players():
     assert matches == []
 
 
-def test_29_9_percent_not_recommended_has_no_penalty():
+def test_below_30_percent_not_recommended_remains_eligible():
     game = _game_with_two_player_poll(299, 1000)
 
     match = PickerService().rank_matches(
@@ -847,42 +864,32 @@ def test_29_9_percent_not_recommended_has_no_penalty():
     )[0]
 
     assert match.score == 95
-    assert not any(
-        reason.startswith("Mixed at")
+    assert any(
+        reason.startswith("Recommended at 2 players")
         for reason in match.reasons
     )
 
 
-def test_30_percent_not_recommended_gets_penalty():
+def test_30_percent_not_recommended_is_excluded():
     game = _game_with_two_player_poll(30, 100)
-
-    match = PickerService().rank_matches(
-        [game],
-        PickerCriteria(players=2),
-    )[0]
-
-    assert match.score == 75
-    assert (
-        "Mixed at 2 players: 30% of voters do not recommend it"
-        in match.reasons
-    )
-
-
-def test_49_9_percent_not_recommended_remains_eligible():
-    game = _game_with_two_player_poll(499, 1000)
 
     matches = PickerService().rank_matches(
         [game],
         PickerCriteria(players=2),
     )
 
-    assert len(matches) == 1
+    assert matches == []
 
-    assert any(
-        "49.9% of voters do not recommend it"
-        in reason
-        for reason in matches[0].reasons
+
+def test_above_30_percent_not_recommended_is_excluded():
+    game = _game_with_two_player_poll(31, 100)
+
+    matches = PickerService().rank_matches(
+        [game],
+        PickerCriteria(players=2),
     )
+
+    assert matches == []
 
 
 def test_50_percent_not_recommended_is_excluded():

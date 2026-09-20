@@ -11,7 +11,7 @@ Keep changing roadmap priorities outside this file.
 - Wishlist membership and collection ownership are separate. Saving a wishlist item must not mark it owned.
 - Preserve historical plays when ownership changes and keep imports idempotent.
 - Exclude expansions from Collection and Picker candidates, including legacy records that require metadata refresh.
-- Keep Picker eligibility deterministic. Exact-count poll evidence with at least 10 votes excludes games at 50% or more Not Recommended and penalises 30–49.9%. Missing or low-sample evidence must not be described as strong community approval.
+- Keep Picker eligibility deterministic. Exact-count poll evidence with at least 10 votes excludes games at 30% or more Not Recommended. Missing or low-sample evidence must not be described as strong community approval.
 - Keep explanations consistent with scoring and retain deterministic fallback when optional AI is unavailable. Do not enable production AI as an incidental change.
 - Validate API inputs and preserve existing response contracts unless the task explicitly requires a coordinated change.
 - Use Alembic for schema changes. Consider existing rows, defaults, backfills and migration compatibility.
