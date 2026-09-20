@@ -349,7 +349,7 @@ function RankGamesView({
       </div>
 
       <RankingTopList
-        key={rankingRevision}
+        key={`${rankingRevision}-${playedOnly}`}
         playedOnly={playedOnly}
         onOpenGame={onOpenGame}
       />

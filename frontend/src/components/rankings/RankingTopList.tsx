@@ -61,10 +61,6 @@ function RankingTopList({
   useEffect(() => {
     let active = true
 
-    setLoading(true)
-    setError("")
-    setShareStatus("")
-
     getRankings(
       playedOnly,
       rankSummaryLimit,
@@ -74,6 +70,7 @@ function RankingTopList({
           setRankedGames(
             result.rankings,
           )
+          setError("")
         }
       })
       .catch((err) => {
@@ -98,6 +95,20 @@ function RankingTopList({
     playedOnly,
     rankSummaryLimit,
   ])
+
+
+  function changeRankSummaryLimit(
+    limit: RankSummaryLimit,
+  ) {
+    if (limit === rankSummaryLimit) {
+      return
+    }
+
+    setLoading(true)
+    setError("")
+    setShareStatus("")
+    setRankSummaryLimit(limit)
+  }
 
 
   async function shareRankStats() {
@@ -207,7 +218,7 @@ function RankingTopList({
               disabled={loading}
               key={limit}
               onClick={() =>
-                setRankSummaryLimit(
+                changeRankSummaryLimit(
                   limit,
                 )
               }
