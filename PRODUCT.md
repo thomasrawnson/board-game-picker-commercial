@@ -37,7 +37,7 @@ and games owned by any attendee without abandoning explainability.
 
 - A user imports or synchronises an owned collection from BoardGameGeek and can
   import historical plays from BG Stats.
-- Before playing, the user chooses the group, time and preferences; Picker
+- Before playing, the user chooses the group, time and preferences; Pick
   filters and ranks eligible games and explains the result.
 - Users can browse their collection, save discovery candidates to Want to Play,
   rank favourites, log sessions and inspect collection, play, player and group
@@ -58,7 +58,7 @@ and games owned by any attendee without abandoning explainability.
 - Owned games, wishlist games and historical plays have distinct meanings.
   Ownership changes must not erase historical plays, and imports must remain
   idempotent.
-- Expansions are excluded from Collection and Picker candidates. Player-count
+- Expansions are excluded from Collection and Pick candidates. Player-count
   suitability uses BoardGameGeek community evidence with bounded, documented
   treatment for weak or missing samples.
 - User accounts and stored collections, plays, players, wishlists, rankings and

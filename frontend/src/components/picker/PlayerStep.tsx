@@ -127,11 +127,11 @@ function PlayerStep({
           onClick={onChoosePlayers}
         >
           <span>
-            <strong>Choose friends</strong>
+            <strong>Choose specific players</strong>
             <small>
               {selectedPlayerIds.length > 0
-                ? `${selectedPlayerIds.length} friend${selectedPlayerIds.length === 1 ? "" : "s"} selected`
-                : "Select from your regular group"}
+                ? `${selectedPlayerIds.length} player${selectedPlayerIds.length === 1 ? "" : "s"} selected`
+                : "Use known player preferences and play history"}
             </small>
           </span>
           <span className="picker-navigation-chevron" aria-hidden="true">›</span>
@@ -192,7 +192,7 @@ function PlayerStep({
         </div>
 
         <Disclosure
-          label="Advanced options"
+          label="Fine-tune"
           hint="Pick style, play style, theme, mechanics and age"
           className="advanced-filters picker-first-step-advanced"
         >

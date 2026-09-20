@@ -150,7 +150,7 @@ Keep the scale compact. The default page heading is 31px, screen headings common
 
 **The Bounded Shelf Rule.** Core flows are mobile-first and fill the viewport at 480px and below. On larger screens the standard app container remains a focused 390px shelf; data-rich collection, detail, rankings and insight surfaces may expand to the established 1040px wide shell at 700px and above.
 
-Use the 4px spacing scale, with 12px to 16px inside controls and cards, 24px between major sections and 32px around screen-level pauses. Preserve a minimum 44px interactive target. The fixed five-item navigation sits above safe-area insets, and scrolling content keeps enough bottom space to remain reachable above it. At narrow widths, grids collapse or tighten at the existing 480px, 420px, 380px and 360px breakpoints; do not introduce horizontal page scrolling.
+Use the 4px spacing scale, with 12px to 16px inside controls and cards, 24px between major sections and 32px around screen-level pauses. Preserve a minimum 44px interactive target. The fixed four-item navigation sits above safe-area insets, and scrolling content keeps enough bottom space to remain reachable above it. Game Night returns to primary navigation once it performs a usable task. At narrow widths, grids collapse or tighten at the existing 480px, 420px, 380px and 360px breakpoints; do not introduce horizontal page scrolling.
 
 Game cover art should remain contained, correctly proportioned and visually dominant. Text columns use `min-width: 0`, wrapping or ellipsis where established so long game names cannot force layouts wider than the viewport.
 
@@ -176,7 +176,7 @@ Inputs and search fields sit on `surface-raised`, use primary text and readable 
 
 Cards use tonal separation and a border before elevation. Recommendation cards give the cover, game title and fit explanation the clearest hierarchy. Compact badges and chips may use Forest-soft for selection or Gold-soft for earned emphasis, with text colors chosen for contrast.
 
-Filter tabs use a Forest label and short underline for the active state. Segmented controls place the selected option on Forest-soft. The bottom navigation uses five equal targets with 24px icons, short labels and a Forest-soft active tile. Dialogs use the surface color, the established 16px–18px radius range, a clear close action and the stronger overlay shadow.
+Filter tabs use a Forest label and short underline for the active state. Segmented controls place the selected option on Forest-soft. The bottom navigation currently uses four equal targets with 24px icons, short labels and a Forest-soft active tile. Game Night rejoins those destinations when it provides a usable group experience. Dialogs use the surface color, the established 16px–18px radius range, a clear close action and the stronger overlay shadow.
 
 ## Do's and Don'ts
 

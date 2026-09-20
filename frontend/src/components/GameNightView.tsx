@@ -80,7 +80,7 @@ function GameNightView() {
       </div>
 
       <p className="game-night-footnote">
-        Game Night will build on the improved Picker, so every suggestion must genuinely suit the people at the table.
+        Game Night will build on Pick, so every suggestion must genuinely suit the people at the table.
       </p>
     </section>
   )

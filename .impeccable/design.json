@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-20T07:17:46Z",
+  "title": "Design System: ShelfPick",
+  "extensions": {
+    "colorMeta": {
+      "forest": { "role": "primary", "displayName": "ShelfPick Forest", "canonical": "#315C48", "tonalRamp": ["oklch(18% 0.04 155)", "oklch(28% 0.06 155)", "oklch(38% 0.07 155)", "oklch(48% 0.07 155)", "oklch(60% 0.06 155)", "oklch(72% 0.05 155)", "oklch(84% 0.03 155)", "oklch(95% 0.015 155)"] },
+      "forest-hover": { "role": "primary", "displayName": "Forest Hover", "canonical": "#284D3C", "tonalRamp": ["oklch(15% 0.035 155)", "oklch(25% 0.05 155)", "oklch(35% 0.06 155)", "oklch(45% 0.06 155)", "oklch(58% 0.055 155)", "oklch(70% 0.045 155)", "oklch(83% 0.028 155)", "oklch(95% 0.012 155)"] },
+      "forest-soft": { "role": "primary", "displayName": "Forest Wash", "canonical": "#E3EBE6", "tonalRamp": ["oklch(15% 0.02 155)", "oklch(27% 0.025 155)", "oklch(39% 0.03 155)", "oklch(51% 0.028 155)", "oklch(64% 0.024 155)", "oklch(76% 0.02 155)", "oklch(87% 0.015 155)", "oklch(95% 0.01 155)"] },
+      "gold": { "role": "secondary", "displayName": "Warm Gold", "canonical": "#C28B37", "tonalRamp": ["oklch(18% 0.05 75)", "oklch(29% 0.08 75)", "oklch(41% 0.11 75)", "oklch(53% 0.13 75)", "oklch(65% 0.12 75)", "oklch(76% 0.09 75)", "oklch(86% 0.055 75)", "oklch(95% 0.02 75)"] },
+      "gold-hover": { "role": "secondary", "displayName": "Gold Hover", "canonical": "#A9752D", "tonalRamp": ["oklch(16% 0.045 75)", "oklch(27% 0.075 75)", "oklch(38% 0.105 75)", "oklch(49% 0.12 75)", "oklch(61% 0.11 75)", "oklch(73% 0.085 75)", "oklch(85% 0.05 75)", "oklch(95% 0.018 75)"] },
+      "gold-soft": { "role": "secondary", "displayName": "Gold Wash", "canonical": "#F4EAD7", "tonalRamp": ["oklch(17% 0.025 75)", "oklch(29% 0.035 75)", "oklch(41% 0.045 75)", "oklch(53% 0.05 75)", "oklch(65% 0.045 75)", "oklch(77% 0.035 75)", "oklch(88% 0.025 75)", "oklch(96% 0.012 75)"] },
+      "canvas": { "role": "neutral", "displayName": "Warm Canvas", "canonical": "#F6F3EB", "tonalRamp": ["oklch(15% 0.006 85)", "oklch(27% 0.008 85)", "oklch(39% 0.01 85)", "oklch(51% 0.012 85)", "oklch(64% 0.014 85)", "oklch(76% 0.014 85)", "oklch(87% 0.012 85)", "oklch(96% 0.01 85)"] },
+      "surface": { "role": "neutral", "displayName": "Paper Surface", "canonical": "#FFFFFF", "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(39% 0 0)", "oklch(51% 0 0)", "oklch(64% 0 0)", "oklch(76% 0 0)", "oklch(88% 0 0)", "oklch(100% 0 0)"] },
+      "surface-raised": { "role": "neutral", "displayName": "Raised Parchment", "canonical": "#EEEAE0", "tonalRamp": ["oklch(15% 0.006 85)", "oklch(27% 0.008 85)", "oklch(39% 0.01 85)", "oklch(51% 0.012 85)", "oklch(63% 0.014 85)", "oklch(75% 0.014 85)", "oklch(86% 0.012 85)", "oklch(94% 0.01 85)"] },
+      "ink": { "role": "neutral", "displayName": "Forest Ink", "canonical": "#1E2A24", "tonalRamp": ["oklch(15% 0.015 155)", "oklch(27% 0.02 155)", "oklch(39% 0.022 155)", "oklch(51% 0.02 155)", "oklch(64% 0.016 155)", "oklch(76% 0.012 155)", "oklch(87% 0.008 155)", "oklch(95% 0.004 155)"] },
+      "ink-secondary": { "role": "neutral", "displayName": "Supporting Ink", "canonical": "#667068", "tonalRamp": ["oklch(15% 0.01 155)", "oklch(27% 0.014 155)", "oklch(39% 0.016 155)", "oklch(51% 0.016 155)", "oklch(64% 0.014 155)", "oklch(76% 0.011 155)", "oklch(87% 0.007 155)", "oklch(95% 0.003 155)"] },
+      "line": { "role": "neutral", "displayName": "Warm Line", "canonical": "#D9D5CB", "tonalRamp": ["oklch(15% 0.004 85)", "oklch(27% 0.006 85)", "oklch(39% 0.008 85)", "oklch(51% 0.009 85)", "oklch(64% 0.01 85)", "oklch(76% 0.01 85)", "oklch(87% 0.009 85)", "oklch(95% 0.005 85)"] },
+      "success": { "role": "tertiary", "displayName": "Success Green", "canonical": "#3F7655", "tonalRamp": ["oklch(16% 0.04 150)", "oklch(28% 0.06 150)", "oklch(40% 0.08 150)", "oklch(52% 0.09 150)", "oklch(64% 0.08 150)", "oklch(76% 0.06 150)", "oklch(87% 0.035 150)", "oklch(95% 0.015 150)"] },
+      "warning": { "role": "tertiary", "displayName": "Warning Amber", "canonical": "#A66D16", "tonalRamp": ["oklch(16% 0.05 70)", "oklch(28% 0.09 70)", "oklch(40% 0.13 70)", "oklch(52% 0.15 70)", "oklch(64% 0.13 70)", "oklch(76% 0.09 70)", "oklch(87% 0.05 70)", "oklch(95% 0.02 70)"] },
+      "danger": { "role": "tertiary", "displayName": "Danger Red", "canonical": "#B7463C", "tonalRamp": ["oklch(16% 0.05 28)", "oklch(28% 0.09 28)", "oklch(40% 0.13 28)", "oklch(52% 0.16 28)", "oklch(64% 0.14 28)", "oklch(76% 0.1 28)", "oklch(87% 0.055 28)", "oklch(95% 0.022 28)"] },
+      "info": { "role": "tertiary", "displayName": "Information Teal", "canonical": "#356A7A", "tonalRamp": ["oklch(16% 0.035 220)", "oklch(28% 0.055 220)", "oklch(40% 0.075 220)", "oklch(52% 0.085 220)", "oklch(64% 0.075 220)", "oklch(76% 0.055 220)", "oklch(87% 0.032 220)", "oklch(95% 0.014 220)"] },
+      "dark-forest": { "role": "primary", "displayName": "Dark Theme Forest", "canonical": "#70A889", "tonalRamp": ["oklch(16% 0.035 155)", "oklch(28% 0.055 155)", "oklch(40% 0.07 155)", "oklch(52% 0.08 155)", "oklch(64% 0.075 155)", "oklch(76% 0.055 155)", "oklch(87% 0.032 155)", "oklch(95% 0.014 155)"] },
+      "dark-forest-hover": { "role": "primary", "displayName": "Dark Forest Hover", "canonical": "#86B99C", "tonalRamp": ["oklch(16% 0.03 155)", "oklch(28% 0.05 155)", "oklch(40% 0.065 155)", "oklch(52% 0.075 155)", "oklch(64% 0.07 155)", "oklch(76% 0.052 155)", "oklch(87% 0.03 155)", "oklch(95% 0.013 155)"] },
+      "dark-forest-soft": { "role": "primary", "displayName": "Dark Forest Wash", "canonical": "#26382E", "tonalRamp": ["oklch(15% 0.02 155)", "oklch(27% 0.03 155)", "oklch(39% 0.038 155)", "oklch(51% 0.04 155)", "oklch(64% 0.035 155)", "oklch(76% 0.026 155)", "oklch(87% 0.015 155)", "oklch(95% 0.007 155)"] },
+      "dark-gold": { "role": "secondary", "displayName": "Dark Theme Gold", "canonical": "#E3AD55", "tonalRamp": ["oklch(18% 0.045 75)", "oklch(29% 0.075 75)", "oklch(41% 0.105 75)", "oklch(53% 0.125 75)", "oklch(65% 0.12 75)", "oklch(76% 0.09 75)", "oklch(86% 0.055 75)", "oklch(95% 0.02 75)"] },
+      "dark-gold-soft": { "role": "secondary", "displayName": "Dark Gold Wash", "canonical": "#403522", "tonalRamp": ["oklch(15% 0.025 75)", "oklch(27% 0.04 75)", "oklch(39% 0.05 75)", "oklch(51% 0.052 75)", "oklch(64% 0.045 75)", "oklch(76% 0.034 75)", "oklch(87% 0.02 75)", "oklch(95% 0.009 75)"] },
+      "dark-canvas": { "role": "neutral", "displayName": "Dark Canvas", "canonical": "#151816", "tonalRamp": ["oklch(15% 0.008 155)", "oklch(27% 0.01 155)", "oklch(39% 0.012 155)", "oklch(51% 0.012 155)", "oklch(64% 0.01 155)", "oklch(76% 0.008 155)", "oklch(87% 0.005 155)", "oklch(95% 0.002 155)"] },
+      "dark-surface": { "role": "neutral", "displayName": "Dark Surface", "canonical": "#202521", "tonalRamp": ["oklch(15% 0.008 155)", "oklch(27% 0.011 155)", "oklch(39% 0.013 155)", "oklch(51% 0.013 155)", "oklch(64% 0.011 155)", "oklch(76% 0.008 155)", "oklch(87% 0.005 155)", "oklch(95% 0.002 155)"] },
+      "dark-surface-raised": { "role": "neutral", "displayName": "Dark Raised Surface", "canonical": "#29302B", "tonalRamp": ["oklch(15% 0.009 155)", "oklch(27% 0.013 155)", "oklch(39% 0.015 155)", "oklch(51% 0.015 155)", "oklch(64% 0.012 155)", "oklch(76% 0.009 155)", "oklch(87% 0.005 155)", "oklch(95% 0.002 155)"] },
+      "dark-ink": { "role": "neutral", "displayName": "Dark Theme Ink", "canonical": "#F4F1E8", "tonalRamp": ["oklch(15% 0.005 85)", "oklch(27% 0.007 85)", "oklch(39% 0.009 85)", "oklch(51% 0.011 85)", "oklch(64% 0.012 85)", "oklch(76% 0.012 85)", "oklch(87% 0.01 85)", "oklch(95% 0.008 85)"] },
+      "dark-ink-secondary": { "role": "neutral", "displayName": "Dark Supporting Ink", "canonical": "#AAB4AD", "tonalRamp": ["oklch(15% 0.008 155)", "oklch(27% 0.012 155)", "oklch(39% 0.015 155)", "oklch(51% 0.016 155)", "oklch(64% 0.015 155)", "oklch(76% 0.012 155)", "oklch(87% 0.008 155)", "oklch(95% 0.003 155)"] },
+      "dark-line": { "role": "neutral", "displayName": "Dark Line", "canonical": "#39413B", "tonalRamp": ["oklch(15% 0.008 155)", "oklch(27% 0.012 155)", "oklch(39% 0.015 155)", "oklch(51% 0.016 155)", "oklch(64% 0.014 155)", "oklch(76% 0.011 155)", "oklch(87% 0.007 155)", "oklch(95% 0.003 155)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Primary page headings and decisive result titles." },
+      "headline": { "displayName": "Headline", "purpose": "Screen and section headings." },
+      "title": { "displayName": "Title", "purpose": "Game names, card titles and meaningful labels." },
+      "body": { "displayName": "Body", "purpose": "Explanations, descriptions and form content." },
+      "label": { "displayName": "Label", "purpose": "Buttons, controls, tabs and navigation." },
+      "meta": { "displayName": "Metadata", "purpose": "Compact game facts, counts and supporting detail." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 4px 16px var(--color-shadow)", "purpose": "App shell, floating navigation and prominent raised cards." },
+      { "name": "dialog", "value": "0 18px 38px var(--color-shadow)", "purpose": "Dialogs and overlay surfaces that must separate from the app plane." }
+    ],
+    "motion": [
+      { "name": "press", "value": "transform 120ms ease", "purpose": "Brief tactile compression on buttons and navigation." },
+      { "name": "state", "value": "color 160ms ease, background-color 160ms ease, border-color 160ms ease", "purpose": "Hover, focus and selected-state changes." },
+      { "name": "screen-in", "value": "350ms ease", "purpose": "An 8px upward fade when a screen enters." }
+    ],
+    "breakpoints": [
+      { "name": "compact", "value": "360px", "purpose": "Protects dense controls and labels on the narrowest supported phones." },
+      { "name": "small", "value": "420px", "purpose": "Tightens picker and shared control spacing." },
+      { "name": "mobile", "value": "480px", "purpose": "Switches the app shell to an edge-to-edge viewport layout." },
+      { "name": "wide", "value": "700px", "purpose": "Enables the established wide app shell for data-rich surfaces." },
+      { "name": "desktop", "value": "1024px", "purpose": "Adds desktop breathing room without changing the information architecture." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single dominant action for the current decision step.",
+      "html": "<button class=\"ds-primary\">Find my game</button>",
+      "css": ".ds-primary{min-width:44px;min-height:46px;width:100%;padding:12px 16px;border:0;border-radius:var(--radius-md);background:var(--color-brand-primary);color:var(--color-text-inverse);font:700 14px/1.2 var(--font-ui);cursor:pointer;transition:transform 120ms ease,background-color 160ms ease}.ds-primary:hover{background:var(--color-brand-primary-hover)}.ds-primary:active{transform:scale(.97)}.ds-primary:focus-visible{outline:2px solid var(--color-brand-primary);outline-offset:3px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A clear alternative that remains subordinate to the primary action.",
+      "html": "<button class=\"ds-secondary\">Adjust filters</button>",
+      "css": ".ds-secondary{min-width:44px;min-height:46px;width:100%;padding:12px 16px;border:1px solid var(--color-brand-primary);border-radius:var(--radius-md);background:transparent;color:var(--color-brand-primary);font:700 14px/1.2 var(--font-ui);cursor:pointer}.ds-secondary:active{transform:scale(.97)}.ds-secondary:focus-visible{outline:2px solid var(--color-brand-primary);outline-offset:3px}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Raised, readable input treatment for collection search and forms.",
+      "html": "<label class=\"ds-field\"><span>Search collection</span><input placeholder=\"Game title\" /></label>",
+      "css": ".ds-field{display:grid;gap:6px;color:var(--color-text-primary);font:700 14px/1.2 var(--font-ui)}.ds-field input{min-height:44px;padding:10px 14px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-raised);color:var(--color-text-primary);font:400 16px/1.4 var(--font-ui)}.ds-field input::placeholder{color:var(--color-text-support)}.ds-field input:focus{border-color:var(--color-brand-primary);outline:2px solid var(--color-brand-primary);outline-offset:2px}"
+    },
+    {
+      "name": "Surface Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "A quiet content grouping that relies on border and tone before shadow.",
+      "html": "<article class=\"ds-card\"><p class=\"ds-eyebrow\">GOOD FIT</p><h3>Ready for the table</h3><p>Balanced for your group and available time.</p></article>",
+      "css": ".ds-card{padding:16px;border:1px solid var(--color-border);border-radius:var(--radius-lg);background:var(--color-surface);color:var(--color-text-primary);font:400 16px/1.5 var(--font-ui)}.ds-card h3{margin:0 0 6px;font:600 18px/1.2 var(--font-display)}.ds-card p{margin:0;color:var(--color-text-support)}.ds-card .ds-eyebrow{margin:0 0 8px;color:var(--color-accent-text);font:700 11px/1.2 var(--font-ui);letter-spacing:.14em}"
+    },
+    {
+      "name": "Selected Chip",
+      "kind": "chip",
+      "refersTo": "chip-selected",
+      "description": "Compact selected state for filters, tags and player choices.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">2–4 players</button>",
+      "css": ".ds-chip{min-height:44px;padding:7px 12px;border:1px solid var(--color-brand-primary);border-radius:999px;background:var(--color-brand-primary-soft);color:var(--color-brand-primary);font:700 14px/1.2 var(--font-ui)}.ds-chip:focus-visible{outline:2px solid var(--color-brand-primary);outline-offset:3px}"
+    },
+    {
+      "name": "Filter Tabs",
+      "kind": "nav",
+      "description": "A low-chrome three-option filter with a concise active marker.",
+      "html": "<div class=\"ds-tabs\" role=\"group\" aria-label=\"Collection view\"><button class=\"active\">Owned</button><button>Want to play</button><button>Played</button></div>",
+      "css": ".ds-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 4px}.ds-tabs button{position:relative;min-height:44px;padding:8px 4px 10px;border:0;background:transparent;color:var(--color-text-support);font:700 14px/1.2 var(--font-ui)}.ds-tabs button.active{color:var(--color-brand-primary)}.ds-tabs button.active:after{content:'';position:absolute;left:50%;bottom:2px;width:18px;height:2px;border-radius:999px;transform:translateX(-50%);background:var(--color-brand-primary)}"
+    },
+    {
+      "name": "Bottom Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Four equal, touch-friendly destinations with a quiet Forest active tile.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Primary\"><button class=\"active\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 6h16M4 12h16M4 18h10\"/></svg><span>Pick</span></button><button><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 4h14v16H5z\"/></svg><span>Collection</span></button><button><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/></svg><span>Discover</span></button><button><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 19V9m6 10V5m6 14v-7\"/></svg><span>Insights</span></button></nav>",
+      "css": ".ds-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:8px;border:1px solid var(--color-border);border-radius:26px;background:var(--color-surface);box-shadow:var(--shadow-card)}.ds-nav button{min-width:0;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px 4px;border:0;border-radius:20px;background:transparent;color:var(--color-text-primary);font:700 12px/1 var(--font-ui)}.ds-nav button.active{background:var(--color-brand-primary-soft);color:var(--color-brand-primary)}.ds-nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}"
+    },
+    {
+      "name": "Recommendation Card",
+      "kind": "custom",
+      "description": "The signature result pattern: artwork first, then title, fit and explanation.",
+      "html": "<article class=\"ds-recommendation\"><div class=\"ds-cover\" aria-hidden=\"true\">GAME<br/>ART</div><div><p class=\"ds-fit\">BEST FIT</p><h3>Cascadia</h3><p>Works for 3 players in about 45 minutes.</p><button>Why this game?</button></div></article>",
+      "css": ".ds-recommendation{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;padding:16px;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface);box-shadow:var(--shadow-card);color:var(--color-text-primary);font:400 14px/1.45 var(--font-ui)}.ds-cover{aspect-ratio:2/3;display:grid;place-items:center;border-radius:10px;background:var(--color-surface-raised);color:var(--color-text-support);font:800 11px/1.2 var(--font-ui);text-align:center}.ds-recommendation h3{margin:2px 0 6px;font:600 20px/1.15 var(--font-display)}.ds-recommendation p{margin:0;color:var(--color-text-support)}.ds-recommendation .ds-fit{color:var(--color-accent-text);font:800 11px/1.2 var(--font-ui);letter-spacing:.12em}.ds-recommendation button{min-height:44px;margin-top:8px;padding:0;border:0;background:transparent;color:var(--color-brand-primary);font:700 14px/1.2 var(--font-ui)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Considered Game Shelf",
+    "overview": "ShelfPick should feel like opening a well-kept personal game shelf: warm, calm, tactile and easy to scan. The interface helps hobbyists make a confident choice, so game artwork and recommendation reasoning lead while the brand supplies structure and recognition.\n\nForest Green carries action, selection and trust. Warm Gold marks moments of emphasis, collection character and small editorial details. Cream canvas, paper-like surfaces and restrained depth keep the product inviting in light mode; the dark theme translates the same relationships into charcoal-green layers rather than becoming a separate visual identity.",
+    "keyCharacteristics": [
+      "Collection-led, with game artwork as the strongest visual content.",
+      "Calm and practical, with a warm tabletop character rather than a dense dashboard feel.",
+      "Explainable, with concise hierarchy that makes recommendations and their reasons easy to trust.",
+      "Consistent across light and dark themes, mobile-first flows and wider app surfaces."
+    ],
+    "rules": [
+      { "name": "The Forest Means Action Rule", "body": "Use Forest Green for primary actions, selected controls, active navigation, focus rings and interactive affordances that move the user forward.", "section": "colors" },
+      { "name": "The Gold Earns Attention Rule", "body": "Reserve Warm Gold for restrained emphasis such as eyebrows, rankings, selected metadata and occasional supporting links; it is not the default action color.", "section": "colors" },
+      { "name": "The Semantic Color Rule", "body": "Success, warning, danger and info retain their functional hues and labels. Never substitute Forest or Gold where the user needs to understand status or risk.", "section": "colors" },
+      { "name": "The Two-Voice Type Rule", "body": "Lora provides a considered editorial voice for page headings, section titles, game names and meaningful numeric highlights; Nunito Sans carries controls, body copy, metadata and navigation.", "section": "typography" },
+      { "name": "The Bounded Shelf Rule", "body": "Core flows are mobile-first and fill the viewport at 480px and below. On larger screens the standard app container remains a focused 390px shelf; data-rich collection, detail, rankings and insight surfaces may expand to the established 1040px wide shell at 700px and above.", "section": "layout" },
+      { "name": "The Quiet Layering Rule", "body": "Establish hierarchy with warm tonal steps and borders first, then use the shared card shadow for true floating surfaces such as the app shell, bottom navigation, dialogs and prominent recommendation cards.", "section": "elevation" },
+      { "name": "The Soft Geometry Rule", "body": "Use 8px for compact controls, 12px for standard fields and buttons, and 16px for cards. Larger app shells and floating navigation may use 24px to 28px radii. Use full pills only for chips, tags, compact status controls and small external actions; content cards remain softly rectangular.", "section": "shapes" },
+      { "name": "The One Primary Action Rule", "body": "A view or decision step should have one visually dominant Forest button. Secondary actions use a Forest outline; quiet or reversible actions use transparent ghost treatment. Disabled actions use raised-surface fill and supporting text rather than reduced-opacity Forest.", "section": "components" }
+    ],
+    "dos": [
+      "Do let game covers, titles and recommendation reasoning carry the strongest hierarchy.",
+      "Do use semantic tokens and existing shared primitives before adding screen-specific values.",
+      "Do preserve clear surface separation, readable supporting text and visible borders in both themes.",
+      "Do keep actions concise, deterministic and explicit about what happens next.",
+      "Do verify new work at mobile width, wider desktop width, and in light and dark mode."
+    ],
+    "donts": [
+      "Don't turn Warm Gold into a general-purpose button or selected-state color.",
+      "Don't add ornamental gradients, shadows or glass effects to ordinary cards and controls.",
+      "Don't let branding compete with cover artwork or recommendation content.",
+      "Don't communicate success, warning, danger or info through brand color alone.",
+      "Don't invent new radii, spacing increments or typography roles when an established token fits."
+    ]
+  }
+}
