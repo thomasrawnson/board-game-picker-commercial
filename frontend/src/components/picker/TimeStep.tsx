@@ -27,8 +27,10 @@ function TimeStep({
   return (
     <section className="screen picker-step-screen time-step-screen">
       <header>
-        <h1>How long you got?</h1>
-        <p className="subtitle">We'll only show games that fit.</p>
+        <h1>How much time is available?</h1>
+        <p className="subtitle">
+          One last choice, then we'll find the best fit from your collection.
+        </p>
       </header>
 
       <div className="picker-step-centered">

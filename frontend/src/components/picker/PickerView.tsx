@@ -231,6 +231,14 @@ function PickerView({ onViewGame }: Props) {
     setPickerSessionId(null);
   }
 
+  function clearFineTune() {
+    setYoungestPlayerAge(null);
+    setPlayStyle("any");
+    setPreferredCategories([]);
+    setPreferredMechanics([]);
+    setMode("best_match");
+  }
+
   function viewGame() {
     if (!match) return;
 
@@ -283,6 +291,7 @@ function PickerView({ onViewGame }: Props) {
           onChoosePlayers={() => setStep("player_selection")}
           onOpenTheme={() => setStep("theme")}
           onOpenMechanics={() => setStep("play_style")}
+          onClearFineTune={clearFineTune}
           onContinue={() => setStep("time")}
         />
       )}

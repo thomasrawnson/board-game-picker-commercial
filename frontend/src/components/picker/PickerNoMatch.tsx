@@ -61,15 +61,14 @@ function PickerNoMatch({
         </p>
 
         <h1>
-          No trustworthy match
+          No confident match yet
         </h1>
 
         <p className="subtitle">
-          We couldn't find a game we can
-          confidently recommend for exactly{" "}
+          Your current criteria are too restrictive for{" "}
           {playerCount} player
           {playerCount === 1 ? "" : "s"}
-          {" "}with all these choices.
+          {" "}Adjust your choices or relax a limit below.
         </p>
       </header>
 
@@ -116,7 +115,7 @@ function PickerNoMatch({
           >
             {loading
               ? "Checking…"
-              : "Remove weight limit"}
+              : "Remove complexity limit"}
           </button>
         )}
 
@@ -129,7 +128,7 @@ function PickerNoMatch({
           >
             {loading
               ? "Checking…"
-              : "Relax time and weight"}
+              : "Relax time and complexity"}
           </button>
         )}
 

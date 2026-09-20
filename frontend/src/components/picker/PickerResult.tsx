@@ -126,12 +126,14 @@ function PickerResult({
 
   const score = Math.round(match.score)
   const primaryReason =
-    match.reasons[0]
+    match.reasons.find(
+      (reason) => !/^Supports?\s+\d+\s+player/i.test(reason)
+    )
     ?? (
       match.ai_used
       && match.ai_explanation
         ? match.ai_explanation
-        : null
+        : match.reasons[0] ?? null
     )
 
   const bestAtText =
@@ -147,11 +149,16 @@ function PickerResult({
         ? `${playerText} · ${bestAtText}`
         : bestAtText
 
-  const showPrimaryReason =
-    primaryReason !== null
-    && !/^Supports?\s+\d+\s+player/i.test(
-      primaryReason
-    )
+  const additionalReasons = match.reasons
+    .filter((reason) => reason !== primaryReason)
+    .slice(0, 3)
+
+  const additionalAiReason =
+    match.ai_used
+    && match.ai_explanation
+    && match.ai_explanation !== primaryReason
+      ? match.ai_explanation
+      : null
 
 
   async function sharePick() {
@@ -295,55 +302,50 @@ function PickerResult({
             {game.name}
           </h2>
 
-          <div className="picker-result-meta">
-            {contextualPlayerText && (
-              <span>{contextualPlayerText}</span>
-            )}
-            {contextualPlayerText && timeText && <span>·</span>}
-            {timeText && <span>{timeText}</span>}
-            {(contextualPlayerText || timeText) && weightText && (
-              <span>·</span>
-            )}
-            {weightText && <span>{weightText}</span>}
-          </div>
+
         </div>
       </button>
 
+      {primaryReason && (
+        <p className="picker-primary-reason">
+          {primaryReason}
+        </p>
+      )}
 
-      {(match.reasons.length > 0
-        || (
-          match.ai_used
-          && match.ai_explanation
-        )) && (
+      <div
+        className="picker-result-meta"
+        aria-label="Game fit"
+      >
+        {contextualPlayerText && (
+          <span>{contextualPlayerText}</span>
+        )}
+        {contextualPlayerText && timeText && <span>·</span>}
+        {timeText && <span>{timeText}</span>}
+        {(contextualPlayerText || timeText) && weightText && (
+          <span>·</span>
+        )}
+        {weightText && <span>{weightText}</span>}
+      </div>
+
+      {(additionalReasons.length > 0 || additionalAiReason) && (
         <Disclosure
-          label="Why this pick?"
+          label="More reasons"
           className="picker-reason-details"
         >
           <div className="picker-reason-detail-body">
-            {showPrimaryReason && primaryReason && (
+            {additionalAiReason && (
               <p>
-                {primaryReason}
+                {additionalAiReason}
               </p>
             )}
 
-            {match.ai_used
-              && match.ai_explanation
-              && match.ai_explanation !== primaryReason
-              && (
-              <p>
-                {match.ai_explanation}
-              </p>
-            )}
-
-            {match.reasons.length > 1 && (
+            {additionalReasons.length > 0 && (
               <ul>
-                {match.reasons
-                  .slice(1, 4)
-                  .map((reason) => (
-                    <li key={reason}>
-                      {reason}
-                    </li>
-                  ))}
+                {additionalReasons.map((reason) => (
+                  <li key={reason}>
+                    {reason}
+                  </li>
+                ))}
               </ul>
             )}
           </div>

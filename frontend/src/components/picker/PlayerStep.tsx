@@ -33,6 +33,7 @@ type Props = {
   onChoosePlayers: () => void
   onOpenTheme: () => void
   onOpenMechanics: () => void
+  onClearFineTune: () => void
   onContinue: () => void
 }
 
@@ -111,16 +112,33 @@ function PlayerStep({
   onChoosePlayers,
   onOpenTheme,
   onOpenMechanics,
+  onClearFineTune,
   onContinue,
 }: Props) {
+  const activeFineTuneCount = [
+    mode !== "best_match",
+    playStyle !== "any",
+    preferredCategories.length > 0,
+    preferredMechanics.length > 0,
+    youngestPlayerAge !== null,
+  ].filter(Boolean).length
+
+  const fineTuneHint = activeFineTuneCount > 0
+    ? `${activeFineTuneCount} preference${activeFineTuneCount === 1 ? "" : "s"} applied`
+    : "Optional preferences"
+
   return (
     <section className="screen picker-step-screen player-step-screen">
       <header>
-        <h1>Who's playing?</h1>
-        <p className="subtitle">Choose your group.</p>
+        <h1>What should we play?</h1>
+        <p className="subtitle">
+          Choose players, complexity and time. We'll pick from your collection.
+        </p>
       </header>
 
       <div className="picker-step-centered">
+        <p className="picker-essential-label">Who is playing?</p>
+
         <button
           type="button"
           className="picker-navigation-card"
@@ -193,9 +211,25 @@ function PlayerStep({
 
         <Disclosure
           label="Fine-tune"
-          hint="Pick style, play style, theme, mechanics and age"
+          hint={fineTuneHint}
           className="advanced-filters picker-first-step-advanced"
         >
+          {activeFineTuneCount > 0 && (
+            <div className="fine-tune-status">
+              <span>
+                {activeFineTuneCount} preference
+                {activeFineTuneCount === 1 ? "" : "s"} applied
+              </span>
+              <button
+                type="button"
+                className="fine-tune-clear"
+                onClick={onClearFineTune}
+              >
+                Clear
+              </button>
+            </div>
+          )}
+
           <div className="advanced-pick-style">
             <span className="advanced-preference-label">Pick style</span>
             <div className="picker-mode-list compact">
