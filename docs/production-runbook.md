@@ -12,31 +12,34 @@ paid plan because free Render PostgreSQL databases do not provide recovery.
 Keep the API and database in Frankfurt. Render serves the static frontend from
 its global CDN, so the static site does not have a regional compute setting.
 
-## Foundation B verification status — 2026-09-19
+## Foundation B verification status — 2026-09-20
 
-This review used the public Git repository and the checked-in Blueprint. The
-Render dashboard required authentication, and no authenticated Render CLI,
-API token or Render connector was available. Production-only facts are marked
-**Untested** rather than inferred from `render.yaml`. No production resources
-or settings were changed.
+This review used the public Git repository, the checked-in Blueprint and the
+authenticated Render dashboard. The selected Render workspace is empty: it
+contains no services and no Blueprint instances. Production-only behavior is
+marked **Untested** rather than inferred from `render.yaml`. No production
+resources, billing details or settings were created or changed.
 
 | Item | Status | Evidence or required follow-up |
 | --- | --- | --- |
 | UX-1B on `origin/main` | **Verified** | `aa686635580ecf3bdab3704388528fa67a79289c` (`Improve request recovery, registration and responsive layouts`) is both local `HEAD` and `origin/main`. |
 | GitHub Actions for UX-1B | **Verified** | Public CI run [#44](https://github.com/thomasrawnson/board-game-picker-commercial/actions/runs/35441421844) completed successfully on `main` for `aa68663` on 2026-09-19. The workflow covers backend migrations/tests and frontend tests, lint, build and PWA validation. The full local release suite was not repeated. |
 | Blueprint resources | **Verified in repository** | `board-game-picker-web` is a static site; `board-game-picker-api` is a Frankfurt `0.5c-512mb` web service; `board-game-picker-db` is a Frankfurt PostgreSQL 16 database on `0.1c-256mb` with 1 GB storage and no public IP allow list. |
-| Existing Render resources, plans and regions | **Untested** | Sign in to Render and compare the service list with the exact names and settings below. |
-| Current Render deploy | **Untested** | Confirm both services show `Live`, their latest successful deploy is `aa686635580ecf3bdab3704388528fa67a79289c`, and the API pre-deploy log shows `alembic upgrade head` succeeded. |
-| Domains, DNS, HTTPS and URL alignment | **Untested** | No production hostnames are recorded in the repository and the dashboard was unavailable. Confirm both custom domains are verified, certificates are active and the three URL variables align as described below. |
-| Environment-variable presence | **Untested** | Confirm presence in Render without copying values. Required keys are listed below. |
+| Existing Render resources, plans and regions | **Verified absent** | The authenticated **My Workspace** overview reported that no services have been created. None of the three Blueprint resource names exists. |
+| Render Blueprint instances | **Verified absent** | The Blueprints page reported that no Blueprint instances have been created. |
+| Current Render deploy | **Not applicable** | With no services, there is no deployed commit or deployment status to inspect. The first deployment must use `aa686635580ecf3bdab3704388528fa67a79289c` or a deliberately reviewed successor on `main`. |
+| Domains, DNS, HTTPS and URL alignment | **Verified absent** | The empty workspace has no services or custom domains. No production hostnames are recorded in the repository. Configure and verify both domains after the first deployment, then confirm the three URL variables align as described below. |
+| Environment-variable presence | **Verified absent** | No services exist, so none of the required service variables is configured in Render. Values were not requested, entered or exposed. |
 | Public health and SPA routing | **Failed for unverified candidates; production untested** | Read-only requests to the unsuffixed candidates `board-game-picker-api.onrender.com/health` and `board-game-picker-web.onrender.com/` both returned HTTP 404. These hostnames are not recorded in the repository and might be unassigned, suffixed or disabled, so this does not establish a production outage. Repeat against the dashboard URLs. |
-| Production migration | **Untested** | CI proved a clean PostgreSQL 16 migration and `alembic check`; the production pre-deploy result still requires Render log evidence. |
+| Blueprint preparation | **Blocked before apply** | Render accepted the public repository URL, selected branch `main`, found the root `render.yaml` and opened the review screen. It then required payment information because the Blueprint contains paid resources. No card was added and the Blueprint was not applied. |
+| Production migration | **Untested** | CI proved a clean PostgreSQL 16 migration and `alembic check`; no production database or API exists yet, so the production pre-deploy result remains outstanding. |
 | Verification and reset email | **Untested** | Requires a verified Resend domain, production sender and two end-to-end delivery tests. |
 | Backup and recovery | **Untested** | Confirm Recovery is available, then schedule the logical export and isolated point-in-time recovery rehearsal in section 4. |
 
-The only failed checks were probes of unverified candidate hostnames. All
-production-specific items require authenticated dashboard access or confirmed
-production URLs before they can pass or fail.
+The only failed checks were probes of unverified candidate hostnames. Their
+HTTP 404 responses are consistent with the now-confirmed empty workspace.
+Production health, routing, migration, email and recovery checks cannot run
+until the reviewed Blueprint is applied in a later, explicitly authorized step.
 
 ### Exact Render dashboard comparison
 
@@ -88,16 +91,26 @@ production URLs before they can pass or fail.
 
 ### Proposed next deployment step
 
-After this proposal is reviewed, sign in to Render and perform the dashboard
-comparison above before creating anything. If the three exact resources do not
-exist, create one Blueprint from `main` using `render.yaml`, retaining the
-exact resource names. Supply the six prompted values shown in section 2, use
+The next deployment step is to add billing information to **My Workspace**,
+connect the GitHub repository provider for
+`thomasrawnson/board-game-picker-commercial`, and return to **New Blueprint
+Instance**. Use Blueprint name `shelfpick-production`, branch `main`, and the
+root `render.yaml`. Before applying, confirm the review lists exactly
+`board-game-picker-web`, `board-game-picker-api` and `board-game-picker-db`
+with the plans and Frankfurt placement specified above. Supply the six
+prompted values shown in section 2, use
 `ShelfPick <accounts@mail.<your-domain>>` for `EMAIL_FROM`, and attach
 `app.<your-domain>` to `board-game-picker-web` and `api.<your-domain>` to
-`board-game-picker-api`. If resources already exist, reconcile them in place
-with the Blueprint instead of creating duplicates.
+`board-game-picker-api` after the first successful deploy.
 
-At Render's 2026-09-19 list prices, the Blueprint adds approximately
+The public-repository preparation reached Render's review page but was not
+applied. Render warned that the Git provider is not configured and that the
+paid API and database require payment information. Connecting the GitHub
+provider before creation preserves the intended GitHub integration and
+`checksPass` deployment gate. Adding a card, connecting repository access and
+applying the Blueprint are production/account changes outside this inspection.
+
+At Render's 2026-09-20 list prices, the Blueprint adds approximately
 **$13.30/month** on a Hobby workspace: $7 for `board-game-picker-api`, $6 for
 `board-game-picker-db` compute and $0.30 for 1 GB database storage.
 `board-game-picker-web` is free. The two proposed custom domains are within the
