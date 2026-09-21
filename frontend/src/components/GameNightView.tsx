@@ -1,87 +1,215 @@
-const features = [
-  {
-    title: "Bring everyone together",
-    detail:
-      "Invite friends with a simple link, with no account required for guests.",
-  },
-  {
-    title: "Combine your collections",
-    detail:
-      "Find the right game from anything owned by the people attending.",
-  },
-  {
-    title: "Fit the exact group",
-    detail:
-      "Match player count, available time and complexity—not just the printed box range.",
-  },
-  {
-    title: "Learn what works together",
-    detail:
-      "Use the games this specific group has enjoyed and played before.",
-  },
-  {
-    title: "Choose as a group",
-    detail:
-      "Get a ranked shortlist of 3–5 games, then discuss, vote and make the final call.",
-  },
-]
+import { useState } from "react"
+
+import {
+  getGameNightRecommendations,
+  type PickerMatch,
+} from "../api/client"
+import PlayLogForm from "./collection/PlayLogForm"
+import PlayerSelectionStep from "./picker/PlayerSelectionStep"
+import TimeStep from "./picker/TimeStep"
 
 
-function GameNightView() {
+type Props = {
+  enabled: boolean
+  onBack: () => void
+  onViewGame: (bggId: number) => void
+  onUnlockPro: () => void
+}
+
+type Step = "players" | "player_selection" | "time" | "shortlist" | "reveal"
+
+
+function GameNightView({ enabled, onBack, onViewGame, onUnlockPro }: Props) {
+  const [step, setStep] = useState<Step>("players")
+  const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([])
+  const [selectedPlayerNames, setSelectedPlayerNames] = useState<string[]>([])
+  const [maxPlayTime, setMaxPlayTime] = useState<number | null>(null)
+  const [matches, setMatches] = useState<PickerMatch[]>([])
+  const [selectedMatch, setSelectedMatch] = useState<PickerMatch | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  async function findGames() {
+    setLoading(true)
+    setError("")
+
+    try {
+      const result = await getGameNightRecommendations(
+        selectedPlayerIds,
+        maxPlayTime,
+      )
+      setMatches(result)
+      setStep("shortlist")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't build this shortlist.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function startOver() {
+    setStep("players")
+    setSelectedPlayerIds([])
+    setSelectedPlayerNames([])
+    setMaxPlayTime(null)
+    setMatches([])
+    setSelectedMatch(null)
+    setError("")
+  }
+
+  if (!enabled) {
+    return (
+      <section className="screen game-night-screen game-night-locked">
+        <p className="eyebrow">Game Night</p>
+        <h1>Game Night is locked</h1>
+        <p>Your current ShelfPick access does not include this feature.</p>
+        <button type="button" className="secondary-button" onClick={onUnlockPro}>
+          Unlock ShelfPick Pro
+        </button>
+      </section>
+    )
+  }
+
+  if (step === "time") {
+    return (
+      <TimeStep
+        maxPlayTime={maxPlayTime}
+        loading={loading}
+        error={error}
+        onSelect={setMaxPlayTime}
+        onFindGame={() => { void findGames() }}
+        onBack={() => setStep("players")}
+        supportingCopy="Choose the limit for everyone at the table."
+        actionLabel="Find games"
+      />
+    )
+  }
+
+  if (step === "player_selection") {
+    return (
+      <PlayerSelectionStep
+        selectedPlayerIds={selectedPlayerIds}
+        onChange={(playerIds, playerNames) => {
+          setSelectedPlayerIds(playerIds)
+          setSelectedPlayerNames(playerNames)
+        }}
+        onBack={() => setStep("players")}
+      />
+    )
+  }
+
+  if (step === "shortlist") {
+    return (
+      <section className="screen game-night-screen">
+        <header>
+          <p className="eyebrow">Game Night</p>
+          <h1>Your shortlist</h1>
+          <p className="subtitle">Choose one game to reveal for the group.</p>
+        </header>
+
+        {matches.length === 0 ? (
+          <div className="game-night-empty">
+            <h2>No games fit yet</h2>
+            <p>Try allowing more time or changing who's playing.</p>
+            <button type="button" className="secondary-button" onClick={() => setStep("time")}>
+              Adjust time
+            </button>
+          </div>
+        ) : (
+          <ol className="game-night-shortlist">
+            {matches.map((match) => (
+              <li key={match.game.bgg_id}>
+                {match.game.thumbnail_url && <img src={match.game.thumbnail_url} alt="" />}
+                <div>
+                  <h2>{match.game.name}</h2>
+                  <p>{match.reasons[1] ?? match.reasons[0]}</p>
+                  <button type="button" className="secondary-button" onClick={() => { setSelectedMatch(match); setStep("reveal") }}>
+                    Choose this game
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+
+        <button type="button" className="ghost-button" onClick={() => setStep("players")}>
+          Change players
+        </button>
+      </section>
+    )
+  }
+
+  if (step === "reveal" && selectedMatch) {
+    return (
+      <section className="screen game-night-screen game-night-reveal">
+        <header>
+          <p className="eyebrow">Tonight's pick</p>
+          <h1>{selectedMatch.game.name}</h1>
+        </header>
+        {selectedMatch.game.image_url && (
+          <img className="game-night-cover" src={selectedMatch.game.image_url} alt={`Cover of ${selectedMatch.game.name}`} />
+        )}
+        <ul className="game-night-reasons">
+          {selectedMatch.reasons.map((reason) => <li key={reason}>{reason}</li>)}
+        </ul>
+        <PlayLogForm
+          game={selectedMatch.game}
+          initialPlayerCount={selectedPlayerIds.length}
+          onSaved={() => Promise.resolve()}
+        />
+        <button type="button" className="secondary-button" onClick={() => onViewGame(selectedMatch.game.bgg_id)}>
+          View game
+        </button>
+        <button type="button" className="secondary-button" onClick={() => setStep("shortlist")}>
+          Back to shortlist
+        </button>
+        <button type="button" className="ghost-button" onClick={startOver}>
+          Start over
+        </button>
+      </section>
+    )
+  }
+
   return (
     <section className="screen game-night-screen">
-      <header className="game-night-hero">
-        <span className="coming-soon-badge">
-          Coming soon
-        </span>
+      <button type="button" className="collection-back" onClick={onBack}>
+        ← Back to Pick
+      </button>
 
-        <p className="eyebrow">
-          Game Night
-        </p>
-
-        <h1>
-          Your whole group. One great shortlist.
-        </h1>
-
-        <p className="game-night-intro">
-          Turn everyone's games and shared history into a shortlist worth arguing about.
+      <header>
+        <p className="eyebrow">Game Night</p>
+        <h1>Who's playing?</h1>
+        <p className="subtitle">
+          Choose everyone at the table. Their exact headcount and shared history shape the shortlist.
         </p>
       </header>
 
-      <div className="game-night-preview">
-        <p className="game-night-preview-label">
-          Built for the decision before the game
-        </p>
+      <button
+        type="button"
+        className="picker-navigation-card"
+        onClick={() => setStep("player_selection")}
+      >
+        <span>
+          <strong>Choose players</strong>
+          <small>
+            {selectedPlayerNames.length > 0
+              ? selectedPlayerNames.join(", ")
+              : "Select everyone at the table"}
+          </small>
+        </span>
+        <span className="picker-navigation-chevron" aria-hidden="true">›</span>
+      </button>
 
-        <ul className="game-night-features">
-          {features.map(
-            (feature) => (
-              <li key={feature.title}>
-                <span
-                  className="game-night-check"
-                  aria-hidden="true"
-                >
-                  ✓
-                </span>
-
-                <div>
-                  <strong>
-                    {feature.title}
-                  </strong>
-
-                  <p>
-                    {feature.detail}
-                  </p>
-                </div>
-              </li>
-            ),
-          )}
-        </ul>
+      <div className="picker-step-actions">
+        <button
+          type="button"
+          className="primary-button"
+          disabled={selectedPlayerIds.length === 0}
+          onClick={() => setStep("time")}
+        >
+          Continue with {selectedPlayerIds.length || ""} {selectedPlayerIds.length === 1 ? "player" : "players"}
+        </button>
       </div>
-
-      <p className="game-night-footnote">
-        Game Night will build on Pick, so every suggestion must genuinely suit the people at the table.
-      </p>
     </section>
   )
 }

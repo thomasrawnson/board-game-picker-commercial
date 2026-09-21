@@ -1292,6 +1292,7 @@
 
 .picker-selection-row.selected {
   color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
 }
 
 .picker-selection-check {

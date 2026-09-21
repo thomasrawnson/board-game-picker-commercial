@@ -30,6 +30,7 @@ from auth.security import (
 )
 from database.connection import get_db
 from database.models import User
+from services.entitlements import entitlements_for, resolve_tier
 from auth.login_rate_limiter import (
     AUTH_REQUEST_WINDOW_SECONDS,
     LOGIN_WINDOW_SECONDS,
@@ -150,6 +151,8 @@ def user_response(
             user.email_verified_at
             is not None
         ),
+        tier=resolve_tier(user).value,
+        entitlements=[feature.value for feature in entitlements_for(user)],
     )
 
 

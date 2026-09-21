@@ -4,6 +4,8 @@ export interface AuthUser {
   display_name: string | null
   bgg_username: string | null
   email_verified: boolean
+  tier: "FREE" | "PRO"
+  entitlements: string[]
 }
 
 export interface AuthResult {

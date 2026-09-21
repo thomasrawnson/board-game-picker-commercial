@@ -93,6 +93,13 @@ class User(Base):
         nullable=True,
     )
 
+    tier: Mapped[str] = mapped_column(
+        String(16),
+        nullable=False,
+        default="FREE",
+        server_default="FREE",
+    )
+
     password_hash: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,

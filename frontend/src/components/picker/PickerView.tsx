@@ -40,6 +40,7 @@ type Props = {
 function PickerView({ onViewGame }: Props) {
   const [step, setStep] = useState<Step>("players");
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
+  const [selectedPlayerNames, setSelectedPlayerNames] = useState<string[]>([]);
   const [players, setPlayers] = useState<number | null>(null);
   const [maxPlayTime, setMaxPlayTime] = useState<number | null>(null);
   const [complexityBand, setComplexityBand] =
@@ -107,13 +108,15 @@ function PickerView({ onViewGame }: Props) {
     );
   }
 
-  function handlePlayerSelection(playerIds: number[]) {
+  function handlePlayerSelection(playerIds: number[], playerNames: string[]) {
     setSelectedPlayerIds(playerIds);
+    setSelectedPlayerNames(playerNames);
     setPlayers(playerIds.length > 0 ? playerIds.length : null);
   }
 
   function chooseGroupSize(count: number | null) {
     setSelectedPlayerIds([]);
+    setSelectedPlayerNames([]);
     setPlayers(count);
   }
 
@@ -217,6 +220,7 @@ function PickerView({ onViewGame }: Props) {
     setStep("players");
     setPlayers(null);
     setSelectedPlayerIds([]);
+    setSelectedPlayerNames([]);
     setMaxPlayTime(null);
     setComplexityBand(null);
     setYoungestPlayerAge(null);
@@ -277,6 +281,7 @@ function PickerView({ onViewGame }: Props) {
         <PlayerStep
           players={players}
           selectedPlayerIds={selectedPlayerIds}
+          selectedPlayerNames={selectedPlayerNames}
           complexityBand={complexityBand}
           preferredCategories={preferredCategories}
           preferredMechanics={preferredMechanics}
@@ -300,7 +305,6 @@ function PickerView({ onViewGame }: Props) {
         <PlayerSelectionStep
           selectedPlayerIds={selectedPlayerIds}
           onChange={handlePlayerSelection}
-          onDone={() => setStep("players")}
           onBack={() => setStep("players")}
         />
       )}

@@ -1018,6 +1018,29 @@ Promise<Player[]> {
   return response.json()
 }
 
+export async function getGameNightRecommendations(
+  playerIds: number[],
+  maxPlayTime: number | null,
+): Promise<PickerMatch[]> {
+  const params = new URLSearchParams({ limit: "5" })
+
+  playerIds.forEach((playerId) => {
+    params.append("player_ids", playerId.toString())
+  })
+  if (maxPlayTime !== null && maxPlayTime !== 0) {
+    params.set("max_play_time", maxPlayTime.toString())
+  }
+
+  const response = await apiFetch(
+    `/game-night/recommendations?${params.toString()}`,
+  )
+  if (!response.ok) {
+    throw new Error(`Game Night request failed: ${response.status}`)
+  }
+
+  return response.json()
+}
+
 export async function deletePlay(
   playId: number,
 ): Promise<void> {

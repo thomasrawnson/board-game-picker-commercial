@@ -18,8 +18,8 @@ type Props = {
   selectedPlayerIds: number[]
   onChange: (
     playerIds: number[],
+    playerNames: string[],
   ) => void
-  onDone: () => void
   onBack: () => void
 }
 
@@ -27,7 +27,6 @@ type Props = {
 function PlayerSelectionStep({
   selectedPlayerIds,
   onChange,
-  onDone,
   onBack,
 }: Props) {
   const [
@@ -96,30 +95,29 @@ function PlayerSelectionStep({
   function togglePlayer(
     playerId: number,
   ) {
-    if (
-      selectedPlayerIds.includes(
-        playerId
-      )
-    ) {
-      onChange(
-        selectedPlayerIds.filter(
-          (id) =>
-            id !== playerId
-        )
-      )
+    const nextIds = selectedPlayerIds.includes(playerId)
+      ? selectedPlayerIds.filter((id) => id !== playerId)
+      : [...selectedPlayerIds, playerId]
 
-      return
-    }
-
-    onChange([
-      ...selectedPlayerIds,
-      playerId,
-    ])
+    onChange(
+      nextIds,
+      players
+        .filter((player) => nextIds.includes(player.id))
+        .map((player) => player.name),
+    )
   }
 
 
   return (
     <section className="screen picker-selection-screen">
+      <button
+        type="button"
+        className="collection-back"
+        onClick={onBack}
+      >
+        ← Back
+      </button>
+
       <header>
         <p className="eyebrow">
           Players
@@ -233,29 +231,6 @@ function PlayerSelectionStep({
             : "players selected"}
         </span>
 
-        <button
-          type="button"
-          className="primary-button"
-          disabled={
-            selectedPlayerIds.length
-            === 0
-          }
-          onClick={
-            onDone
-          }
-        >
-          Done
-        </button>
-
-        <button
-          type="button"
-          className="ghost-button"
-          onClick={
-            onBack
-          }
-        >
-          Back
-        </button>
       </div>
     </section>
   )

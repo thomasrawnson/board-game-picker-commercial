@@ -34,6 +34,8 @@ class UserResponse(BaseModel):
     display_name: str | None
     bgg_username: str | None
     email_verified: bool
+    tier: str
+    entitlements: list[str]
 
 
 class AuthResponse(BaseModel):

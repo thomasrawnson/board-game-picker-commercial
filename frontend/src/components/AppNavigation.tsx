@@ -80,6 +80,7 @@ const items: {
 }[] = [
   { view: "picker", label: "Pick", icon: "picker" },
   { view: "collection", label: "Collection", icon: "collection" },
+  { view: "gameNight", label: "Game Night", icon: "gameNight" },
   { view: "discover", label: "Discover", icon: "discover" },
   { view: "insights", label: "Insights", icon: "insights" },
 ]

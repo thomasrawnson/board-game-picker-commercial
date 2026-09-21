@@ -338,3 +338,59 @@ def test_get_player_stats_returns_none_for_unknown_player():
 
         db.commit()
         db.close()
+
+
+def test_group_stats_require_the_exact_participant_set():
+    db = SessionLocal()
+    email = "exact-group-test@boardgamepicker.local"
+    bgg_id = 999103
+
+    try:
+        user = User(email=email, display_name="Exact Group Test")
+        game = DatabaseGame(bgg_id=bgg_id, name="Exact Group Game", owned=True)
+        db.add_all([user, game])
+        db.flush()
+        db.add(UserGame(user_id=user.id, game_id=game.id))
+        db.commit()
+
+        repository = PlayRepository(db, user_id=user.id)
+        repository.create(
+            bgg_id=bgg_id,
+            played_at=datetime(2026, 9, 1, tzinfo=timezone.utc),
+            duration_minutes=45,
+            participants=[
+                {"name": "Alex", "score": None, "is_winner": False},
+                {"name": "Tom", "score": None, "is_winner": False},
+            ],
+        )
+        repository.create(
+            bgg_id=bgg_id,
+            played_at=datetime(2026, 9, 2, tzinfo=timezone.utc),
+            duration_minutes=45,
+            participants=[
+                {"name": "Alex", "score": None, "is_winner": False},
+                {"name": "Tom", "score": None, "is_winner": False},
+                {"name": "Chris", "score": None, "is_winner": False},
+            ],
+        )
+
+        player_ids = {
+            player["name"]: player["id"]
+            for player in repository.get_players()
+        }
+        stats = repository.get_group_game_play_stats(
+            [player_ids["Alex"], player_ids["Tom"]]
+        )
+
+        assert stats[bgg_id].play_count == 1
+        assert stats[bgg_id].last_played_at.date().isoformat() == "2026-09-01"
+    finally:
+        user = db.query(User).filter(User.email == email).first()
+        if user is not None:
+            db.query(DatabasePlay).filter(DatabasePlay.user_id == user.id).delete(synchronize_session=False)
+            db.query(Player).filter(Player.user_id == user.id).delete(synchronize_session=False)
+            db.query(UserGame).filter(UserGame.user_id == user.id).delete(synchronize_session=False)
+            db.delete(user)
+        db.query(DatabaseGame).filter(DatabaseGame.bgg_id == bgg_id).delete(synchronize_session=False)
+        db.commit()
+        db.close()

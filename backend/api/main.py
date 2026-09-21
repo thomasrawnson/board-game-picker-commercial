@@ -16,6 +16,7 @@ from api.routers import (
     collection,
     discover,
     games,
+    game_night,
     health,
     imports,
     insights,
@@ -87,6 +88,10 @@ app.include_router(
 
 app.include_router(
     picker.router
+)
+
+app.include_router(
+    game_night.router
 )
 
 app.include_router(

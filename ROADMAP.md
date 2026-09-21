@@ -23,7 +23,7 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Slice 1 — Core Picker improvements**
+**Slice 1 — Game Night MVP + entitlement scaffolding**
 
 ## Status legend
 
@@ -34,20 +34,19 @@ product work below is the current engineering priority.
 
 ## Delivery order
 
-1. Core Picker improvements
+1. Game Night MVP + entitlement scaffolding
 2. Discover v3
 3. Onboarding + Player Profiles
 4. Settings + Pro foundations
-5. Game Night MVP
-6. Private Beta
-7. Public launch
-8. Live Plays
-9. Challenges
-10. Advanced Pro intelligence
+5. Private Beta readiness
+6. Public launch
+7. Live Plays
+8. Challenges
+9. Advanced Pro intelligence
 
-## Slice 1 — Core Picker improvements
+## Foundation — Core Picker improvements
 
-**Status:** IN PROGRESS
+**Status:** COMPLETE
 
 ### Objective
 
@@ -233,6 +232,10 @@ group features.
 
 **Status:** NOT STARTED
 
+The shared FREE/PRO tier resolution, frontend-facing entitlement list and
+central feature-capability checks are complete. Pricing, paywalls, subscription
+management and the full Settings presentation remain incomplete.
+
 ### Objective
 
 Create a structured, production-quality settings experience and clearly
@@ -307,9 +310,9 @@ treated separately from arbitrary Pro gating.
   the release roadmap and runbook.
 - A separate decision before any real billing or subscription implementation.
 
-## Slice 5 — Group Game Night MVP
+## Slice 1 — Game Night MVP + entitlement scaffolding
 
-**Status:** NOT STARTED
+**Status:** COMPLETE
 
 ### Objective
 
@@ -331,6 +334,9 @@ Private Beta without overbuilding it.
 - Allow selection and reveal of the final game.
 - Reuse the Core Picker recommendation logic rather than creating a second
   engine.
+- Gate access through the central `game_night_basic` entitlement while keeping
+  that capability available to FREE beta accounts.
+- Fall back to the host's collection until attendee-linked ownership exists.
 
 ### Explicitly out of scope
 
@@ -386,7 +392,7 @@ In addition:
 - An agreed minimal approach for linked collections that preserves user data
   isolation and existing API boundaries.
 
-## Slice 6 — Private Beta
+## Slice 5 — Private Beta readiness
 
 **Status:** NOT STARTED
 

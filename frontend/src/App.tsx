@@ -511,7 +511,17 @@ function App() {
               }
             />
 
-            <Route path={APP_PATHS.gameNight} element={<GameNightView />} />
+            <Route
+              path={APP_PATHS.gameNight}
+              element={
+                <GameNightView
+                  enabled={user.entitlements.includes("game_night_basic")}
+                  onBack={() => navigate(APP_PATHS.picker)}
+                  onViewGame={openOwnedCollectionGame}
+                  onUnlockPro={() => navigate(APP_PATHS.setup)}
+                />
+              }
+            />
 
             <Route
               path={APP_PATHS.rankings}

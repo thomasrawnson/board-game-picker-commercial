@@ -5,6 +5,8 @@ type Props = {
   onSelect: (value: number) => void
   onFindGame: () => void
   onBack: () => void
+  supportingCopy?: string
+  actionLabel?: string
 }
 
 const timeOptions = [
@@ -23,13 +25,15 @@ function TimeStep({
   onSelect,
   onFindGame,
   onBack,
+  supportingCopy = "One last choice, then we'll find the best fit from your collection.",
+  actionLabel = "Find a game",
 }: Props) {
   return (
     <section className="screen picker-step-screen time-step-screen">
       <header>
         <h1>How much time is available?</h1>
         <p className="subtitle">
-          One last choice, then we'll find the best fit from your collection.
+          {supportingCopy}
         </p>
       </header>
 
@@ -61,7 +65,7 @@ function TimeStep({
             disabled={maxPlayTime === null || loading}
             onClick={onFindGame}
           >
-            {loading ? "Searching the shelf..." : "Find a game"}
+            {loading ? "Searching the shelf..." : actionLabel}
           </button>
 
           <button

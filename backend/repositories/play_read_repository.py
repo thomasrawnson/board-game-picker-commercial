@@ -322,6 +322,17 @@ class PlayReadRepository:
             )
         )
 
+        participant_count = (
+            self.db.query(
+                func.count(PlayParticipant.id)
+            )
+            .filter(
+                PlayParticipant.play_id == DatabasePlay.id
+            )
+            .correlate(DatabasePlay)
+            .scalar_subquery()
+        )
+
         rows = (
             self.db.query(
                 DatabaseGame.bgg_id,
@@ -351,6 +362,8 @@ class PlayReadRepository:
             .filter(
                 DatabasePlay.user_id
                 == self.user_id,
+                participant_count
+                == len(unique_player_ids),
                 PlayParticipant.player_id.in_(
                     unique_player_ids
                 ),

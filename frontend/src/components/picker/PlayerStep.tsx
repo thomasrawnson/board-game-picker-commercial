@@ -14,6 +14,7 @@ import Disclosure
 type Props = {
   players: number | null
   selectedPlayerIds: number[]
+  selectedPlayerNames: string[]
   complexityBand: PickerComplexityBand | null
   preferredCategories: string[]
   preferredMechanics: string[]
@@ -98,6 +99,7 @@ function selectionSummary(values: string[]) {
 function PlayerStep({
   players,
   selectedPlayerIds,
+  selectedPlayerNames,
   complexityBand,
   preferredCategories,
   preferredMechanics,
@@ -148,7 +150,7 @@ function PlayerStep({
             <strong>Choose specific players</strong>
             <small>
               {selectedPlayerIds.length > 0
-                ? `${selectedPlayerIds.length} player${selectedPlayerIds.length === 1 ? "" : "s"} selected`
+                ? selectedPlayerNames.join(", ")
                 : "Use known player preferences and play history"}
             </small>
           </span>
