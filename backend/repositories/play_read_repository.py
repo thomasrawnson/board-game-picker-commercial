@@ -12,6 +12,7 @@ from database.models import (
 from database.models import (
     PlayParticipant,
     Player,
+    User,
     UserGame,
 )
 from models.game_play_stats import GamePlayStats
@@ -24,6 +25,8 @@ class PlayReadRepository:
                 "typical_player_count": None,
                 "typical_play_time": None,
             }
+
+        user = self.db.get(User, self.user_id)
 
         rows = (
             self.db.query(
@@ -54,9 +57,13 @@ class PlayReadRepository:
             )
 
         return {
-            "typical_player_count": typical_player_count,
+            "typical_player_count": (
+                user.preferred_player_count if user and user.preferred_player_count is not None
+                else typical_player_count
+            ),
             "typical_play_time": (
-                round(median(durations)) if durations else None
+                user.preferred_play_time if user and user.preferred_play_time is not None
+                else (round(median(durations)) if durations else None)
             ),
         }
 
@@ -482,6 +489,7 @@ class PlayReadRepository:
             {
                 "id": player.id,
                 "name": player.name,
+                "avatar_key": player.avatar_key,
             }
             for player in rows
         ]

@@ -1,534 +1,165 @@
-import {
-  useState,
-} from "react"
-
-import {
-  completeOnboarding,
-  importBGStatsPlays,
-  syncBGGCollection,
-  type BGStatsImportResult,
-  type CollectionSyncResult,
-} from "../api/client"
+import { useEffect, useRef, useState } from "react"
+import { addGameToCollection, completeOnboarding, searchBGGGames, syncBGGCollection, type BGGSearchResult } from "../api/client"
+import type { AuthUser } from "../auth"
 import BrandLogo from "./ui/BrandLogo"
+import PlayerAvatar from "./ui/PlayerAvatar"
 
+type Props = { displayName: string | null; onComplete: (user: AuthUser) => void }
+const counts = [1, 2, 3, 4, 5, 6]
+const times = [30, 60, 90, 120, 0]
+const avatars = ["forest", "gold", "clay"] as const
 
-type OnboardingStep =
-  | "collection"
-  | "history"
-  | "complete"
+function OnboardingView({ displayName, onComplete }: Props) {
+  const screenRef = useRef<HTMLElement>(null)
+  const [step, setStep] = useState(0)
+  const [username, setUsername] = useState("")
+  const [syncing, setSyncing] = useState(false)
+  const [query, setQuery] = useState("")
+  const [results, setResults] = useState<BGGSearchResult[]>([])
+  const [searched, setSearched] = useState(false)
+  const [searching, setSearching] = useState(false)
+  const [addingId, setAddingId] = useState<number | null>(null)
+  const [added, setAdded] = useState<number[]>([])
+  const [playerCount, setPlayerCount] = useState<number | null>(null)
+  const [playTime, setPlayTime] = useState<number | null>(null)
+  const [name, setName] = useState(displayName ?? "")
+  const [avatar, setAvatar] = useState<(typeof avatars)[number]>("forest")
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState("")
 
+  useEffect(() => {
+    screenRef.current?.scrollTo(0, 0)
+    screenRef.current?.closest(".phone")?.scrollTo(0, 0)
+    window.scrollTo(0, 0)
+  }, [step])
 
-type Props = {
-  displayName: string | null
-  onComplete: (
-    username: string,
-  ) => void
+  async function importShelf() {
+    if (!username.trim()) return
+    setSyncing(true); setError("")
+    try {
+      await syncBGGCollection(username.trim())
+      setStep(2)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not import your shelf.")
+    } finally { setSyncing(false) }
+  }
+  async function searchGames() {
+    if (!query.trim()) return
+    setSearching(true); setError("")
+    try { setResults(await searchBGGGames(query.trim())); setSearched(true) }
+    catch (err) { setError(err instanceof Error ? err.message : "Could not search games.") }
+    finally { setSearching(false) }
+  }
+  async function addGame(id: number) {
+    setAddingId(id); setError("")
+    try { await addGameToCollection(id); setAdded((current) => [...current, id]) }
+    catch (err) { setError(err instanceof Error ? err.message : "Could not add this game.") }
+    finally { setAddingId(null) }
+  }
+  async function finish() {
+    if (!name.trim()) { setError("Enter a player name to continue."); return }
+    setBusy(true); setError("")
+    try {
+      onComplete(await completeOnboarding({
+        player_name: name.trim(), avatar_key: avatar,
+        preferred_player_count: playerCount, preferred_play_time: playTime,
+      }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not finish setup.")
+    } finally { setBusy(false) }
+  }
+
+  return <section className="onboarding-screen" ref={screenRef}>
+    <header className="onboarding-header">
+      <BrandLogo />
+      <p className="eyebrow">Welcome to ShelfPick</p>
+      <h1>{["Spend less time choosing. Spend more time playing.", "Build your shelf",
+        "How do you usually play?", "Your player identity"][step]}</h1>
+      <p className="subtitle">{[
+        "Find a game that fits your collection and your table.",
+        "Bring in your games now, or do it later.",
+        "These become starting choices in Pick. Change them anytime.",
+        "A simple identity for Pick, Plays and Game Night.",
+      ][step]}</p>
+    </header>
+    <p className="onboarding-step-label">Step {step + 1} of 4</p>
+    <div className="onboarding-progress" aria-label={"Step " + (step + 1) + " of 4"}>
+      {[0, 1, 2, 3].map((index) => <span key={index}
+        className={index === step ? "active" : index < step ? "complete" : ""}>{index + 1}</span>)}
+    </div>
+    {step === 0 && <div className="onboarding-card">
+      <h2>Let's get your shelf ready</h2>
+      <p>Four quick steps, then straight to Pick.</p>
+      <button type="button" className="primary-button" onClick={() => setStep(1)}>Get started</button>
+    </div>}
+    {step === 1 && <div className="onboarding-card">
+      <h2>Import from BGG</h2>
+      <label className="setup-label" htmlFor="onboarding-bgg">BoardGameGeek username</label>
+      <input id="onboarding-bgg" className="setup-input" value={username}
+        autoCapitalize="none" autoCorrect="off" placeholder="Your BGG username"
+        onChange={(event) => setUsername(event.target.value)} />
+      <button type="button" className="primary-button setup-button"
+        disabled={syncing || !username.trim()} onClick={() => void importShelf()}>
+        {syncing ? "Importing..." : "Import from BGG"}</button>
+      <div className="onboarding-divider">or add games manually</div>
+      <form onSubmit={(event) => { event.preventDefault(); void searchGames() }}>
+        <label className="setup-label" htmlFor="onboarding-game">Game name</label>
+        <div className="onboarding-search-row">
+          <input id="onboarding-game" className="setup-input" value={query}
+            onChange={(event) => setQuery(event.target.value)} placeholder="e.g. Catan" />
+          <button type="submit" className="secondary-button" disabled={searching || !query.trim()}>
+            {searching ? "Searching..." : "Search"}</button>
+        </div>
+      </form>
+      {results.length > 0 && <ul className="onboarding-results">
+        {results.map((game) => <li key={game.bgg_id}><span>{game.name}</span>
+          <button type="button" className="secondary-button"
+            disabled={game.owned || added.includes(game.bgg_id) || addingId === game.bgg_id}
+            onClick={() => void addGame(game.bgg_id)}>
+            {game.owned || added.includes(game.bgg_id) ? "Added" : "Add"}</button>
+        </li>)}
+      </ul>}
+      {searched && results.length === 0 && <p role="status">No games found. Try a different title.</p>}
+      {added.length > 0 && <p role="status">{added.length} game{added.length === 1 ? "" : "s"} added.</p>}
+      <button type="button" className="secondary-button onboarding-next" onClick={() => { setError(""); setStep(2) }}>Continue</button>
+      <button type="button" className="onboarding-skip" onClick={() => { setError(""); setStep(2) }}>Skip for now</button>
+    </div>}
+    {step === 2 && <div className="onboarding-card">
+      <h2>Your usual table</h2>
+      <p>Choose either, both, or skip. These are defaults, not restrictions.</p>
+      <fieldset className="onboarding-fieldset"><legend>Typical player count</legend>
+        <div className="onboarding-choices">{counts.map((count) => <button key={count} type="button"
+          className={playerCount === count ? "onboarding-choice selected" : "onboarding-choice"}
+          aria-pressed={playerCount === count} onClick={() => setPlayerCount(count)}>
+          {count === 6 ? "6+" : count}</button>)}</div>
+      </fieldset>
+      <fieldset className="onboarding-fieldset"><legend>Typical play time</legend>
+        <div className="onboarding-choices">{times.map((value) => <button key={value} type="button"
+          className={playTime === value ? "onboarding-choice selected" : "onboarding-choice"}
+          aria-pressed={playTime === value} onClick={() => setPlayTime(value)}>
+          {value === 0 ? "Any / varies" : value + "m"}</button>)}</div>
+      </fieldset>
+      <button type="button" className="primary-button onboarding-next" onClick={() => { setError(""); setStep(3) }}>Continue</button>
+      <button type="button" className="onboarding-skip" onClick={() => { setError(""); setStep(3) }}>Skip preferences</button>
+    </div>}
+    {step === 3 && <div className="onboarding-card">
+      <h2>How should we show you?</h2>
+      <label className="setup-label" htmlFor="onboarding-name">Player name</label>
+      <input id="onboarding-name" className="setup-input" maxLength={100} value={name}
+        onChange={(event) => setName(event.target.value)} />
+      <fieldset className="onboarding-fieldset"><legend>Avatar</legend>
+        <div className="onboarding-avatars">{avatars.map((choice) => <button key={choice} type="button"
+          aria-label={choice + " avatar"} aria-pressed={avatar === choice}
+          className={avatar === choice ? "onboarding-avatar-choice selected" : "onboarding-avatar-choice"}
+          onClick={() => setAvatar(choice)}>
+          <PlayerAvatar name={name || "You"} variant={choice} /></button>)}</div>
+      </fieldset>
+      <button type="button" className="primary-button onboarding-next" disabled={busy}
+        onClick={() => void finish()}>{busy ? "Finishing..." : "Start picking"}</button>
+    </div>}
+    {error && <p className="error-message" role="alert">{error}</p>}
+    {step > 0 && <button type="button" className="onboarding-skip" disabled={busy || syncing}
+      onClick={() => { setError(""); setStep(step - 1) }}>Back</button>}
+  </section>
 }
-
-
-function OnboardingView({
-  displayName,
-  onComplete,
-}: Props) {
-  const [
-    step,
-    setStep,
-  ] = useState<OnboardingStep>(
-    "collection",
-  )
-
-  const [
-    username,
-    setUsername,
-  ] = useState("")
-
-  const [
-    syncing,
-    setSyncing,
-  ] = useState(false)
-
-  const [
-    syncError,
-    setSyncError,
-  ] = useState("")
-
-  const [
-    syncResult,
-    setSyncResult,
-  ] = useState<
-    CollectionSyncResult | null
-  >(
-    null,
-  )
-
-  const [
-    file,
-    setFile,
-  ] = useState<File | null>(
-    null,
-  )
-
-  const [
-    importing,
-    setImporting,
-  ] = useState(false)
-
-  const [
-    importError,
-    setImportError,
-  ] = useState("")
-
-  const [
-    importResult,
-    setImportResult,
-  ] = useState<
-    BGStatsImportResult | null
-  >(
-    null,
-  )
-
-  const [
-    finishing,
-    setFinishing,
-  ] = useState(false)
-
-
-  async function handleSync() {
-    const cleanedUsername =
-      username.trim()
-
-    if (!cleanedUsername) {
-      return
-    }
-
-    setSyncing(true)
-    setSyncError("")
-
-    try {
-      const result =
-        await syncBGGCollection(
-          cleanedUsername,
-        )
-
-      setSyncResult(
-        result,
-      )
-
-      setStep(
-        "history",
-      )
-    } catch (err) {
-      console.error(err)
-
-      setSyncError(
-        err instanceof Error
-          ? err.message
-          : "Couldn't sync that collection.",
-      )
-    } finally {
-      setSyncing(false)
-    }
-  }
-
-
-  async function handleImport() {
-    if (!file) {
-      return
-    }
-
-    setImporting(true)
-    setImportError("")
-
-    try {
-      const result =
-        await importBGStatsPlays(
-          file,
-        )
-
-      setImportResult(
-        result,
-      )
-
-      setStep(
-        "complete",
-      )
-    } catch (err) {
-      console.error(err)
-
-      setImportError(
-        err instanceof Error
-          ? err.message
-          : "Couldn't import that file.",
-      )
-    } finally {
-      setImporting(false)
-    }
-  }
-
-
-  function skipCollection() {
-    setUsername("")
-    setSyncResult(null)
-    setSyncError("")
-
-    setStep(
-      "history",
-    )
-  }
-
-
-  function skipHistory() {
-    setImportResult(null)
-    setImportError("")
-
-    setStep(
-      "complete",
-    )
-  }
-
-
-  async function finishOnboarding() {
-    const cleanedUsername =
-      username.trim()
-
-    setFinishing(true)
-    setImportError("")
-
-    try {
-      if (!cleanedUsername) {
-        await completeOnboarding()
-      }
-
-      onComplete(
-        cleanedUsername,
-      )
-    } catch (err) {
-      console.error(err)
-
-      setImportError(
-        err instanceof Error
-          ? err.message
-          : "Couldn't finish setup.",
-      )
-    } finally {
-      setFinishing(false)
-    }
-  }
-
-
-  const hasCollection =
-    syncResult !== null
-
-
-  return (
-    <section className="onboarding-screen">
-      <header className="onboarding-header">
-        <BrandLogo />
-
-        <h1>
-          {displayName
-            ? `Welcome, ${displayName}`
-            : "Welcome"}
-        </h1>
-
-        <p className="subtitle">
-          Bring in your games and we'll
-          help decide what hits the table.
-        </p>
-      </header>
-
-
-      <div className="onboarding-progress">
-        <span
-          className={
-            step === "collection"
-              ? "active"
-              : "complete"
-          }
-        >
-          1
-        </span>
-
-        <div />
-
-        <span
-          className={
-            step === "history"
-              ? "active"
-              : step === "complete"
-                ? "complete"
-                : ""
-          }
-        >
-          2
-        </span>
-
-        <div />
-
-        <span
-          className={
-            step === "complete"
-              ? "active"
-              : ""
-          }
-        >
-          3
-        </span>
-      </div>
-
-
-      {step === "collection" && (
-        <div className="onboarding-card">
-          <p className="insight-label">
-            Step 1
-          </p>
-
-          <h2>
-            Add your collection
-          </h2>
-
-          <p>
-            Enter your BoardGameGeek
-            username and we'll import
-            the games you own.
-          </p>
-
-          <label
-            className="setup-label"
-            htmlFor="onboarding-bgg"
-          >
-            BoardGameGeek username
-          </label>
-
-          <input
-            id="onboarding-bgg"
-            className="setup-input"
-            type="text"
-            value={username}
-            autoCapitalize="none"
-            autoCorrect="off"
-            placeholder="e.g. NorthPenguin"
-            onChange={(event) =>
-              setUsername(
-                event.target.value,
-              )
-            }
-          />
-
-          <button
-            type="button"
-            className="primary-button setup-button"
-            disabled={
-              syncing
-              || username.trim().length === 0
-            }
-            onClick={
-              handleSync
-            }
-          >
-            {syncing
-              ? "Importing collection..."
-              : "Import collection"}
-          </button>
-
-          <button
-            type="button"
-            className="onboarding-skip"
-            disabled={
-              syncing
-            }
-            onClick={
-              skipCollection
-            }
-          >
-            Skip for now
-          </button>
-
-          {syncError && (
-            <p className="error-message">
-              {syncError}
-            </p>
-          )}
-        </div>
-      )}
-
-
-      {step === "history" && (
-        <div className="onboarding-card">
-          <p className="insight-label">
-            Step 2
-          </p>
-
-          <h2>
-            Add your play history
-          </h2>
-
-          {syncResult && (
-            <div className="setup-success">
-              <strong>
-                Collection imported
-              </strong>
-
-              <span>
-                {
-                  syncResult
-                    .games_synced
-                }{" "}
-                games ready to pick
-                from.
-              </span>
-            </div>
-          )}
-
-          <p>
-            If you use BG Stats, import
-            your JSON export to make
-            recommendations and insights
-            more personal.
-          </p>
-
-          <label
-            className="file-picker"
-            htmlFor="onboarding-bgstats"
-          >
-            <strong>
-              {file
-                ? file.name
-                : "Choose BG Stats JSON"}
-            </strong>
-
-            <span>
-              {file
-                ? "Ready to import"
-                : "Optional"}
-            </span>
-          </label>
-
-          <input
-            id="onboarding-bgstats"
-            className="file-input"
-            type="file"
-            accept=".json,application/json"
-            onChange={(event) =>
-              setFile(
-                event.target.files?.[0]
-                ?? null,
-              )
-            }
-          />
-
-          <button
-            type="button"
-            className="primary-button setup-button"
-            disabled={
-              importing
-              || file === null
-            }
-            onClick={
-              handleImport
-            }
-          >
-            {importing
-              ? "Importing history..."
-              : "Import play history"}
-          </button>
-
-          <button
-            type="button"
-            className="onboarding-skip"
-            disabled={
-              importing
-            }
-            onClick={
-              skipHistory
-            }
-          >
-            Skip for now
-          </button>
-
-          {importError && (
-            <p className="error-message">
-              {importError}
-            </p>
-          )}
-        </div>
-      )}
-
-
-      {step === "complete" && (
-        <div className="onboarding-card onboarding-complete">
-          <div className="onboarding-ready">
-            ✓
-          </div>
-
-          <p className="insight-label">
-            You're ready
-          </p>
-
-          <h2>
-            {hasCollection
-              ? "Time to pick a game"
-              : "Let's add some games"}
-          </h2>
-
-          {syncResult && (
-            <p>
-              {
-                syncResult
-                  .games_synced
-              }{" "}
-              games are waiting on your
-              shelf.
-            </p>
-          )}
-
-          {importResult && (
-            <p>
-              {
-                importResult
-                  .imported
-              }{" "}
-              historical plays were
-              added too.
-            </p>
-          )}
-
-          {!syncResult
-            && !importResult && (
-            <p>
-              You can add your collection
-              and play history later
-              from Setup.
-            </p>
-          )}
-
-          {importError && (
-            <p className="error-message">
-              {importError}
-            </p>
-          )}
-
-          <button
-            type="button"
-            className="primary-button setup-button"
-            disabled={
-              finishing
-            }
-            onClick={
-              finishOnboarding
-            }
-          >
-            {finishing
-              ? "Finishing..."
-              : hasCollection
-                ? "Start picking"
-                : "Add my first game"}
-          </button>
-        </div>
-      )}
-    </section>
-  )
-}
-
-
 export default OnboardingView

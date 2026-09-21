@@ -93,6 +93,19 @@ class User(Base):
         nullable=True,
     )
 
+    onboarding_completed: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false",
+    )
+    preferred_player_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    preferred_play_time: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    profile_player_id: Mapped[int | None] = mapped_column(
+        ForeignKey(
+            "players.id", ondelete="SET NULL", use_alter=True,
+            name="fk_users_profile_player_id",
+        ), nullable=True,
+    )
+    profile_player = relationship("Player", foreign_keys=[profile_player_id], post_update=True)
+
     tier: Mapped[str] = mapped_column(
         String(16),
         nullable=False,
@@ -135,6 +148,7 @@ class User(Base):
         "Player",
         back_populates="user",
         cascade="all, delete-orphan",
+        foreign_keys="Player.user_id",
     )
 
     picker_sessions = relationship(
@@ -457,6 +471,10 @@ class Player(Base):
         nullable=False,
     )
 
+    avatar_key: Mapped[str] = mapped_column(
+        String(16), nullable=False, default="forest", server_default="forest",
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
@@ -466,6 +484,7 @@ class Player(Base):
     user = relationship(
         "User",
         back_populates="players",
+        foreign_keys=[user_id],
     )
 
     participants = relationship(

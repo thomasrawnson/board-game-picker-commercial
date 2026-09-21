@@ -229,6 +229,7 @@ export interface CollectionGameStats {
 export interface Player {
   id: number
   name: string
+  avatar_key: "forest" | "gold" | "clay"
 }
 
 export interface PlayerStatsGame {
@@ -1243,13 +1244,22 @@ export async function addGameToCollection(
   return response.json()
 }
 
-export async function completeOnboarding():
+export type ProfileChanges = {
+  player_name?: string
+  avatar_key?: "forest" | "gold" | "clay"
+  preferred_player_count?: number | null
+  preferred_play_time?: number | null
+}
+
+export async function completeOnboarding(changes: ProfileChanges = {}):
 Promise<AuthUser> {
   const response =
     await apiFetch(
       "/auth/onboarding/complete",
       {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(changes),
       },
     )
 
@@ -1262,6 +1272,16 @@ Promise<AuthUser> {
     )
   }
 
+  return response.json()
+}
+
+export async function saveProfile(changes: ProfileChanges): Promise<AuthUser> {
+  const response = await apiFetch("/auth/profile", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(changes),
+  })
+  if (!response.ok) throw new Error(await readError(response, "Could not save profile."))
   return response.json()
 }
 

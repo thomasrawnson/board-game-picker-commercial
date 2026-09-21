@@ -41,6 +41,11 @@ def test_frontend_user_response_uses_the_same_entitlement_rules():
         bgg_username="free-user",
         email_verified_at=None,
         tier="FREE",
+        onboarding_completed=True,
+        preferred_player_count=None,
+        preferred_play_time=None,
+        profile_player_id=None,
+        profile_player=None,
     )
 
     response = user_response(user)

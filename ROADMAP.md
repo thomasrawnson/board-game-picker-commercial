@@ -23,7 +23,7 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Slice 3 — Onboarding + Player Profiles**
+**Slice 4 — Settings + Pro foundations**
 
 ## Status legend
 
@@ -176,7 +176,7 @@ Turn Discover into a stronger acquisition and retention feature.
 
 ## Slice 3 — Onboarding + Player Profiles
 
-**Status:** NOT STARTED
+**Status:** COMPLETE
 
 ### Objective
 
@@ -237,6 +237,14 @@ group features.
 - A documented distinction between the authenticated user's profile and the
   reusable participant identities already attached to plays.
 - Existing avatar-capable navigation and settings patterns from `DESIGN.md`.
+
+### Implementation notes
+
+- New accounts complete a four-step welcome, shelf, usual-play and identity flow, then enter Pick. BGG sync and manual collection search/add reuse the existing endpoints; BG Stats import remains available in Setup.
+- `users.onboarding_completed` is the first-run gate. The additive migration marks all accounts present at upgrade as completed, so established users are not forced through setup. New accounts begin incomplete and can safely skip shelf and preferences.
+- `users.preferred_player_count` and `users.preferred_play_time` are the single saved preference source. Pick uses both as editable defaults, Discover For You reads both, and Game Night uses the time default while its headcount continues to come from selected players. `0` means no time limit. Complexity remains a per-session Pick choice.
+- The signed-in user links explicitly to a `Player` row through `users.profile_player_id`. Matching names are not silently merged with historical participants; existing accounts without a link retain a name/initials fallback and can create their linked identity in Profile. `players.avatar_key` uses three token-based initials treatments, with no image hosting.
+- Profile editing lives within the existing Setup route. The broader Settings and Pro foundations work remains Slice 4, followed by Private Beta readiness in Slice 5.
 
 ## Slice 4 — Settings + Pro foundations
 

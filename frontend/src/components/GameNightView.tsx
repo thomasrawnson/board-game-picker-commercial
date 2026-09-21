@@ -11,6 +11,7 @@ import TimeStep from "./picker/TimeStep"
 
 type Props = {
   enabled: boolean
+  defaultTime?: number | null
   onBack: () => void
   onViewGame: (bggId: number) => void
   onUnlockPro: () => void
@@ -19,11 +20,11 @@ type Props = {
 type Step = "players" | "player_selection" | "time" | "shortlist" | "reveal"
 
 
-function GameNightView({ enabled, onBack, onViewGame, onUnlockPro }: Props) {
+function GameNightView({ enabled, defaultTime = null, onBack, onViewGame, onUnlockPro }: Props) {
   const [step, setStep] = useState<Step>("players")
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([])
   const [selectedPlayerNames, setSelectedPlayerNames] = useState<string[]>([])
-  const [maxPlayTime, setMaxPlayTime] = useState<number | null>(null)
+  const [maxPlayTime, setMaxPlayTime] = useState<number | null>(defaultTime)
   const [matches, setMatches] = useState<PickerMatch[]>([])
   const [selectedMatch, setSelectedMatch] = useState<PickerMatch | null>(null)
   const [loading, setLoading] = useState(false)
@@ -51,7 +52,7 @@ function GameNightView({ enabled, onBack, onViewGame, onUnlockPro }: Props) {
     setStep("players")
     setSelectedPlayerIds([])
     setSelectedPlayerNames([])
-    setMaxPlayTime(null)
+    setMaxPlayTime(defaultTime)
     setMatches([])
     setSelectedMatch(null)
     setError("")

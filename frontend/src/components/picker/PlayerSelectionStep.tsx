@@ -10,6 +10,8 @@ import {
   type Player,
 } from "../../api/client"
 
+import PlayerAvatar from "../ui/PlayerAvatar"
+
 import LoadingMessage
   from "../ui/LoadingMessage"
 
@@ -194,7 +196,8 @@ function PlayerSelectionStep({
                     )
                   }
                 >
-                  <span>
+                  <span className="picker-selection-person">
+                    <PlayerAvatar name={player.name} variant={player.avatar_key} />
                     {player.name}
                   </span>
 

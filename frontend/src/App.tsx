@@ -40,6 +40,8 @@ import GameNightView from "./components/GameNightView";
 import OnboardingView from "./components/OnboardingView";
 
 import SetupView from "./components/SetupView";
+import ProfileSettings from "./components/ProfileSettings";
+import PlayerAvatar from "./components/ui/PlayerAvatar";
 
 import AppNavigation, { type AppView } from "./components/AppNavigation";
 
@@ -75,31 +77,22 @@ type CollectionRouteProps = {
   scrollPositionsRef: React.RefObject<CollectionScrollPositions>;
 };
 
-function SettingsIcon() {
-  return (
-    <svg className="settings-icon" viewBox="0 0 24 24" aria-hidden="true"
-      fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
-      <path d="m9 3-.6 2.2-1.8 1L4.4 5.6l-2 3.4L4 10.6v2.8L2.4 15l2 3.4 2.2-.6 1.8 1L9 21h4l.6-2.2 1.8-1 2.2.6 2-3.4-1.6-1.6v-2.8L19.6 9l-2-3.4-2.2.6-1.8-1L13 3Z" />
-      <circle cx="11" cy="12" r="3" />
-    </svg>
-  );
-}
-
 type AppHeaderProps = {
   onOpenSettings: () => void;
+  user: AuthUser;
 };
 
-function AppHeader({ onOpenSettings }: AppHeaderProps) {
+function AppHeader({ onOpenSettings, user }: AppHeaderProps) {
   return (
     <header className="app-top-bar">
       <button
         type="button"
         className="dice-menu-button"
         onClick={onOpenSettings}
-        aria-label="Open settings"
-        title="Settings"
+        aria-label={"Open profile and settings for " + user.player_name}
+        title="Profile and settings"
       >
-        <SettingsIcon />
+        <PlayerAvatar name={user.player_name} variant={user.avatar_key} />
       </button>
 
     </header>
@@ -358,7 +351,7 @@ function App() {
     resetCollectionUiState();
     setUser(nextUser);
 
-    if (nextUser.bgg_username === null) {
+    if (!nextUser.onboarding_completed) {
       navigate(APP_PATHS.onboarding, {
         replace: true,
         state: intendedRoute ? { from: intendedRoute } : null,
@@ -440,7 +433,7 @@ function App() {
     return pageShell(<AuthView onAuthenticated={handleAuthenticated} sessionExpired={sessionExpired} />);
   }
 
-  if (user.bgg_username === null) {
+  if (!user.onboarding_completed) {
     if (location.pathname !== APP_PATHS.onboarding) {
       const from = isProtectedAppPath(location.pathname)
         ? `${location.pathname}${location.search}`
@@ -458,17 +451,9 @@ function App() {
     return pageShell(
       <OnboardingView
         displayName={user.display_name}
-        onComplete={(username) => {
-          setUser({
-            ...user,
-            bgg_username: username,
-          });
-
-          navigate(
-            intendedRoute ??
-              (username ? APP_PATHS.picker : APP_PATHS.collectionOwned),
-            { replace: true },
-          );
+        onComplete={(updatedUser) => {
+          setUser(updatedUser);
+          navigate(intendedRoute ?? APP_PATHS.picker, { replace: true });
         }}
       />,
     );
@@ -487,6 +472,7 @@ function App() {
     <main className="app-shell">
       <section className={`phone app-phone${["collection", "discover", "rankings", "insights"].includes(view) ? " app-phone-wide" : ""}`} ref={appScrollRef}>
         <AppHeader
+          user={user}
           onOpenSettings={() => {
             navigate(APP_PATHS.setup);
           }}
@@ -496,7 +482,9 @@ function App() {
           <Routes>
             <Route
               path={APP_PATHS.picker}
-              element={<PickerView onViewGame={openOwnedCollectionGame} />}
+              element={<PickerView onViewGame={openOwnedCollectionGame}
+                defaultPlayers={user.preferred_player_count}
+                defaultTime={user.preferred_play_time} />}
             />
 
             <Route
@@ -515,6 +503,7 @@ function App() {
               path={APP_PATHS.gameNight}
               element={
                 <GameNightView
+                  defaultTime={user.preferred_play_time}
                   enabled={user.entitlements.includes("game_night_basic")}
                   onBack={() => navigate(APP_PATHS.picker)}
                   onViewGame={openOwnedCollectionGame}
@@ -559,6 +548,7 @@ function App() {
               path={APP_PATHS.setup}
               element={
                 <>
+                  <ProfileSettings user={user} onChange={setUser} />
                   <SetupView
                     initialUsername={user.bgg_username}
                     onUsernameChange={(username) => {

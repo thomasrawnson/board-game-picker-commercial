@@ -9,6 +9,7 @@ from database.connection import (
 from database.models import (
     Game as DatabaseGame,
     Play as DatabasePlay,
+    PlayParticipant,
     Player,
     User,
     UserGame,
@@ -257,6 +258,11 @@ def test_get_player_stats():
         )
 
         if user is not None:
+            db.query(PlayParticipant).filter(
+                PlayParticipant.play_id.in_(
+                    db.query(DatabasePlay.id).filter(DatabasePlay.user_id == user.id)
+                )
+            ).delete(synchronize_session=False)
             db.query(
                 DatabasePlay
             ).filter(
@@ -394,6 +400,11 @@ def test_group_stats_require_the_exact_participant_set():
     finally:
         user = db.query(User).filter(User.email == email).first()
         if user is not None:
+            db.query(PlayParticipant).filter(
+                PlayParticipant.play_id.in_(
+                    db.query(DatabasePlay.id).filter(DatabasePlay.user_id == user.id)
+                )
+            ).delete(synchronize_session=False)
             db.query(DatabasePlay).filter(DatabasePlay.user_id == user.id).delete(synchronize_session=False)
             db.query(Player).filter(Player.user_id == user.id).delete(synchronize_session=False)
             db.query(UserGame).filter(UserGame.user_id == user.id).delete(synchronize_session=False)

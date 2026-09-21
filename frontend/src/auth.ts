@@ -3,6 +3,12 @@ export interface AuthUser {
   email: string
   display_name: string | null
   bgg_username: string | null
+  onboarding_completed: boolean
+  preferred_player_count: number | null
+  preferred_play_time: number | null
+  profile_player_id: number | null
+  player_name: string
+  avatar_key: "forest" | "gold" | "clay"
   email_verified: boolean
   tier: "FREE" | "PRO"
   entitlements: string[]

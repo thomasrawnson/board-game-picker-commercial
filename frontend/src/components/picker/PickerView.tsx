@@ -35,14 +35,16 @@ type Step =
 
 type Props = {
   onViewGame: (bggId: number) => void;
+  defaultPlayers?: number | null;
+  defaultTime?: number | null;
 };
 
-function PickerView({ onViewGame }: Props) {
+function PickerView({ onViewGame, defaultPlayers = null, defaultTime = null }: Props) {
   const [step, setStep] = useState<Step>("players");
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
   const [selectedPlayerNames, setSelectedPlayerNames] = useState<string[]>([]);
-  const [players, setPlayers] = useState<number | null>(null);
-  const [maxPlayTime, setMaxPlayTime] = useState<number | null>(null);
+  const [players, setPlayers] = useState<number | null>(defaultPlayers);
+  const [maxPlayTime, setMaxPlayTime] = useState<number | null>(defaultTime);
   const [complexityBand, setComplexityBand] =
     useState<PickerComplexityBand | null>(null);
   const [youngestPlayerAge, setYoungestPlayerAge] =
@@ -218,10 +220,10 @@ function PickerView({ onViewGame }: Props) {
     );
 
     setStep("players");
-    setPlayers(null);
+    setPlayers(defaultPlayers);
     setSelectedPlayerIds([]);
     setSelectedPlayerNames([]);
-    setMaxPlayTime(null);
+    setMaxPlayTime(defaultTime);
     setComplexityBand(null);
     setYoungestPlayerAge(null);
     setPlayStyle("any");

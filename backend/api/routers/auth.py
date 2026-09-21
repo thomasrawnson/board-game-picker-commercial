@@ -18,6 +18,7 @@ from auth.schemas import (
     LoginRequest,
     RegisterRequest,
     UserResponse,
+    ProfileUpdateRequest,
     EmailRequest,
     MessageResponse,
     ResetPasswordRequest,
@@ -30,6 +31,7 @@ from auth.security import (
 )
 from database.connection import get_db
 from database.models import User
+from services.profile_service import update_profile
 from services.entitlements import entitlements_for, resolve_tier
 from auth.login_rate_limiter import (
     AUTH_REQUEST_WINDOW_SECONDS,
@@ -142,6 +144,7 @@ def login_rate_limit_key(
 def user_response(
     user: User,
 ) -> UserResponse:
+    player = user.profile_player
     return UserResponse(
         id=user.id,
         email=user.email,
@@ -153,6 +156,15 @@ def user_response(
         ),
         tier=resolve_tier(user).value,
         entitlements=[feature.value for feature in entitlements_for(user)],
+        onboarding_completed=user.onboarding_completed,
+        preferred_player_count=user.preferred_player_count,
+        preferred_play_time=user.preferred_play_time,
+        profile_player_id=user.profile_player_id,
+        player_name=(
+            player.name if player
+            else (user.display_name or user.email.split("@", 1)[0])
+        ),
+        avatar_key=player.avatar_key if player else "forest",
     )
 
 
@@ -331,25 +343,30 @@ def login(
     response_model=UserResponse,
 )
 def complete_onboarding(
+    changes: ProfileUpdateRequest = ProfileUpdateRequest(),
     current_user: User = Depends(
         get_current_user
     ),
     db: Session = Depends(get_db),
 ):
-    if (
-        current_user.bgg_username
-        is None
-    ):
-        current_user.bgg_username = ""
+    try:
+        user = update_profile(db, current_user, changes, complete_onboarding=True)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return user_response(user)
 
-        db.commit()
-        db.refresh(
-            current_user
-        )
 
-    return user_response(
-        current_user
-    )
+@router.put("/profile", response_model=UserResponse)
+def save_profile(
+    changes: ProfileUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        user = update_profile(db, current_user, changes)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return user_response(user)
 
 @router.post(
     "/verification/request",
