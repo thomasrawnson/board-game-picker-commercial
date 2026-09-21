@@ -1,241 +1,205 @@
 from collections import Counter
+from dataclasses import replace
 
 from bgg.client import BGGClient
-from bgg.game_parser import (
-    parse_games_metadata,
-)
-from repositories.game_repository import (
-    GameRepository,
-)
-from services.discover_sources import (
-    DiscoverCandidateProvider,
-)
+from bgg.game_parser import parse_games_metadata
+from repositories.game_repository import GameRepository
+from repositories.play_repository import PlayRepository
+from services.discover_sources import DiscoverCandidate, DiscoverCandidateProvider
+from services.picker_service import PickerCriteria, PickerService
+
+
+DISCOVER_MODES = {"hot", "top100", "for_you"}
 
 
 class DiscoverService:
     def __init__(
         self,
         repository: GameRepository,
+        play_repository: PlayRepository,
         bgg_client: BGGClient,
         candidate_provider: DiscoverCandidateProvider,
         user_id: int,
     ):
         self.repository = repository
+        self.play_repository = play_repository
         self.bgg_client = bgg_client
         self.candidate_provider = candidate_provider
         self.user_id = user_id
 
+    def get_recommendations(self, mode: str = "hot", limit: int = 10) -> list[dict]:
+        if mode not in DISCOVER_MODES:
+            raise ValueError("Unknown Discover mode")
 
-    def get_recommendations(
-        self,
-        limit: int = 10,
-    ) -> list[dict]:
-        owned_games = (
-            self.repository
-            .get_owned_by_user(
-                self.user_id
-            )
-        )
-
-        owned_bgg_ids = {
-            game.bgg_id
-            for game in owned_games
-        }
-
-        preferred_categories = Counter(
-            category
-            for game in owned_games
-            for category in (
-                game.categories or []
-            )
-        )
-
-        preferred_mechanics = Counter(
-            mechanic
-            for game in owned_games
-            for mechanic in (
-                game.mechanics or []
-            )
-        )
-
-        source_candidates = (
-            self.candidate_provider
-            .get_candidates(owned_bgg_ids)
+        owned_games = self.repository.get_owned_by_user(self.user_id)
+        owned_bgg_ids = {game.bgg_id for game in owned_games}
+        source_names = {
+            "hot": {"hot"},
+            "top100": {"ranked"},
+            "for_you": {"hot", "ranked"},
+        }[mode]
+        source_candidates = self.candidate_provider.get_candidates(
+            owned_bgg_ids,
+            source_names=source_names,
         )[:30]
+        candidates = self._load_metadata(source_candidates)
+        wishlisted_ids = self.repository.get_wishlisted_bgg_ids(self.user_id)
 
-        candidate_ids = [
-            candidate.bgg_id
+        if mode != "for_you":
+            return self._source_recommendations(
+                candidates, source_candidates, wishlisted_ids, mode, limit
+            )
+
+        return self._personalized_recommendations(
+            candidates,
+            source_candidates,
+            owned_games,
+            wishlisted_ids,
+            limit,
+        )
+
+    def _load_metadata(
+        self,
+        source_candidates: list[DiscoverCandidate],
+    ) -> list:
+        candidate_ids = [candidate.bgg_id for candidate in source_candidates]
+        games = []
+
+        for index in range(0, len(candidate_ids), 20):
+            batch = candidate_ids[index:index + 20]
+            if batch:
+                games.extend(parse_games_metadata(self.bgg_client.get_games(batch)))
+
+        game_by_id = {game.bgg_id: game for game in games}
+        return [
+            game_by_id[candidate.bgg_id]
             for candidate in source_candidates
+            if candidate.bgg_id in game_by_id
         ]
 
-        if not candidate_ids:
-            return []
+    @staticmethod
+    def _source_recommendations(
+        games,
+        source_candidates: list[DiscoverCandidate],
+        wishlisted_ids: set[int],
+        mode: str,
+        limit: int,
+    ) -> list[dict]:
+        source_by_id = {candidate.bgg_id: candidate for candidate in source_candidates}
+        results = []
 
-        candidates = []
+        for game in games[:limit]:
+            source = source_by_id[game.bgg_id]
+            results.append({
+                "game": game,
+                "score": 0,
+                "reasons": [
+                    "Currently hot on BoardGameGeek"
+                    if mode == "hot"
+                    else "Highly ranked on BoardGameGeek"
+                ],
+                "wishlisted": game.bgg_id in wishlisted_ids,
+                "source_rank": source.ranked_position,
+                "section": None,
+            })
 
-        for index in range(
-            0,
-            len(candidate_ids),
-            20,
-        ):
-            batch = candidate_ids[
-                index:index + 20
-            ]
+        return results
 
-            metadata_xml = (
-                self.bgg_client
-                .get_games(
-                    batch
-                )
+    def _personalized_recommendations(
+        self,
+        games,
+        source_candidates: list[DiscoverCandidate],
+        owned_games,
+        wishlisted_ids: set[int],
+        limit: int,
+    ) -> list[dict]:
+        play_stats = self.play_repository.get_game_play_stats()
+        profile = self.play_repository.get_discover_profile()
+        typical_players = profile["typical_player_count"]
+        typical_time = profile["typical_play_time"]
+        source_by_id = {candidate.bgg_id: candidate for candidate in source_candidates}
+
+        category_weights: Counter[str] = Counter()
+        mechanic_weights: Counter[str] = Counter()
+        for game in owned_games:
+            history_weight = max(
+                1,
+                play_stats.get(game.bgg_id).play_count
+                if game.bgg_id in play_stats
+                else 1,
             )
+            category_weights.update({category: history_weight for category in game.categories})
+            mechanic_weights.update({mechanic: history_weight for mechanic in game.mechanics})
 
-            candidates.extend(
-                parse_games_metadata(
-                    metadata_xml
-                )
-            )
-
-        source_by_bgg_id = {
-            candidate.bgg_id: candidate
-            for candidate in source_candidates
-        }
-        wishlisted_ids = (
-            self.repository
-            .get_wishlisted_bgg_ids(
-                self.user_id
-            )
-        )
-        recommendations = []
-
-        for game in candidates:
-            score = 0.0
-            reasons: list[str] = []
-            source = source_by_bgg_id[
+        if typical_players is not None:
+            eligible_ids = {
                 game.bgg_id
-            ]
+                for game in PickerService().find_matches(
+                    [replace(game, owned=True) for game in games],
+                    PickerCriteria(players=typical_players),
+                )
+            }
+            games = [game for game in games if game.bgg_id in eligible_ids]
 
-            category_matches = [
-                category
-                for category
-                in (game.categories or [])
-                if category
-                in preferred_categories
-            ]
+        recommendations = []
+        for game in games:
+            score = (game.rating or 0) / 2
+            reasons: list[str] = []
+            section = "Popular starting points"
+            source = source_by_id[game.bgg_id]
 
-            mechanic_matches = [
-                mechanic
-                for mechanic
-                in (game.mechanics or [])
-                if mechanic
-                in preferred_mechanics
-            ]
-
+            category_matches = [category for category in game.categories if category in category_weights]
+            mechanic_matches = [mechanic for mechanic in game.mechanics if mechanic in mechanic_weights]
             if category_matches:
-                score += sum(
-                    preferred_categories[
-                        category
-                    ]
-                    for category
-                    in category_matches
-                )
-
-                top_categories = sorted(
-                    category_matches,
-                    key=lambda category:
-                        preferred_categories[
-                            category
-                        ],
-                    reverse=True,
-                )[:2]
-
-                reasons.append(
-                    "Matches your interest in "
-                    + ", ".join(
-                        top_categories
-                    )
-                )
-
+                best = max(category_matches, key=category_weights.get)
+                score += category_weights[best]
+                reasons.append(f"Matches {best} games on your shelf")
+                section = "Matches your collection"
             if mechanic_matches:
-                score += (
-                    sum(
-                        preferred_mechanics[
-                            mechanic
-                        ]
-                        for mechanic
-                        in mechanic_matches
-                    )
-                    * 1.5
-                )
+                best = max(mechanic_matches, key=mechanic_weights.get)
+                score += mechanic_weights[best] * 1.5
+                reasons.append(f"Includes {best} from games on your shelf")
+                section = "Matches your collection"
 
-                top_mechanics = sorted(
-                    mechanic_matches,
-                    key=lambda mechanic:
-                        preferred_mechanics[
-                            mechanic
-                        ],
-                    reverse=True,
-                )[:2]
+            if typical_time is not None and game.max_play_time is not None:
+                if game.max_play_time <= typical_time:
+                    score += 1.5
+                    reasons.append(f"Fits your usual {typical_time}-minute session")
+                    section = "Fits your usual session"
 
-                reasons.append(
-                    "Includes "
-                    + ", ".join(
-                        top_mechanics
-                    )
-                )
+            if typical_players is not None:
+                if typical_players in game.best_player_counts:
+                    score += 4
+                    reasons.append(f"Great at {typical_players} players")
+                    section = "Great at your usual player count"
+                elif typical_players in game.recommended_player_counts:
+                    score += 2
+                    reasons.append(f"Recommended at {typical_players} players")
+                    section = "Great at your usual player count"
 
-            if game.rating is not None:
-                score += (
-                    game.rating
-                    / 2
-                )
-
-            if source.sources == {
-                "hot",
-                "ranked",
-            }:
+            if source.sources == {"hot", "ranked"}:
                 score += 0.5
                 reasons.append(
-                    "Both currently hot and "
-                    "highly ranked on BoardGameGeek"
+                    "Both currently hot and highly ranked on BoardGameGeek"
                 )
             elif "hot" in source.sources:
-                score += 0.2
-                reasons.append(
-                    "Currently hot on BoardGameGeek"
-                )
+                score += 0.3
+                reasons.append("Currently hot on BoardGameGeek")
             elif "ranked" in source.sources:
                 score += 0.2
-                reasons.append(
-                    "Highly ranked on BoardGameGeek"
-                )
+                reasons.append("Highly ranked on BoardGameGeek")
 
             if not reasons:
-                reasons.append(
-                     "Currently popular on BoardGameGeek"
-                )
+                reasons.append("Popular on BoardGameGeek")
 
-            recommendations.append(
-                {
-                    "game": game,
-                    "score": round(
-                        score,
-                        2,
-                    ),
-                    "reasons": reasons,
-                    "wishlisted": (
-                        game.bgg_id
-                        in wishlisted_ids
-                    ),
-                }
-            )
+            recommendations.append({
+                "game": game,
+                "score": round(score, 2),
+                "reasons": reasons,
+                "wishlisted": game.bgg_id in wishlisted_ids,
+                "source_rank": source.ranked_position,
+                "section": section,
+            })
 
-        recommendations.sort(
-            key=lambda item: (
-                -item["score"],
-                item["game"].name,
-            )
-        )
-
-        return recommendations[
-            :limit
-        ]
+        recommendations.sort(key=lambda item: (-item["score"], item["game"].name))
+        return recommendations[:limit]

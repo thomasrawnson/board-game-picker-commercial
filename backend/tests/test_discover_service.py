@@ -1,4 +1,5 @@
 from models.game import Game
+from models.game_play_stats import GamePlayStats
 from services.discover_service import DiscoverService
 from services.discover_sources import DiscoverCandidate
 
@@ -10,6 +11,7 @@ class FakeRepository:
                 bgg_id=99,
                 name="Owned",
                 categories=["Strategy"],
+                mechanics=["Deck Building"],
             )
         ]
 
@@ -17,77 +19,114 @@ class FakeRepository:
         return {1}
 
 
+class FakePlayRepository:
+    def __init__(self, player_count=2, play_time=60):
+        self.profile = {
+            "typical_player_count": player_count,
+            "typical_play_time": play_time,
+        }
+
+    def get_game_play_stats(self):
+        return {99: GamePlayStats(99, 4, None)}
+
+    def get_discover_profile(self):
+        return self.profile
+
+
 class FakeCandidateProvider:
-    def get_candidates(self, owned_bgg_ids):
+    candidates = [
+        DiscoverCandidate(1, {"hot", "ranked"}, 1),
+        DiscoverCandidate(2, {"ranked"}, 2),
+        DiscoverCandidate(3, {"hot"}),
+        DiscoverCandidate(4, {"hot"}),
+    ]
+
+    def get_candidates(self, owned_bgg_ids, source_names=None):
         assert owned_bgg_ids == {99}
         return [
-            DiscoverCandidate(
-                bgg_id=1,
-                sources={"hot", "ranked"},
-                ranked_position=1,
-            ),
-            DiscoverCandidate(
-                bgg_id=2,
-                sources={"ranked"},
-                ranked_position=2,
-            ),
+            candidate
+            for candidate in self.candidates
+            if source_names is None or candidate.sources & source_names
         ]
 
 
 class FakeBGGClient:
     def get_games(self, bgg_ids):
         items = []
-
         for bgg_id in bgg_ids:
             category = (
-                '<link type="boardgamecategory" '
-                'value="Strategy"/>'
+                '<link type="boardgamecategory" value="Strategy"/>'
                 if bgg_id == 1
                 else ""
             )
-            items.append(
-                f"""
+            mechanic = (
+                '<link type="boardgamemechanic" value="Deck Building"/>'
+                if bgg_id == 1
+                else ""
+            )
+            not_recommended = 15 if bgg_id == 4 else 4
+            max_players = 4 if bgg_id != 2 else 1
+            items.append(f"""
                 <item type="boardgame" id="{bgg_id}">
                     <name type="primary" value="Game {bgg_id}"/>
-                    <minplayers value="2"/>
-                    <maxplayers value="4"/>
+                    <minplayers value="1"/>
+                    <maxplayers value="{max_players}"/>
                     <maxplaytime value="60"/>
                     <statistics><ratings>
                         <average value="7"/>
                         <averageweight value="2.5"/>
                     </ratings></statistics>
-                    {category}
+                    <poll name="suggested_numplayers">
+                        <results numplayers="2">
+                            <result value="Best" numvotes="20"/>
+                            <result value="Recommended" numvotes="10"/>
+                            <result value="Not Recommended" numvotes="{not_recommended}"/>
+                        </results>
+                    </poll>
+                    {category}{mechanic}
                 </item>
-                """
-            )
-
+            """)
         return "<items>" + "".join(items) + "</items>"
 
 
-def test_discover_reports_wishlist_and_source_state():
-    service = DiscoverService(
+def make_service(play_repository=None):
+    return DiscoverService(
         repository=FakeRepository(),
+        play_repository=play_repository or FakePlayRepository(),
         bgg_client=FakeBGGClient(),
         candidate_provider=FakeCandidateProvider(),
         user_id=7,
     )
 
-    results = service.get_recommendations()
-    first = next(
-        item for item in results
-        if item["game"].bgg_id == 1
-    )
-    second = next(
-        item for item in results
-        if item["game"].bgg_id == 2
-    )
 
-    assert first["wishlisted"] is True
-    assert second["wishlisted"] is False
-    assert "Matches your interest in Strategy" in first["reasons"]
-    assert (
-        "Both currently hot and highly ranked on BoardGameGeek"
-        in first["reasons"]
-    )
-    assert "Highly ranked on BoardGameGeek" in second["reasons"]
-    assert first["score"] > second["score"]
+def test_hot_and_top100_keep_sources_order_and_wishlist_state():
+    hot = make_service().get_recommendations(mode="hot")
+    ranked = make_service().get_recommendations(mode="top100")
+
+    assert [item["game"].bgg_id for item in hot] == [1, 3, 4]
+    assert [item["game"].bgg_id for item in ranked] == [1, 2]
+    assert hot[0]["wishlisted"] is True
+    assert ranked[0]["source_rank"] == 1
+    assert hot[0]["reasons"] == ["Currently hot on BoardGameGeek"]
+
+
+def test_for_you_uses_real_player_time_and_collection_signals():
+    results = make_service().get_recommendations(mode="for_you")
+
+    assert all(item["game"].bgg_id != 2 for item in results)
+    assert all(item["game"].bgg_id != 4 for item in results)
+    first = next(item for item in results if item["game"].bgg_id == 1)
+    assert "Great at 2 players" in first["reasons"]
+    assert "Fits your usual 60-minute session" in first["reasons"]
+    assert "Matches Strategy games on your shelf" in first["reasons"]
+    assert first["section"] == "Great at your usual player count"
+
+
+def test_for_you_new_user_falls_back_to_popular_candidates():
+    results = make_service(
+        FakePlayRepository(player_count=None, play_time=None)
+    ).get_recommendations(mode="for_you")
+
+    assert results
+    assert all(item["reasons"] for item in results)
+    assert any("BoardGameGeek" in reason for item in results for reason in item["reasons"])

@@ -306,7 +306,11 @@ export interface DiscoverRecommendation {
   score: number
   reasons: string[]
   wishlisted: boolean
+  source_rank: number | null
+  section: string | null
 }
+
+export type DiscoverMode = "hot" | "top100" | "for_you"
 
 export interface BGGSearchResult {
   bgg_id: number
@@ -1059,11 +1063,13 @@ export async function deletePlay(
   }
 }
 
-export async function getDiscoverRecommendations():
+export async function getDiscoverRecommendations(
+  mode: DiscoverMode = "hot",
+):
 Promise<DiscoverRecommendation[]> {
   const response =
     await apiFetch(
-      "/discover",
+      `/discover?mode=${mode}`,
     )
 
   if (!response.ok) {

@@ -1,3 +1,6 @@
+from collections import Counter
+from statistics import median
+
 from sqlalchemy import func
 
 from database.models import (
@@ -15,6 +18,48 @@ from models.game_play_stats import GamePlayStats
 
 
 class PlayReadRepository:
+    def get_discover_profile(self) -> dict[str, int | None]:
+        if self.user_id is None:
+            return {
+                "typical_player_count": None,
+                "typical_play_time": None,
+            }
+
+        rows = (
+            self.db.query(
+                DatabasePlay.player_count,
+                DatabasePlay.duration_minutes,
+            )
+            .filter(DatabasePlay.user_id == self.user_id)
+            .all()
+        )
+
+        player_counts = Counter(
+            row.player_count
+            for row in rows
+            if row.player_count > 0
+        )
+        durations = [
+            row.duration_minutes
+            for row in rows
+            if row.duration_minutes is not None
+            and row.duration_minutes > 0
+        ]
+
+        typical_player_count = None
+        if player_counts:
+            typical_player_count = min(
+                player_counts,
+                key=lambda count: (-player_counts[count], count),
+            )
+
+        return {
+            "typical_player_count": typical_player_count,
+            "typical_play_time": (
+                round(median(durations)) if durations else None
+            ),
+        }
+
     def get_game_play_stats(
         self,
     ) -> dict[int, GamePlayStats]:

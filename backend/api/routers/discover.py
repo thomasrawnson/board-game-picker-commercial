@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from typing import Literal
 
 import httpx
 from fastapi import (
@@ -11,6 +12,9 @@ from fastapi import (
 from api.dependencies import (
     get_discover_service,
 )
+from api.current_user import get_current_user
+from database.models import User
+from services.entitlements import Feature, can_use
 from services.discover_service import (
     DiscoverService,
 )
@@ -23,6 +27,7 @@ router = APIRouter()
     "/discover"
 )
 def get_discover_recommendations(
+    mode: Literal["hot", "top100", "for_you"] = Query("hot"),
     limit: int = Query(
         10,
         ge=1,
@@ -31,10 +36,21 @@ def get_discover_recommendations(
     service: DiscoverService = Depends(
         get_discover_service
     ),
+    current_user: User = Depends(get_current_user),
 ):
+    if mode == "for_you" and not can_use(
+        current_user,
+        Feature.PERSONALIZED_DISCOVER,
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="Personalised Discover requires ShelfPick Pro.",
+        )
+
     try:
         return (
             service.get_recommendations(
+                mode=mode,
                 limit=limit
             )
         )

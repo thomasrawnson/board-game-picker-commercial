@@ -170,6 +170,13 @@ def test_get_player_stats():
             )
         )
 
+        discover_profile = repository.get_discover_profile()
+
+        assert discover_profile == {
+            "typical_player_count": 2,
+            "typical_play_time": 60,
+        }
+
         assert stats is not None
 
         assert stats["player"] == {

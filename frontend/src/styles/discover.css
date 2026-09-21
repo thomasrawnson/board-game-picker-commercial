@@ -9,6 +9,90 @@
   margin-bottom: 0;
 }
 
+.discover-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+  padding: var(--space-1);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.discover-tab {
+  min-width: 0;
+  min-height: var(--target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  color: var(--color-text-support);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: var(--text-support);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.discover-tab.active {
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
+}
+
+.discover-pro-badge {
+  padding: 2px 5px;
+  color: var(--color-accent-text);
+  background: var(--color-brand-accent-soft);
+  border-radius: 999px;
+  font-size: var(--text-meta);
+  line-height: 1.2;
+}
+
+.discover-sections {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-5);
+}
+
+.discover-section > h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.discover-section .discover-list {
+  margin-top: var(--space-3);
+}
+
+.discover-locked {
+  max-width: 520px;
+  margin: var(--space-5) auto 0;
+  padding: var(--space-5);
+  text-align: center;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.discover-locked h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.discover-locked p {
+  margin: var(--space-2) auto var(--space-4);
+  color: var(--color-text-support);
+  line-height: 1.5;
+}
+
+.discover-locked .primary-button {
+  width: auto;
+  margin: 0 auto;
+}
+
 .discover-wishlist-link {
   width: auto;
   min-height: var(--target-min);
@@ -127,8 +211,8 @@
   justify-content: center;
   margin-top: 10px;
   padding: 4px 8px;
-  color: var(--color-on-accent);
-  background: var(--sp-gold);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-primary-soft);
   border-radius: 999px;
   font-size: var(--text-meta);
   font-weight: 900;
@@ -266,23 +350,6 @@
     top: 10px;
     right: 10px;
   }
-
-  .discover-match-pill {
-  width: fit-content;
-  min-height: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10px;
-  padding: 4px 8px;
-  color: var(--color-on-accent);
-  background: var(--sp-gold);
-  border-radius: 999px;
-  font-size: var(--text-meta);
-  font-weight: 900;
-  line-height: 1;
-  white-space: nowrap;
-}
 
   .discover-copy {
     padding-right: 44px;

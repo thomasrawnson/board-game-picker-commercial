@@ -134,11 +134,15 @@ def get_discover_service(
     db: Session = Depends(
         get_db
     ),
+    play_repository: PlayRepository = Depends(
+        get_play_repository
+    ),
 ) -> DiscoverService:
     bgg_client = BGGClient()
 
     return DiscoverService(
         repository=GameRepository(db),
+        play_repository=play_repository,
         bgg_client=bgg_client,
         candidate_provider=(
             DiscoverCandidateProvider(

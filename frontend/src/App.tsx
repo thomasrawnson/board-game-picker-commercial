@@ -537,9 +537,11 @@ function App() {
               path={APP_PATHS.discover}
               element={
                 <DiscoverView
+                  personalized={user.entitlements.includes("personalized_discover")}
                   onViewWishlist={() => {
                     navigate(APP_PATHS.collectionWishlist);
                   }}
+                  onUnlockPro={() => navigate(APP_PATHS.setup)}
                 />
               }
             />

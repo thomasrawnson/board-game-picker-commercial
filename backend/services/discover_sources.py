@@ -201,10 +201,14 @@ class DiscoverCandidateProvider:
     def get_candidates(
         self,
         owned_bgg_ids: set[int],
+        source_names: set[str] | None = None,
     ) -> list[DiscoverCandidate]:
         source_results = []
 
         for source in self.sources:
+            if source_names is not None and source.name not in source_names:
+                continue
+
             try:
                 source_results.append(
                     source.get_candidates()
