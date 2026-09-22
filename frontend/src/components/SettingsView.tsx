@@ -1,7 +1,9 @@
+import { useState } from "react"
 import { Link } from "react-router-dom"
 
 import type { AuthUser } from "../auth"
 import { APP_PATHS } from "../routes"
+import { getThemePreference, setThemePreference, type ThemePreference } from "../theme"
 import PlayerAvatar from "./ui/PlayerAvatar"
 
 type Setting = {
@@ -21,9 +23,7 @@ const sections: { title: string; items: Setting[] }[] = [
     { label: "Import Data", to: APP_PATHS.setup, detail: "BG Stats plays" },
     { label: "Export Data" },
   ] },
-  { title: "Appearance", items: [
-    { label: "Theme / Appearance" },
-  ] },
+  { title: "Appearance", items: [] },
   { title: "Plays", items: [
     { label: "Play Challenges" },
   ] },
@@ -56,6 +56,13 @@ function SettingRow({ label, to, detail }: Setting) {
 }
 
 function SettingsView({ user, onLogout }: { user: AuthUser; onLogout: () => void }) {
+  const [theme, setTheme] = useState<ThemePreference>(getThemePreference)
+
+  function chooseTheme(value: ThemePreference) {
+    setThemePreference(value)
+    setTheme(value)
+  }
+
   return <section className="screen settings-screen" aria-labelledby="settings-heading">
     <header className="settings-heading">
       <h1 id="settings-heading">Settings</h1>
@@ -80,9 +87,18 @@ function SettingsView({ user, onLogout }: { user: AuthUser; onLogout: () => void
       const id = `settings-${title.toLowerCase().replace(/[^a-z]+/g, "-")}`
       return <section key={title} className="settings-section" aria-labelledby={id}>
         <h2 id={id}>{title}</h2>
-        <div className="settings-list">
+        {title === "Appearance" ? (
+          <fieldset className="settings-theme-list">
+            <legend>Theme / Appearance</legend>
+            {(["system", "light", "dark"] as const).map((value) => <label key={value} className="settings-theme-option">
+              <span>{value === "system" ? "System" : value === "light" ? "Light" : "Dark"}</span>
+              <input type="radio" name="appearance" value={value} checked={theme === value}
+                onChange={() => chooseTheme(value)} />
+            </label>)}
+          </fieldset>
+        ) : <div className="settings-list">
           {items.map((item) => <SettingRow key={item.label} {...item} />)}
-        </div>
+        </div>}
       </section>
     })}
 

@@ -4,28 +4,73 @@ import test from "node:test"
 import vm from "node:vm"
 
 const source = await readFile(new URL("../public/theme.js", import.meta.url), "utf8")
-function initialize(dark, explicitTheme) {
-  const root = { dataset: explicitTheme ? { theme: explicitTheme } : {}, hasAttribute: () => Boolean(explicitTheme) }
+
+function initialize(dark, stored = null, explicitTheme = null) {
+  const values = new Map(stored ? [["shelfpick-theme", stored]] : [])
+  const root = {
+    dataset: explicitTheme ? { theme: explicitTheme } : {},
+    hasAttribute: () => Boolean(explicitTheme),
+  }
+  const meta = [{ content: "" }, { content: "" }]
   let listener
-  const preference = { matches: dark, addEventListener(event, callback) { assert.equal(event, "change"); listener = callback } }
+  const preference = {
+    matches: dark,
+    addEventListener(event, callback) { assert.equal(event, "change"); listener = callback },
+  }
+  const window = {
+    localStorage: {
+      getItem: key => values.get(key) ?? null,
+      setItem: (key, value) => values.set(key, value),
+    },
+    matchMedia: query => {
+      assert.equal(query, "(prefers-color-scheme: dark)")
+      return preference
+    },
+  }
   vm.runInNewContext(source, {
-    document: { documentElement: root },
-    window: { matchMedia: query => { assert.equal(query, "(prefers-color-scheme: dark)"); return preference } },
+    document: { documentElement: root, querySelectorAll: () => meta.map(item => ({ setAttribute: (_, value) => { item.content = value } })) },
+    window,
   })
-  return { root, preference, listener }
+  return { root, preference, listener, window, values, meta }
 }
-test("theme follows initial OS preference and subsequent changes", () => {
+
+test("system theme follows OS preference and updates browser theme colour", () => {
   for (const dark of [false, true]) {
-    const { root, preference, listener } = initialize(dark)
+    const { root, preference, listener, window, meta } = initialize(dark)
+    assert.equal(window.shelfPickTheme.getPreference(), "system")
     assert.equal(root.dataset.theme, dark ? "dark" : "light")
+    assert.equal(meta[0].content, dark ? "#151816" : "#315C48")
     preference.matches = !dark
     listener()
     assert.equal(root.dataset.theme, dark ? "light" : "dark")
   }
 })
-test("explicit initial theme is preserved without subscribing to OS changes", () => {
+
+test("light and dark stay selected regardless of OS and persist across refresh", () => {
   for (const theme of ["light", "dark"]) {
-    const { root, listener } = initialize(theme === "light", theme)
+    const current = initialize(theme === "dark")
+    current.window.shelfPickTheme.setPreference(theme)
+    assert.equal(current.root.dataset.theme, theme)
+    current.preference.matches = theme !== "dark"
+    current.listener()
+    assert.equal(current.root.dataset.theme, theme)
+    assert.equal(current.values.get("shelfpick-theme"), theme)
+    const refreshed = initialize(theme !== "dark", current.values.get("shelfpick-theme"))
+    assert.equal(refreshed.root.dataset.theme, theme)
+    refreshed.window.shelfPickTheme.setPreference("system")
+    assert.equal(refreshed.root.dataset.theme, refreshed.preference.matches ? "dark" : "light")
+  }
+})
+
+test("invalid stored preference falls back to system", () => {
+  const { root, window } = initialize(true, "unknown")
+  assert.equal(window.shelfPickTheme.getPreference(), "system")
+  assert.equal(root.dataset.theme, "dark")
+})
+
+test("explicit host theme is preserved", () => {
+  for (const theme of ["light", "dark"]) {
+    const { root, listener } = initialize(theme === "light", null, theme)
     assert.equal(root.dataset.theme, theme)
     assert.equal(listener, undefined)
   }

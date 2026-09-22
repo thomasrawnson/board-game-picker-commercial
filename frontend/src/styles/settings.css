@@ -31,6 +31,53 @@
   background: var(--color-surface);
 }
 
+.settings-theme-list {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.settings-theme-list legend {
+  padding: 0 0 var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-support);
+}
+
+.settings-theme-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: var(--space-2) var(--space-4);
+  color: var(--text-primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.settings-theme-option + .settings-theme-option {
+  border-top: 1px solid var(--line);
+}
+
+.settings-theme-option:hover {
+  background: var(--color-surface-raised);
+}
+
+.settings-theme-option:has(input:focus-visible) {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: -3px;
+}
+
+.settings-theme-option input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--color-brand-primary);
+}
+
 .settings-row {
   display: flex;
   align-items: center;
