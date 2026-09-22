@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import {
   getGameNightRecommendations,
@@ -7,6 +7,7 @@ import {
 import PlayLogForm from "./collection/PlayLogForm"
 import PlayerSelectionStep from "./picker/PlayerSelectionStep"
 import TimeStep from "./picker/TimeStep"
+import { timeBand, trackEvent } from "../telemetry"
 
 
 type Props = {
@@ -29,6 +30,7 @@ function GameNightView({ enabled, defaultTime = null, onBack, onViewGame, onUnlo
   const [selectedMatch, setSelectedMatch] = useState<PickerMatch | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const completionTracked = useRef(false)
 
   async function findGames() {
     setLoading(true)
@@ -40,6 +42,7 @@ function GameNightView({ enabled, defaultTime = null, onBack, onViewGame, onUnlo
         maxPlayTime,
       )
       setMatches(result)
+      completionTracked.current = false
       setStep("shortlist")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't build this shortlist.")
@@ -56,6 +59,7 @@ function GameNightView({ enabled, defaultTime = null, onBack, onViewGame, onUnlo
     setMatches([])
     setSelectedMatch(null)
     setError("")
+    completionTracked.current = false
   }
 
   if (!enabled) {
@@ -124,7 +128,16 @@ function GameNightView({ enabled, defaultTime = null, onBack, onViewGame, onUnlo
                 <div>
                   <h2>{match.game.name}</h2>
                   <p>{match.reasons[1] ?? match.reasons[0]}</p>
-                  <button type="button" className="secondary-button" onClick={() => { setSelectedMatch(match); setStep("reveal") }}>
+                  <button type="button" className="secondary-button" onClick={() => {
+                    if (!completionTracked.current) {
+                      completionTracked.current = true
+                      trackEvent("game_night_completed", {
+                        source: "game_night", player_count: selectedPlayerIds.length,
+                        time_band: timeBand(maxPlayTime), result_count: matches.length,
+                      })
+                    }
+                    setSelectedMatch(match); setStep("reveal")
+                  }}>
                     Choose this game
                   </button>
                 </div>

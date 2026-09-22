@@ -8,6 +8,7 @@ import {
   type DiscoverRecommendation,
 } from "../api/client"
 import RetryNotice from "./ui/RetryNotice"
+import { trackEvent } from "../telemetry"
 
 
 type Props = {
@@ -53,6 +54,15 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
   const [actionError, setActionError] = useState("")
   const [reloadKey, setReloadKey] = useState(0)
   const pendingIds = useRef(new Set<number>())
+  const lastTrackedTab = useRef<DiscoverMode | null>(null)
+
+  useEffect(() => {
+    if (lastTrackedTab.current === mode) return
+    lastTrackedTab.current = mode
+    trackEvent("discover_opened", {
+      source: "discover", tab: mode === "top100" ? "top500" : mode,
+    })
+  }, [mode])
 
   useEffect(() => {
     if (mode === "for_you" && !personalized) return
@@ -107,7 +117,10 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
 
     try {
       if (wasWishlisted) await removeFromWishlist(bggId)
-      else await addToWishlist(bggId)
+      else {
+        await addToWishlist(bggId)
+        trackEvent("wishlist_added", { source: "discover" })
+      }
     } catch (err) {
       setRecommendations((current) => current.map((item) => (
         item.game.bgg_id === bggId

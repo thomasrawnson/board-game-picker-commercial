@@ -1,9 +1,10 @@
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { Link } from "react-router-dom"
 
 import type { AuthUser } from "../auth"
 import { APP_PATHS } from "../routes"
 import { getThemePreference, setThemePreference, type ThemePreference } from "../theme"
+import { trackEvent } from "../telemetry"
 import PlayerAvatar from "./ui/PlayerAvatar"
 
 type Setting = {
@@ -57,6 +58,7 @@ function SettingRow({ label, to, detail }: Setting) {
 
 function SettingsView({ user, onLogout }: { user: AuthUser; onLogout: () => void }) {
   const [theme, setTheme] = useState<ThemePreference>(getThemePreference)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   function chooseTheme(value: ThemePreference) {
     setThemePreference(value)
@@ -97,7 +99,17 @@ function SettingsView({ user, onLogout }: { user: AuthUser; onLogout: () => void
             </label>)}
           </fieldset>
         ) : <div className="settings-list">
-          {items.map((item) => <SettingRow key={item.label} {...item} />)}
+          {items.map((item) => item.label === "Feedback" ? <Fragment key={item.label}>
+            <button type="button" className="settings-row settings-row-link settings-feedback-button"
+              aria-expanded={feedbackOpen} onClick={() => {
+                if (!feedbackOpen) trackEvent("feedback_opened", { source: "settings" })
+                setFeedbackOpen(!feedbackOpen)
+              }}>
+              <span className="settings-row-label">Feedback</span>
+              <span className="settings-row-detail">{feedbackOpen ? "Close" : "Open"}</span>
+            </button>
+            {feedbackOpen && <p className="settings-feedback-note">Feedback form coming soon.</p>}
+          </Fragment> : <SettingRow key={item.label} {...item} />)}
         </div>}
       </section>
     })}

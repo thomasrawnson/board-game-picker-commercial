@@ -9,6 +9,7 @@ import {
   type BGStatsImportResult,
   type CollectionSyncResult,
 } from "../api/client"
+import { trackEvent } from "../telemetry"
 
 
 type Props = {
@@ -76,6 +77,7 @@ function SetupView({
         )
 
       setSyncResult(result)
+      trackEvent("collection_import_completed", { source: "settings_bgg", result_count: result.games_synced })
       
       onUsernameChange?.(
         result.username,
@@ -110,6 +112,7 @@ function SetupView({
         await importBGStatsPlays(file)
 
       setImportResult(result)
+      trackEvent("collection_import_completed", { source: "settings_bgstats", result_count: result.imported })
     } catch (err) {
       console.error(err)
 

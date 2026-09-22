@@ -23,6 +23,7 @@ import ThemeStep from "./ThemeStep";
 import PlayStyleStep from "./PlayStyleStep";
 import PickerResult from "./PickerResult";
 import PickerNoMatch from "./PickerNoMatch";
+import { timeBand, trackEvent } from "../../telemetry";
 
 type Step =
   | "players"
@@ -151,6 +152,11 @@ function PickerView({ onViewGame, defaultPlayers = null, defaultTime = null }: P
       });
 
       setPickerSessionId(response.session_id);
+
+      trackEvent("picker_completed", {
+        source: "pick", player_count: players,
+        time_band: timeBand(nextMaxPlayTime), result_count: response.matches.length,
+      });
 
       if (response.matches.length === 0) {
         setNoMatchGuidance(response.guidance);

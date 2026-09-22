@@ -415,7 +415,7 @@ In addition:
 
 ## Slice 5 — Private Beta readiness
 
-**Status:** NOT STARTED
+**Status:** IN PROGRESS — client instrumentation foundation complete; beta operations remain open
 
 Run Private Beta immediately after the Game Night MVP. Before inviting users,
 complete the production deployment, migration, email and backup/recovery checks
@@ -433,6 +433,12 @@ Beta should explicitly test:
 
 Use the evidence to revise later scope rather than treating requested features
 as automatic commitments.
+
+The frontend now emits a small, typed set of core-journey events and has a
+render-error boundary with a provider-neutral capture hook. No analytics or
+monitoring provider is connected yet, so these hooks do not transmit data.
+Deployment, recovery, feedback collection and the remaining beta checks are
+still open.
 
 ## Slice 7 — Public launch
 

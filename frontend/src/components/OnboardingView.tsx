@@ -3,6 +3,7 @@ import { addGameToCollection, completeOnboarding, searchBGGGames, syncBGGCollect
 import type { AuthUser } from "../auth"
 import BrandLogo from "./ui/BrandLogo"
 import PlayerAvatar from "./ui/PlayerAvatar"
+import { timeBand, trackEvent } from "../telemetry"
 
 type Props = { displayName: string | null; onComplete: (user: AuthUser) => void }
 const counts = [1, 2, 3, 4, 5, 6]
@@ -11,6 +12,8 @@ const avatars = ["forest", "gold", "clay"] as const
 
 function OnboardingView({ displayName, onComplete }: Props) {
   const screenRef = useRef<HTMLElement>(null)
+  const syncPending = useRef(false)
+  const finishPending = useRef(false)
   const [step, setStep] = useState(0)
   const [username, setUsername] = useState("")
   const [syncing, setSyncing] = useState(false)
@@ -34,14 +37,16 @@ function OnboardingView({ displayName, onComplete }: Props) {
   }, [step])
 
   async function importShelf() {
-    if (!username.trim()) return
+    if (!username.trim() || syncPending.current) return
+    syncPending.current = true
     setSyncing(true); setError("")
     try {
-      await syncBGGCollection(username.trim())
+      const result = await syncBGGCollection(username.trim())
+      trackEvent("collection_import_completed", { source: "onboarding_bgg", result_count: result.games_synced })
       setStep(2)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not import your shelf.")
-    } finally { setSyncing(false) }
+    } finally { syncPending.current = false; setSyncing(false) }
   }
   async function searchGames() {
     if (!query.trim()) return
@@ -57,16 +62,22 @@ function OnboardingView({ displayName, onComplete }: Props) {
     finally { setAddingId(null) }
   }
   async function finish() {
+    if (finishPending.current) return
     if (!name.trim()) { setError("Enter a player name to continue."); return }
+    finishPending.current = true
     setBusy(true); setError("")
     try {
-      onComplete(await completeOnboarding({
+      const completedUser = await completeOnboarding({
         player_name: name.trim(), avatar_key: avatar,
         preferred_player_count: playerCount, preferred_play_time: playTime,
-      }))
+      })
+      trackEvent("onboarding_completed", {
+        source: "onboarding", player_count: playerCount ?? undefined, time_band: timeBand(playTime),
+      })
+      onComplete(completedUser)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not finish setup.")
-    } finally { setBusy(false) }
+    } finally { finishPending.current = false; setBusy(false) }
   }
 
   return <section className="onboarding-screen" ref={screenRef}>
