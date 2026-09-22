@@ -1,0 +1,104 @@
+.settings-screen {
+  gap: var(--space-5);
+  padding-bottom: var(--space-5);
+}
+
+.settings-heading {
+  text-align: left;
+}
+
+.settings-heading h1 {
+  margin: 0 0 var(--space-2);
+}
+
+.settings-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.settings-section h2 {
+  margin: 0 0 var(--space-2);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  font-weight: 800;
+}
+
+.settings-list {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 52px;
+  padding: var(--space-2) var(--space-4);
+  text-decoration: none;
+}
+
+.settings-row + .settings-row {
+  border-top: 1px solid var(--line);
+}
+
+.settings-row-label {
+  color: var(--text-primary);
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+
+.settings-row-detail {
+  color: var(--text-secondary);
+  font-size: var(--text-support);
+  text-align: right;
+}
+
+.settings-row-pending .settings-row-detail {
+  white-space: nowrap;
+}
+
+.settings-row-link:hover {
+  background: var(--color-surface-raised);
+}
+
+.settings-row-link:focus-visible,
+.settings-logout:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: -3px;
+}
+
+.settings-profile-row {
+  justify-content: flex-start;
+}
+
+.settings-profile-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.settings-logout {
+  align-self: flex-start;
+  min-height: var(--target-min);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.settings-back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  margin-bottom: var(--space-3);
+  color: var(--color-brand-primary);
+  font-weight: 700;
+}

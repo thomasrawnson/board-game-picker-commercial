@@ -25,6 +25,8 @@ export const APP_PATHS = {
   discover: "/discover",
   insights: "/insights",
   setup: "/setup",
+  settings: "/settings",
+  settingsProfile: "/settings/profile",
 } as const
 
 
@@ -89,6 +91,10 @@ export function appViewForPath(
     return "setup"
   }
 
+  if (pathname === APP_PATHS.settings || pathname === APP_PATHS.settingsProfile) {
+    return "setup"
+  }
+
   return "picker"
 }
 
@@ -107,6 +113,8 @@ export function isProtectedAppPath(
     || pathname === APP_PATHS.rankings
     || pathname === APP_PATHS.insights
     || pathname === APP_PATHS.setup
+    || pathname === APP_PATHS.settings
+    || pathname === APP_PATHS.settingsProfile
   )
 }
 

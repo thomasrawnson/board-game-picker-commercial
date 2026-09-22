@@ -8,6 +8,7 @@ import {
 } from "react";
 
 import {
+  Link,
   Navigate,
   Route,
   Routes,
@@ -41,6 +42,7 @@ import OnboardingView from "./components/OnboardingView";
 
 import SetupView from "./components/SetupView";
 import ProfileSettings from "./components/ProfileSettings";
+import SettingsView from "./components/SettingsView";
 import PlayerAvatar from "./components/ui/PlayerAvatar";
 
 import AppNavigation, { type AppView } from "./components/AppNavigation";
@@ -474,7 +476,7 @@ function App() {
         <AppHeader
           user={user}
           onOpenSettings={() => {
-            navigate(APP_PATHS.setup);
+            navigate(APP_PATHS.settings);
           }}
         />
 
@@ -507,7 +509,7 @@ function App() {
                   enabled={user.entitlements.includes("game_night_basic")}
                   onBack={() => navigate(APP_PATHS.picker)}
                   onViewGame={openOwnedCollectionGame}
-                  onUnlockPro={() => navigate(APP_PATHS.setup)}
+                  onUnlockPro={() => navigate(APP_PATHS.settings)}
                 />
               }
             />
@@ -530,7 +532,7 @@ function App() {
                   onViewWishlist={() => {
                     navigate(APP_PATHS.collectionWishlist);
                   }}
-                  onUnlockPro={() => navigate(APP_PATHS.setup)}
+                  onUnlockPro={() => navigate(APP_PATHS.settings)}
                 />
               }
             />
@@ -542,6 +544,19 @@ function App() {
                   onOpenGame={openOwnedCollectionGame}
                 />
               }
+            />
+
+            <Route
+              path={APP_PATHS.settings}
+              element={<SettingsView user={user} onLogout={handleLogout} />}
+            />
+
+            <Route
+              path={APP_PATHS.settingsProfile}
+              element={<>
+                <Link className="settings-back-link" to={APP_PATHS.settings}>Back to Settings</Link>
+                <ProfileSettings user={user} onChange={setUser} />
+              </>}
             />
 
             <Route
