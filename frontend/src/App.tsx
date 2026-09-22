@@ -569,7 +569,6 @@ function App() {
               path={APP_PATHS.setup}
               element={
                 <>
-                  <ProfileSettings user={user} onChange={setUser} />
                   <SetupView
                     initialUsername={user.bgg_username}
                     onUsernameChange={(username) => {
