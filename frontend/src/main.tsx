@@ -16,6 +16,7 @@ import {
 
 import App
   from "./App.tsx"
+import AppErrorBoundary from "./components/AppErrorBoundary.tsx"
 
 import "./index.css"
 
@@ -63,8 +64,10 @@ createRoot(
   )!,
 ).render(
   <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <AppErrorBoundary>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </AppErrorBoundary>
   </StrictMode>,
 )
