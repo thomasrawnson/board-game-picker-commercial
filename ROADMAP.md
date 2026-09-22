@@ -124,7 +124,7 @@ Turn Discover into a stronger acquisition and retention feature.
 
 - Add three clear tabs:
   - **Hot** — free;
-  - **Top 100** — free;
+  - **Top 500** — free;
   - **For You** — the personalised, Pro-oriented experience.
 - Preserve the current separation between owned games and Want to Play.
 - Prepare personalised sections such as:
@@ -137,7 +137,7 @@ Turn Discover into a stronger acquisition and retention feature.
   - Good for your regular group.
 - Use existing collection, wishlist, plays and available preference data where
   practical.
-- Keep Hot and Top 100 on their existing BoardGameGeek sources while exposing
+- Keep Hot and Top 500 on their existing BoardGameGeek sources while exposing
   them as separate lists.
 - Gate For You through the central `personalized_discover` entitlement.
 - Rank For You candidates using collection affinities, recorded play frequency,
@@ -155,9 +155,9 @@ Turn Discover into a stronger acquisition and retention feature.
 
 ### Acceptance criteria
 
-- Hot, Top 100 and For You are distinct, accessible tab destinations with
+- Hot, Top 500 and For You are distinct, accessible tab destinations with
   clear loading, empty, error and retry states.
-- Hot and Top 100 remain useful without Pro access.
+- Hot and Top 500 remain useful without Pro access.
 - For You uses available user signals to produce explainable sections and
   clearly communicates its Pro-oriented status without weakening the free
   tabs.
@@ -294,7 +294,7 @@ communicate Free versus Pro.
   - Tip Jar.
 
 Free functionality remains useful and includes Collection, Wishlist, Core
-Picker, basic play tracking, Discover Hot and Discover Top 100. Pro candidates
+Picker, basic play tracking, Discover Hot and Discover Top 500. Pro candidates
 include personalised Discover, advanced recommendation intelligence, richer
 statistics and enhanced Game Night features. Basic backup and data safety are
 treated separately from arbitrary Pro gating.

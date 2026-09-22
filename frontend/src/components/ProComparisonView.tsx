@@ -9,7 +9,7 @@ const freeFeatures = [
   "Core Pick",
   "Basic play tracking",
   "Discover: Hot",
-  "Discover: Top 100",
+  "Discover: Top 500",
   "Basic Game Night",
 ]
 

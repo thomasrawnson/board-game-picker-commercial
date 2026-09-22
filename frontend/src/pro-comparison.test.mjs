@@ -8,6 +8,7 @@ import { createServer } from "vite"
 let server
 let ProComparisonView
 let SettingsView
+let DiscoverView
 
 const user = {
   id: 1, email: "morgan@example.com", display_name: "Morgan", bgg_username: null,
@@ -20,6 +21,7 @@ before(async () => {
   server = await createServer({ server: { middlewareMode: true, hmr: false }, appType: "custom" })
   ProComparisonView = (await server.ssrLoadModule("/src/components/ProComparisonView.tsx")).default
   SettingsView = (await server.ssrLoadModule("/src/components/SettingsView.tsx")).default
+  DiscoverView = (await server.ssrLoadModule("/src/components/DiscoverView.tsx")).default
 })
 
 after(async () => { await server?.close() })
@@ -40,12 +42,11 @@ test("Free plan shows current essentials and an unavailable purchase action", ()
   const markup = render(ProComparisonView, { user })
   assert.match(markup, /Current plan: Free/)
   assert.match(markup, /Basic Game Night/)
-  assert.match(markup, /Discover: Top 100/)
+  assert.match(markup, /Discover: Top 500/)
   assert.match(markup, /Personalised Discover \/ For You/)
   assert.match(markup, /Available with Pro/)
   assert.match(markup, /disabled=""[^>]*>Unlock ShelfPick Pro/)
   assert.match(markup, /Purchases are not available yet/)
-  assert.doesNotMatch(markup, /Top 500/)
 })
 
 test("Pro plan uses account tier and entitlement without a purchase action", () => {
@@ -56,4 +57,13 @@ test("Pro plan uses account tier and entitlement without a purchase action", () 
   assert.match(markup, /Personalised Discover \/ For You<\/span><span class="pro-feature-status">Available now/)
   assert.match(markup, /Advanced recommendation intelligence<\/span><span class="pro-feature-status">Coming later/)
   assert.doesNotMatch(markup, /Unlock ShelfPick Pro/)
+})
+
+test("Discover and the Free comparison use the same Top 500 label", () => {
+  const discover = renderToStaticMarkup(React.createElement(DiscoverView, {
+    personalized: false, onViewWishlist: () => {}, onUnlockPro: () => {},
+  }))
+  const comparison = render(ProComparisonView, { user })
+  assert.match(discover, /role="tab"[^>]*>Top 500<\/button>/)
+  assert.match(comparison, /Discover: Top 500/)
 })
