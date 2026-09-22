@@ -251,8 +251,12 @@ group features.
 **Status:** NOT STARTED
 
 The shared FREE/PRO tier resolution, frontend-facing entitlement list and
-central feature-capability checks are complete. Pricing, paywalls, subscription
-management and the full Settings presentation remain incomplete.
+central feature-capability checks are complete. One-off purchase pricing and
+checkout remain undecided; the full Settings presentation remains incomplete.
+
+The launch offer is a useful Free version plus a one-off ShelfPick Pro unlock.
+No recurring subscription is planned at launch. A subscription model should be
+reconsidered only if the product direction changes later.
 
 ### Objective
 
@@ -267,7 +271,7 @@ communicate Free versus Pro.
 - **ShelfPick Pro**
   - Unlock Pro;
   - Free versus Pro comparison;
-  - restore/manage subscription placeholders where appropriate.
+  - one-off purchase placeholder until checkout is implemented.
 - **Collection & Data**
   - Sync Collection with BoardGameGeek;
   - Cloud Sync;
@@ -316,8 +320,7 @@ treated separately from arbitrary Pro gating.
   not put basic collection, Picker, play tracking or data safety behind Pro.
 - Data actions reuse established import, export and sync behavior and retain
   existing recovery protections.
-- Placeholder subscription actions cannot imply that a purchase or restore
-  occurred.
+- Placeholder purchase actions cannot imply that an unlock occurred.
 - Relevant tests, accessibility checks and responsive validation pass.
 
 ### Dependencies
@@ -326,7 +329,7 @@ treated separately from arbitrary Pro gating.
 - Slice 3 profile and avatar model.
 - Production privacy, feedback and account-management requirements tracked by
   the release roadmap and runbook.
-- A separate decision before any real billing or subscription implementation.
+- A separate decision on price and payment implementation before a real Pro unlock.
 
 ## Slice 1 — Game Night MVP + entitlement scaffolding
 

@@ -40,23 +40,33 @@ test("both Settings Pro entries open the comparison route", () => {
 
 test("Free plan shows current essentials and an unavailable purchase action", () => {
   const markup = render(ProComparisonView, { user })
-  assert.match(markup, /Current plan: Free/)
+  assert.match(markup, /Free <span class="pro-plan-state">Current plan/)
   assert.match(markup, /Basic Game Night/)
-  assert.match(markup, /Discover: Top 500/)
-  assert.match(markup, /Personalised Discover \/ For You/)
-  assert.match(markup, /Available with Pro/)
+  assert.match(markup, /Discover Top 500/)
+  assert.match(markup, /For You/)
+  assert.match(markup, /Pro — one-time unlock/)
+  assert.match(markup, /One-time purchase — price coming soon/)
   assert.match(markup, /disabled=""[^>]*>Unlock ShelfPick Pro/)
   assert.match(markup, /Purchases are not available yet/)
+  assert.doesNotMatch(markup, /monthly|subscription/i)
 })
 
-test("Pro plan uses account tier and entitlement without a purchase action", () => {
+test("Pro plan is current without a purchase action", () => {
   const markup = render(ProComparisonView, {
     user: { ...user, tier: "PRO", entitlements: ["game_night_basic", "personalized_discover"] },
   })
-  assert.match(markup, /Current plan: Pro/)
-  assert.match(markup, /Personalised Discover \/ For You<\/span><span class="pro-feature-status">Available now/)
-  assert.match(markup, /Advanced recommendation intelligence<\/span><span class="pro-feature-status">Coming later/)
+  assert.match(markup, /Pro <span class="pro-plan-state">Current plan/)
   assert.doesNotMatch(markup, /Unlock ShelfPick Pro/)
+})
+
+test("matrix separates included, planned and excluded with accessible labels", () => {
+  const markup = render(ProComparisonView, { user })
+  const row = name => markup.match(new RegExp(`<tr><th scope="row">${name}<\\/th>(.*?)<\\/tr>`))?.[1]
+  assert.match(row("Collection management"), /Included now.*Included now/)
+  assert.match(row("Basic Game Night"), /Included now.*Included now/)
+  assert.match(row("For You"), /Not included.*Included now/)
+  assert.match(row("Advanced recommendations"), /Not included.*Coming later/)
+  assert.match(markup, /ShelfPick Free and Pro feature comparison/)
 })
 
 test("Discover and the Free comparison use the same Top 500 label", () => {
@@ -65,5 +75,5 @@ test("Discover and the Free comparison use the same Top 500 label", () => {
   }))
   const comparison = render(ProComparisonView, { user })
   assert.match(discover, /role="tab"[^>]*>Top 500<\/button>/)
-  assert.match(comparison, /Discover: Top 500/)
+  assert.match(comparison, /Discover Top 500/)
 })
