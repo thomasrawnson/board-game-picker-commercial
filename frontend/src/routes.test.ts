@@ -90,4 +90,6 @@ test("return routes accept app deep links but reject unsafe paths", () => {
   )
   assert.equal(safeReturnPath("/settings/profile"), "/settings/profile")
   assert.equal(appViewForPath(APP_PATHS.settings), "setup")
+  assert.equal(appViewForPath(APP_PATHS.settingsPro), "setup")
+  assert.equal(safeReturnPath(APP_PATHS.settingsPro), APP_PATHS.settingsPro)
 })

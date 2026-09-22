@@ -27,6 +27,7 @@ export const APP_PATHS = {
   setup: "/setup",
   settings: "/settings",
   settingsProfile: "/settings/profile",
+  settingsPro: "/settings/pro",
 } as const
 
 
@@ -91,7 +92,7 @@ export function appViewForPath(
     return "setup"
   }
 
-  if (pathname === APP_PATHS.settings || pathname === APP_PATHS.settingsProfile) {
+  if (pathname === APP_PATHS.settings || pathname === APP_PATHS.settingsProfile || pathname === APP_PATHS.settingsPro) {
     return "setup"
   }
 
@@ -115,6 +116,7 @@ export function isProtectedAppPath(
     || pathname === APP_PATHS.setup
     || pathname === APP_PATHS.settings
     || pathname === APP_PATHS.settingsProfile
+    || pathname === APP_PATHS.settingsPro
   )
 }
 

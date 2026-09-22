@@ -9,7 +9,7 @@
     "check:pwa": "node scripts/check-pwa-assets.mjs",
     "check:colors": "node scripts/check-colors.mjs",
     "lint": "eslint .",
-    "test": "node --test src/routes.test.ts src/auth-validation.test.ts src/api/request.test.ts src/onboarding.test.mjs scripts/theme.test.mjs",
+    "test": "node --test src/routes.test.ts src/auth-validation.test.ts src/api/request.test.ts src/onboarding.test.mjs src/pro-comparison.test.mjs scripts/theme.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

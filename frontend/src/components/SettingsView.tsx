@@ -14,8 +14,8 @@ type Setting = {
 
 const sections: { title: string; items: Setting[] }[] = [
   { title: "ShelfPick Pro", items: [
-    { label: "Unlock Pro" },
-    { label: "Compare Free vs Pro" },
+    { label: "Unlock Pro", to: APP_PATHS.settingsPro },
+    { label: "Compare Free vs Pro", to: APP_PATHS.settingsPro },
   ] },
   { title: "Collection & Data", items: [
     { label: "Sync with BGG", to: APP_PATHS.setup },

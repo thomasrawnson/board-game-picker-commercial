@@ -43,6 +43,7 @@ import OnboardingView from "./components/OnboardingView";
 import SetupView from "./components/SetupView";
 import ProfileSettings from "./components/ProfileSettings";
 import SettingsView from "./components/SettingsView";
+import ProComparisonView from "./components/ProComparisonView";
 import PlayerAvatar from "./components/ui/PlayerAvatar";
 
 import AppNavigation, { type AppView } from "./components/AppNavigation";
@@ -472,7 +473,7 @@ function App() {
 
   return (
     <main className="app-shell">
-      <section className={`phone app-phone${["collection", "discover", "rankings", "insights"].includes(view) ? " app-phone-wide" : ""}`} ref={appScrollRef}>
+      <section className={`phone app-phone${["collection", "discover", "rankings", "insights"].includes(view) || location.pathname === APP_PATHS.settingsPro ? " app-phone-wide" : ""}`} ref={appScrollRef}>
         <AppHeader
           user={user}
           onOpenSettings={() => {
@@ -557,6 +558,11 @@ function App() {
                 <Link className="settings-back-link" to={APP_PATHS.settings}>Back to Settings</Link>
                 <ProfileSettings user={user} onChange={setUser} />
               </>}
+            />
+
+            <Route
+              path={APP_PATHS.settingsPro}
+              element={<ProComparisonView user={user} />}
             />
 
             <Route
