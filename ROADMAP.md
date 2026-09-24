@@ -23,7 +23,16 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Slice 4 — Settings + Pro foundations**
+**Pre-beta design pass — UI/layout, logo correction and Free vs Pro value**
+
+Requested by Tom on 24 September 2026. Follow
+[the three workstream briefs](docs/pre-beta-design-priorities.md) before
+Private Beta or public launch. Choose the visual direction and logo, verify
+the working Pro benefits, then implement shared UI/core screens, approved
+assets and the upgrade presentation in small slices. Pause unrelated feature
+expansion. Keep the one-time Pro unlock direction; price remains undecided.
+Existing production/runbook gates remain mandatory. These are planned tasks,
+not completed implementation.
 
 ## Status legend
 
@@ -37,7 +46,7 @@ product work below is the current engineering priority.
 1. Game Night MVP + entitlement scaffolding
 2. Discover v3
 3. Onboarding + Player Profiles
-4. Settings + Pro foundations
+4. Pre-beta UI/layout, logo and Free vs Pro pass (including remaining Settings + Pro presentation)
 5. Private Beta readiness
 6. Public launch
 7. Live Plays
@@ -417,7 +426,7 @@ In addition:
 
 **Status:** IN PROGRESS — client instrumentation foundation complete; beta operations remain open
 
-Run Private Beta immediately after the Game Night MVP. Before inviting users,
+Run Private Beta after the Game Night MVP and the current pre-beta design pass. Before inviting users,
 complete the production deployment, migration, email and backup/recovery checks
 in `docs/production-runbook.md`.
 

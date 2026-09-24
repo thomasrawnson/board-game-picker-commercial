@@ -433,6 +433,14 @@ backup/restore rehearsal and rollback.
 
 ## Roadmap
 
+**Priority update — 24 September 2026:** the current product focus is UI/layout,
+logo consistency and Free vs Pro clarity before beta. See [ROADMAP.md](ROADMAP.md)
+and [the workstream briefs](docs/pre-beta-design-priorities.md). The engineering
+roadmap is authoritative for delivery status; the older narrative below predates
+completed Game Night MVP, Discover v3 and onboarding work. Pro is currently
+planned as a one-time unlock with price undecided. Production readiness checks
+remain required alongside this design pass.
+
 Development is currently organised around reaching a small closed alpha before expanding the recommendation engine.
 
 **UX-1B is on `origin/main`:** recoverable requests, accessible registration/password reset, and bounded tablet/desktop layouts shipped in `aa68663`, with GitHub Actions run #44 passing. See [UX-1B release notes](docs/ux-1b-release-notes.md) for validation and limitations. **Foundation B production verification is in progress; authenticated Render checks remain next.**
