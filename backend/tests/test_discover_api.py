@@ -68,3 +68,32 @@ def test_unavailable_discover_source_is_not_an_empty_success():
     assert response.json() == {
         "detail": "Recommendations are temporarily unavailable. Please try again."
     }
+
+
+def test_no_matching_top100_games_is_an_empty_success():
+    class EmptyDiscoverService:
+        def get_recommendations(
+            self,
+            mode="hot",
+            limit=10,
+        ):
+            assert mode == "top100"
+            return []
+
+    app.dependency_overrides[get_current_user] = (
+        lambda: SimpleNamespace(tier="FREE")
+    )
+    app.dependency_overrides[get_discover_service] = (
+        EmptyDiscoverService
+    )
+
+    try:
+        response = client.get(
+            "/discover",
+            params={"mode": "top100"},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json() == []

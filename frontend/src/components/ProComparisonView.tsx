@@ -11,7 +11,7 @@ const features: { name: string; free: Availability; pro: Availability }[] = [
   { name: "Core Pick", free: "included", pro: "included" },
   { name: "Basic play tracking", free: "included", pro: "included" },
   { name: "Discover Hot", free: "included", pro: "included" },
-  { name: "Discover Top 500", free: "included", pro: "included" },
+  { name: "Discover Top 100", free: "included", pro: "included" },
   { name: "Basic Game Night", free: "included", pro: "included" },
   { name: "For You", free: "excluded", pro: "included" },
   { name: "Advanced recommendations", free: "excluded", pro: "planned" },

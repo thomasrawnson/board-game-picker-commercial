@@ -12,7 +12,7 @@ export function discoverEmptyCopy(mode: DiscoverMode) {
   return {
     title: "No new games to show right now",
     body: mode === "hot"
-      ? "Your shelf may already contain the current Hot games. Check Top 500 for more ideas."
-      : "Your shelf may already contain these highly ranked games. Check Hot for something different.",
+      ? "Your shelf may already contain the current Hot games. Check Top 100 for more ideas."
+      : "Your shelf may already contain the current Top 100 games. Check Hot for something different.",
   }
 }

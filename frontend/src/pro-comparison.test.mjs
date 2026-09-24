@@ -42,7 +42,7 @@ test("Free plan shows current essentials and an unavailable purchase action", ()
   const markup = render(ProComparisonView, { user })
   assert.match(markup, /Free <span class="pro-plan-state">Current plan/)
   assert.match(markup, /Basic Game Night/)
-  assert.match(markup, /Discover Top 500/)
+  assert.match(markup, /Discover Top 100/)
   assert.match(markup, /For You/)
   assert.match(markup, /Pro — one-time unlock/)
   assert.match(markup, /One-time purchase — price coming soon/)
@@ -69,11 +69,11 @@ test("matrix separates included, planned and excluded with accessible labels", (
   assert.match(markup, /ShelfPick Free and Pro feature comparison/)
 })
 
-test("Discover and the Free comparison use the same Top 500 label", () => {
+test("Discover and the Free comparison use the same Top 100 label", () => {
   const discover = renderToStaticMarkup(React.createElement(DiscoverView, {
     personalized: false, onViewWishlist: () => {}, onUnlockPro: () => {},
   }))
   const comparison = render(ProComparisonView, { user })
-  assert.match(discover, /role="tab"[^>]*>Top 500<\/button>/)
-  assert.match(comparison, /Discover Top 500/)
+  assert.match(discover, /role="tab"[^>]*>Top 100<\/button>/)
+  assert.match(comparison, /Discover Top 100/)
 })

@@ -23,7 +23,7 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Pre-beta priority 1 — UI/layout redesign (UI-1B complete; Top 100 copy correction next)**
+**Pre-beta priority 1 — UI/layout redesign (Top 100 correction complete; UI-1C next)**
 
 Before Private Beta, product work is prioritised in this order:
 
@@ -47,11 +47,17 @@ verified the end of long Collection, Discover and Insights pages remains above
 the navigation at mobile widths, and enabled inactive controls use the existing
 primary-text token in dark mode.
 
-The immediate next small slice is a copy-only correction: the ranked Discover
-tab and matching customer-facing references must say **Top 100**, not
-**Top 500**. The implementation keeps the existing `mode="top100"` API value
-and preserves route/query parameters, saved state and telemetry keys. This
-correction remains separate from UI-1B and precedes UI-1C.
+The **Top 100** correction is complete. For `mode="top100"`, candidates must
+have an original ranked-source position from 1 through 100 before ownership
+filtering and the existing 30-item metadata limit. Missing, invalid and
+above-100 ranks are not eligible, and owned games do not cause lower-ranked
+games to fill vacancies. The ranked source and its 500-candidate fresh, warm
+and stale caches remain available to personalised Discover.
+
+Customer-facing Discover, empty-state and Free/Pro comparison copy now says
+**Top 100**. API identifiers, routes/query parameters, saved state, telemetry
+keys, recommendation scoring and access rules are unchanged. BoardGameGeek's
+ranked-page 403 remains an external availability issue. UI-1C is next.
 
 Across all three stages, use “warm shelf, confident choices” as the visual
 principle. Game Night remains a separate primary-navigation destination; it is
@@ -334,7 +340,7 @@ communicate Free versus Pro.
   - Tip Jar.
 
 Free functionality remains useful and includes Collection, Wishlist, Core
-Picker, basic play tracking, Discover Hot and Discover Top 500. Pro candidates
+Picker, basic play tracking, Discover Hot and Discover Top 100. Pro candidates
 include personalised Discover, advanced recommendation intelligence, richer
 statistics and enhanced Game Night features. Basic backup and data safety are
 treated separately from arbitrary Pro gating.

@@ -10,6 +10,7 @@ from services.picker_service import PickerCriteria, PickerService
 
 
 DISCOVER_MODES = {"hot", "top100", "for_you"}
+TOP_RANKED_POSITION = 100
 
 
 class DiscoverService:
@@ -41,6 +42,11 @@ class DiscoverService:
         source_candidates = self.candidate_provider.get_candidates(
             owned_bgg_ids,
             source_names=source_names,
+            max_ranked_position=(
+                TOP_RANKED_POSITION
+                if mode == "top100"
+                else None
+            ),
         )[:30]
         candidates = self._load_metadata(source_candidates)
         wishlisted_ids = self.repository.get_wishlisted_bgg_ids(self.user_id)

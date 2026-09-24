@@ -20,7 +20,7 @@ type Props = {
 
 const tabs: Array<{ mode: DiscoverMode; label: string }> = [
   { mode: "hot", label: "Hot" },
-  { mode: "top100", label: "Top 500" },
+  { mode: "top100", label: "Top 100" },
   { mode: "for_you", label: "For You" },
 ]
 

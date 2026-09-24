@@ -16,6 +16,6 @@ test("Discover empty copy distinguishes personalised no-match results", () => {
   )
   assert.match(
     discoverEmptyCopy("top100").body,
-    /highly ranked games/,
+    /current Top 100 games/,
   )
 })

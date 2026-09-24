@@ -295,6 +295,7 @@ class DiscoverCandidateProvider:
         self,
         owned_bgg_ids: set[int],
         source_names: set[str] | None = None,
+        max_ranked_position: int | None = None,
     ) -> list[DiscoverCandidate]:
         source_results = []
         unavailable_errors: list[
@@ -350,6 +351,19 @@ class DiscoverCandidateProvider:
                     continue
 
                 candidate = result[index]
+
+                if max_ranked_position is not None:
+                    ranked_position = (
+                        candidate.ranked_position
+                    )
+
+                    if (
+                        type(ranked_position) is not int
+                        or not 1
+                        <= ranked_position
+                        <= max_ranked_position
+                    ):
+                        continue
 
                 if candidate.bgg_id in owned_bgg_ids:
                     continue

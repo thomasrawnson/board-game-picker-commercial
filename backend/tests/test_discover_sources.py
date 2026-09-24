@@ -300,3 +300,135 @@ def test_ranked_candidates_are_cached():
     assert client.calls == 5
     assert [item.bgg_id for item in first] == [1, 2, 3, 4, 5]
     assert [item.bgg_id for item in second] == [1, 2, 3, 4, 5]
+
+
+def test_top100_boundary_applies_to_fresh_warm_and_stale_candidates():
+    now = [100.0]
+
+    class RankedClient:
+        def __init__(self):
+            self.calls = 0
+            self.unavailable = False
+
+        def get_ranked_games_page(self, page):
+            self.calls += 1
+
+            if self.unavailable:
+                raise BGGSourceUnavailableError(
+                    source="ranked",
+                    status_code=502,
+                )
+
+            first_id = (page - 1) * 100 + 1
+            return "".join(
+                (
+                    f'<a href="/boardgame/{bgg_id}/game">'
+                    "Game</a>"
+                )
+                for bgg_id in range(
+                    first_id,
+                    first_id + 100,
+                )
+            )
+
+    client = RankedClient()
+    source = RankedDiscoverSource(
+        client,
+        cache=RankedCandidateCache(
+            ttl_seconds=10,
+            unavailable_cooldown_seconds=60,
+            clock=lambda: now[0],
+        ),
+    )
+    provider = DiscoverCandidateProvider([
+        source,
+    ])
+
+    fresh = provider.get_candidates(
+        set(),
+        source_names={"ranked"},
+        max_ranked_position=100,
+    )
+    warm = provider.get_candidates(
+        set(),
+        source_names={"ranked"},
+        max_ranked_position=100,
+    )
+
+    assert fresh[-1].ranked_position == 100
+    assert warm[-1].ranked_position == 100
+    assert len(fresh) == 100
+    assert all(
+        item.ranked_position != 101
+        for item in fresh
+    )
+    assert client.calls == 5
+
+    after_ownership = provider.get_candidates(
+        {1},
+        source_names={"ranked"},
+        max_ranked_position=100,
+    )
+
+    assert after_ownership[0].bgg_id == 2
+    assert after_ownership[0].ranked_position == 2
+
+    now[0] += 11
+    client.unavailable = True
+    stale = provider.get_candidates(
+        set(),
+        source_names={"ranked"},
+        max_ranked_position=100,
+    )
+
+    assert stale[-1].ranked_position == 100
+    assert len(stale) == 100
+    assert client.calls == 6
+
+    broader = provider.get_candidates(
+        set(),
+        source_names={"ranked"},
+    )
+
+    assert broader[-1].ranked_position == 500
+    assert len(broader) == 500
+    assert client.calls == 6
+
+    no_matches = provider.get_candidates(
+        set(range(1, 101)),
+        source_names={"ranked"},
+        max_ranked_position=100,
+    )
+
+    assert no_matches == []
+    assert client.calls == 6
+
+
+def test_top100_boundary_preserves_source_rank_and_rejects_invalid_ranks():
+    provider = DiscoverCandidateProvider([
+        FakeSource(
+            "ranked",
+            [
+                candidate(1, "ranked", 100),
+                candidate(2, "ranked", 101),
+                candidate(3, "ranked", None),
+                candidate(4, "ranked", 0),
+                candidate(5, "ranked", -1),
+                candidate(6, "ranked", True),
+                DiscoverCandidate(
+                    bgg_id=7,
+                    sources={"ranked"},
+                    ranked_position="7",
+                ),
+            ],
+        ),
+    ])
+
+    results = provider.get_candidates(
+        set(),
+        source_names={"ranked"},
+        max_ranked_position=100,
+    )
+
+    assert [item.bgg_id for item in results] == [1]
+    assert results[0].ranked_position == 100

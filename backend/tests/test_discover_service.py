@@ -39,14 +39,33 @@ class FakeCandidateProvider:
         DiscoverCandidate(2, {"ranked"}, 2),
         DiscoverCandidate(3, {"hot"}),
         DiscoverCandidate(4, {"hot"}),
+        DiscoverCandidate(5, {"ranked"}, 150),
     ]
 
-    def get_candidates(self, owned_bgg_ids, source_names=None):
+    def get_candidates(
+        self,
+        owned_bgg_ids,
+        source_names=None,
+        max_ranked_position=None,
+    ):
         assert owned_bgg_ids == {99}
         return [
             candidate
             for candidate in self.candidates
-            if source_names is None or candidate.sources & source_names
+            if (
+                source_names is None
+                or candidate.sources & source_names
+            )
+            and (
+                max_ranked_position is None
+                or (
+                    type(candidate.ranked_position)
+                    is int
+                    and 1
+                    <= candidate.ranked_position
+                    <= max_ranked_position
+                )
+            )
         ]
 
 
@@ -130,3 +149,15 @@ def test_for_you_new_user_falls_back_to_popular_candidates():
     assert results
     assert all(item["reasons"] for item in results)
     assert any("BoardGameGeek" in reason for item in results for reason in item["reasons"])
+
+
+def test_for_you_keeps_ranked_candidates_beyond_top_100():
+    results = make_service().get_recommendations(
+        mode="for_you",
+    )
+
+    assert any(
+        item["game"].bgg_id == 5
+        and item["source_rank"] == 150
+        for item in results
+    )

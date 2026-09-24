@@ -35,13 +35,23 @@ Playwright covered Picker, Collection, Game Night, Discover and Insights at
 mobile and desktop widths in light and dark themes. No UI-1B issues remained;
 UI-1C and stale artwork refresh remain separate work.
 
-### Immediate copy correction — Discover Top 100
+### Immediate correction — Discover Top 100 (complete)
 
-Before UI-1C, complete a small copy-only sweep so Discover's ranked tab and
-all matching customer-facing references use **Top 100** rather than
-**Top 500**. Preserve the backend and frontend API identifier
-`mode="top100"`, route/query parameters, saved state and existing telemetry
-keys. Do not combine this correction with UI-1B behavior or styling work.
+Completed on 24 September 2026. The `top100` service path now accepts only
+original ranked-source positions 1–100 before ownership filtering and its
+existing 30-candidate metadata limit. Missing, invalid and above-100 ranks are
+excluded, so owning the entire Top 100 produces a genuine empty result rather
+than filling vacancies from lower-ranked games.
+
+The underlying source still fetches and caches up to 500 candidates for 24
+hours, including its stale outage fallback, so personalised Discover retains
+its broader ranked pool. Authentication, cooldown and truthful source-failure
+handling are unchanged. Customer-facing Discover and Free/Pro copy now says
+**Top 100**, while `mode="top100"`, route/query parameters, saved state and the
+existing `top500` telemetry key remain unchanged. Deterministic tests cover
+fresh, warm-cache, stale-fallback, boundary, invalid-rank, ownership and
+failure-versus-empty behavior. BoardGameGeek's ranked-page 403 remains an
+external availability issue. UI-1B and UI-1C remain separate.
 
 ### UI-2 — core visual polish
 
