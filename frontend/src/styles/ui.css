@@ -60,6 +60,27 @@
   background: var(--color-brand-primary);
 }
 
+/* Enabled choices must remain clearly legible against dark raised surfaces. */
+:root[data-theme="dark"]
+  :is(
+    .segmented-control button:not(.active),
+    .filter-tabs button:not(.active),
+    .player-chip:not(.selected),
+    .picker-mode-option:not(.selected),
+    .preference-chip:not(.selected),
+    .complexity-option:not(.selected),
+    .collection-section-tabs button:not(.active),
+    .collection-filter-tabs button:not(.active),
+    .collection-sort,
+    .collection-back,
+    .discover-tab:not(.active),
+    .discover-dismiss-button,
+    .ranking-view-tabs button:not(.active),
+    .stats-section-tab:not(.active)
+  ):not(:disabled) {
+  color: var(--color-text-primary);
+}
+
 .ui-disclosure {
   border: 0;
   background: transparent;

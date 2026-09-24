@@ -12,7 +12,8 @@
   max-width: 430px;
   min-height: 100dvh;
   max-height: 100dvh;
-  padding: 0 20px calc(122px + env(safe-area-inset-bottom));
+  padding-block-start: 0;
+  padding-inline: 20px;
   background: var(--sp-bg);
   border: 0;
   border-radius: 0;

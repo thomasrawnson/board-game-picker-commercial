@@ -23,7 +23,7 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Pre-beta priority 1 — UI/layout redesign (UI-1A active)**
+**Pre-beta priority 1 — UI/layout redesign (UI-1B complete; Top 100 copy correction next)**
 
 Before Private Beta, product work is prioritised in this order:
 
@@ -39,6 +39,19 @@ targeted legacy colour/`!important` cleanup. UI-2 refines hierarchy, typography,
 spacing, component consistency and responsive polish after those defects are
 stable. UI-3 gives artwork and content more desktop space without pulling its
 future card/grid treatment into UI-1.
+
+UI-1B is complete. The fixed primary navigation now retains the intended
+128px content clearance plus the device safe-area inset because its definitive
+spacing is no longer reduced by a later app-shell shorthand. Playwright
+verified the end of long Collection, Discover and Insights pages remains above
+the navigation at mobile widths, and enabled inactive controls use the existing
+primary-text token in dark mode.
+
+The immediate next small slice is a copy-only correction: the ranked Discover
+tab and matching customer-facing references must say **Top 100**, not
+**Top 500**. The implementation keeps the existing `mode="top100"` API value
+and preserves route/query parameters, saved state and telemetry keys. This
+correction remains separate from UI-1B and precedes UI-1C.
 
 Across all three stages, use “warm shelf, confident choices” as the visual
 principle. Game Night remains a separate primary-navigation destination; it is

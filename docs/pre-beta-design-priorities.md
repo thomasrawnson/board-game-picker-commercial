@@ -26,6 +26,23 @@ resilience and Collection readability. UI-1B covers bottom-navigation clearance
 and dark inactive-control contrast. UI-1C covers sparse/empty-state copy and
 targeted legacy override cleanup.
 
+UI-1B validation completed on 24 September 2026. The signed-in shell preserves
+the navigation-owned 128px bottom clearance plus `safe-area-inset-bottom`, so
+the final content and controls remain reachable above the fixed navigation.
+Enabled inactive controls use the existing primary-text token in dark mode;
+selected and disabled states keep their established semantic treatment.
+Playwright covered Picker, Collection, Game Night, Discover and Insights at
+mobile and desktop widths in light and dark themes. No UI-1B issues remained;
+UI-1C and stale artwork refresh remain separate work.
+
+### Immediate copy correction — Discover Top 100
+
+Before UI-1C, complete a small copy-only sweep so Discover's ranked tab and
+all matching customer-facing references use **Top 100** rather than
+**Top 500**. Preserve the backend and frontend API identifier
+`mode="top100"`, route/query parameters, saved state and existing telemetry
+keys. Do not combine this correction with UI-1B behavior or styling work.
+
 ### UI-2 — core visual polish
 
 After UI-1 is stable, refine hierarchy, typography, spacing, component
