@@ -49,13 +49,15 @@ until the reviewed Blueprint is applied in a later, explicitly authorized step.
 2. For `board-game-picker-web`, confirm type **Static Site**, branch `main`,
    root directory `frontend`, build command
    `npm ci && npm run build && npm run check:pwa`, publish directory `./dist`,
-   and auto-deploy **After CI Checks Pass**. Confirm its latest deploy is
+   runtime environment `NODE_VERSION=22`, and auto-deploy **After CI Checks
+   Pass**. Confirm its latest deploy is
    `aa686635580ecf3bdab3704388528fa67a79289c` and `Live`.
 3. For `board-game-picker-api`, confirm region **Frankfurt**, plan
    `0.5c-512mb`, branch `main`, root directory `backend`, build command
    `pip install -r requirements.txt`, pre-deploy command
    `alembic upgrade head`, start command `bash start.sh`, health path
-   `/health`, and auto-deploy **After CI Checks Pass**. Confirm the latest
+   `/health`, runtime environment `PYTHON_VERSION=3.12.14`, and auto-deploy
+   **After CI Checks Pass**. Confirm the latest
    deploy is the same commit and `Live`.
 4. For `board-game-picker-db`, confirm region **Frankfurt**, PostgreSQL 16,
    plan `0.1c-256mb`, 1 GB storage, database `boardgamepicker`, user
@@ -155,6 +157,11 @@ the application's production identity.
 private database connection and neither value belongs in GitHub. Keep the
 BoardGameGeek application token server-side; never expose it through a Vite
 environment variable or browser request.
+
+The Blueprint fixes the API runtime at Python 3.12.14 and the static-site
+build runtime at Node 22. These values are not secrets and do not need manual
+entry. The API validates `BGG_API_TOKEN` during production startup; a missing
+or whitespace-only token stops the deployment without logging its value.
 
 4. Add the two custom domains to their matching Render services and create
 the DNS records Render supplies.

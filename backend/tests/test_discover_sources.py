@@ -1,8 +1,10 @@
 import logging
 
 import httpx
+import pytest
 
 from bgg.client import BGGClient
+from bgg.client import BGGSourceUnavailableError
 from services.discover_sources import (
     DiscoverCandidate,
     DiscoverCandidateProvider,
@@ -147,7 +149,13 @@ def test_ranked_403_falls_back_and_enters_cooldown(
         clock=lambda: now[0],
     )
     provider = DiscoverCandidateProvider([
-        HotDiscoverSource(client),
+        HotDiscoverSource(
+            client,
+            cache=RankedCandidateCache(
+                unavailable_cooldown_seconds=60,
+                clock=lambda: now[0],
+            ),
+        ),
         RankedDiscoverSource(
             client,
             cache=cache,
@@ -181,6 +189,92 @@ def test_ranked_403_falls_back_and_enters_cooldown(
     provider.get_candidates(set())
 
     assert ranked_calls == [1, 1]
+
+
+def test_hot_502_uses_stale_cache_during_cooldown_and_recovers():
+    now = [100.0]
+
+    class RecoveringHotClient:
+        def __init__(self):
+            self.calls = 0
+
+        def get_hot_games(self):
+            self.calls += 1
+
+            if self.calls == 1:
+                return "<items><item id='7'/></items>"
+
+            if self.calls == 2:
+                raise BGGSourceUnavailableError(
+                    source="hot",
+                    status_code=502,
+                )
+
+            return "<items><item id='8'/></items>"
+
+    client = RecoveringHotClient()
+    source = HotDiscoverSource(
+        client,
+        cache=RankedCandidateCache(
+            ttl_seconds=10,
+            unavailable_cooldown_seconds=60,
+            clock=lambda: now[0],
+        ),
+    )
+
+    first = source.get_candidates()
+    now[0] += 11
+    stale = source.get_candidates()
+    during_cooldown = source.get_candidates()
+
+    assert [item.bgg_id for item in first] == [7]
+    assert [item.bgg_id for item in stale] == [7]
+    assert [item.bgg_id for item in during_cooldown] == [7]
+    assert client.calls == 2
+
+    now[0] += 61
+    recovered = source.get_candidates()
+
+    assert [item.bgg_id for item in recovered] == [8]
+    assert client.calls == 3
+
+
+def test_single_unavailable_source_without_cache_is_not_empty_success():
+    class UnavailableHotClient:
+        def __init__(self):
+            self.calls = 0
+
+        def get_hot_games(self):
+            self.calls += 1
+            raise BGGSourceUnavailableError(
+                source="hot",
+                status_code=502,
+            )
+
+    client = UnavailableHotClient()
+    provider = DiscoverCandidateProvider([
+        HotDiscoverSource(
+            client,
+            cache=RankedCandidateCache(),
+        ),
+    ])
+
+    with pytest.raises(BGGSourceUnavailableError) as error:
+        provider.get_candidates(
+            set(),
+            source_names={"hot"},
+        )
+
+    assert error.value.status_code == 502
+
+    with pytest.raises(BGGSourceUnavailableError) as cooldown_error:
+        provider.get_candidates(
+            set(),
+            source_names={"hot"},
+        )
+
+    assert cooldown_error.value.cooldown_active is True
+    assert client.calls == 1
 
 
 def test_ranked_candidates_are_cached():

@@ -9,6 +9,7 @@ import {
 } from "../api/client"
 import RetryNotice from "./ui/RetryNotice"
 import { trackEvent } from "../telemetry"
+import { discoverEmptyCopy } from "../discover-state"
 
 
 type Props = {
@@ -154,6 +155,7 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
     },
     new Map(),
   )
+  const emptyCopy = discoverEmptyCopy(mode)
 
   function renderCard(recommendation: DiscoverRecommendation, index: number) {
     const { game, reasons, wishlisted } = recommendation
@@ -271,8 +273,8 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
           {actionError && <p className="error-message" role="alert">{actionError}</p>}
           {!loading && !error && recommendations.length === 0 && (
             <div className="discover-empty">
-              <h2>No games to show right now</h2>
-              <p>Try another Discover list or check back when BoardGameGeek refreshes.</p>
+              <h2>{emptyCopy.title}</h2>
+              <p>{emptyCopy.body}</p>
             </div>
           )}
 

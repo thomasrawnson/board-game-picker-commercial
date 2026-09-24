@@ -12,9 +12,11 @@ class BGGSourceUnavailableError(
         self,
         source: str,
         status_code: int,
+        cooldown_active: bool = False,
     ):
         self.source = source
         self.status_code = status_code
+        self.cooldown_active = cooldown_active
 
         super().__init__(
             f"BGG {source} source unavailable "
@@ -130,11 +132,22 @@ class BGGClient:
             "type": "boardgame",
         }
 
-        return self._get(
-            url,
-            params,
-            "BGG hot games request",
-        )
+        try:
+            return self._get(
+                url,
+                params,
+                "BGG hot games request",
+            )
+        except httpx.HTTPStatusError as exc:
+            if 500 <= exc.response.status_code < 600:
+                raise BGGSourceUnavailableError(
+                    source="hot",
+                    status_code=(
+                        exc.response.status_code
+                    ),
+                ) from exc
+
+            raise
 
     def get_ranked_games_page(
         self,
@@ -158,10 +171,17 @@ class BGGClient:
                 headers={},
             )
         except httpx.HTTPStatusError as exc:
-            if exc.response.status_code == 403:
+            if (
+                exc.response.status_code == 403
+                or 500
+                <= exc.response.status_code
+                < 600
+            ):
                 raise BGGSourceUnavailableError(
                     source="ranked",
-                    status_code=403,
+                    status_code=(
+                        exc.response.status_code
+                    ),
                 ) from exc
 
             raise
