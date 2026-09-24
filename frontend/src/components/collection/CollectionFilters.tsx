@@ -47,7 +47,7 @@ function CollectionFilters({
         options={[
           { value: "all", label: "All" },
           { value: "played", label: "Played" },
-          { value: "never", label: "Never played" },
+          { value: "never", label: "Unplayed" },
         ]}
         onChange={
           onPlayFilterChange
@@ -56,12 +56,17 @@ function CollectionFilters({
 
 
       <div className="collection-search-sort-row">
-        <label className="collection-search-wrap">
+        <label
+          className="collection-search-wrap"
+          htmlFor="collection-search"
+        >
           <span className="sr-only">
             Search your games
           </span>
 
           <input
+            id="collection-search"
+            name="collection_search"
             className="collection-search"
             type="search"
             value={search}
@@ -74,12 +79,17 @@ function CollectionFilters({
           />
         </label>
 
-        <label className="collection-sort-wrap">
+        <label
+          className="collection-sort-wrap"
+          htmlFor="collection-sort"
+        >
           <span className="sr-only">
             Sort games
           </span>
 
           <select
+            id="collection-sort"
+            name="collection_sort"
             className="collection-sort"
             value={sort}
             aria-label="Sort games"

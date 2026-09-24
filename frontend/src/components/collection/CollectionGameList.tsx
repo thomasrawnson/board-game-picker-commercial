@@ -2,6 +2,7 @@ import type {
   CollectionGameStats,
   Game,
 } from "../../api/client"
+import ResilientGameArtwork from "../ResilientGameArtwork"
 
 type Props = {
   games: Game[]
@@ -40,40 +41,30 @@ function CollectionGameList({
             onClick={() => onOpenGame(game)}
           >
             <div className="collection-thumb">
-              {game.thumbnail_url ||
-              game.image_url ? (
-                <img
-                  src={
-                    game.thumbnail_url ??
-                    game.image_url ??
-                    ""
-                  }
-                  alt=""
-                />
-              ) : (
-                <span>?</span>
-              )}
+              <ResilientGameArtwork
+                src={game.thumbnail_url ?? game.image_url}
+                alt=""
+                gameName={game.name}
+              />
             </div>
 
             <div className="collection-game-info">
               <strong>{game.name}</strong>
+
+              {playCount === 0 && (
+                <span>Not played</span>
+              )}
             </div>
 
-            <span
-              className={
-                playCount > 0
-                  ? "collection-play-count"
-                  : "collection-play-count muted"
-              }
-            >
-              {playCount > 0
-                ? `${playCount} ${
+            {playCount > 0 && (
+              <span className="collection-play-count">
+                {`${playCount} ${
                     playCount === 1
                       ? "play"
                       : "plays"
-                  }`
-                : "Not played"}
-            </span>
+                  }`}
+              </span>
+            )}
           </button>
         )
       })}

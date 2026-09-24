@@ -130,6 +130,22 @@ Forest Green carries action, selection and trust. Warm Gold marks moments of emp
 - Explainable, with concise hierarchy that makes recommendations and their reasons easy to trust.
 - Consistent across light and dark themes, mobile-first flows and wider app surfaces.
 
+The pre-beta visual principle is **“warm shelf, confident choices.”** Delivery
+is sequenced as UI-1 confirmed defect repair, UI-2 core visual polish, and UI-3
+full-width, content-forward desktop redesign. UI-1 must make external artwork
+failure safe, keep fixed navigation clear of content, restore dark inactive-state
+contrast, improve Collection scanability, correct misleading sparse states, and
+remove only the legacy overrides responsible for drift. UI-2 then refines core
+hierarchy, type, spacing, component consistency and responsive behaviour. UI-3
+is the later desktop structural redesign; do not introduce its card/grid model
+piecemeal during UI-1.
+
+Game Night remains a distinct primary-navigation destination and must not be
+merged into Picker. Visual work preserves recommendation rules, exact-player
+logic, the BoardGameGeek Not Recommended >=30% exclusion, routes, deep links,
+browser Back behaviour, collection state and scroll restoration. Logo work and
+the Free/Pro proposition are separate pre-beta priorities.
+
 ## Colors
 
 **The Forest Means Action Rule.** Use Forest Green for primary actions, selected controls, active navigation, focus rings and interactive affordances that move the user forward.

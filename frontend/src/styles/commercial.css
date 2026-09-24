@@ -407,23 +407,34 @@ h1 {
 }
 
 .collection-game {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
   gap: 11px;
-  padding: 10px 0;
-  color: var(--sp-text);
+  min-height: 72px;
+  padding: 8px 0;
+
+  color: var(--color-text-primary);
+  text-align: left;
   background: transparent;
+
   border: 0;
-  border-bottom: 1px solid var(--sp-line);
+  border-bottom: 1px solid var(--color-border);
   border-radius: 0;
+
+  cursor: pointer;
 }
 
 .collection-game:hover {
   background: var(--color-surface-raised);
-  border-color: var(--sp-line);
+  border-color: var(--color-border);
 }
 
 .collection-thumb {
-  width: 43px;
-  height: 43px;
+  width: 56px;
+  height: 56px;
   background: var(--color-surface-raised);
   border-radius: 8px;
 }
@@ -434,16 +445,31 @@ h1 {
 }
 
 .collection-game-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   gap: 3px;
 }
 
 .collection-game-info strong {
-  color: var(--sp-text);
-  font-size: 14px;
+  color: var(--color-text-primary);
+
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  line-height: 1.25;
+
+  display: -webkit-box;
+  overflow: hidden;
+
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
 }
 
 .collection-game-info span {
-  color: var(--sp-green);
+  color: var(--color-text-support);
   font-size: var(--text-meta);
 }
 
@@ -451,10 +477,6 @@ h1 {
   color: var(--color-accent-text);
   font-size: var(--text-meta);
   white-space: nowrap;
-}
-
-.collection-play-count.muted {
-  color: var(--sp-muted);
 }
 
 /* Rankings */
@@ -684,21 +706,6 @@ h1 {
 .collection-heading-row {
   padding-left: 2px;
   padding-right: 2px;
-}
-
-.collection-game {
-  grid-template-columns: 43px minmax(0, 1fr) auto;
-  min-height: 62px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-.collection-game-info {
-  justify-content: center;
-}
-
-.collection-game-info strong {
-  line-height: 1.25;
 }
 
 /* Wishlist uses the same naming and visual hierarchy as Collection. */

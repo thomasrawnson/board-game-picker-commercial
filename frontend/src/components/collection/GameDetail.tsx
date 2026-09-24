@@ -5,6 +5,7 @@ import type {
   GameHistory as GameHistoryData,
 } from "../../api/client"
 
+import ResilientGameArtwork from "../ResilientGameArtwork"
 import GameHistory from "./GameHistory"
 import PlayLogForm from "./PlayLogForm"
 
@@ -70,21 +71,11 @@ function GameDetail({
 
       <article className="collection-detail">
         <div className="collection-detail-image">
-          {game.image_url ||
-          game.thumbnail_url ? (
-            <img
-              src={
-                game.image_url ??
-                game.thumbnail_url ??
-                ""
-              }
-              alt={game.name}
-            />
-          ) : (
-            <div className="collection-placeholder">
-              ?
-            </div>
-          )}
+          <ResilientGameArtwork
+            src={game.image_url ?? game.thumbnail_url}
+            alt={`Cover of ${game.name}`}
+            gameName={game.name}
+          />
         </div>
 
         <p className="eyebrow">

@@ -34,6 +34,16 @@ bookend and a shared shelf. Game covers should remain visually dominant.
 - Prefer existing shared UI components over page-specific versions.
 - New colours must first be added as semantic tokens with a documented purpose.
 - New frontend visual work should read this document before implementation.
+- Use “warm shelf, confident choices” as the pre-beta visual principle: warm
+  neutrals structure the page, artwork carries visual weight, Forest indicates
+  action or selection, and Gold provides restrained emphasis.
+- Deliver layout work in sequence: UI-1 confirmed defect repair, UI-2 core
+  visual polish, then UI-3 full-width content-forward desktop redesign.
+- Game Night remains a distinct primary-navigation destination and is not
+  merged with Picker.
+- Preserve recommendation and exact-player-count rules, the BoardGameGeek Not
+  Recommended >=30% exclusion, routes/deep links, browser Back behaviour, and
+  collection state/scroll restoration during visual work.
 
 ## Tokens and theme mechanism
 

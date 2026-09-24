@@ -234,6 +234,11 @@
   margin-bottom: 10px;
 }
 
+.collection-tools .filter-tabs button {
+  min-height: var(--target-min);
+  white-space: nowrap;
+}
+
 /* Rankings remain discoverable from Insight without owning a permanent nav slot. */
 .rank-section-title-row {
   display: flex;

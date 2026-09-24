@@ -23,7 +23,30 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Slice 4 — Settings + Pro foundations**
+**Pre-beta priority 1 — UI/layout redesign (UI-1A active)**
+
+Before Private Beta, product work is prioritised in this order:
+
+1. UI/layout redesign;
+2. logo/brand correction;
+3. Free versus Pro proposition.
+
+The UI/layout work proceeds as UI-1 confirmed defects, UI-2 core visual polish,
+then UI-3 full-width, content-forward desktop redesign. UI-1 covers resilient
+BoardGameGeek artwork, bottom-navigation clearance, dark-mode inactive-control
+contrast, more readable Collection rows, accurate sparse/empty-state copy, and
+targeted legacy colour/`!important` cleanup. UI-2 refines hierarchy, typography,
+spacing, component consistency and responsive polish after those defects are
+stable. UI-3 gives artwork and content more desktop space without pulling its
+future card/grid treatment into UI-1.
+
+Across all three stages, use “warm shelf, confident choices” as the visual
+principle. Game Night remains a separate primary-navigation destination; it is
+not merged with Picker. Preserve recommendation rules, exact-player-count
+suitability, the BoardGameGeek Not Recommended >=30% exclusion, routes and deep
+links, browser Back behaviour, collection state and scroll restoration. Do not
+change backend/domain behaviour except where strictly needed for artwork
+fallbacks, and do not change the logo or Free/Pro proposition as part of UI-1.
 
 ## Status legend
 
@@ -416,6 +439,12 @@ In addition:
 ## Slice 5 — Private Beta readiness
 
 **Status:** IN PROGRESS — client instrumentation foundation complete; beta operations remain open
+
+T01 production configuration and Apple Silicon setup is complete in the
+repository: local, CI and Render runtimes align on Python 3.12 and Node 22,
+production requires a server-side BoardGameGeek token, and native arm64 setup
+is documented. Live Render configuration and verification remain operational
+steps rather than repository work.
 
 Run Private Beta immediately after the Game Night MVP. Before inviting users,
 complete the production deployment, migration, email and backup/recovery checks
