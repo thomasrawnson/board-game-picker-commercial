@@ -1,6 +1,6 @@
-# Board Game Picker
+# ShelfPick
 
-Board Game Picker is a mobile-first application for answering a familiar game-night question: **what should we play?**
+ShelfPick is a mobile-first application for answering a familiar game-night question: **what should we play?**
 
 The application imports a board game collection, stores game and play-history data in PostgreSQL, and recommends suitable games based on player count, available play time, complexity and recent play history.
 
@@ -10,7 +10,7 @@ It is also being developed as a data-engineering portfolio project, with an emph
 
 ## Current progress
 
-Board Game Picker now has a working end-to-end application flow covering account onboarding, collection ingestion, recommendation, discovery, play tracking and collection analytics.
+ShelfPick now has a working end-to-end application flow covering account onboarding, collection ingestion, recommendation, discovery, play tracking and collection analytics.
 
 Currently implemented:
 

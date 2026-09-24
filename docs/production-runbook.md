@@ -93,7 +93,7 @@ until the reviewed Blueprint is applied in a later, explicitly authorized step.
 
 The next deployment step is to add billing information to **My Workspace**,
 connect the GitHub repository provider for
-`thomasrawnson/board-game-picker-commercial`, and return to **New Blueprint
+`thomasrawnson/shelfpick`, and return to **New Blueprint
 Instance**. Use Blueprint name `shelfpick-production`, branch `main`, and the
 root `render.yaml`. Before applying, confirm the review lists exactly
 `board-game-picker-web`, `board-game-picker-api` and `board-game-picker-db`
