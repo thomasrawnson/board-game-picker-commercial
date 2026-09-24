@@ -17,4 +17,15 @@ The interface is designed as a mobile-first game-night experience and currently 
 Install dependencies:
 
 ```bash
-npm install
+npm ci
+```
+
+The frontend uses Node.js 22. The repository root `.node-version` and this
+package's `engines` declaration carry the same constraint for local tools and
+Render builds.
+
+Start the development server:
+
+```bash
+npm run dev
+```

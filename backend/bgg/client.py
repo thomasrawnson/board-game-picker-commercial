@@ -1,9 +1,8 @@
-import os
 import time
 
 import httpx
-from dotenv import load_dotenv
-load_dotenv()
+
+from config import settings
 
 
 class BGGSourceUnavailableError(
@@ -43,8 +42,8 @@ class BGGClient:
             max_retry_wait
         )
 
-        self.api_token = os.getenv(
-            "BGG_API_TOKEN"
+        self.api_token = (
+            settings.bgg_api_token
         )
 
         self.headers = {}

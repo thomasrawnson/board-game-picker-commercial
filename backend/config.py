@@ -47,6 +47,7 @@ class Settings:
     frontend_url: str
     resend_api_key: str
     email_from: str
+    bgg_api_token: str
 
 
 def get_settings() -> Settings:
@@ -102,6 +103,11 @@ def get_settings() -> Settings:
     email_from = os.getenv(
         "EMAIL_FROM",
         "ShelfPick <onboarding@resend.dev>",
+    ).strip()
+
+    bgg_api_token = os.getenv(
+        "BGG_API_TOKEN",
+        "",
     ).strip()
 
     if not database_url:
@@ -164,6 +170,11 @@ def get_settings() -> Settings:
                 "a verified sending domain"
             )
 
+        if not bgg_api_token:
+            raise RuntimeError(
+                "BGG_API_TOKEN must be configured"
+            )
+
     return Settings(
         environment=environment,
         database_url=database_url,
@@ -178,6 +189,7 @@ def get_settings() -> Settings:
         frontend_url=frontend_url,
         resend_api_key=resend_api_key,
         email_from=email_from,
+        bgg_api_token=bgg_api_token,
     )
 
 

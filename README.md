@@ -351,9 +351,40 @@ clean database and remains aligned with the SQLAlchemy models.
 
 ### Prerequisites
 
-- Python 3.12+
-- Node.js
+- Python 3.12.14 (declared in `.python-version`)
+- Node.js 22 (declared in `.node-version` and `frontend/package.json`)
 - Docker Desktop / Docker Compose
+
+### Apple Silicon macOS
+
+Use native arm64 builds of Python, Node.js and Docker Desktop. Rosetta is not
+required. A version manager such as pyenv for Python and fnm, nodenv or Volta
+for Node can read the version declarations at the repository root. Confirm a
+native shell and toolchain before installing dependencies:
+
+```bash
+uname -m
+python3 --version
+node --version
+```
+
+`uname -m` should report `arm64`, Python should report `3.12.14`, and Node
+should report a `v22` release. The Python bundled with macOS is not suitable
+for this project.
+
+Create the backend environment with the declared Python version:
+
+```bash
+cd backend
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+On first setup, copy `backend/.env.example` to `backend/.env` and replace only
+the local placeholders. `BGG_API_TOKEN` may remain blank for development, but
+authenticated BoardGameGeek requests require a real token kept outside source
+control.
 
 ### Database
 
@@ -392,7 +423,7 @@ uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 From `frontend`:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -426,6 +457,9 @@ explicit pre-deploy command rather than inside the web process.
 Secrets and environment-specific URLs are prompted for by Render and are not
 stored in source control. The database must use a paid plan so point-in-time
 recovery and logical exports are available for the closed alpha.
+Render is pinned to Python 3.12.14 and Node 22 by the Blueprint. Production
+startup fails with a variable-name-only error when required configuration,
+including `BGG_API_TOKEN`, is blank.
 
 Follow [the production deployment runbook](docs/production-runbook.md) for
 domain setup, Resend verification, environment values, smoke testing,
