@@ -78,6 +78,23 @@ consistency, responsive behaviour and the balance between artwork and controls.
 Use existing tokens and shared primitives rather than adding screen-specific
 visual exceptions.
 
+UI-2A Picker polish completed on 25 September 2026. The result screen now gives
+artwork, the game title and factual fit explanation a clear scan order. The
+existing rounded match value moved from the artwork into a restrained status
+row, while the existing metadata and More reasons disclosure keep supporting
+detail available. Log a play remains the single primary action; Try another is
+an outlined secondary action and Start over remains tertiary. Picker inputs,
+recommendation scoring, eligibility and player-count safeguards are unchanged.
+
+Frontend tests, lint, build, PWA and colour validation passed. Mocked,
+authenticated Playwright checks covered populated results, long titles, missing
+artwork, no matches and request errors at 390, 768, 1024 and 1440px in light and
+dark themes. They also checked keyboard focus, reachable actions, horizontal
+overflow and that one recorded play still exposes its valid Insights facts.
+The local test account supplied authentication only; fixture data was isolated
+and no account or database records were changed. Later UI-2 slices and the
+broader UI-3 desktop shell remain separate.
+
 ### UI-3 — full-width, content-forward desktop
 
 Move data-rich desktop surfaces beyond the current narrow app-shell treatment

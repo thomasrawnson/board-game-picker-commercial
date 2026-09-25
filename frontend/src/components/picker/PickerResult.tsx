@@ -282,19 +282,21 @@ function PickerResult({
               Cover art
             </div>
           )}
+        </div>
 
-          <div
-            className="picker-match-score"
+        <div className="picker-result-status">
+          <span
+            className="picker-result-score"
             aria-label={`Match score ${score}`}
           >
             <strong>{score}</strong>
-            <span>Match</span>
-          </div>
-        </div>
+            <span>match</span>
+          </span>
 
-        <p className="picker-result-counter">
-          Pick {matchIndex + 1} of {totalMatches}
-        </p>
+          <span className="picker-result-counter">
+            Pick {matchIndex + 1} of {totalMatches}
+          </span>
+        </div>
 
         <div className="picker-result-copy">
           <h2
@@ -304,14 +306,21 @@ function PickerResult({
             {game.name}
           </h2>
 
-
+          <span className="picker-view-game">
+            View game details
+          </span>
         </div>
       </button>
 
       {primaryReason && (
-        <p className="picker-primary-reason">
-          {primaryReason}
-        </p>
+        <div className="picker-fit-summary">
+          <p className="picker-fit-label">
+            Why it fits
+          </p>
+          <p className="picker-primary-reason">
+            {primaryReason}
+          </p>
+        </div>
       )}
 
       <div

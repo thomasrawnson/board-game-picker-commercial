@@ -23,7 +23,7 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Pre-beta priority 1 — UI/layout redesign (UI-1 complete; UI-2 next)**
+**Pre-beta priority 1 — UI/layout redesign (UI-1 and UI-2A complete)**
 
 Before Private Beta, product work is prioritised in this order:
 
@@ -69,7 +69,18 @@ results, locally dismissed lists and the locked For You state remain distinct.
 Focused backend/frontend tests, lint, build and colour validation passed.
 Deterministic Playwright fixtures covered 40 mobile/desktop light/dark state
 checks, while a separate read-only live-account pass confirmed the five main
-routes across the established responsive widths. UI-2 is next.
+routes across the established responsive widths.
+
+UI-2A is complete. Picker results now present artwork, the unchanged match
+value, game name, fit explanation and actions in a clearer reading order. The
+match value is no longer overlaid on artwork; supporting fit details and the
+existing reason disclosure remain available without competing with the primary
+Log a play action. Try another and Start over retain their existing behaviour
+as secondary and tertiary actions. No recommendation, suitability, flow,
+route, state or access logic changed. Deterministic Playwright fixtures covered
+populated, long-title, missing-artwork, no-match and error states at 390, 768,
+1024 and 1440px in both themes, including keyboard focus, reachable actions,
+horizontal overflow and the one-play Insights facts regression.
 
 Across all three stages, use “warm shelf, confident choices” as the visual
 principle. Game Night remains a separate primary-navigation destination; it is
