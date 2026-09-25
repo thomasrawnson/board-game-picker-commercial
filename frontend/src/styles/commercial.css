@@ -411,11 +411,11 @@ h1 {
   width: 100%;
 
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
   align-items: center;
   gap: 11px;
-  min-height: 72px;
-  padding: 8px 0;
+  min-height: 88px;
+  padding: 8px 2px;
 
   color: var(--color-text-primary);
   text-align: left;
@@ -434,14 +434,14 @@ h1 {
 }
 
 .collection-thumb {
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
   background: var(--color-surface-raised);
   border-radius: 8px;
 }
 
 .collection-thumb img {
-  object-fit: cover;
+  object-fit: contain;
   background: var(--color-surface-raised);
 }
 
@@ -458,8 +458,8 @@ h1 {
   color: var(--color-text-primary);
 
   font-family: var(--font-display);
-  font-size: var(--text-body);
-  line-height: 1.25;
+  font-size: 18px;
+  line-height: 1.2;
 
   display: -webkit-box;
   overflow: hidden;
@@ -469,14 +469,21 @@ h1 {
   white-space: normal;
 }
 
-.collection-game-info span {
+.collection-game-info .collection-game-meta {
   color: var(--color-text-support);
   font-size: var(--text-meta);
+  line-height: 1.45;
+  text-wrap: pretty;
 }
 
 .collection-play-count {
+  align-self: center;
+  padding: 5px 8px;
   color: var(--color-accent-text);
+  background: var(--color-brand-accent-soft);
+  border-radius: 999px;
   font-size: var(--text-meta);
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -711,11 +718,35 @@ h1 {
 
 /* Wishlist uses the same naming and visual hierarchy as Collection. */
 .wishlist-card {
-  padding: 10px 0;
+  padding: 12px 2px;
   background: transparent;
   border: 0;
   border-bottom: 1px solid var(--sp-line);
   border-radius: 0;
+}
+
+@media (min-width: 700px) {
+  .app-phone-wide .collection-game,
+  .app-phone-wide .wishlist-card {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .collection-game {
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    gap: 10px;
+    min-height: 80px;
+  }
+
+  .collection-thumb {
+    width: 64px;
+    height: 64px;
+  }
+
+  .collection-play-count {
+    padding-inline: 6px;
+  }
 }
 
 .wishlist-status {

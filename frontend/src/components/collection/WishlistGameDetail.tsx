@@ -4,6 +4,7 @@ import {
   moveWishlistGameToCollection,
   type Game,
 } from "../../api/client"
+import ResilientGameArtwork from "../ResilientGameArtwork"
 
 
 type Props = {
@@ -80,21 +81,20 @@ function WishlistGameDetail({
 
       <article className="collection-detail">
         <div className="collection-detail-image">
-          {game.image_url || game.thumbnail_url ? (
-            <img
-              src={game.image_url ?? game.thumbnail_url ?? ""}
-              alt={game.name}
-            />
-          ) : (
-            <div className="collection-placeholder">?</div>
-          )}
+          <ResilientGameArtwork
+            src={game.image_url ?? game.thumbnail_url}
+            alt={`Cover of ${game.name}`}
+            gameName={game.name}
+          />
         </div>
 
-        <p className="eyebrow">
-          {game.year_published ?? "Board game"}
-        </p>
-        <h1>{game.name}</h1>
-        <p className="wishlist-status">Want to Play</p>
+        <div className="collection-detail-heading">
+          <p className="eyebrow">
+            {game.year_published ?? "Board game"}
+          </p>
+          <h1>{game.name}</h1>
+          <p className="wishlist-status">Want to Play</p>
+        </div>
 
         <div className="detail-stats">
           <div>

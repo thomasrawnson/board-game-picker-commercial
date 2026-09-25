@@ -14,6 +14,8 @@ import {
 
 import WishlistGameDetail
   from "./collection/WishlistGameDetail"
+import ResilientGameArtwork
+  from "./ResilientGameArtwork"
 
 
 type Props = {
@@ -130,8 +132,16 @@ function WishlistView({
   }, [gameBggId, onGameUnavailable, reloadKey])
 
   useLayoutEffect(() => {
-    if (!loading && gameBggId === null) {
-      onContentReady()
+    if (loading || gameBggId !== null) {
+      return
+    }
+
+    const frame = window.requestAnimationFrame(
+      onContentReady,
+    )
+
+    return () => {
+      window.cancelAnimationFrame(frame)
     }
   }, [gameBggId, loading, onContentReady])
 
@@ -255,11 +265,13 @@ function WishlistView({
               onClick={() => onOpenGame(game.bgg_id)}
               aria-label={`View details for ${game.name}`}
             >
-              {game.image_url ? (
-                <img className="wishlist-image" src={game.image_url} alt="" />
-              ) : (
-                <span className="wishlist-image wishlist-image-placeholder">?</span>
-              )}
+              <span className="wishlist-image">
+                <ResilientGameArtwork
+                  src={game.thumbnail_url ?? game.image_url}
+                  alt=""
+                  gameName={game.name}
+                />
+              </span>
 
               <span className="wishlist-card-body">
                 <strong>{game.name}</strong>

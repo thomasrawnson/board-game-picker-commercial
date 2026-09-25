@@ -23,7 +23,7 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Pre-beta priority 1 — UI/layout redesign (UI-1 and UI-2A complete)**
+**Pre-beta priority 1 — UI/layout redesign (UI-1, UI-2A and UI-2B complete)**
 
 Before Private Beta, product work is prioritised in this order:
 
@@ -81,6 +81,19 @@ route, state or access logic changed. Deterministic Playwright fixtures covered
 populated, long-title, missing-artwork, no-match and error states at 390, 768,
 1024 and 1440px in both themes, including keyboard focus, reachable actions,
 horizontal overflow and the one-play Insights facts regression.
+
+UI-2B is complete. Owned and Want to Play lists now give contained cover art,
+wrapping game titles and factual game metadata a consistent scan order. Owned
+rows show positive play counts without repeating the ambiguous “Not played”
+label, and both detail paths use the established resilient artwork fallback.
+The existing bounded desktop list, actions, filters, sorting, section state,
+routes and scroll restoration remain unchanged. Frontend checks passed, and
+deterministic mocked Playwright coverage exercised both lists and details at
+390, 768, 1024 and 1440px in light and dark themes, including empty,
+filtered-empty, loading, error, long-title, missing/failed-artwork, keyboard,
+overflow, both list → detail → browser Back paths, and independent Owned/Want
+to Play scroll restoration. No live account or backend data was used or
+changed.
 
 Across all three stages, use “warm shelf, confident choices” as the visual
 principle. Game Night remains a separate primary-navigation destination; it is

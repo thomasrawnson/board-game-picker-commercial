@@ -95,6 +95,25 @@ The local test account supplied authentication only; fixture data was isolated
 and no account or database records were changed. Later UI-2 slices and the
 broader UI-3 desktop shell remain separate.
 
+UI-2B Collection polish completed on 25 September 2026. Owned and Want to Play
+lists now share a clearer artwork, title and factual-metadata hierarchy across
+mobile and the existing two-column desktop list. Positive play counts remain
+visible, while repeated “Not played” copy was removed because missing ShelfPick
+history does not prove that a game has never been played. Missing and failed
+list/detail art now uses the shared UI-1 fallback, long titles wrap without
+forcing horizontal overflow, and existing actions retain their hierarchy and
+behavior.
+
+Frontend tests, lint, build, PWA and colour validation passed. Deterministic,
+authenticated Playwright fixtures covered populated, empty, filtered-empty,
+loading and error states; long titles; missing and failed artwork; visible
+keyboard focus; reachable actions; horizontal overflow; and list → detail →
+browser Back restoration at 390, 768, 1024 and 1440px in light and dark themes.
+Owned and Want to Play offsets were also verified to survive section switching
+independently.
+These were mocked checks only: no live account or backend data was accessed or
+changed. UI-3's future desktop shell/card architecture remains separate.
+
 ### UI-3 — full-width, content-forward desktop
 
 Move data-rich desktop surfaces beyond the current narrow app-shell treatment

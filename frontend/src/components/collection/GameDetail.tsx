@@ -78,12 +78,14 @@ function GameDetail({
           />
         </div>
 
-        <p className="eyebrow">
-          {game.year_published ??
-            "Board game"}
-        </p>
+        <div className="collection-detail-heading">
+          <p className="eyebrow">
+            {game.year_published ??
+              "Board game"}
+          </p>
 
-        <h1>{game.name}</h1>
+          <h1>{game.name}</h1>
+        </div>
 
         <div className="detail-stats">
           <div>

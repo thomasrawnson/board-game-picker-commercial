@@ -250,12 +250,23 @@ function CollectionView({
       section,
     ])
 
+  const handleCollectionScroll =
+    useCallback(() => {
+      if (pendingScrollRestore.current) {
+        return
+      }
+
+      saveScrollPosition()
+    }, [saveScrollPosition])
+
   const restoreScrollPosition =
     useCallback((
       targetSection: CollectionSection,
+      force = false,
     ) => {
       if (
-        !pendingScrollRestore.current
+        (!pendingScrollRestore.current
+          && !force)
         || section !== targetSection
       ) {
         return
@@ -283,6 +294,14 @@ function CollectionView({
       scrollPositionsRef,
       section,
     ])
+
+  const restoreWishlistScroll =
+    useCallback(() => {
+      restoreScrollPosition(
+        "wishlist",
+        true,
+      )
+    }, [restoreScrollPosition])
 
   function changeSection(
     nextSection: CollectionSection,
@@ -378,18 +397,18 @@ function CollectionView({
 
     scrollContainer.addEventListener(
       "scroll",
-      saveScrollPosition,
+      handleCollectionScroll,
       { passive: true },
     )
 
     return () => {
       scrollContainer.removeEventListener(
         "scroll",
-        saveScrollPosition,
+        handleCollectionScroll,
       )
     }
   }, [
-    saveScrollPosition,
+    handleCollectionScroll,
     scrollContainerRef,
     selectedGame,
     wishlistGameBggId,
@@ -873,11 +892,7 @@ function CollectionView({
             ))
             onWishlistGameConverted(game.bgg_id)
           }}
-          onContentReady={() =>
-            restoreScrollPosition(
-              "wishlist",
-            )
-          }
+          onContentReady={restoreWishlistScroll}
           onBrowseDiscover={onBrowseDiscover}
         />
       </section>

@@ -64,6 +64,16 @@ function CollectionGameList({
           statsByGame.get(game.bgg_id)
         const playCount =
           stats?.play_count ?? 0
+        const gameMeta = [
+          game.year_published,
+          game.min_players !== null
+          && game.max_players !== null
+            ? `${game.min_players}–${game.max_players} players`
+            : null,
+          game.max_play_time !== null
+            ? `${game.max_play_time} min`
+            : null,
+        ].filter(Boolean)
 
         return (
           <button
@@ -81,9 +91,10 @@ function CollectionGameList({
 
             <div className="collection-game-info">
               <strong>{game.name}</strong>
-
-              {playCount === 0 && (
-                <span>Not played</span>
+              {gameMeta.length > 0 && (
+                <span className="collection-game-meta">
+                  {gameMeta.join(" · ")}
+                </span>
               )}
             </div>
 
