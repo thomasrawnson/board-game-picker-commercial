@@ -23,6 +23,7 @@ type Props = {
   onGameUnavailable: () => void
   onGameConverted: (game: Game) => void
   onContentReady: () => void
+  onBrowseDiscover: () => void
 }
 
 
@@ -33,6 +34,7 @@ function WishlistView({
   onGameUnavailable,
   onGameConverted,
   onContentReady,
+  onBrowseDiscover,
 }: Props) {
   const pending = useRef(false)
   const [games, setGames] = useState<Game[]>([])
@@ -230,10 +232,17 @@ function WishlistView({
 
       {games.length === 0 && !error && !loading && (
         <div className="collection-empty">
-          <strong>Nothing on the wishlist yet</strong>
+          <strong>Nothing in Want to Play yet</strong>
           <p>
-            Browse Discover and stash anything that catches your eye — it'll show up here.
+            Save a game from Discover and it will appear here.
           </p>
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={onBrowseDiscover}
+          >
+            Browse Discover
+          </button>
         </div>
       )}
 

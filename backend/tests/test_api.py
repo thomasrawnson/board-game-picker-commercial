@@ -410,6 +410,7 @@ def test_picker_guidance_explains_safe_no_match_options():
 
     assert data["matches"] == []
     assert data["guidance"] == {
+        "owned_game_count": 2,
         "player_count_exclusions": 1,
         "can_relax_time": True,
         "can_relax_complexity": False,

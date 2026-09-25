@@ -257,6 +257,10 @@ def pick_games(
             )
 
             guidance = {
+                "owned_game_count": (
+                    no_match_guidance
+                    .owned_game_count
+                ),
                 "player_count_exclusions": (
                     no_match_guidance
                     .player_count_exclusions

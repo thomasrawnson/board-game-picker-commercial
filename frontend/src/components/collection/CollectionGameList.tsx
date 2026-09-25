@@ -3,26 +3,57 @@ import type {
   Game,
 } from "../../api/client"
 import ResilientGameArtwork from "../ResilientGameArtwork"
+import { collectionEmptyKind } from "../../ui-empty-state"
 
 type Props = {
   games: Game[]
+  totalGames: number
   statsByGame: Map<
     number,
     CollectionGameStats
   >
   onOpenGame: (game: Game) => void
+  onAddGame: () => void
+  onClearFilters: () => void
 }
 
 function CollectionGameList({
   games,
+  totalGames,
   statsByGame,
   onOpenGame,
+  onAddGame,
+  onClearFilters,
 }: Props) {
   if (games.length === 0) {
+    const emptyKind = collectionEmptyKind(totalGames)
+
     return (
-      <p className="collection-empty">
-        Nothing on the shelf matches that — try loosening a filter.
-      </p>
+      <div className="collection-empty">
+        <strong>
+          {emptyKind === "empty"
+            ? "Your shelf is empty"
+            : "No games match these filters"}
+        </strong>
+        <p>
+          {emptyKind === "empty"
+            ? "Add an owned game to start picking and tracking plays."
+            : "Clear the search and play filter to see your full collection."}
+        </p>
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={
+            emptyKind === "empty"
+              ? onAddGame
+              : onClearFilters
+          }
+        >
+          {emptyKind === "empty"
+            ? "Add your first game"
+            : "Clear filters"}
+        </button>
+      </div>
     )
   }
 

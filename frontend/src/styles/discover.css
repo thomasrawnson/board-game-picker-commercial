@@ -333,7 +333,7 @@
 }
 
 .discover-empty p {
-  margin: 7px 0 0;
+  margin: 7px 0 16px;
   color: var(--sp-secondary);
   font-size: var(--text-support);
   line-height: 1.45;

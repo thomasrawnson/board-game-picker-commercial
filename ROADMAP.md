@@ -23,7 +23,7 @@ product work below is the current engineering priority.
 
 ## Current priority
 
-**Pre-beta priority 1 — UI/layout redesign (Top 100 correction complete; UI-1C next)**
+**Pre-beta priority 1 — UI/layout redesign (UI-1 complete; UI-2 next)**
 
 Before Private Beta, product work is prioritised in this order:
 
@@ -57,7 +57,19 @@ and stale caches remain available to personalised Discover.
 Customer-facing Discover, empty-state and Free/Pro comparison copy now says
 **Top 100**. API identifiers, routes/query parameters, saved state, telemetry
 keys, recommendation scoring and access rules are unchanged. BoardGameGeek's
-ranked-page 403 remains an external availability issue. UI-1C is next.
+ranked-page 403 remains an external availability issue.
+
+UI-1C is complete. Collection now distinguishes an empty shelf from active
+filters with no matches; Picker identifies an empty owned shelf without
+blaming the selected criteria; and Insights separates no recorded plays from
+recorded plays that lack participant data for group insights. Want to
+Play, Discover and each changed Insights state provide an existing-route or
+existing-control recovery action. Discover source errors, genuine no-match
+results, locally dismissed lists and the locked For You state remain distinct.
+Focused backend/frontend tests, lint, build and colour validation passed.
+Deterministic Playwright fixtures covered 40 mobile/desktop light/dark state
+checks, while a separate read-only live-account pass confirmed the five main
+routes across the established responsive widths. UI-2 is next.
 
 Across all three stages, use “warm shelf, confident choices” as the visual
 principle. Game Night remains a separate primary-navigation destination; it is

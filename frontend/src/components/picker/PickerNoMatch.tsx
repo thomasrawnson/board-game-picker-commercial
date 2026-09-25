@@ -1,6 +1,7 @@
 import type {
   PickerNoMatchGuidance,
 } from "../../api/client"
+import { pickerEmptyKind } from "../../ui-empty-state"
 
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
   onRelaxBoth: () => void
   onAdjustChoices: () => void
   onStartOver: () => void
+  onViewCollection: () => void
 }
 
 
@@ -30,7 +32,9 @@ function PickerNoMatch({
   onRelaxBoth,
   onAdjustChoices,
   onStartOver,
+  onViewCollection,
 }: Props) {
+  const emptyKind = pickerEmptyKind(guidance)
   const excluded =
     guidance
       ?.player_count_exclusions
@@ -61,18 +65,24 @@ function PickerNoMatch({
         </p>
 
         <h1>
-          No confident match yet
+          {emptyKind === "empty"
+            ? "Add games before you pick"
+            : "No confident match yet"}
         </h1>
 
         <p className="subtitle">
-          Your current criteria are too restrictive for{" "}
-          {playerCount} player
-          {playerCount === 1 ? "" : "s"}
-          {" "}Adjust your choices or relax a limit below.
+          {emptyKind === "empty"
+            ? "Picker chooses from the owned games on your shelf. Add a game, then come back to find a fit."
+            : <>
+                No owned game fits every choice for{" "}
+                {playerCount} player
+                {playerCount === 1 ? "" : "s"}
+                {" "}Adjust your choices or relax a limit below.
+              </>}
         </p>
       </header>
 
-      {excluded > 0 && (
+      {emptyKind === "no_matches" && excluded > 0 && (
         <div className="picker-trust-note">
           <strong>
             {excluded} game
@@ -91,6 +101,18 @@ function PickerNoMatch({
       )}
 
       <div className="picker-no-match-actions">
+        {emptyKind === "empty" && (
+          <button
+            type="button"
+            className="primary-button"
+            onClick={onViewCollection}
+            disabled={loading}
+          >
+            Open Collection
+          </button>
+        )}
+
+        {emptyKind === "no_matches" && <>
         {hasTimeLimit
           && guidance?.can_relax_time && (
           <button
@@ -140,6 +162,7 @@ function PickerNoMatch({
         >
           Adjust choices
         </button>
+        </>}
       </div>
 
       {error && (
@@ -151,11 +174,11 @@ function PickerNoMatch({
         </p>
       )}
 
-      <p className="picker-safety-copy">
+      {emptyKind === "no_matches" && <p className="picker-safety-copy">
         Player-count quality stays fixed.
         We won't suggest a game the community
         rejects at this group size.
-      </p>
+      </p>}
 
       <button
         type="button"

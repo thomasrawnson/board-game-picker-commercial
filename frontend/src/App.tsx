@@ -248,6 +248,9 @@ function CollectionRoute({
       onSectionChange={(nextSection) => {
         navigate(collectionPath(nextSection));
       }}
+      onBrowseDiscover={() => {
+        navigate(APP_PATHS.discover);
+      }}
     />
   );
 }
@@ -486,6 +489,7 @@ function App() {
             <Route
               path={APP_PATHS.picker}
               element={<PickerView onViewGame={openOwnedCollectionGame}
+                onViewCollection={() => navigate(APP_PATHS.collectionOwned)}
                 defaultPlayers={user.preferred_player_count}
                 defaultTime={user.preferred_play_time} />}
             />
@@ -543,6 +547,8 @@ function App() {
               element={
                 <InsightsView
                   onOpenGame={openOwnedCollectionGame}
+                  onOpenCollection={() => navigate(APP_PATHS.collectionOwned)}
+                  onOpenPicker={() => navigate(APP_PATHS.picker)}
                 />
               }
             />

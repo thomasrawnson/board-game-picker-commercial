@@ -92,6 +92,7 @@ type Props = {
   onSectionChange: (
     section: CollectionSection,
   ) => void
+  onBrowseDiscover: () => void
 }
 
 
@@ -110,6 +111,7 @@ function CollectionView({
   onWishlistGameUnavailable,
   onWishlistGameConverted,
   onSectionChange,
+  onBrowseDiscover,
 }: Props) {
   const {
     section,
@@ -876,6 +878,7 @@ function CollectionView({
               "wishlist",
             )
           }
+          onBrowseDiscover={onBrowseDiscover}
         />
       </section>
     )
@@ -1046,11 +1049,24 @@ function CollectionView({
         games={
           filteredGames
         }
+        totalGames={games.length}
         statsByGame={
           statsByGame
         }
         onOpenGame={
           openGame
+        }
+        onAddGame={() =>
+          setAddingGame(true)
+        }
+        onClearFilters={() =>
+          onUiStateChange(
+            (current) => ({
+              ...current,
+              search: "",
+              playFilter: "all",
+            }),
+          )
         }
       />
     </section>

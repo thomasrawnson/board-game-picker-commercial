@@ -35,6 +35,24 @@ Playwright covered Picker, Collection, Game Night, Discover and Insights at
 mobile and desktop widths in light and dark themes. No UI-1B issues remained;
 UI-1C and stale artwork refresh remain separate work.
 
+UI-1C validation completed on 25 September 2026. Empty Collection, filtered
+Collection, empty Want to Play, zero-play Insights, missing participant
+history, Discover no-match/source-error and Picker empty/no-match states
+now communicate the actual condition and offer an existing route or control as
+the next action. A service-provided owned-game count lets Picker distinguish an
+empty shelf without changing eligibility or recommendation rules. Discover
+continues to separate upstream failure, genuine no matches, locally dismissed
+cards and the locked For You entitlement state. The duplicate legacy
+Collection empty/chevron colour overrides were removed in favour of the
+existing semantic tokens.
+
+Focused backend and frontend tests, lint, build and colour validation passed.
+Mocked Playwright fixtures covered 40 checks at 390×844 and 1440×900 in light
+and dark modes without horizontal overflow. A separate read-only pass using the
+dedicated test account verified Picker, Collection, Game Night, Discover and
+Insights at 390, 768, 1024 and 1440px in both themes; it did not mutate account
+or database data. Broader UI-2 polish and stale artwork refresh remain separate.
+
 ### Immediate correction — Discover Top 100 (complete)
 
 Completed on 24 September 2026. The `top100` service path now accepts only

@@ -36,11 +36,12 @@ type Step =
 
 type Props = {
   onViewGame: (bggId: number) => void;
+  onViewCollection: () => void;
   defaultPlayers?: number | null;
   defaultTime?: number | null;
 };
 
-function PickerView({ onViewGame, defaultPlayers = null, defaultTime = null }: Props) {
+function PickerView({ onViewGame, onViewCollection, defaultPlayers = null, defaultTime = null }: Props) {
   const [step, setStep] = useState<Step>("players");
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
   const [selectedPlayerNames, setSelectedPlayerNames] = useState<string[]>([]);
@@ -363,6 +364,7 @@ function PickerView({ onViewGame, defaultPlayers = null, defaultTime = null }: P
           onRelaxBoth={relaxTimeAndComplexity}
           onAdjustChoices={() => setStep("players")}
           onStartOver={startOver}
+          onViewCollection={onViewCollection}
         />
       )}
 

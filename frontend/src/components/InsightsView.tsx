@@ -13,6 +13,8 @@ import PlayerProfile
 
 import RankingCategorySummary
   from "./rankings/RankingCategorySummary"
+import { insightHistoryState }
+  from "../ui-empty-state"
 
 
 type StatsSection =
@@ -81,11 +83,15 @@ function formatHours(
 type Props = {
   onOpenGame:
     (bggId: number) => void
+  onOpenCollection: () => void
+  onOpenPicker: () => void
 }
 
 
 function InsightsView({
   onOpenGame,
+  onOpenCollection,
+  onOpenPicker,
 }: Props) {
   const [
     insights,
@@ -185,7 +191,6 @@ function InsightsView({
     )
   }
 
-
   if (loading) {
     return (
       <section className="screen insights-screen">
@@ -221,6 +226,10 @@ function InsightsView({
       </section>
     )
   }
+
+  const historyState = insightHistoryState(
+    insights.total_plays,
+  )
 
 
   return (
@@ -279,6 +288,21 @@ function InsightsView({
             </h2>
           </div>
 
+          {insights.total_games === 0 ? (
+            <article className="stats-empty-card">
+              <h2>Your collection is empty</h2>
+              <p>
+                Add an owned game to see shelf coverage and play history here.
+              </p>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={onOpenCollection}
+              >
+                Open Collection
+              </button>
+            </article>
+          ) : <>
           <div className="insights-stat-grid">
             <article className="stat-card">
               <strong>
@@ -333,6 +357,7 @@ function InsightsView({
           </div>
 
           <RankingCategorySummary />
+          </>}
         </div>
       )}
 
@@ -347,6 +372,21 @@ function InsightsView({
             </h2>
           </div>
 
+          {historyState === "none" ? (
+            <article className="stats-empty-card">
+              <h2>No plays recorded yet</h2>
+              <p>
+                Log your first play to start building factual play insights.
+              </p>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={onOpenPicker}
+              >
+                Pick a game
+              </button>
+            </article>
+          ) : <>
           <div className="insights-stat-grid">
             <article className="stat-card">
               <strong>
@@ -405,6 +445,7 @@ function InsightsView({
               </strong>
             </article>
           </div>
+          </>}
         </div>
       )}
 
@@ -566,9 +607,16 @@ function InsightsView({
                   .recent_plays
                   .length === 0
                 && (
-                  <p className="insight-empty">
-                    No plays this month.
-                  </p>
+                  <div className="insight-empty">
+                    <p>No plays recorded this month.</p>
+                    <button
+                      type="button"
+                      className="ghost-button"
+                      onClick={onOpenPicker}
+                    >
+                      Pick a game
+                    </button>
+                  </div>
                 )
               }
             </div>
@@ -578,7 +626,7 @@ function InsightsView({
       )}
 
 
-      {activeSection === "play" && (
+      {activeSection === "play" && historyState === "ready" && (
       <div className="insight-feature-list">
         <article className="insight-feature">
           <p className="insight-label">
@@ -1098,12 +1146,24 @@ function InsightsView({
             </span>
 
             <h2>
-              Group stories start with a play
+              {historyState === "none"
+                ? "No group plays recorded yet"
+                : "No player history recorded yet"}
             </h2>
 
             <p>
-              Add players when logging games to reveal regular groups, favourite games and player profiles.
+              {historyState === "none"
+                ? "Log a play with its players to start building group history."
+                : "Your plays do not include player details yet. Add players next time to build group insights."}
             </p>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={onOpenPicker}
+            >
+              Pick a game
+            </button>
           </article>
         )
       }

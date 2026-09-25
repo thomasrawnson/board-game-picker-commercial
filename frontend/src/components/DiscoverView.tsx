@@ -54,6 +54,7 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
   const [updatingIds, setUpdatingIds] = useState<Set<number>>(new Set())
   const [actionError, setActionError] = useState("")
   const [reloadKey, setReloadKey] = useState(0)
+  const [dismissedCount, setDismissedCount] = useState(0)
   const pendingIds = useRef(new Set<number>())
   const lastTrackedTab = useRef<DiscoverMode | null>(null)
 
@@ -73,6 +74,7 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
       .then((results) => {
         if (!cancelled) {
           setRecommendations(results)
+          setDismissedCount(0)
           setError("")
         }
       })
@@ -94,6 +96,7 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
     setRecommendations([])
     setError("")
     setActionError("")
+    setDismissedCount(0)
     setLoading(nextMode !== "for_you" || personalized)
   }
 
@@ -145,6 +148,7 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
     setRecommendations((current) => current.filter(
       (item) => item.game.bgg_id !== bggId,
     ))
+    setDismissedCount((current) => current + 1)
   }
 
   const groupedRecommendations = recommendations.reduce<Map<string, DiscoverRecommendation[]>>(
@@ -155,7 +159,7 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
     },
     new Map(),
   )
-  const emptyCopy = discoverEmptyCopy(mode)
+  const emptyCopy = discoverEmptyCopy(mode, dismissedCount > 0)
 
   function renderCard(recommendation: DiscoverRecommendation, index: number) {
     const { game, reasons, wishlisted } = recommendation
@@ -275,6 +279,20 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
             <div className="discover-empty">
               <h2>{emptyCopy.title}</h2>
               <p>{emptyCopy.body}</p>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => {
+                  if (emptyCopy.actionMode === mode) {
+                    retry()
+                    return
+                  }
+
+                  selectMode(emptyCopy.actionMode)
+                }}
+              >
+                {emptyCopy.actionLabel}
+              </button>
             </div>
           )}
 

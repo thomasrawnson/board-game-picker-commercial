@@ -214,6 +214,14 @@
   line-height: 1.5;
 }
 
+.stats-empty-card .secondary-button {
+  margin-top: 16px;
+}
+
+.insight-empty .ghost-button {
+  margin-top: 8px;
+}
+
 .insights-stat-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

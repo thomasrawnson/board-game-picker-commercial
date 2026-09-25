@@ -266,6 +266,18 @@
   text-align: center;
 }
 
+.collection-empty strong {
+  display: block;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.collection-empty p {
+  max-width: 38ch;
+  margin: 8px auto 16px;
+}
+
 .collection-back {
   align-self: flex-start;
 
@@ -701,14 +713,6 @@
 
 .collection-list::-webkit-scrollbar-thumb:hover {
   background: var(--color-brand-accent-soft);
-}
-
-.collection-chevron {
-  color: var(--text-accent);
-}
-
-.collection-empty {
-  color: var(--text-secondary);
 }
 
 /* Collection detail */

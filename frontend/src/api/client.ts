@@ -75,6 +75,7 @@ export interface PickerMatch {
 }
 
 export interface PickerNoMatchGuidance {
+  owned_game_count: number
   player_count_exclusions: number
   can_relax_time: boolean
   can_relax_complexity: boolean

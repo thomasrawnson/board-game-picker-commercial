@@ -1106,6 +1106,7 @@ def test_no_match_guidance_never_relaxes_player_count_fit():
     )
 
     assert guidance.player_count_exclusions == 1
+    assert guidance.owned_game_count == 1
     assert guidance.can_relax_time is False
     assert guidance.can_relax_complexity is False
     assert guidance.can_relax_both is False
@@ -1148,9 +1149,20 @@ def test_no_match_guidance_identifies_safe_relaxations():
     )
 
     assert guidance.player_count_exclusions == 0
+    assert guidance.owned_game_count == 2
     assert guidance.can_relax_time is True
     assert guidance.can_relax_complexity is True
     assert guidance.can_relax_both is True
+
+
+def test_no_match_guidance_reports_an_empty_owned_collection():
+    guidance = PickerService().get_no_match_guidance(
+        [],
+        PickerCriteria(players=2),
+    )
+
+    assert guidance.owned_game_count == 0
+    assert guidance.player_count_exclusions == 0
 
 
 def test_try_another_pool_never_contains_rejected_game():

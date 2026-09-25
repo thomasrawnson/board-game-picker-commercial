@@ -54,6 +54,7 @@ class PickerMatch:
 
 @dataclass
 class PickerNoMatchGuidance:
+    owned_game_count: int
     player_count_exclusions: int
     can_relax_time: bool
     can_relax_complexity: bool
@@ -133,6 +134,11 @@ class PickerService:
         )
 
         return PickerNoMatchGuidance(
+            owned_game_count=sum(
+                1
+                for game in games
+                if game.owned and not game.is_expansion
+            ),
             player_count_exclusions=(
                 player_count_exclusions
             ),
