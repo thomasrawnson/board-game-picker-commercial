@@ -163,6 +163,13 @@ build runtime at Node 22. These values are not secrets and do not need manual
 entry. The API validates `BGG_API_TOKEN` during production startup; a missing
 or whitespace-only token stops the deployment without logging its value.
 
+Railway startup diagnostics on 2026-09-25 reported Python 3.13, while this
+repository declares Python 3.12.14 in `.python-version`. The database-driver
+compatibility fix does not change that runtime. Before a separately approved
+Railway deployment, configure its build runtime to use the intended Python
+3.12.14 release and rebuild; do not treat successful driver selection as
+resolution of the runtime mismatch.
+
 4. Add the two custom domains to their matching Render services and create
 the DNS records Render supplies.
 5. Wait for both Render certificates to become active.

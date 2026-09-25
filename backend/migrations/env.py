@@ -4,19 +4,18 @@ from sqlalchemy import engine_from_config, pool
 from config import settings
 from database.connection import Base
 from database import models  # noqa: F401
+from database.url import database_url_for_alembic
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Use the same DATABASE_URL as the application.
-# Escape % because Alembic uses ConfigParser interpolation.
+# Use the same normalised DATABASE_URL as the application.
 config.set_main_option(
     "sqlalchemy.url",
-    settings.database_url.replace(
-        "%",
-        "%%",
+    database_url_for_alembic(
+        settings.database_url
     ),
 )
 

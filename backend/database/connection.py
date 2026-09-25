@@ -1,15 +1,13 @@
-from sqlalchemy import (
-    create_engine,
-)
 from sqlalchemy.orm import (
     declarative_base,
     sessionmaker,
 )
 
 from config import settings
+from database.url import create_database_engine
 
 
-engine = create_engine(
+engine = create_database_engine(
     settings.database_url,
     pool_pre_ping=True,
 )
