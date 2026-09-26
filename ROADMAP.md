@@ -28,7 +28,7 @@ product work below is the current engineering priority.
 Before Private Beta, product work is prioritised in this order:
 
 1. UI/layout redesign;
-2. logo/brand correction;
+2. logo/brand correction (approved illustrated shelf icon complete);
 3. Free versus Pro proposition.
 
 The UI/layout work proceeds as UI-1 confirmed defects, UI-2 core visual polish,

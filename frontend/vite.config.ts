@@ -58,7 +58,7 @@ export default defineConfig({
               "image/png",
 
             purpose:
-              "any maskable",
+              "any",
           },
           {
             src:
@@ -71,7 +71,33 @@ export default defineConfig({
               "image/png",
 
             purpose:
-              "any maskable",
+              "any",
+          },
+          {
+            src:
+              "/branding/pwa-maskable-192.png",
+
+            sizes:
+              "192x192",
+
+            type:
+              "image/png",
+
+            purpose:
+              "maskable",
+          },
+          {
+            src:
+              "/branding/pwa-maskable-512.png",
+
+            sizes:
+              "512x512",
+
+            type:
+              "image/png",
+
+            purpose:
+              "maskable",
           },
         ],
       },
@@ -85,6 +111,11 @@ export default defineConfig({
 
         globPatterns: [
           "**/*.{js,css,html,ico,png,svg,woff,woff2}",
+        ],
+
+        globIgnores: [
+          "branding/shelfpick-icon-source.png",
+          "branding/social-profile-1024.png",
         ],
       },
     }),

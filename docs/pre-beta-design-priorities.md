@@ -3,11 +3,18 @@
 The agreed pre-beta priorities are:
 
 1. UI/layout redesign;
-2. logo/brand correction;
+2. logo/brand correction (approved illustrated shelf icon complete);
 3. Free versus Pro proposition.
 
 These are separate workstreams. UI work does not change the approved logo or
 the Free/Pro proposition.
+
+The focused logo/brand correction completed on 26 September 2026. The supplied
+`Cozy Board Game Shelf Icon.png` is retained as the canonical source and now
+drives the Apple touch, standard PWA, dedicated safe-area maskable and square
+social-profile exports. A matching simplified shelf-and-meeple mark, small
+favicon and light/dark ShelfPick wordmarks replace the earlier generic mark.
+BoardGameGeek attribution remains separate and unchanged.
 
 ## UI/layout sequence
 

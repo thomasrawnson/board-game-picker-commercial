@@ -4,9 +4,12 @@ import path from "node:path"
 
 
 const expectedIcons = new Map([
-  ["branding/apple-touch-icon.png", 180],
-  ["branding/pwa-192.png", 192],
-  ["branding/pwa-512.png", 512],
+  ["branding/apple-touch-icon.png", { size: 180, purpose: null }],
+  ["branding/pwa-192.png", { size: 192, purpose: "any" }],
+  ["branding/pwa-512.png", { size: 512, purpose: "any" }],
+  ["branding/pwa-maskable-192.png", { size: 192, purpose: "maskable" }],
+  ["branding/pwa-maskable-512.png", { size: 512, purpose: "maskable" }],
+  ["branding/social-profile-1024.png", { size: 1024, purpose: null }],
 ])
 
 
@@ -46,18 +49,30 @@ for (const logo of ["shelfpick-mark.svg", "shelfpick-logo-light.svg", "shelfpick
   assert.match(await readFile(path.resolve("dist/branding", logo), "utf8"), /<svg\b/)
 }
 const serviceWorker = await readFile(path.resolve("dist/sw.js"), "utf8")
-for (const asset of ["theme.js", "branding/favicon.svg", "branding/shelfpick-mark.svg", "branding/shelfpick-logo-light.svg", "branding/shelfpick-logo-dark.svg", ...expectedIcons.keys()]) {
+const precachedBrandAssets = [
+  "theme.js",
+  "branding/favicon.svg",
+  "branding/shelfpick-mark.svg",
+  "branding/shelfpick-logo-light.svg",
+  "branding/shelfpick-logo-dark.svg",
+  "branding/apple-touch-icon.png",
+  "branding/pwa-192.png",
+  "branding/pwa-512.png",
+  "branding/pwa-maskable-192.png",
+  "branding/pwa-maskable-512.png",
+]
+for (const asset of precachedBrandAssets) {
   assert.ok(serviceWorker.includes(asset), `${asset} is missing from the precache`)
 }
 
-for (const [filename, expectedSize] of expectedIcons) {
+for (const [filename, expected] of expectedIcons) {
   const icon = manifest.icons?.find((item) => item.src === `/${filename}`)
 
-  if (filename !== "branding/apple-touch-icon.png") {
+  if (expected.purpose) {
     assert.ok(icon, `${filename} is missing from the generated manifest`)
-    assert.equal(icon.sizes, `${expectedSize}x${expectedSize}`)
+    assert.equal(icon.sizes, `${expected.size}x${expected.size}`)
     assert.equal(icon.type, "image/png")
-    assert.equal(icon.purpose, "any maskable")
+    assert.equal(icon.purpose, expected.purpose)
   }
 
   const dimensions = await readPngDimensions(
@@ -67,8 +82,8 @@ for (const [filename, expectedSize] of expectedIcons) {
   assert.deepEqual(
     dimensions,
     {
-      width: expectedSize,
-      height: expectedSize,
+      width: expected.size,
+      height: expected.size,
     },
   )
 }

@@ -4,19 +4,24 @@
 
 Primary: Forest Green. Accent: Warm Gold.
 
-The approved logo is Shelf + Meeple: three vertical board-game boxes, a meeple
-bookend and a shared shelf. Game covers should remain visually dominant.
+The approved icon source is the supplied `Cozy Board Game Shelf Icon.png`,
+stored as `frontend/public/branding/shelfpick-icon-source.png`: three illustrated
+board-game boxes, a gold meeple, a complete wooden shelf and a dark-green square
+background. The in-app logo is its simplified Shelf + Meeple companion. Game
+covers should remain visually dominant.
 
 ### Brand assets
 
 - Use `shelfpick-logo-light.svg` on light authentication, onboarding and larger
   brand surfaces. Use `shelfpick-logo-dark.svg` on the matching dark surfaces.
-- Use `shelfpick-mark.svg` for compact brand contexts; the favicon and install
-  icons use the same mark without wordmark text.
+- Use `shelfpick-mark.svg` for compact in-app brand contexts. The favicon uses
+  the same simplified composition; install and social icons use uncropped
+  exports of the approved illustration.
 - Light artwork uses Forest Green `#315C48` and Warm Gold `#C28B37`. Dark artwork
   uses the existing dark brand-token values `#70A889` and `#E3AD55`.
 - Keep the standalone mark at least 16px high. Use the 180px, 192px and 512px
-  raster exports for platform metadata rather than scaling the wordmark.
+  raster exports for platform metadata rather than scaling the wordmark. Use
+  the dedicated padded maskable exports where a platform may apply an icon mask.
 - Preserve aspect ratio, clear space and supplied colours. Do not recolour,
   stretch, rotate, outline or decorate the logo.
 - The full logo names the product and should not sit beside duplicate visible
