@@ -95,6 +95,15 @@ overflow, both list → detail → browser Back paths, and independent Owned/Wan
 to Play scroll restoration. No live account or backend data was used or
 changed.
 
+The bounded Free versus Pro presentation pass is complete. The comparison now
+leads with the useful Free product and lists only implemented capabilities;
+personalised Discover is the sole current Pro-only outcome. Locked feature
+states use the same comparison language and route directly to `/settings/pro`.
+Entitlement checks and purchase behaviour are unchanged. The agreed launch
+price is £3.99 as a one-off purchase, not a subscription. Technically, no price
+is configured and checkout is not implemented, so the unlock action stays
+explicitly unavailable and no price is displayed in the app.
+
 Across all three stages, use “warm shelf, confident choices” as the visual
 principle. Game Night remains a separate primary-navigation destination; it is
 not merged with Picker. Preserve recommendation rules, exact-player-count
@@ -329,12 +338,12 @@ group features.
 **Status:** NOT STARTED
 
 The shared FREE/PRO tier resolution, frontend-facing entitlement list and
-central feature-capability checks are complete. One-off purchase pricing and
-checkout remain undecided; the full Settings presentation remains incomplete.
+central feature-capability checks are complete. The agreed launch price is
+£3.99 as a one-off purchase, but no price is configured and checkout is not
+implemented; the full Settings presentation remains incomplete.
 
-The launch offer is a useful Free version plus a one-off ShelfPick Pro unlock.
-No recurring subscription is planned at launch. A subscription model should be
-reconsidered only if the product direction changes later.
+The launch offer is a useful Free version plus a £3.99 one-off ShelfPick Pro
+unlock. Pro is not a subscription.
 
 ### Objective
 
@@ -407,7 +416,8 @@ treated separately from arbitrary Pro gating.
 - Slice 3 profile and avatar model.
 - Production privacy, feedback and account-management requirements tracked by
   the release roadmap and runbook.
-- A separate decision on price and payment implementation before a real Pro unlock.
+- Configure the agreed £3.99 one-off price and implement payment before a real
+  Pro unlock.
 
 ## Slice 1 — Game Night MVP + entitlement scaffolding
 

@@ -261,13 +261,13 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
 
       {mode === "for_you" && !personalized ? (
         <div className="discover-locked">
-          <h2>Recommendations shaped around your shelf</h2>
+          <h2>For You is a Pro feature</h2>
           <p>
             For You uses your collection and real play patterns to surface new games
             that fit how you play.
           </p>
           <button type="button" className="primary-button" onClick={onUnlockPro}>
-            Unlock ShelfPick Pro
+            Compare Free and Pro
           </button>
         </div>
       ) : (

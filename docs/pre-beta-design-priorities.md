@@ -16,6 +16,16 @@ social-profile exports. A matching simplified shelf-and-meeple mark, small
 favicon and light/dark ShelfPick wordmarks replace the earlier generic mark.
 BoardGameGeek attribution remains separate and unchanged.
 
+The bounded Free versus Pro presentation pass completed on 26 September 2026.
+Free is explained as a useful product across shelf management, Pick, play
+tracking, Discover Hot/Top 100 and basic Game Night. The current Pro benefit is
+limited to personalised For You recommendations; planned recommendation,
+statistics and enhanced Game Night candidates are not presented as available.
+Locked states route directly to the comparison with consistent language.
+The agreed launch price is £3.99 as a one-off purchase, not a subscription.
+Technically, no price is configured and checkout is not implemented, so the
+purchase control remains honestly unavailable.
+
 ## UI/layout sequence
 
 ### UI-1 — confirmed defects

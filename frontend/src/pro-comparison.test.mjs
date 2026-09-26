@@ -9,6 +9,7 @@ let server
 let ProComparisonView
 let SettingsView
 let DiscoverView
+let GameNightView
 
 const user = {
   id: 1, email: "morgan@example.com", display_name: "Morgan", bgg_username: null,
@@ -22,6 +23,7 @@ before(async () => {
   ProComparisonView = (await server.ssrLoadModule("/src/components/ProComparisonView.tsx")).default
   SettingsView = (await server.ssrLoadModule("/src/components/SettingsView.tsx")).default
   DiscoverView = (await server.ssrLoadModule("/src/components/DiscoverView.tsx")).default
+  GameNightView = (await server.ssrLoadModule("/src/components/GameNightView.tsx")).default
 })
 
 after(async () => { await server?.close() })
@@ -38,35 +40,39 @@ test("both Settings Pro entries open the comparison route", () => {
   delete globalThis.window
 })
 
-test("Free plan shows current essentials and an unavailable purchase action", () => {
+test("Free plan explains the useful free product and an unavailable one-off action", () => {
   const markup = render(ProComparisonView, { user })
-  assert.match(markup, /Free <span class="pro-plan-state">Current plan/)
-  assert.match(markup, /Basic Game Night/)
-  assert.match(markup, /Discover Top 100/)
+  assert.match(markup, /Free gives you the full shelf/)
+  assert.match(markup, /ShelfPick is free to use/)
+  assert.match(markup, /Free<\/h2><span class="pro-plan-state">Your plan/)
+  assert.match(markup, /basic group picker/i)
+  assert.match(markup, /Discover Hot and Top 100/)
   assert.match(markup, /For You/)
-  assert.match(markup, /Pro — one-time unlock/)
-  assert.match(markup, /One-time purchase — price coming soon/)
+  assert.match(markup, /One-off unlock/)
+  assert.match(markup, /one-off price will be shown before you pay/i)
   assert.match(markup, /disabled=""[^>]*>Unlock ShelfPick Pro/)
   assert.match(markup, /Purchases are not available yet/)
   assert.doesNotMatch(markup, /monthly|subscription/i)
+  assert.doesNotMatch(markup, /Advanced recommendations|Richer statistics|Enhanced Game Night/)
 })
 
 test("Pro plan is current without a purchase action", () => {
   const markup = render(ProComparisonView, {
     user: { ...user, tier: "PRO", entitlements: ["game_night_basic", "personalized_discover"] },
   })
-  assert.match(markup, /Pro <span class="pro-plan-state">Current plan/)
+  assert.match(markup, /Pro<\/h2><span class="pro-plan-state">Your plan/)
+  assert.match(markup, /Pro is active on your account/)
   assert.doesNotMatch(markup, /Unlock ShelfPick Pro/)
 })
 
-test("matrix separates included, planned and excluded with accessible labels", () => {
+test("comparison lists only available features with accessible inclusion labels", () => {
   const markup = render(ProComparisonView, { user })
-  const row = name => markup.match(new RegExp(`<tr><th scope="row">${name}<\\/th>(.*?)<\\/tr>`))?.[1]
-  assert.match(row("Collection management"), /Included now.*Included now/)
-  assert.match(row("Basic Game Night"), /Included now.*Included now/)
-  assert.match(row("For You"), /Not included.*Included now/)
-  assert.match(row("Advanced recommendations"), /Not included.*Coming later/)
+  const row = name => markup.match(new RegExp(`<tr><th scope="row"><span>${name}<\\/span>.*?<\\/th>(.*?)<\\/tr>`))?.[1]
+  assert.match(row("Collection"), /Included.*Included/)
+  assert.match(row("Game Night"), /Included.*Included/)
+  assert.match(row("For You"), /Not included.*Included/)
   assert.match(markup, /ShelfPick Free and Pro feature comparison/)
+  assert.match(markup, /Only features already available in ShelfPick are listed here/)
 })
 
 test("Discover and the Free comparison use the same Top 100 label", () => {
@@ -75,5 +81,13 @@ test("Discover and the Free comparison use the same Top 100 label", () => {
   }))
   const comparison = render(ProComparisonView, { user })
   assert.match(discover, /role="tab"[^>]*>Top 100<\/button>/)
-  assert.match(comparison, /Discover Top 100/)
+  assert.match(comparison, /Discover Hot and Top 100/)
+})
+
+test("locked feature presentations use the comparison-screen language", () => {
+  const gameNight = render(GameNightView, {
+    enabled: false, onBack: () => {}, onViewGame: () => {}, onUnlockPro: () => {},
+  })
+  assert.match(gameNight, /Game Night isn’t included/)
+  assert.match(gameNight, />Compare Free and Pro<\/button>/)
 })

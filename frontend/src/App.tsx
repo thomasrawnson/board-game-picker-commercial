@@ -514,7 +514,7 @@ function App() {
                   enabled={user.entitlements.includes("game_night_basic")}
                   onBack={() => navigate(APP_PATHS.picker)}
                   onViewGame={openOwnedCollectionGame}
-                  onUnlockPro={() => navigate(APP_PATHS.settings)}
+                  onUnlockPro={() => navigate(APP_PATHS.settingsPro)}
                 />
               }
             />
@@ -537,7 +537,7 @@ function App() {
                   onViewWishlist={() => {
                     navigate(APP_PATHS.collectionWishlist);
                   }}
-                  onUnlockPro={() => navigate(APP_PATHS.settings)}
+                  onUnlockPro={() => navigate(APP_PATHS.settingsPro)}
                 />
               }
             />

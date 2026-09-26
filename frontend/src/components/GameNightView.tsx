@@ -66,10 +66,10 @@ function GameNightView({ enabled, defaultTime = null, onBack, onViewGame, onUnlo
     return (
       <section className="screen game-night-screen game-night-locked">
         <p className="eyebrow">Game Night</p>
-        <h1>Game Night is locked</h1>
-        <p>Your current ShelfPick access does not include this feature.</p>
+        <h1>Game Night isn’t included</h1>
+        <p>Compare plans to see what’s available with your ShelfPick access.</p>
         <button type="button" className="secondary-button" onClick={onUnlockPro}>
-          Unlock ShelfPick Pro
+          Compare Free and Pro
         </button>
       </section>
     )
