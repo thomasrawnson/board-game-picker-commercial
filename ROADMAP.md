@@ -113,6 +113,16 @@ capability names without corresponding shipped behaviour, and that For You’s
 source cache is process-local. The recommended next slice is Pro entitlement
 and For You readiness hardening before £3.99 one-off checkout implementation.
 
+The truthful For You personalisation-state slice completed on 26 September
+2026. The unchanged recommendation path now reports whether collection matches,
+recorded play history or saved preferences actually influenced the returned
+list. For You labels source-only results as popular fallback, explains their
+BoardGameGeek basis and links to existing Profile preferences. Personalised,
+fallback, empty, source-error, dismissed and Free-locked states remain distinct;
+Hot-only results can still be personalised when ranked candidates are
+unavailable. Persistent source resilience and entitlement cleanup remain later
+work.
+
 Across all three stages, use “warm shelf, confident choices” as the visual
 principle. Game Night remains a separate primary-navigation destination; it is
 not merged with Picker. Preserve recommendation rules, exact-player-count

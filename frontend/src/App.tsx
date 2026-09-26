@@ -538,6 +538,7 @@ function App() {
                     navigate(APP_PATHS.collectionWishlist);
                   }}
                   onUnlockPro={() => navigate(APP_PATHS.settingsPro)}
+                  onPersonalize={() => navigate(APP_PATHS.settingsProfile)}
                 />
               }
             />

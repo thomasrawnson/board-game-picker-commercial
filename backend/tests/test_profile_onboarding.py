@@ -63,6 +63,7 @@ def test_onboarding_persists_profile_preferences_and_player(account):
     with sessions() as db:
         assert PlayRepository(db, user_id).get_discover_profile() == {
             "typical_player_count": 3, "typical_play_time": 90,
+            "player_count_source": "preference", "play_time_source": "preference",
         }
 
 

@@ -1,4 +1,5 @@
 from collections import Counter
+from dataclasses import dataclass
 from dataclasses import replace
 
 from bgg.client import BGGClient
@@ -11,6 +12,13 @@ from services.picker_service import PickerCriteria, PickerService
 
 DISCOVER_MODES = {"hot", "top100", "for_you"}
 TOP_RANKED_POSITION = 100
+
+
+@dataclass(frozen=True)
+class DiscoverRecommendationResult:
+    recommendations: list[dict]
+    personalisation: str
+    signals: tuple[str, ...] = ()
 
 
 class DiscoverService:
@@ -29,6 +37,13 @@ class DiscoverService:
         self.user_id = user_id
 
     def get_recommendations(self, mode: str = "hot", limit: int = 10) -> list[dict]:
+        return self.get_recommendation_result(mode, limit).recommendations
+
+    def get_recommendation_result(
+        self,
+        mode: str = "hot",
+        limit: int = 10,
+    ) -> DiscoverRecommendationResult:
         if mode not in DISCOVER_MODES:
             raise ValueError("Unknown Discover mode")
 
@@ -52,8 +67,11 @@ class DiscoverService:
         wishlisted_ids = self.repository.get_wishlisted_bgg_ids(self.user_id)
 
         if mode != "for_you":
-            return self._source_recommendations(
-                candidates, source_candidates, wishlisted_ids, mode, limit
+            return DiscoverRecommendationResult(
+                recommendations=self._source_recommendations(
+                    candidates, source_candidates, wishlisted_ids, mode, limit
+                ),
+                personalisation="not_applicable",
             )
 
         return self._personalized_recommendations(
@@ -118,12 +136,15 @@ class DiscoverService:
         owned_games,
         wishlisted_ids: set[int],
         limit: int,
-    ) -> list[dict]:
+    ) -> DiscoverRecommendationResult:
         play_stats = self.play_repository.get_game_play_stats()
         profile = self.play_repository.get_discover_profile()
         typical_players = profile["typical_player_count"]
         typical_time = profile["typical_play_time"]
+        player_count_source = profile.get("player_count_source", "history")
+        play_time_source = profile.get("play_time_source", "history")
         source_by_id = {candidate.bgg_id: candidate for candidate in source_candidates}
+        signals: set[str] = set()
 
         category_weights: Counter[str] = Counter()
         mechanic_weights: Counter[str] = Counter()
@@ -146,6 +167,12 @@ class DiscoverService:
                 )
             }
             games = [game for game in games if game.bgg_id in eligible_ids]
+            if games:
+                signals.add(
+                    "preferences"
+                    if player_count_source == "preference"
+                    else "play_history"
+                )
 
         recommendations = []
         for game in games:
@@ -161,17 +188,28 @@ class DiscoverService:
                 score += category_weights[best]
                 reasons.append(f"Matches {best} games on your shelf")
                 section = "Matches your collection"
+                signals.add("collection")
+                if category_weights[best] > 1:
+                    signals.add("play_history")
             if mechanic_matches:
                 best = max(mechanic_matches, key=mechanic_weights.get)
                 score += mechanic_weights[best] * 1.5
                 reasons.append(f"Includes {best} from games on your shelf")
                 section = "Matches your collection"
+                signals.add("collection")
+                if mechanic_weights[best] > 1:
+                    signals.add("play_history")
 
             if typical_time is not None and game.max_play_time is not None:
                 if game.max_play_time <= typical_time:
                     score += 1.5
                     reasons.append(f"Fits your usual {typical_time}-minute session")
                     section = "Fits your usual session"
+                    signals.add(
+                        "preferences"
+                        if play_time_source == "preference"
+                        else "play_history"
+                    )
 
             if typical_players is not None:
                 if typical_players in game.best_player_counts:
@@ -208,4 +246,13 @@ class DiscoverService:
             })
 
         recommendations.sort(key=lambda item: (-item["score"], item["game"].name))
-        return recommendations[:limit]
+        recommendations = recommendations[:limit]
+        return DiscoverRecommendationResult(
+            recommendations=recommendations,
+            personalisation=(
+                "personalised"
+                if signals
+                else "popular_fallback"
+            ),
+            signals=tuple(sorted(signals)),
+        )

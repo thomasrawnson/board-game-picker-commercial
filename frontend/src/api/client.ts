@@ -313,6 +313,23 @@ export interface DiscoverRecommendation {
 }
 
 export type DiscoverMode = "hot" | "top100" | "for_you"
+export type DiscoverPersonalisationStatus =
+  | "personalised"
+  | "popular_fallback"
+  | "not_applicable"
+  | "unknown"
+export type DiscoverPersonalisationSignal =
+  | "collection"
+  | "play_history"
+  | "preferences"
+
+export interface DiscoverRecommendationResult {
+  recommendations: DiscoverRecommendation[]
+  personalisation: {
+    status: DiscoverPersonalisationStatus
+    signals: DiscoverPersonalisationSignal[]
+  }
+}
 
 export interface BGGSearchResult {
   bgg_id: number
@@ -1068,7 +1085,7 @@ export async function deletePlay(
 export async function getDiscoverRecommendations(
   mode: DiscoverMode = "hot",
 ):
-Promise<DiscoverRecommendation[]> {
+Promise<DiscoverRecommendationResult> {
   const response =
     await apiFetch(
       `/discover?mode=${mode}`,
@@ -1083,7 +1100,28 @@ Promise<DiscoverRecommendation[]> {
     )
   }
 
-  return response.json()
+  const rawStatus = response.headers.get("X-ShelfPick-Personalisation")
+  const status: DiscoverPersonalisationStatus = (
+    rawStatus === "personalised"
+    || rawStatus === "popular_fallback"
+    || rawStatus === "not_applicable"
+  ) ? rawStatus : "unknown"
+  const allowedSignals = new Set<DiscoverPersonalisationSignal>([
+    "collection",
+    "play_history",
+    "preferences",
+  ])
+  const signals = (response.headers.get("X-ShelfPick-Personalisation-Signals") ?? "")
+    .split(",")
+    .filter(Boolean)
+    .filter((signal): signal is DiscoverPersonalisationSignal => (
+      allowedSignals.has(signal as DiscoverPersonalisationSignal)
+    ))
+
+  return {
+    recommendations: await response.json(),
+    personalisation: { status, signals },
+  }
 }
 
 

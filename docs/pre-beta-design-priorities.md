@@ -34,6 +34,14 @@ align granted entitlement names with shipped capabilities and harden For You’s
 cold-start and source-failure behaviour. The agreed commercial decision remains
 £3.99 as a one-off purchase, not a subscription.
 
+Truthful For You personalisation states completed on 26 September 2026. The UI
+now distinguishes results influenced by the user’s matching Owned shelf,
+recorded plays or saved preferences from source-only popular fallback. Fallback
+copy names its BoardGameGeek Hot/ranked basis and offers the existing Profile
+preferences action without removing useful results. Empty, error, dismissed and
+locked states remain separate. Recommendation scoring, ordering, access and
+source behaviour are unchanged.
+
 ## UI/layout sequence
 
 ### UI-1 — confirmed defects

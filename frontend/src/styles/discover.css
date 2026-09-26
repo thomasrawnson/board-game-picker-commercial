@@ -58,6 +58,35 @@
   margin-top: var(--space-5);
 }
 
+.discover-personalisation-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.discover-personalisation-note h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.discover-personalisation-note p {
+  max-width: 68ch;
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-support);
+  line-height: 1.5;
+}
+
+.discover-personalisation-note .secondary-button {
+  width: auto;
+  flex: 0 0 auto;
+}
+
 .discover-section > h2 {
   margin: 0;
   font-size: 20px;
@@ -65,6 +94,17 @@
 
 .discover-section .discover-list {
   margin-top: var(--space-3);
+}
+
+@media (max-width: 640px) {
+  .discover-personalisation-note {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .discover-personalisation-note .secondary-button {
+    width: 100%;
+  }
 }
 
 .discover-locked {

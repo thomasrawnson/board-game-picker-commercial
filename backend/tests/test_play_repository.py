@@ -176,6 +176,8 @@ def test_get_player_stats():
         assert discover_profile == {
             "typical_player_count": 2,
             "typical_play_time": 60,
+            "player_count_source": "history",
+            "play_time_source": "history",
         }
 
         assert stats is not None

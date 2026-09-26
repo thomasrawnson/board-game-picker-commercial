@@ -66,9 +66,10 @@ and purchasing remains disabled.
 3. **For You resilience is process-local:** persist a last-known-good candidate
    snapshot, define freshness, and verify restart behaviour. Candidate metadata
    also needs an intentional failure/fallback policy.
-4. **Thin cold-start value:** an empty/no-signal Pro account receives a popular
-   fallback. Treat that state truthfully and establish the minimum evidence
-   needed before calling results personalised.
+4. **Cold-start value is now labelled truthfully:** an empty/no-signal Pro
+   account keeps useful popular fallback results, labelled with their source
+   basis and an existing preferences action. Improving the value of that
+   fallback remains separate from representing it accurately.
 5. **Operational proof remains absent:** no live BoardGameGeek or production-like
    availability check was run in this audit.
 
@@ -80,8 +81,8 @@ Acceptance criteria:
 
 - The frontend-facing entitlement list contains only capabilities with shipped,
   independently enforced behaviour; planned identifiers cannot imply access.
-- For You reports or represents personalised versus popular-fallback results
-  truthfully for empty and sparse accounts.
+- Preserve the completed truthful distinction between personalised and
+  popular-fallback results for empty and sparse accounts.
 - Last-known-good Hot/ranked candidates survive an application restart with a
   documented freshness limit; partial-source degradation remains useful and
   total failure remains distinct from an empty result.

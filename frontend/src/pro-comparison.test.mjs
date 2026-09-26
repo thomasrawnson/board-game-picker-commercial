@@ -77,7 +77,7 @@ test("comparison lists only available features with accessible inclusion labels"
 
 test("Discover and the Free comparison use the same Top 100 label", () => {
   const discover = renderToStaticMarkup(React.createElement(DiscoverView, {
-    personalized: false, onViewWishlist: () => {}, onUnlockPro: () => {},
+    personalized: false, onViewWishlist: () => {}, onUnlockPro: () => {}, onPersonalize: () => {},
   }))
   const comparison = render(ProComparisonView, { user })
   assert.match(discover, /role="tab"[^>]*>Top 100<\/button>/)

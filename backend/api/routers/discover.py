@@ -7,6 +7,7 @@ from fastapi import (
     Depends,
     HTTPException,
     Query,
+    Response,
 )
 
 from api.dependencies import (
@@ -27,6 +28,7 @@ router = APIRouter()
     "/discover"
 )
 def get_discover_recommendations(
+    response: Response,
     mode: Literal["hot", "top100", "for_you"] = Query("hot"),
     limit: int = Query(
         10,
@@ -48,12 +50,13 @@ def get_discover_recommendations(
         )
 
     try:
-        return (
-            service.get_recommendations(
-                mode=mode,
-                limit=limit
-            )
+        result = service.get_recommendation_result(
+            mode=mode,
+            limit=limit,
         )
+        response.headers["X-ShelfPick-Personalisation"] = result.personalisation
+        response.headers["X-ShelfPick-Personalisation-Signals"] = ",".join(result.signals)
+        return result.recommendations
     except httpx.TimeoutException as exc:
         raise HTTPException(
             status_code=504,

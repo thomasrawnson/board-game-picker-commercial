@@ -1,7 +1,8 @@
 from models.game import Game
 from models.game_play_stats import GamePlayStats
+from bgg.client import BGGSourceUnavailableError
 from services.discover_service import DiscoverService
-from services.discover_sources import DiscoverCandidate
+from services.discover_sources import DiscoverCandidate, DiscoverCandidateProvider
 
 
 class FakeRepository:
@@ -23,11 +24,20 @@ class FakeRepository:
 
 
 class FakePlayRepository:
-    def __init__(self, player_count=2, play_time=60, play_count=4):
+    def __init__(
+        self,
+        player_count=2,
+        play_time=60,
+        play_count=4,
+        player_count_source="history",
+        play_time_source="history",
+    ):
         self.play_count = play_count
         self.profile = {
             "typical_player_count": player_count,
             "typical_play_time": play_time,
+            "player_count_source": player_count_source,
+            "play_time_source": play_time_source,
         }
 
     def get_game_play_stats(self):
@@ -145,22 +155,30 @@ def test_for_you_uses_real_player_time_and_collection_signals():
     assert first["section"] == "Great at your usual player count"
 
 
-def test_for_you_new_user_falls_back_to_popular_candidates():
-    results = make_service(
-        FakePlayRepository(player_count=None, play_time=None)
-    ).get_recommendations(mode="for_you")
+def test_for_you_without_history_uses_a_matching_collection_signal():
+    result = make_service(
+        FakePlayRepository(player_count=None, play_time=None, play_count=0)
+    ).get_recommendation_result(mode="for_you")
 
-    assert results
-    assert all(item["reasons"] for item in results)
-    assert any("BoardGameGeek" in reason for item in results for reason in item["reasons"])
+    assert result.personalisation == "personalised"
+    assert result.signals == ("collection",)
+    assert result.recommendations
+    assert all(item["reasons"] for item in result.recommendations)
+    assert any(
+        "BoardGameGeek" in reason
+        for item in result.recommendations
+        for reason in item["reasons"]
+    )
 
 
 def test_for_you_empty_collection_uses_only_source_signals():
-    results = make_service(
+    result = make_service(
         FakePlayRepository(player_count=None, play_time=None, play_count=0),
         repository=FakeRepository(owned=False),
-    ).get_recommendations(mode="for_you")
+    ).get_recommendation_result(mode="for_you")
 
+    assert result.personalisation == "popular_fallback"
+    results = result.recommendations
     assert results
     assert all(item["section"] == "Popular starting points" for item in results)
     assert all(
@@ -175,14 +193,61 @@ def test_for_you_empty_collection_uses_only_source_signals():
 
 
 def test_for_you_single_play_keeps_truthful_collection_and_session_reasons():
-    results = make_service(
+    result = make_service(
         FakePlayRepository(player_count=2, play_time=60, play_count=1)
-    ).get_recommendations(mode="for_you")
+    ).get_recommendation_result(mode="for_you")
 
+    assert result.personalisation == "personalised"
+    assert result.signals == ("collection", "play_history")
+    results = result.recommendations
     first = next(item for item in results if item["game"].bgg_id == 1)
     assert "Matches Strategy games on your shelf" in first["reasons"]
     assert "Fits your usual 60-minute session" in first["reasons"]
     assert "Great at 2 players" in first["reasons"]
+
+
+def test_for_you_explicit_preferences_are_reported_as_the_used_signal():
+    result = make_service(FakePlayRepository(
+        player_count=2,
+        play_time=60,
+        play_count=0,
+        player_count_source="preference",
+        play_time_source="preference",
+    )).get_recommendation_result(mode="for_you")
+
+    assert result.personalisation == "personalised"
+    assert result.signals == ("collection", "preferences")
+
+
+def test_for_you_stays_personalised_with_hot_only_source_fallback():
+    class HotSource:
+        name = "hot"
+
+        def get_candidates(self):
+            return [DiscoverCandidate(1, {"hot"})]
+
+    class UnavailableRankedSource:
+        name = "ranked"
+
+        def get_candidates(self):
+            raise BGGSourceUnavailableError(source="ranked", status_code=403)
+
+    service = DiscoverService(
+        repository=FakeRepository(),
+        play_repository=FakePlayRepository(),
+        bgg_client=FakeBGGClient(),
+        candidate_provider=DiscoverCandidateProvider([
+            HotSource(),
+            UnavailableRankedSource(),
+        ]),
+        user_id=7,
+    )
+
+    result = service.get_recommendation_result(mode="for_you")
+
+    assert result.personalisation == "personalised"
+    assert result.recommendations
+    assert result.recommendations[0]["reasons"][-1] == "Currently hot on BoardGameGeek"
 
 
 def test_for_you_keeps_ranked_candidates_beyond_top_100():

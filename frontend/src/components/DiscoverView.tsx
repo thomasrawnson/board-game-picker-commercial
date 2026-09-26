@@ -5,17 +5,20 @@ import {
   getDiscoverRecommendations,
   removeFromWishlist,
   type DiscoverMode,
+  type DiscoverPersonalisationSignal,
+  type DiscoverPersonalisationStatus,
   type DiscoverRecommendation,
 } from "../api/client"
 import RetryNotice from "./ui/RetryNotice"
 import { trackEvent } from "../telemetry"
-import { discoverEmptyCopy } from "../discover-state"
+import { discoverEmptyCopy, discoverPersonalisationCopy } from "../discover-state"
 
 
 type Props = {
   personalized: boolean
   onViewWishlist: () => void
   onUnlockPro: () => void
+  onPersonalize: () => void
 }
 
 const tabs: Array<{ mode: DiscoverMode; label: string }> = [
@@ -46,7 +49,7 @@ function complexityLabel(value: number | null | undefined) {
   return "Very heavy"
 }
 
-function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
+function DiscoverView({ personalized, onViewWishlist, onUnlockPro, onPersonalize }: Props) {
   const [mode, setMode] = useState<DiscoverMode>("hot")
   const [recommendations, setRecommendations] = useState<DiscoverRecommendation[]>([])
   const [loading, setLoading] = useState(true)
@@ -55,6 +58,10 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
   const [actionError, setActionError] = useState("")
   const [reloadKey, setReloadKey] = useState(0)
   const [dismissedCount, setDismissedCount] = useState(0)
+  const [personalisationStatus, setPersonalisationStatus] =
+    useState<DiscoverPersonalisationStatus>("unknown")
+  const [personalisationSignals, setPersonalisationSignals] =
+    useState<DiscoverPersonalisationSignal[]>([])
   const pendingIds = useRef(new Set<number>())
   const lastTrackedTab = useRef<DiscoverMode | null>(null)
 
@@ -71,9 +78,11 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
 
     let cancelled = false
     getDiscoverRecommendations(mode)
-      .then((results) => {
+      .then((result) => {
         if (!cancelled) {
-          setRecommendations(results)
+          setRecommendations(result.recommendations)
+          setPersonalisationStatus(result.personalisation.status)
+          setPersonalisationSignals(result.personalisation.signals)
           setDismissedCount(0)
           setError("")
         }
@@ -97,6 +106,8 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
     setError("")
     setActionError("")
     setDismissedCount(0)
+    setPersonalisationStatus("unknown")
+    setPersonalisationSignals([])
     setLoading(nextMode !== "for_you" || personalized)
   }
 
@@ -160,6 +171,10 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
     new Map(),
   )
   const emptyCopy = discoverEmptyCopy(mode, dismissedCount > 0)
+  const personalisationCopy = discoverPersonalisationCopy(
+    personalisationStatus,
+    personalisationSignals,
+  )
 
   function renderCard(recommendation: DiscoverRecommendation, index: number) {
     const { game, reasons, wishlisted } = recommendation
@@ -263,8 +278,8 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
         <div className="discover-locked">
           <h2>For You is a Pro feature</h2>
           <p>
-            For You uses your collection and real play patterns to surface new games
-            that fit how you play.
+            For You can use your Owned shelf, saved play preferences and recorded
+            plays to surface games that fit how you play.
           </p>
           <button type="button" className="primary-button" onClick={onUnlockPro}>
             Compare Free and Pro
@@ -275,6 +290,23 @@ function DiscoverView({ personalized, onViewWishlist, onUnlockPro }: Props) {
           {loading && <p className="subtitle">Finding games...</p>}
           {error && <RetryNotice message={error} busy={loading} onRetry={retry} />}
           {actionError && <p className="error-message" role="alert">{actionError}</p>}
+          {mode === "for_you" && recommendations.length > 0 && personalisationStatus === "personalised" && (
+            <section className="discover-personalisation-note" aria-labelledby="discover-personalised-heading">
+              <h2 id="discover-personalised-heading">{personalisationCopy?.title}</h2>
+              <p>{personalisationCopy?.body}</p>
+            </section>
+          )}
+          {mode === "for_you" && recommendations.length > 0 && personalisationStatus === "popular_fallback" && (
+            <section className="discover-personalisation-note" aria-labelledby="discover-fallback-heading">
+              <div>
+                <h2 id="discover-fallback-heading">{personalisationCopy?.title}</h2>
+                <p>{personalisationCopy?.body}</p>
+              </div>
+              <button type="button" className="secondary-button" onClick={onPersonalize}>
+                {personalisationCopy?.actionLabel}
+              </button>
+            </section>
+          )}
           {!loading && !error && recommendations.length === 0 && (
             <div className="discover-empty">
               <h2>{emptyCopy.title}</h2>

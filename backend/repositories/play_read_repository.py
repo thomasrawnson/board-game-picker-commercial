@@ -19,11 +19,13 @@ from models.game_play_stats import GamePlayStats
 
 
 class PlayReadRepository:
-    def get_discover_profile(self) -> dict[str, int | None]:
+    def get_discover_profile(self) -> dict[str, int | str | None]:
         if self.user_id is None:
             return {
                 "typical_player_count": None,
                 "typical_play_time": None,
+                "player_count_source": None,
+                "play_time_source": None,
             }
 
         user = self.db.get(User, self.user_id)
@@ -64,6 +66,16 @@ class PlayReadRepository:
             "typical_play_time": (
                 user.preferred_play_time if user and user.preferred_play_time is not None
                 else (round(median(durations)) if durations else None)
+            ),
+            "player_count_source": (
+                "preference"
+                if user and user.preferred_player_count is not None
+                else ("history" if typical_player_count is not None else None)
+            ),
+            "play_time_source": (
+                "preference"
+                if user and user.preferred_play_time is not None
+                else ("history" if durations else None)
             ),
         }
 

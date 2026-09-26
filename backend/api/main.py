@@ -71,6 +71,8 @@ app.add_middleware(
     ],
     expose_headers=[
         "X-Request-ID",
+        "X-ShelfPick-Personalisation",
+        "X-ShelfPick-Personalisation-Signals",
     ],
     )
 
