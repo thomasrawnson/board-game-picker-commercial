@@ -26,6 +26,14 @@ The agreed launch price is £3.99 as a one-off purchase, not a subscription.
 Technically, no price is configured and checkout is not implemented, so the
 purchase control remains honestly unavailable.
 
+The implementation audit in `docs/free-pro-capability-audit.md` verifies that
+For You is currently the only implemented Pro-only behaviour. All Picker modes,
+Owned and Want to Play, play logging, Insights, Discover Hot/Top 100 and basic
+Game Night are Free. Before checkout work, the recommended next slice is to
+align granted entitlement names with shipped capabilities and harden For You’s
+cold-start and source-failure behaviour. The agreed commercial decision remains
+£3.99 as a one-off purchase, not a subscription.
+
 ## UI/layout sequence
 
 ### UI-1 — confirmed defects

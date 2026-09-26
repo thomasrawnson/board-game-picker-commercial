@@ -104,6 +104,15 @@ price is £3.99 as a one-off purchase, not a subscription. Technically, no price
 is configured and checkout is not implemented, so the unlock action stays
 explicitly unavailable and no price is displayed in the app.
 
+The implementation audit is recorded in
+`docs/free-pro-capability-audit.md`. It verifies that personalised Discover
+`For You` is the only implemented Pro-only behaviour. Picker modes, collection,
+Want to Play, play logging, Insights and basic Game Night are Free. The audit
+also records that the Pro entitlement response currently includes planned
+capability names without corresponding shipped behaviour, and that For You’s
+source cache is process-local. The recommended next slice is Pro entitlement
+and For You readiness hardening before £3.99 one-off checkout implementation.
+
 Across all three stages, use “warm shelf, confident choices” as the visual
 principle. Game Night remains a separate primary-navigation destination; it is
 not merged with Picker. Preserve recommendation rules, exact-player-count

@@ -5,6 +5,9 @@ from services.discover_sources import DiscoverCandidate
 
 
 class FakeRepository:
+    def __init__(self, owned=True):
+        self.owned = owned
+
     def get_owned_by_user(self, user_id):
         return [
             Game(
@@ -13,21 +16,22 @@ class FakeRepository:
                 categories=["Strategy"],
                 mechanics=["Deck Building"],
             )
-        ]
+        ] if self.owned else []
 
     def get_wishlisted_bgg_ids(self, user_id):
         return {1}
 
 
 class FakePlayRepository:
-    def __init__(self, player_count=2, play_time=60):
+    def __init__(self, player_count=2, play_time=60, play_count=4):
+        self.play_count = play_count
         self.profile = {
             "typical_player_count": player_count,
             "typical_play_time": play_time,
         }
 
     def get_game_play_stats(self):
-        return {99: GamePlayStats(99, 4, None)}
+        return {99: GamePlayStats(99, self.play_count, None)}
 
     def get_discover_profile(self):
         return self.profile
@@ -48,7 +52,7 @@ class FakeCandidateProvider:
         source_names=None,
         max_ranked_position=None,
     ):
-        assert owned_bgg_ids == {99}
+        assert owned_bgg_ids in ({99}, set())
         return [
             candidate
             for candidate in self.candidates
@@ -108,9 +112,9 @@ class FakeBGGClient:
         return "<items>" + "".join(items) + "</items>"
 
 
-def make_service(play_repository=None):
+def make_service(play_repository=None, repository=None):
     return DiscoverService(
-        repository=FakeRepository(),
+        repository=repository or FakeRepository(),
         play_repository=play_repository or FakePlayRepository(),
         bgg_client=FakeBGGClient(),
         candidate_provider=FakeCandidateProvider(),
@@ -149,6 +153,36 @@ def test_for_you_new_user_falls_back_to_popular_candidates():
     assert results
     assert all(item["reasons"] for item in results)
     assert any("BoardGameGeek" in reason for item in results for reason in item["reasons"])
+
+
+def test_for_you_empty_collection_uses_only_source_signals():
+    results = make_service(
+        FakePlayRepository(player_count=None, play_time=None, play_count=0),
+        repository=FakeRepository(owned=False),
+    ).get_recommendations(mode="for_you")
+
+    assert results
+    assert all(item["section"] == "Popular starting points" for item in results)
+    assert all(
+        any("BoardGameGeek" in reason for reason in item["reasons"])
+        for item in results
+    )
+    assert not any(
+        "your shelf" in reason.lower()
+        for item in results
+        for reason in item["reasons"]
+    )
+
+
+def test_for_you_single_play_keeps_truthful_collection_and_session_reasons():
+    results = make_service(
+        FakePlayRepository(player_count=2, play_time=60, play_count=1)
+    ).get_recommendations(mode="for_you")
+
+    first = next(item for item in results if item["game"].bgg_id == 1)
+    assert "Matches Strategy games on your shelf" in first["reasons"]
+    assert "Fits your usual 60-minute session" in first["reasons"]
+    assert "Great at 2 players" in first["reasons"]
 
 
 def test_for_you_keeps_ranked_candidates_beyond_top_100():
